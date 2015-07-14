@@ -56,6 +56,8 @@ antigen bundle command-not-found
 antigen bundle history  
 antigen bundle zsh-users/zsh-syntax-highlighting  
 antigen bundle jdavis/zsh-files  
+#antigen bundle chrissicool/zsh-bash
+#antigen bundle zsh-users/zsh-completions src
 antigen bundle unixorn/autoupdate-antigen.zshplugin
 antigen bundle rupa/z
 

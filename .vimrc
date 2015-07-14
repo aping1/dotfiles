@@ -1,6 +1,8 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
- 
+
+if version >= 700
+
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -20,6 +22,7 @@ Plugin 'L9'
 Plugin 'git://git.wincent.com/command-t.git'
 
 Plugin 'lzap/vim-selinux'
+Plugin 'christoomey/vim-tmux-navigator'
 " git repos on your local machine (i.e. when working on your own plugin)
 " Plugin 'file:///home/gmarik/path/to/plugin'
 " The sparkup vim script is in a subdirectory of this repo called vim.
@@ -47,3 +50,4 @@ filetype plugin indent on    " required
 "
 "
 set iskeyword=-,:,@,48-57,_,192-255
+endif
