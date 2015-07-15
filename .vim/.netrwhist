@@ -1,10 +1,3 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =8
-let g:netrw_dirhist_1='/users/ewampler3/configs/puppet/profiles/rhel6/files'
-let g:netrw_dirhist_2='/users/ewampler3/configs/puppet/services/sssd/manifests'
-let g:netrw_dirhist_3='/etc/openvpn'
-let g:netrw_dirhist_4='/users/awampler3/code/stash.ctisl.configs/puppet/modules/restorcond/files'
-let g:netrw_dirhist_5='/users/awampler3/code/git.postgres.postgresql/config'
-let g:netrw_dirhist_6='/users/awampler3/rpmbuild/git.postgres.postgresql'
-let g:netrw_dirhist_7='/users/awampler3/code/svn.ctisl.rpm-stl/branches'
-let g:netrw_dirhist_8='/users/awampler3/code/stash.allison.rpm-sis-rhel6/openscap'
+let g:netrw_dirhist_cnt =1
+let g:netrw_dirhist_1='/users/awampler3/.dotfiles/.git/modules'
