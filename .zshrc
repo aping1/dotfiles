@@ -122,3 +122,26 @@ preexec () {
     fi
 
 }
+
+_powerline_set_prompt ()
+{
+    local last_exit_code=$?;
+    local jobnum="$(jobs -p|wc -l)";
+    PS1="$(_powerline_prompt aboveleft $last_exit_code $jobnum)";
+    if test -n "$POWERLINE_SHELL_CONTINUATION$POWERLINE_BASH_CONTINUATION"; then
+        PS2="$(_powerline_local_prompt left -r.bash $last_exit_code $jobnum continuation)";
+    fi;
+    if test -n "$POWERLINE_SHELL_SELECT$POWERLINE_BASH_SELECT"; then
+        PS3="$(_powerline_local_prompt left '' $last_exit_code $jobnum select)";
+    fi;
+    return $last_exit_code
+}
+
+PATH=$PATH:$HOME/bin
+export PATH
+
+# Initialization for FDK command line tools.Mon Aug 17 11:15:45 2015
+FDK_EXE="/users/awampler3/bin/FDK/Tools/linux"
+PATH=${PATH}:"/users/awampler3/bin/FDK/Tools/linux"
+export PATH
+export FDK_EXE

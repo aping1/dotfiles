@@ -137,21 +137,19 @@ antigen-update () {
 
 antigen-revert () {
     if [[ -f $ADOTDIR/revert-info ]]; then
-        cat $ADOTDIR/revert-info | sed '1!p' | while read line; do
-            dir="$(echo "$line" | cut -d: -f1)"
+        cat $ADOTDIR/revert-info | sed -n '1!p' | while read line; do
+            local dir="$(echo "$line" | cut -d: -f1)"
             git --git-dir="$dir/.git" --work-tree="$dir" \
                 checkout "$(echo "$line" | cut -d: -f2)" 2> /dev/null
-
         done
 
         echo "Reverted to state before running -update on $(
-                cat $ADOTDIR/revert-info | sed -n 1p)."
+                cat $ADOTDIR/revert-info | sed -n '1p')."
 
-    else 
+    else
         echo 'No revert information available. Cannot revert.' >&2
+        return 1
     fi
-
-
 }
 
 -antigen-get-clone-dir () {
@@ -260,10 +258,12 @@ antigen-revert () {
     # The full location where the plugin is located.
     local location
     if $make_local_clone; then
-        location="$(-antigen-get-clone-dir "$url")/$loc"
+        location="$(-antigen-get-clone-dir "$url")/"
     else
-        location="$url/$loc"
+        location="$url/"
     fi
+
+    [[ $loc != "/" ]] && location="$location$loc"
 
     if [[ -f "$location" ]]; then
         source "$location"
@@ -293,12 +293,12 @@ antigen-revert () {
         elif ls "$location" | grep -l '\.zsh$' &> /dev/null; then
             # If there is no `*.plugin.zsh` file, source *all* the `*.zsh`
             # files.
-            for script ($location/*.zsh(N)) source "$script"
+            for script ($location/*.zsh(N)) { source "$script" }
 
         elif ls "$location" | grep -l '\.sh$' &> /dev/null; then
             # If there are no `*.zsh` files either, we look for and source any
             # `*.sh` files instead.
-            for script ($location/*.sh(N)) source "$script"
+            for script ($location/*.sh(N)) { source "$script" }
 
         fi
 
@@ -395,6 +395,9 @@ antigen-use () {
 -antigen-use-oh-my-zsh () {
     if [[ -z "$ZSH" ]]; then
         export ZSH="$(-antigen-get-clone-dir "$ANTIGEN_DEFAULT_REPO_URL")"
+    fi
+    if [[ -z "$ZSH_CACHE_DIR" ]]; then
+        export ZSH_CACHE_DIR="$ZSH/cache/"
     fi
     antigen-bundle --loc=lib
 }

@@ -50,4 +50,8 @@ filetype plugin indent on    " required
 "
 "
 set iskeyword=-,:,@,48-57,_,192-255
+set expandtab
+set tabstop=4
+set shiftwidth=4
 endif
+
