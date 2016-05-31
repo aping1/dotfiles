@@ -12,7 +12,7 @@ dotfiles='''~/.gitconfig
 ~/.vimrc
 ~/.zshrc
 '''
-tar cvzf ~/.dotfile.backup.$(date '+%F').tar.gz ${dotfiles}
+tar cvzf ~/dotfile.backup.$(date '+%F').tar.gz ${dotfiles}
 rm ~/.gitconfig
 rm ~/.gitignore_global
 rm ~/.tmux.conf

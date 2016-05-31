@@ -1,5 +1,5 @@
 ## === Profiling ===
-f I see that zsh takes to much time to load I profile what has been changed,
+# if I see that zsh takes to much time to load I profile what has been changed,
 # I want to see my shell ready in not more than 1 second
 PROFILING=${PROFILING:-false}
 if $PROFILING; then
