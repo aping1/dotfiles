@@ -1,5 +1,5 @@
 ## === Profiling ===
-# if I see that zsh takes to much time to load I profile what has been changed,
+#if I see that zsh takes to much time to load I profile what has been changed,
 # I want to see my shell ready in not more than 1 second
 PROFILING=${PROFILING:-false}
 if $PROFILING; then
@@ -25,7 +25,7 @@ path=(
     $(brew --prefix)/bin/:${PATH}
     $path
 )
-elif [[ "${DISTRO}" == "Darwin" ]]; 
+elif [[ "${DISTRO}" == "Darwin" ]]; then
     echo "Install Homebrew" >&2
 fi
 typeset -U path
@@ -60,7 +60,7 @@ ZSH_TMUX_FIXTERM=true
 ZSH_TMUX_AUTOQUIT=false
 
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
-DEFAULT_USER=outcoldman
+DEFAULT_USER=awampler
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status history time)
