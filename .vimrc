@@ -1,21 +1,70 @@
+"
+"
+" ~/.vimrc (remote shell)
+"
+
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
+set ruler
+set ignorecase
+set smartcase
+
+set shell=/bin/bash
+set encoding=utf8
+set ffs=unix,dos,mac
+set nobackup
+"set noswapfile
+set incsearch
+set title
+set showmode
+set wildmenu
+set history=1000
+
+try
+    set undodir=~/.vim_runtime/undodir
+    set undofile
+catch
+endtry
+
+set smarttab
+set expandtab
+set linebreak
+set textwidth=0
+
+" Disable case insensitive search and replace.
+set noignorecase
+set nosmartcase
+
+" Fix up arrow not working in search.
+imap OA <ESC>ki
+imap OB <ESC>ji
+imap OC <ESC>li
+imap OD <ESC>hi
+
+" set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
+"call vundle#rc()
+" alternatively, pass a path where Vundle should install bundles
+"let path = '~/some/path/here'
+"call vundle#rc(path)
 call vundle#begin()
+" let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'gmarik/vundle'
 
 " other packages, run ' vim +PluginInstall +qall ' to up date them
+Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'elzr/vim-json'
 Plugin 'saltstack/salt-vim'
 Plugin 'lepture/vim-jinja'
+Plugin 'vim-scripts/snipMate'
+Plugin 'vim-scripts/taglist.vim'
 Plugin 'benmills/vimux'
 Plugin 'mileszs/ack.vim'
 Plugin 'protocool/AckMate'
 
-Plugin 'christoomy/vim-tmux-navigator'
 Plugin 'scrooloose/syntastic'
 Plugin 'scrooloose/nerdtree'
 
@@ -26,16 +75,10 @@ Plugin 'vim-scripts/vim-misc'
 Plugin 'vim-scripts/easytags.vim'
 Plugin 'vim-scripts/gitdiff.vim'
 Plugin 'vim-scripts/pdbvim'
-
-Plugin 'altercation/vim-colors-solarized'  
-Plugin 'vim-scripts/taglist-plus'
-Plugin 'vim-scripts/Trinity'
-Plugin 'tmhedberg/SimpylFold'
-Plugin 'vim-scripts/vim-json-bundle' " Pathogen friendly file type plugin bundle for json files
-
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'edkolev/tmuxline.vim'
+Plugin 'vim-scripts/vim-json-bundle'
+Plugin 'vim-scripts/grep.vim'
+Plugin 'vim-scripts/Tagbar'
+Plugin 'szw/vim-tags.git'
 
 "Plugin 'bling/vim-airline'
 
@@ -60,6 +103,10 @@ set sw=4
 set ai
 set expandtab
 set hlsearch
+
+" Tagsgenerate from scw/vim-tags
+set exrc
+set secure
 
 "  set t_Co=256
 set t_Co=16
@@ -138,25 +185,46 @@ let plsql_space_errors = 1
 if version >= 702
     autocmd BufWinLeave * call clearmatches()
 endif
- 
-" Always display the statusline in all windows
-set laststatus=2 
-" set font
-set guifont=Sauce\ Code\ for\ Powerline:h14 
 
-" Hide the default mode text (e.g. -- INSERT -- below the statusline)
-" set noshowmode 
+:au BufNewFile,BufRead *.jinja set filetype=jinja
 
-" Show line numbers
-set number        
-" Use syntax highlighting
-syntax enable     
+:au BufNewFile,BufRead *.input set filetype=json
 
-" fix backspace to work like you would expect
-set backspace=indent,eol,start
+" Change the Pmenu colors so they're more readable.
+highlight Pmenu ctermbg=cyan ctermfg=white
+highlight PmenuSel ctermbg=black ctermfg=white
 
-" Color Scheme
-colorscheme solarized
+" pyflakes
+let g:khuno_ignore="E501"
+
+"
+" pymode options
+"
+
+" OPTION: g:pymode_folding -- bool. Disable python-mode folding for pyfiles.
+"call pymode#Default("g:pymode_folding", 0)
+
+" OPTION: g:pymode_syntax -- bool. Enable python-mode syntax for pyfiles.
+"call pymode#Default("g:pymode_syntax", 1)
+
+" OPTION: g:pymode_indent -- bool. Enable/Disable pymode PEP8 indentation
+"call pymode#Default("g:pymode_indent", 1)
+
+" OPTION: g:pymode_utils_whitespaces -- bool. Remove unused whitespaces on save
+"call pymode#Default("g:pymode_utils_whitespaces", 1)
+
+" OPTION: g:pymode_options -- bool. To set some python options.
+"call pymode#Default("g:pymode_options", 1)
+
+" OPTION: g:pymode_updatetime -- int. Set updatetime for async pymode's operation
+"call pymode#Default("g:pymode_updatetime", 1000)
+
+" OPTION: g:pymode_lint_ignore -- string. Skip errors and warnings (e.g.  E4,W)
+"call pymode#Default("g:pymode_lint_ignore", "E501")
+
+" Reload .vimrc immediately when edited
+autocmd! bufwritepost vimrc source ~/.vimrc
+
 " Set max line length.
 "let linelen = 100
 "execute "set colorcolumn=".linelen
@@ -164,7 +232,7 @@ colorscheme solarized
 "execute "match OverLength /\%".linelen."v.\+/"
 
 " Tell VIM which tags file to use.
-set tags=./tags
+set tags=./tags,tags;$HOME
 let g:easytags_dynamic_files = 1
 
 " Tell VIM to use ack instead of grep.
@@ -172,9 +240,13 @@ set grepprg=grep
 
 " Make underscores part of words.
 "set iskeyword-=_
+set iskeyword+=-
 
 " When shifting always round to the correct indentation.
 set shiftround
+
+set list
+set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 
 " Run lint on these file types.
 "au FileType xml exe ":silent 1, $!xmllint --format --recover - 2> /dev/null"
@@ -183,16 +255,48 @@ set shiftround
 let g:airline_powerline_fonts = 1
 set term=xterm-256color
 set background=dark
-let g:solarized_visibility = "high"
-let g:solarized_contrast = "high"
-let g:solarized_termcolors=256
+try
+  " Solarized options
+  syntax enable
+  let g:solarized_term = 1
+  let g:solarized_visibility = "high"
+  let g:solarized_contrast   = "high"
+  let g:solarized_termtrans = 1
+  let g:solarized_termcolors=16
+  colorscheme solarized_low
 
-" Setup airline
-let g:airline_theme='solarized'
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
+  " tune solarized color contrash
+  fun! Solarized8Contrast(delta)
+    let l:schemes = map(["_low", "_flat", "", "_high"], '"solarized8_".(&background).v:val')
+    exe "colors" l:schemes[((a:delta+index(l:schemes, g:colors_name)) % 4 + 4) % 4]
+  endf
+
+  nmap <leader>- :<c-u>call Solarized8Contrast(-v:count1)<cr>
+  nmap <leader>+ :<c-u>call Solarized8Contrast(+v:count1)<cr>
+
+catch
+endtry
+
+" AirlineTheme dark
+set mouse+=a
+if &term =~ '^screen' || &term =~ '^xterm'
+    " tmux knows the extended mouse mode
+    set ttymouse=xterm2
 endif
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_symbols.space = "\ua0"
-let g:airline_powerline_fonts = 1
-let g:minBufExplForceSyntaxEnable = 1
+set foldcolumn=2
+
+"function! UpdateTags()
+"  let f = expand("%:p")
+"  let cwd = getcwd()
+"  let tagfilename = cwd . "/tags"
+"  let cmd = 'ctags -a -f ' . tagfilename . ' --c++-kinds=+p --fields=+iaS --extra=+q ' . '"' . f . '"'
+"  call DelTagOfFile(f)
+"  let resp = system(cmd)
+"endfunction
+
+autocmd BufWritePost * exe ":UpdateTags"
+" comment out for osx
+"set re=0
+
+
+au BufNewFile *.py 0r ~/.vim/python.skel | let IndentStyle = "python"
