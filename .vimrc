@@ -65,6 +65,7 @@ Plugin 'benmills/vimux'
 Plugin 'mileszs/ack.vim'
 Plugin 'protocool/AckMate'
 
+Plugin 'christoomy/vim-tmux-navigator'
 Plugin 'scrooloose/syntastic'
 Plugin 'scrooloose/nerdtree'
 
@@ -78,6 +79,7 @@ Plugin 'vim-scripts/pdbvim'
 Plugin 'vim-scripts/vim-json-bundle'
 Plugin 'vim-scripts/grep.vim'
 Plugin 'vim-scripts/Tagbar'
+Plugin 'vim-scripts/surrond.vim'
 Plugin 'szw/vim-tags.git'
 
 "Plugin 'bling/vim-airline'
@@ -263,16 +265,8 @@ try
   let g:solarized_contrast   = "high"
   let g:solarized_termtrans = 1
   let g:solarized_termcolors=16
-  colorscheme solarized_low
+  colorscheme solarized
 
-  " tune solarized color contrash
-  fun! Solarized8Contrast(delta)
-    let l:schemes = map(["_low", "_flat", "", "_high"], '"solarized8_".(&background).v:val')
-    exe "colors" l:schemes[((a:delta+index(l:schemes, g:colors_name)) % 4 + 4) % 4]
-  endf
-
-  nmap <leader>- :<c-u>call Solarized8Contrast(-v:count1)<cr>
-  nmap <leader>+ :<c-u>call Solarized8Contrast(+v:count1)<cr>
 
 catch
 endtry
@@ -295,8 +289,7 @@ set foldcolumn=2
 "endfunction
 
 autocmd BufWritePost * exe ":UpdateTags"
-" comment out for osx
-"set re=0
+set re=0
 
 
 au BufNewFile *.py 0r ~/.vim/python.skel | let IndentStyle = "python"
