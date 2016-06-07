@@ -15,7 +15,6 @@ Plugin 'benmills/vimux'
 Plugin 'mileszs/ack.vim'
 Plugin 'protocool/AckMate'
 
-Plugin 'christoomy/vim-tmux-navigator'
 Plugin 'scrooloose/syntastic'
 Plugin 'scrooloose/nerdtree'
 
