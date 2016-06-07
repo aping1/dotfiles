@@ -60,8 +60,8 @@ set ai
 set expandtab
 set hlsearch
 
-"  set t_Co=256
-set t_Co=16
+set t_Co=256
+"set t_Co=16
 " SaltStack - Force using the Django template syntax file
 " let g:sls_use_jinja_syntax = 0
 
@@ -155,7 +155,8 @@ syntax enable
 set backspace=indent,eol,start
 
 " Color Scheme
-colorscheme solarized
+colorscheme solarized_high
+
 " Set max line length.
 "let linelen = 100
 "execute "set colorcolumn=".linelen

@@ -10,3 +10,6 @@
 [submodule "tpm"]
 	path = tpm
 	url = https://github.com/tmux-plugins/tpm.git
+[submodule "vim-solarized8"]
+	path = vim-solarized8
+	url = https://github.com/lifepillar/vim-solarized8.git
