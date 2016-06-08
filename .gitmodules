@@ -13,3 +13,6 @@
 [submodule "vim-solarized8"]
 	path = vim-solarized8
 	url = https://github.com/lifepillar/vim-solarized8.git
+[submodule "awesome-terminal-fonts"]
+	path = awesome-terminal-fonts
+	url = https://github.com/gabrielelana/awesome-terminal-fonts.git

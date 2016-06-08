@@ -36,3 +36,7 @@ fi
 
 # install powerline fonts
 ~/.dotfiles/powerline-fonts/install.sh
+
+# TODO: Install vim-solarized8
+# TODO: Install https://github.com/gabrielelana/awesome-terminal-fonts 
+# TODO: Install .zpreztorc
