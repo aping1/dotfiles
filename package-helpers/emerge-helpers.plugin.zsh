@@ -4,7 +4,7 @@ sentials() {
   emerge -av dev-util/cmake
   emerge -av sys-apps/coreutils
   emerge -av dev-util/ctags
-  emerge -av cvi # core https://github.com/Xfennec/progress
+#  emerge -av cvi # core https://github.com/Xfennec/progress
 #  emerge -av docker
 #  emerge -av docker-compose
 #  emerge -av docker-machine

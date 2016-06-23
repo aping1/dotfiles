@@ -9,6 +9,7 @@ sentials() {
 #  brew install docker-compose
 #  brew install docker-machine
   brew install git
+  brew install tig
 #  brew install gotags
 #  brew install hr
 #  brew install httpie
