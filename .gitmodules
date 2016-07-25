@@ -1,18 +1,18 @@
 [submodule "zgen"]
-	path = zgen
+	path = deps/zgen
 	url = https://github.com/tarjoilija/zgen.git
 [submodule "powerline"]
-	path = powerline
+	path = deps/powerline
 	url = https://github.com/powerline/powerline.git
 [submodule "fonts"]
-	path = fonts
+	path = deps/fonts
 	url = https://github.com/powerline/fonts.git
 [submodule "tpm"]
-	path = tpm
+	path = deps/tpm
 	url = https://github.com/tmux-plugins/tpm.git
 [submodule "vim-solarized8"]
-	path = vim-solarized8
+	path = deps/vim-solarized8
 	url = https://github.com/lifepillar/vim-solarized8.git
 [submodule "awesome-terminal-fonts"]
-	path = awesome-terminal-fonts
+	path = deps/awesome-terminal-fonts
 	url = https://github.com/gabrielelana/awesome-terminal-fonts.git
