@@ -1,0 +1,6 @@
+cd()
+{
+        builtin cd $1 && la
+}
+
+alias clusterssh-remote='clusterssh-dev -i ${HOME}/.dotfiles/remote/bash_aliases -i ${HOME}/.dotfiles/remote/colors.sh -i ${HOME}/.dotfiles/remote/.bash_profile'
