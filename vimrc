@@ -27,14 +27,14 @@ Plugin 'vim-scripts/gitdiff.vim'
 Plugin 'vim-scripts/pdbvim'
 
 Plugin 'altercation/vim-colors-solarized'  
-Plugin 'vim-scripts/taglist-plus'
+Plugin 'vim-scripts/TagBar'
 Plugin 'vim-scripts/Trinity'
 Plugin 'tmhedberg/SimpylFold'
 Plugin 'vim-scripts/vim-json-bundle' " Pathogen friendly file type plugin bundle for json files
 
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'edkolev/tmuxline.vim'
+"Plugin 'edkolev/tmuxline.vim'
 
 "Plugin 'bling/vim-airline'
 
@@ -62,15 +62,12 @@ set hlsearch
 
 set t_Co=256
 "set t_Co=16
-" SaltStack - Force using the Django template syntax file
-" let g:sls_use_jinja_syntax = 0
 
 " http://vim.wikia.com/wiki/Highlight_unwanted_spaces
 :highlight ExtraWhitespace ctermbg=red guibg=red
 
 " The following alternative may be less obtrusive.
 ":highlight ExtraWhitespace ctermbg=darkgreen guibg=lightgreen
-
 " Try the following if your GUI uses a dark background.
 ":highlight ExtraWhitespace ctermbg=darkgreen guibg=darkgreen
 
@@ -79,16 +76,12 @@ set t_Co=256
 
 " Show trailing whitespace:
 ":match ExtraWhitespace /\s\+$/
-
 " Show trailing whitespace and spaces before a tab:
 ":match ExtraWhitespace /\s\+$\| \+\ze\t/
-
 " Show tabs that are not at the start of a line:
 ":match ExtraWhitespace /[^\t]\zs\t\+/
-
 " Show spaces used for indenting (so you use only tabs for indenting).
 ":match ExtraWhitespace /^\t*\zs \+/
-
 " Switch off :match highlighting.
 ":match
 
@@ -102,17 +95,11 @@ set t_Co=256
 
 " Supported languages are: ada, c, chill, csc, forth, groovy, icon, java, lpc, mel, nqc, nroff, ora, pascal, plm, plsql, python and ruby. The c settings also apply to cpp.
 "let c_space_errors = 0
-"let ada_space_errors = 1
 "let chill_space_errors = 1
-"let csc_space_errors = 1
-"let forth_space_errors = 1
-"let groovy_space_errors = 1
 "let icon_space_errors = 1
 "let java_space_errors = 1
 "let lpc_space_errors = 1
 "let nroff_space_errors = 1
-"let ora_space_errors = 1
-"let pascal_space_errors = 1
 let plsql_space_errors = 1
 "let python_space_errors = 1
 "blet ruby_space_errors = 1
@@ -120,11 +107,8 @@ let plsql_space_errors = 1
 
 " For C, if you don't want to see trailing space errors at end-of-line set:
 "let c_no_trail_space_error = 1
-
 " If you only use spaces to indent, and don't want to see space errors in front of tabs:
 "let c_no_tab_space_error = 1
-
-" Show long lines
 " Show < or > when characters are not displayed on the left or right.
 ":set list listchars=precedes:<,extends:>
 " Same, but also show tabs and trailing spaces.
@@ -137,25 +121,26 @@ let plsql_space_errors = 1
 if version >= 702
     autocmd BufWinLeave * call clearmatches()
 endif
- 
+
 " Always display the statusline in all windows
-set laststatus=2 
+set laststatus=2
 " set font
-set guifont=Sauce\ Code\ for\ Powerline:h14 
+set guifont=Sauce\ Code\ for\ Powerline:h14
 
 " Hide the default mode text (e.g. -- INSERT -- below the statusline)
-" set noshowmode 
+set noshowmode
 
 " Show line numbers
-set number        
+set number
 " Use syntax highlighting
-syntax enable     
+syntax enable
 
 " fix backspace to work like you would expect
 set backspace=indent,eol,start
 
 " Color Scheme
-colorscheme solarized_high
+"colorscheme solarized_high
+colorscheme solarized8_dark
 
 " Set max line length.
 "let linelen = 100
@@ -182,7 +167,7 @@ set shiftround
 
 let g:airline_powerline_fonts = 1
 set term=xterm-256color
-set background=dark
+"set background=dark
 let g:solarized_visibility = "high"
 let g:solarized_contrast = "high"
 let g:solarized_termcolors=256

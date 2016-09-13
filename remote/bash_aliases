@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# Various variables you might want for your PS1 prompt instead
+Time12h="\T"
+Time12a="\@"
+PathShort="\w"
+PathFull="\W"
+NewLine="\n"
+Jobs="\j"
+
+_utc_date () {
+    echo -n "$(date -u '+%d/%M/%y %k:%m:%S')"
+}
+
+_gaikai_release () {
+	if [[ -f /etc/gaikai-release ]]; then
+		: ${GKRELEASE:=$(cat /etc/gaikai-release | awk -F'-' 'END{print $NF}' )}
+		export GKRELEASE
+	fi
+	echo -n	${GKRELEASE:-'-'}
+}
+
+_gaikai_host_type () {
+	if [[ -f /etc/gaikai-host-type ]]; then
+		: ${GKHOST_TYPE:=$(cat /etc/gaikai-host-type)}
+	fi
+	echo -n ${GKHOST_TYPE:-'-'}
+
+}
+
+_git_current_branch() {
+	git status | head -n1 | cut -d' ' -f3 2>/dev/null
+}
+
+source colors.sh
+if ! type -a __git_ps1 &>/dev/null; then
+    alias __git_ps1='_git_current_branch'
+fi
+
+
+_git_status () {
+	[[ -d ".git" ]] || return
+	local branch=$(__git_ps1 )
+	if git status | tail -n1 | grep 'clean' &>/dev/null 2>&1; then
+		color_text "$Green" "$branch"
+	elif [[ -z ${branch} ]]; then
+		echo ""
+	else
+		color_text "$Red" "$branch"
+	fi
+
+}
+PREFIX_SPECIAL='╭─'
+
+export PROMPT_COMMAND='printf "$PREFIX_SPECIAL [$(color_text $Blue %s)] %s ($(color_text $Yellow %s)) ($(color_text $Yellow %s)) [$(_git_status)$Color_Off] \n" "$(_utc_date)" "${HOSTNAME}" "$(_gaikai_host_type)" "$(_gaikai_release)"'
+PS1='╰─\w (\u) $ '
+# Export prompt_command='echo $date -u'

@@ -16,3 +16,6 @@
 [submodule "awesome-terminal-fonts"]
 	path = deps/awesome-terminal-fonts
 	url = https://github.com/gabrielelana/awesome-terminal-fonts.git
+[submodule "deps/dircolors-solarized"]
+	path = deps/dircolors-solarized
+	url = https://github.com/seebi/dircolors-solarized.git

@@ -11,20 +11,28 @@ dotfiles='''~/.gitconfig
 ~/.tmux.conf
 ~/.vimrc
 ~/.zshrc
+~/.zpreztorc
 '''
+
 tar cvzf ~/dotfile.backup.$(date '+%F').tar.gz ${dotfiles}
 rm ~/.gitconfig
 rm ~/.gitignore_global
 rm ~/.tmux.conf
 rm ~/.vimrc
 rm ~/.zshrc
+rm ~/.zpreztorc
 
+rsync -a .tmux ~/.dotfiles/tmux && rm -rf ~/.tmux || { echo "Cannot finish installed tmux sync" && return; }
+rsync -a ~/.vim ~/.dotfiles/vim && rm -rf ~/.vim || { echo "Cannot finish installed vim sync" && return; }
 # link new dot files
-ln ~/.dotfiles/dots/home/gitconfig               ~/.gitconfig
-ln ~/.dotfiles/dots/home/gitignore_global        ~/.gitignore_global
-ln ~/.dotfiles/dots/home/tmux.conf               ~/.tmux.conf
-ln ~/.dotfiles/dots/home/vimrc                   ~/.vimrc
-ln ~/.dotfiles/dots/home/zshrc                   ~/.zshrc
+ln -s ~/.dotfiles/gitconfig               ~/.gitconfig
+ln -s ~/.dotfiles/gitignore_global        ~/.gitignore_global
+ln -s ~/.dotfiles/tmux.conf               ~/.tmux.conf
+ln -s ~/.dotfiles/tmux                  ~/.tmux
+ln -s ~/.dotfiles/vimrc                   ~/.vimrc
+ln -s ~/.dotfiles/
+ln -s ~/.dotfiles/zshrc                   ~/.zshrc
+ln -s ~/.dotfiles/.zpreztorc              ~/.zpreztorc
 
 # Do special to sync sublime settings on OS X
 if [[ "$OSTYPE" =~ "darwin" ]]; then

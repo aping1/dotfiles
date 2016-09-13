@@ -9,12 +9,14 @@ fi
 # === PATHS and EVNS 
 # Location of my dotfiles
 DOTFILES=$HOME/.dotfiles
+DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 
 ## Setup PATH
 # Standard path includes
 path=(
     /usr/local/{bin,sbin}
     $DOTFILES/scripts
+    ${HOME}/bin
     $path
 )
 
@@ -50,6 +52,7 @@ export PAGER='less'
 # Great plugin to automatically modify path when it sees .env file
 # I use it for example to automatically setup docker/rbenv/pyenv environments
 AUTOENV_FILE_ENTER=.env
+AUTOENV_HANDLE_LEAVE=1 # Turn on/off handling leaving an env
 AUTOENV_FILE_LEAVE=.envl
 
 # tmux plugin settings
@@ -62,7 +65,7 @@ ZSH_TMUX_AUTOQUIT=false
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
 DEFAULT_USER=awampler
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir vcs)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(virtualenv context dir vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status history time)
 POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
 POWERLEVEL9K_DIR_BACKGROUND='238'
@@ -86,7 +89,7 @@ if [ ! $TERM = dumb ]; then
     fi
 
     # load zgen
-    source $DOTFILES/zgen/zgen.zsh
+    source $DOTFILESDEPS/zgen/zgen.zsh
 
     # configure zgen
     if ! zgen saved; then
@@ -120,7 +123,7 @@ if [ ! $TERM = dumb ]; then
         # my own plugins
         zgen load $DOTFILES/plugins/aliases
         zgen load $DOTFILES/plugins/dotfiles
-        zgen load $DOTFILES/plugins/my-brew
+        zgen load $DOTFILES/plugins/brew-helpers
         zgen load $DOTFILES/plugins/pyenv
         zgen load $DOTFILES/plugins/tpm
 
@@ -174,7 +177,7 @@ setopt histnostore
 # Remove superfluous blanks from each command line being added to the history list.
 setopt histreduceblanks
 # Do not exit on end-of-file. Require the use of exit or logout instead.
-setopt ignoreeof
+#setopt ignoreeof
 # Print the exit value of programs with non-zero exit status.
 setopt printexitvalue
 # Do not share history
@@ -184,3 +187,13 @@ setopt no_share_history
 if $PROFILING; then
     zprof
 fi
+[[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
+
+# Vim mode
+bindkey -v
+[[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which dircolors &> /dev/null && eval $(dircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
+[[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which gdircolors &> /dev/null && eval $(gdircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
+
+TMUXINATOR='/Library/Ruby/Gems/2.0.0/gems/tmuxinator-0.8.1/completion/tmuxinator.zsh'
+
+[[ -f $TMUXINATOR ]] && source ${TMUXINATOR} || echo "Warning: Could not instatiate tmuxinator"

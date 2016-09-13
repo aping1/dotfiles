@@ -1,0 +1,25 @@
+# Setup default command zsh with copy/paste on OSX
+# Requires brew install reattach-to-user-namespace
+## FOR OSX, changes
+set-option -g default-command "reattach-to-user-namespace -l /usr/local/bin/zsh"
+
+# Setup 'v' to begin selection as in Vim
+bind-key -t vi-copy v begin-selection
+bind-key -t vi-copy y copy-pipe "reattach-to-user-namespace pbcopy"
+
+# Update default binding of `Enter` to also use copy-pipe
+unbind -t vi-copy Enter
+bind-key -t vi-copy Enter copy-pipe "reattach-to-user-namespace pbcopy"
+
+bind -t vi-copy WheelUpPane halfpage-up
+bind -t vi-copy WheelDownPane halfpage-down
+
+## Powerline
+#set -g status-left '#(${POWERLINE_COMMAND} tmux left)'
+#set -g status-right '#(${POWERLINE_COMMAND} tmux right)'
+#run-shell "powerline-daemon -q"
+#set-environment -g POWERLINE_COMMAND _powerline_set_prompt
+## source-file "$HOME/repos/github.powerline-status/powerline/bindings/tmux/powerline.conf"
+# source-file "$HOME/repos/github.powerline-status/powerline/bindings/tmux/powerline_tmux_1.9_plus.conf"
+# if-shell 'env "$POWERLINE_CONFIG_COMMAND" tmux setup' '' 'run-shell "powerline-config tmux setup"'
+
