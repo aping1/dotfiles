@@ -74,6 +74,11 @@ set t_Co=256
 " Using before the first colorscheme command will ensure that the highlight group gets created and is not cleared by future colorscheme commands
 :autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 
+" Over line
+set colorcolumn=80
+:highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
+:highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+:match OverLength /\%81v.\+/
 " Show trailing whitespace:
 ":match ExtraWhitespace /\s\+$/
 " Show trailing whitespace and spaces before a tab:
