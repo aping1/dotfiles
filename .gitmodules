@@ -19,3 +19,9 @@
 [submodule "deps/dircolors-solarized"]
 	path = deps/dircolors-solarized
 	url = https://github.com/seebi/dircolors-solarized.git
+[submodule "vim/bundle/Vundle.vim"]
+	path = vim/bundle/Vundle.vim
+	url = https://github.com/VundleVim/Vundle.vim.git
+[submodule "tmux/tmux-extra"]
+	path = tmux/tmux-extra
+	url = https://github.com/brandur/tmux-extra.git

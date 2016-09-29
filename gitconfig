@@ -1,13 +1,1 @@
-[diff]
-	tool = vimdiff
-[merge]
-	tool = vimdiff
-[difftool]
-	prompt = false
-[user]
-	name = awampler
-	email = awampler@gaikai.com
-[alias]
-	d = difftool
-[core]
-	excludesfile = ~/.gitignore_global
+dotfiles/gitconfig

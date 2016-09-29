@@ -1,39 +1,6 @@
 #!/bin/bash
-#  Customize BASH PS1 prompt to show current GIT repository and branch.
-#  by Mike Stewart - http://MediaDoneRight.com
 
-#  SETUP CONSTANTS
-#  Bunch-o-predefined colors.  Makes reading code easier than escape sequences.
-##  I don't remember where I found this.  o_O
-
-# 
-# tput Color Capabilities:
-# 
-# tput setab [1-7] – Set a background color using ANSI escape
-# tput setb [1-7] – Set a background color
-# tput setaf [1-7] – Set a foreground color using ANSI escape
-# tput setf [1-7] – Set a foreground color
-# tput Text Mode Capabilities:
-# 
-# tput bold – Set bold mode
-# tput dim – turn on half-bright mode
-# tput smul – begin underline mode
-# tput rmul – exit underline mode
-# tput rev – Turn on reverse mode
-# tput smso – Enter standout mode (bold on rxvt)
-# tput rmso – Exit standout mode
-# tput sgr0 – Turn off all attributes
-# Color Code for tput:
-# 
-# 0 – Black
-# 1 – Red
-# 2 – Green
-# 3 – Yellow
-# 4 – Blue
-# 5 – Magenta
-# 6 – Cyan
-# 7 – White
-
+# colors
 export ESCCHAR='\x1b'
 # Reset
 #Color_Off="$ESCCHAR[0m$ESCEND"       # Text Reset
@@ -122,14 +89,16 @@ PathShort="\w"
 PathFull="\W"
 NewLine="\n"
 Jobs="\j"
+RHRELEASE_RE='^([a-zA-Z]*) Linux release ([0-9.]*)'
+RHRELEASE="$(cat /etc/redhat-release | tr '\n' ' ')"
 
 _utc_date () {
     echo -n "$(date -u '+%m/%d/%y %k:%M:%S')"
 }
 
-_gaikai_release () {
-	if [[ -f /etc/gaikai-release ]]; then
-		: ${GKRELEASE:=$(cat /etc/gaikai-release | awk -F'-' 'END{print $NF}' )}
+_redhat_release() {
+	if [[ -f /etc/redhat-release && ${RHRELEASE} =~ ${RHRELEASE_RE} ]]; then
+        GKRELEASE="${BASH_REMATCH[1]} ${BASH_REMATCH[2]}"
 		export GKRELEASE
 	fi
 	echo -n	${GKRELEASE:-'-'}
@@ -147,6 +116,7 @@ _git_current_branch() {
 	git status | head -n1 | cut -d' ' -f3 2>/dev/null
 }
 
+source colors.sh
 if ! type -a __git_ps1 &>/dev/null; then
     alias __git_ps1='_git_current_branch'
 fi
@@ -166,6 +136,5 @@ _git_status () {
 }
 PREFIX_SPECIAL='╭─'
 
-export PROMPT_COMMAND='printf "$PREFIX_SPECIAL [$(color_text $Blue %s)] %s ($(color_text $Yellow %s)) ($(color_text $Yellow %s)) [$(_git_status)$Color_Off] \n" "$(_utc_date)" "${HOSTNAME}" "$(_gaikai_host_type)" "$(_gaikai_release)"'
+export PROMPT_COMMAND='printf "$PREFIX_SPECIAL [$(color_text $Blue %s)] %s ($(color_text $Yellow %s)) ($(color_text $Yellow %s)) [$(_git_status)$Color_Off] \n" "$(_utc_date)" "${HOSTNAME}" "$(_gaikai_host_type)" "$(_redhat_release)"'
 PS1='╰─\w (\u) $ '
-# Export prompt_command='echo $date -u'
