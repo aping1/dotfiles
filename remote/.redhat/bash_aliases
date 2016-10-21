@@ -113,7 +113,7 @@ _gaikai_host_type () {
 }
 
 _git_current_branch() {
-	git status | head -n1 | cut -d' ' -f3 2>/dev/null
+	git status | head -n1 | awk '{print $NF}' 2>/dev/null
 }
 
 source colors.sh

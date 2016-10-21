@@ -98,6 +98,8 @@ set colorcolumn=80
 :au InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 :au InsertLeave * match ExtraWhitespace /\s\+$/
 
+au BufNewFile,BufRead *.input set syntax=json
+
 " Supported languages are: ada, c, chill, csc, forth, groovy, icon, java, lpc, mel, nqc, nroff, ora, pascal, plm, plsql, python and ruby. The c settings also apply to cpp.
 "let c_space_errors = 0
 "let chill_space_errors = 1

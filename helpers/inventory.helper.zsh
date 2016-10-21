@@ -1,3 +1,13 @@
-alias rsync_inventory='rsync -avz --delete --progress --exclude "venvs" --exclude ".git" ~/project/Inventory/. awampler-desk:project/Inventory/.'
-alias rsync_inventory_test='rsync -avzn --delete --progress --exclude "venvs" --exclude ".git" ~/project/Inventory/. awampler-desk:project/Inventory/.'
+alias rsync-inventory='rsync -avz --delete --progress \
+                        --exclude  "venvs" \
+                        --exclude  "__pychache__" \
+                        ~/project/Inventory/. awampler-desk:project/Inventory/.'
+alias rsync-inventory-test='rsync-inventory -n'
 
+                            #--exclude "*.git" \
+alias rsync-inventory-back='rsync -azv --progress \
+                            --exclude "venvs" \
+                            --exclude "*.pyc" \
+                            --exclude "__pycache__" \
+                            awampler-desk:project/Inventory/. /Users/awampler/project/Inventory/'
+alias rsync-inventory-back-test='rsync-inventory-back -n'
