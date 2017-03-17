@@ -184,3 +184,10 @@ setopt no_share_history
 if $PROFILING; then
     zprof
 fi
+
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+bindkey -v
+
+# Powerline
+source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
