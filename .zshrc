@@ -93,6 +93,7 @@ if [ ! $TERM = dumb ]; then
 
         # zgen will load oh-my-zsh and download it if required
         zgen oh-my-zsh
+        zgen prezto
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
@@ -125,7 +126,7 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/tpm
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme
+        # zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme
 
         # It takes control, so load last
         zgen load $DOTFILES/plugins/my-tmux
@@ -153,10 +154,10 @@ setopt COMPLETE_IN_WORD
 #setopt HUP
 
 ## history
-#setopt APPEND_HISTORY
+setopt APPEND_HISTORY
 ## for sharing history between zsh processes
-#setopt INC_APPEND_HISTORY
-#setopt SHARE_HISTORY
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
 
 ## never ever beep ever
 #setopt NO_BEEP

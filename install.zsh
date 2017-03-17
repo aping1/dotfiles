@@ -1,5 +1,11 @@
 #!/bin/zsh
 
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+: "${DOTFILES=-"$HOME/.dotfiles"}"
+[[ "${DOTFILES} -s "${SCRIPTPATH}" ]] || echo "Warning: Scriptpath \"${SCRIPTPATH}\" is not the same as Dotfile path: \"${DOTFILES\" 
+export DOTFILES
+
 # Change shell for current user to zsh
 if [ ! "$SHELL" = "/bin/zsh" ]; then
   chsh -s /bin/zsh
@@ -13,18 +19,17 @@ dotfiles='''~/.gitconfig
 ~/.zshrc
 '''
 tar cvzf ~/dotfile.backup.$(date '+%F').tar.gz ${dotfiles}
-rm ~/.gitconfig
-rm ~/.gitignore_global
-rm ~/.tmux.conf
-rm ~/.vimrc
-rm ~/.zshrc
+rm -rf ${dotfiles}
 
+# Absolute path this script is in, thus /home/user/bin
 # link new dot files
-ln ~/.dotfiles/dots/home/gitconfig               ~/.gitconfig
-ln ~/.dotfiles/dots/home/gitignore_global        ~/.gitignore_global
-ln ~/.dotfiles/dots/home/tmux.conf               ~/.tmux.conf
-ln ~/.dotfiles/dots/home/vimrc                   ~/.vimrc
-ln ~/.dotfiles/dots/home/zshrc                   ~/.zshrc
+#
+popd ${HOME}
+
+for file in ${Sdotfiles}; then 
+    ln -s "${DOTFILES}/$(basename $file)"
+done
+
 
 # Do special to sync sublime settings on OS X
 if [[ "$OSTYPE" =~ "darwin" ]]; then
@@ -32,6 +37,8 @@ if [[ "$OSTYPE" =~ "darwin" ]]; then
 
   ln -s ~/.dotfiles/settings/SublimeText/User      ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User
 fi
+
+ln -s ${DOTFILES}/prezto "${ZDOTDIR:-$HOME}/.zprezto"
 
 
 # install powerline fonts
