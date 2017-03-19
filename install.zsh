@@ -15,7 +15,7 @@ if [[ ! "$SHELL" = "/bin/zsh" && ${CHANGESHELL:-N} =~ ^[Yy]$ ]]; then
 fi
 
 # remove old dot files
-dotfiles='''.gitconfig .gitignore_global .tmux.conf .vimrc .zshrc '''
+dotfiles='''.gitconfig .gitignore_global .tmux.conf .vimrc .zshrc .zprofile'''
 old_dotfiles="$( for i in  $dotfiles; do [[ -f "${HOME}/$i" ]] && echo -n "${HOME}/$i"; done)"
 [[ ${old_dotfiles} ]] && tar cvzf ~/dotfile.backup.$(date '+%F').tar.gz ${=old_dotfiles} && rm -r ${=dotfiles}
 
