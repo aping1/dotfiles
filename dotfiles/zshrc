@@ -198,3 +198,6 @@ bindkey -v
 TMUXINATOR='/Library/Ruby/Gems/2.0.0/gems/tmuxinator-0.8.1/completion/tmuxinator.zsh'
 
 [[ -f $TMUXINATOR ]] && source ${TMUXINATOR} || echo "Warning: Could not instatiate tmuxinator"
+
+set -o vi
+export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.4/site-packages"

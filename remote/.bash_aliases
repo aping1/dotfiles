@@ -165,7 +165,12 @@ _git_status () {
 
 }
 PREFIX_SPECIAL='╭─'
-
-export PROMPT_COMMAND='printf "$PREFIX_SPECIAL [$(color_text $Blue %s)] %s ($(color_text $Yellow %s)) ($(color_text $Yellow %s)) [$(_git_status)$Color_Off] \n" "$(_utc_date)" "${HOSTNAME}" "$(_gaikai_host_type)" "$(_gaikai_release)"'
-PS1='╰─\w (\u) $ '
 # Export prompt_command='echo $date -u'
+export PROMPT_COMMAND='printf "$PREFIX_SPECIAL [$(color_text $Blue %s)] %s ($(color_text $Yellow %s)) ($(color_text $Yellow %s)) [$(_git_status)$Color_Off] \n" "$(_utc_date)" "${HOSTNAME}" "$(_gaikai_host_type)" "$(_gaikai_release)"'
+if [[ "${SUDO_USER:-x}" != x || $(whoami) == root ]]; then
+    export PS1='╰─\w ('"$Red"'\u'"$TestEnd"') $ '
+else
+    export PS1='╰─\w (\u) $ '
+fi
+# Export prompt_command='echo $date -u'
+

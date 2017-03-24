@@ -26,7 +26,7 @@ Plugin 'vim-scripts/easytags.vim'
 Plugin 'vim-scripts/gitdiff.vim'
 Plugin 'vim-scripts/pdbvim'
 
-Plugin 'altercation/vim-colors-solarized'  
+Plugin 'altercation/vim-colors-solarized'
 Plugin 'vim-scripts/TagBar'
 Plugin 'vim-scripts/Trinity'
 Plugin 'tmhedberg/SimpylFold'
