@@ -56,6 +56,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 " other packages, run ' vim +PluginInstall +qall ' to up date them
+Plugin 'lifepillar/vim-solarized8'
 Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'saltstack/salt-vim'
