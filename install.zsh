@@ -24,9 +24,9 @@ dotfiles='''~/.gitconfig
 ~/.zpreztorc
 '''
 
-tar cvzf ~/dotfile.backup.$(date '+%F').tar.gz ${dotfiles}
-rsync -a .tmux ~/.dotfiles/tmux && rm -rf ~/.tmux || { echo "Cannot finish installed tmux sync" && return; }
-rsync -a ~/.vim ~/.dotfiles/vim && rm -rf ~/.vim || { echo "Cannot finish installed vim sync" && return; }
+tar cvzf ~/dotfile.backup.$(date '+%F').tar.gz ${dotfiles} ${HOME}/.vim ${HOME}/.tmux
+#rsync -a .tmux ~/.dotfiles/tmux && rm -rf ~/.tmux || { echo "Cannot finish installed tmux sync" && return; }
+#rsync -a ~/.vim ~/.dotfiles/vim && rm -rf ~/.vim || { echo "Cannot finish installed vim sync" && return; }
 dotfiles='''.gitconfig .gitignore_global .tmux.conf .vimrc .zshrc .zprofile'''
 old_dotfiles="$( for i in  $dotfiles; do [[ -f "${HOME}/$i" ]] && echo -n "${HOME}/$i"; done)"
 [[ ${old_dotfiles} ]] && tar cvzf ~/dotfile.backup.$(date '+%F').tar.gz ${=old_dotfiles} && rm -r ${=dotfiles}
@@ -38,6 +38,7 @@ ln -s "${DOTFILES}/deps/Vundle.vim" ".vim/bundle"
 ln -s "${DOTFILES}/deps/tpm" ".tmux/plugins"
 vim +BundleInstall +qall &>/dev/null
 
+ln -s "${DOTFILES}/deps/zgen" "${HOME}/.zgen"
 mkdir -p $HOME/.config/
 ln -s "${DOTFILES}/.powerline_config" ".config/powerline"
 
