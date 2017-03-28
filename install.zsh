@@ -31,6 +31,12 @@ dotfiles='''.gitconfig .gitignore_global .tmux.conf .vimrc .zshrc .zprofile'''
 old_dotfiles="$( for i in  $dotfiles; do [[ -f "${HOME}/$i" ]] && echo -n "${HOME}/$i"; done)"
 [[ ${old_dotfiles} ]] && tar cvzf ~/dotfile.backup.$(date '+%F').tar.gz ${=old_dotfiles} && rm -r ${=dotfiles}
 
+
+mkdir -p .tmux
+mkdir -p .vim/bundle
+ln -s "${DOTFILES}/deps/Vundle.vim" ".vim/bundle/"
+vim +BundleInstall +qall &>/dev/null
+
 # Absolute path this script is in, thus /home/user/bin
 # link new dot files
 #
@@ -50,13 +56,10 @@ fi
 ln -s ${DOTFILES}/prezto "${ZDOTDIR:-$HOME}/.zprezto"
 
 # install powerline fonts
-<<<<<<< HEAD
 ~/.dotfiles/powerline-fonts/install.sh
 
 # TODO: Install vim-solarized8
 # TODO: Install https://github.com/gabrielelana/awesome-terminal-fonts 
 # TODO: Install .zpreztorc
-=======
 
 "${DOTFILES}/fonts/install.sh"
->>>>>>> origin/awampler-15-mbp

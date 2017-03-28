@@ -1,1 +1,1 @@
-/Volumes/Harmony/Users/awampler/.vim
+../.vim

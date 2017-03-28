@@ -1,6 +1,6 @@
 [user]
 	name = Allison Wampler
-	email = awampler@gmail.com
+	email = awampler@gaikai.com
 [core]
 	excludesfile = ~/.gitignore_global
 	editor = /usr/bin/vim

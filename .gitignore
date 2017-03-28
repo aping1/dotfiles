@@ -38,10 +38,6 @@
 ehthumbs.db
 Thumbs.db
 .idea
-deps/*
-vim/*
-tmux/*
-.vim
 vim/bundle/**
 tmux/resurrect/tmux_resurrect_*
 tmux/plugins/*
