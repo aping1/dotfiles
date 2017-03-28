@@ -1,5 +1,6 @@
 #!/bin/zsh
 sentials() {
+  brew install psutil
   brew install cloc
   brew install cmake
   brew install coreutils

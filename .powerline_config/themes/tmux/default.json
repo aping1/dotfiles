@@ -2,6 +2,18 @@
 	"segments": {
 		"right": [
 			{
+				"function": "powerline.segments.common.bat.battery",
+                "name": "battery",
+                "args": {
+                    "gamify": true,
+                    "empty_heart": "♡",
+                    "full_heart": "♥︎",
+                    "online": "✔︎ ",
+                    "offline": "✘ "
+                },
+				"priority": 50
+			},
+			{
 				"function": "powerline.segments.common.sys.uptime",
 				"priority": 50
 			},

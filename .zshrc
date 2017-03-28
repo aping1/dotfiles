@@ -207,26 +207,21 @@ setopt histreduceblanks
 setopt printexitvalue
 # Do not share history
 setopt no_share_history
-
-# if profiling was on
-if $PROFILING; then
-    zprof
-fi
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
 # Vim mode
 bindkey -v
-#set -o vi
+# set -o vi
 [[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which dircolors &> /dev/null && eval $(dircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
 [[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which gdircolors &> /dev/null && eval $(gdircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
 
-TMUXINATOR='/Library/Ruby/Gems/2.0.0/gems/tmuxinator-0.8.1/completion/tmuxinator.zsh'
-[[ -f $TMUXINATOR ]] && source ${TMUXINATOR} || echo "Warning: Could not instatiate tmuxinator"
+# TMUXINATOR='/Library/Ruby/Gems/2.0.0/gems/tmuxinator-0.8.1/completion/tmuxinator.zsh'
+# [[ -f $TMUXINATOR ]] && source ${TMUXINATOR} || echo "Warning: Could not instatiate tmuxinator"
 
 export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.4/site-packages"
 
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+#export LC_CTYPE=en_US.UTF-8
+#export LC_ALL=en_US.UTF-8
 
 # Powerline
 # source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh

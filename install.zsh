@@ -32,10 +32,14 @@ old_dotfiles="$( for i in  $dotfiles; do [[ -f "${HOME}/$i" ]] && echo -n "${HOM
 [[ ${old_dotfiles} ]] && tar cvzf ~/dotfile.backup.$(date '+%F').tar.gz ${=old_dotfiles} && rm -r ${=dotfiles}
 
 
-mkdir -p .tmux
-mkdir -p .vim/bundle
-ln -s "${DOTFILES}/deps/Vundle.vim" ".vim/bundle/"
+mkdir -p $HOME/.tmux/plugins
+mkdir -p $HOME/.vim/bundle
+ln -s "${DOTFILES}/deps/Vundle.vim" ".vim/bundle"
+ln -s "${DOTFILES}/deps/tpm" ".tmux/plugins"
 vim +BundleInstall +qall &>/dev/null
+
+mkdir -p $HOME/.config/
+ln -s "${DOTFILES}/.powerline_config" ".config/powerline"
 
 # Absolute path this script is in, thus /home/user/bin
 # link new dot files
