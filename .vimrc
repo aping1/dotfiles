@@ -6,7 +6,6 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-
 set ruler
 set ignorecase
 set smartcase
@@ -80,9 +79,9 @@ filetype plugin indent on     " required
 " These lines setup the environment to show graphics and colors correctly.
 set nocompatible
 set t_Co=256
- 
+
 " Quickly close in gui mode
-if ! has('gui_running') 
+if ! has('gui_running')
    set ttimeoutlen=10
    augroup FastEscape
       autocmd!

@@ -19,6 +19,6 @@
 [submodule "deps/dircolors-solarized"]
 	path = deps/dircolors-solarized
 	url = https://github.com/seebi/dircolors-solarized.git
-[submodule "tmux/tmux-extra"]
-	path = tmux/tmux-extra
-	url = https://github.com/brandur/tmux-extra.git
+[submodule "prezto"]
+	path = deps/prezto
+	url = https://github.com/sorin-ionescu/prezto.git

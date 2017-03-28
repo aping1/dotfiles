@@ -65,7 +65,7 @@ ZSH_TMUX_AUTOQUIT=false
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
 DEFAULT_USER=awampler
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(virtualenv context dir vcs)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(vi_mode virtualenv context dir vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status history time)
 POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
 POWERLEVEL9K_DIR_BACKGROUND='238'
@@ -78,6 +78,8 @@ POWERLEVEL9K_TIME_BACKGROUND='238'
 POWERLEVEL9K_TIME_FOREGROUND='252'
 POWERLEVEL9K_HISTORY_BACKGROUND='240'
 POWERLEVEL9K_HISTORY_FOREGROUND='252'
+#POWERLEVEL9K_VI_MODE_INSERT_FOREGROUND='teal'
+
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
 if [ ! $TERM = dumb ]; then
@@ -90,6 +92,9 @@ if [ ! $TERM = dumb ]; then
 
     # load zgen
     source $DOTFILESDEPS/zgen/zgen.zsh
+    if [[ ${ZGENRESET:-N} =~ ^[Yy]$ ]]; then
+        zgen reset
+    fi
 
     # configure zgen
     if ! zgen saved; then
@@ -97,11 +102,24 @@ if [ ! $TERM = dumb ]; then
         # zgen will load oh-my-zsh and download it if required
         zgen oh-my-zsh
 
+        # zgen prezto
+        # zgen prezto editor key-bindings 'vi'
+        # zgen prezto '*:*' color 'yes'
+        # zgen prezto tmux:auto-start local 'yes'
+        # zgen prezto '*:*' case-sensitive 'yes'
+        # zgen prezto prompt theme 'off'
+        # zgen prezto git
+        # zgen prezto editor key-bindings 'vi'
+        # zgen prezto command-not-found
+        # zgen prezto tmux
+        # zgen prezto fasd
+        # zgen prezto history-substring-search
+        # zgen prezto syntax-highlighting
+
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
         zgen oh-my-zsh plugins/bower
         zgen oh-my-zsh plugins/brew
-        zgen oh-my-zsh plugins/colored-man
         zgen oh-my-zsh plugins/git
         zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
@@ -120,7 +138,7 @@ if [ ! $TERM = dumb ]; then
         # https://github.com/zsh-users/zsh-completions
         zgen load zsh-users/zsh-completions src
 
-        # my own plugins
+        # my own plugins each of these folders use init.zsh entry point
         zgen load $DOTFILES/plugins/aliases
         zgen load $DOTFILES/plugins/dotfiles
         zgen load $DOTFILES/plugins/zpython
@@ -129,7 +147,13 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/tpm
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme
+        # load https://github.com/bhilburn/powerlevel9k theme for zsh
+        zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme next
+        zgen oh-my-zsh plugins/vi-mode
+        # async update vim mode
+        # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
+
+        # zgen load christian-schulze/powerlevel9k powerlevel9k.zsh-theme
 
         # It takes control, so load last
         zgen load $DOTFILES/plugins/my-tmux
@@ -157,10 +181,10 @@ setopt COMPLETE_IN_WORD
 #setopt HUP
 
 ## history
-#setopt APPEND_HISTORY
+setopt APPEND_HISTORY
 ## for sharing history between zsh processes
-#setopt INC_APPEND_HISTORY
-#setopt SHARE_HISTORY
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
 
 ## never ever beep ever
 #setopt NO_BEEP
@@ -177,8 +201,8 @@ setopt COMPLETE_IN_WORD
 setopt histnostore
 # Remove superfluous blanks from each command line being added to the history list.
 setopt histreduceblanks
-# Do not exit on end-of-file. Require the use of exit or logout instead.
-#setopt ignoreeof
+# Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
+# setopt ignoreeof
 # Print the exit value of programs with non-zero exit status.
 setopt printexitvalue
 # Do not share history
@@ -192,12 +216,23 @@ fi
 
 # Vim mode
 bindkey -v
+#set -o vi
 [[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which dircolors &> /dev/null && eval $(dircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
 [[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which gdircolors &> /dev/null && eval $(gdircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
 
 TMUXINATOR='/Library/Ruby/Gems/2.0.0/gems/tmuxinator-0.8.1/completion/tmuxinator.zsh'
-
 [[ -f $TMUXINATOR ]] && source ${TMUXINATOR} || echo "Warning: Could not instatiate tmuxinator"
 
-set -o vi
 export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.4/site-packages"
+
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Powerline
+# source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
+#
+# Fix 
+#TRAPWINCH() {
+#    zle && zle .reset-prompt && zle -R
+#}
+bindkey -v
