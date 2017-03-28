@@ -6,7 +6,7 @@
                 "name": "battery",
                 "args": {
                     "gamify": true,
-                    "empty_heart": "♡",
+                    "empty_heart": "♡ ",
                     "full_heart": "♥︎",
                     "online": "✔︎ ",
                     "offline": "✘ "
@@ -28,7 +28,7 @@
 				"function": "powerline.segments.common.time.date",
 				"name": "time",
 				"args": {
-					"format": "%H:%M",
+					"format": "%I:%M %p",
 					"istime": true
 				}
 			},
