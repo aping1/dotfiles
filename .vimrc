@@ -94,10 +94,15 @@ endif
 """"""""""""""""""""""""""""
 """" Format ExtraWhitespace
 """""""""""""""""""""""""""
+" test colors with
+" :runtime syntax/colortest.vim
 " http://vim.wikia.com/wiki/Highlight_unwanted_spaces
-:highlight ExtraWhitespace ctermbg=red guibg=red
 " Using before the first colorscheme command will ensure that the highlight group gets created and is not cleared by future colorscheme commands
+:highlight ExtraWhitespace ctermbg=red guibg=red
 :autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+" Format tabs and other special list chars
+:autocmd ColorScheme * highlight SpecialKey ctermbg=cyan ctermfg=black
+:autocmd ColorScheme * highlight NonText ctermfg=darkgrey
 " Show trailing whitespace:
 :match ExtraWhitespace /\s\+$/
 " Show trailing whitespace and spaces before a tab:
@@ -209,7 +214,7 @@ try
   colorscheme solarized8_dark
   let g:solarized_term = 1
   let g:solarized_visibility = "high"
-  let g:solarized_contrast   = "high"
+  "let g:solarized_contrast   = "high"
   let g:solarized_termtrans = 1
   let g:solarized_termcolors=16
 catch
