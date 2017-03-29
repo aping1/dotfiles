@@ -1,5 +1,4 @@
 "
-"
 " ~/.vimrc (remote shell)
 "
 
@@ -100,8 +99,8 @@ endif
 " Using before the first colorscheme command will ensure that the highlight group gets created and is not cleared by future colorscheme commands
 :highlight ExtraWhitespace ctermbg=red guibg=red
 :autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
-" Format tabs and other special list chars
-:autocmd ColorScheme * highlight SpecialKey ctermbg=cyan ctermfg=black
+" Format tabs and other special list chars "	"
+:autocmd ColorScheme * highlight SpecialKey ctermfg=darkgrey ctermbg=black
 :autocmd ColorScheme * highlight NonText ctermfg=darkgrey
 " Show trailing whitespace:
 :match ExtraWhitespace /\s\+$/
