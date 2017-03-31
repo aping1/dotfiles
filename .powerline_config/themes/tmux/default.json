@@ -6,10 +6,10 @@
                 "name": "battery",
                 "args": {
                     "gamify": true,
-                    "empty_heart": "♡ ",
+                    "empty_heart": "♡",
                     "full_heart": "♥︎",
-                    "online": "✔︎ ",
-                    "offline": "✘ "
+                    "online": "✔︎",
+                    "offline": "✘"
                 },
 				"priority": 50
 			},
