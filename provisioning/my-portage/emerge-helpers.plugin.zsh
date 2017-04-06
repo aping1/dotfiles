@@ -26,7 +26,7 @@ sentials() {
 #  emerge -av ruby-build
 #  emerge -av sqlite
 #  emerge -av ssh-copy-id # Add a public key to a remote machine's authorized_keys file ttp://www.openssh.com/
-  emerge -av  sys-apps/the_silver_searcher
+  emerge -av sys-apps/the_silver_searcher
   emerge -av app-misc/tmux
   emerge -av app-editors/vim
   emerge -av watch

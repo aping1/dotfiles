@@ -1,3 +1,4 @@
+# aliases to mov inventory
 alias rsync-inventory='rsync -avz --delete --progress \
                         --exclude  "venvs" \
                         --exclude ".env" \

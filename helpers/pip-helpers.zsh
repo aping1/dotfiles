@@ -1,4 +1,6 @@
+#!/bin/zsh
 
-
-pip install powerline
-pip install psutils
+sentinals = (
+    pip install powerline
+    pip install psutils
+    )
