@@ -1,3 +1,4 @@
+# Brew loadout
 #!/bin/zsh
 sentials() {
   brew install psutil
