@@ -174,3 +174,5 @@ else
 fi
 # Export prompt_command='echo $date -u'
 
+[[ -d ".bash_plugins" ]] && PLUGINS=($(find $HOME/.bash_plugins/ -iname init.sh -type f))
+[[ "${PLUGINS}" ]]; for thing in ${PLUGINS[@]}; do source $thing; done

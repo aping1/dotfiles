@@ -4,5 +4,3 @@
 # Date shortcuts
 alias now='date "+%F-%H%M"'
 alias unow='date -u "+%F-%H%M"'
-
-alias flushdns='sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder'

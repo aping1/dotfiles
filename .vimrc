@@ -192,6 +192,7 @@ set shiftround
 
 set list
 set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
+
 " Show < or > when characters are not displayed on the left or right.
 ":set list listchars=precedes:<,extends:>
 " Same, but also show tabs and trailing spaces.
@@ -236,6 +237,8 @@ if &term =~ '^screen' || &term =~ '^xterm'
     " tmux knows the extended mouse mode
     set ttymouse=xterm2
 endif
+" Backspace make sense
+set backspace=indent,eol,start
 
 imap OA <ESC>ki
 imap OB <ESC>ji

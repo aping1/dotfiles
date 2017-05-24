@@ -63,9 +63,10 @@ ZSH_TMUX_FIXTERM=true
 ZSH_TMUX_AUTOQUIT=false
 
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
-DEFAULT_USER=awampler
+export DEFAULT_USER=awampler
+POWERLEVEL9K_CONTEXT_TEMPLATE="%n@`hostname -f`"
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(vi_mode virtualenv context dir vcs)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(ssh vi_mode virtualenv context dir vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status history time)
 POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
 POWERLEVEL9K_DIR_BACKGROUND='238'
@@ -198,15 +199,16 @@ setopt SHARE_HISTORY
 
 # additional configuration for zsh
 # Remove the history (fc -l) command from the history list when invoked.
-setopt histnostore
+# setopt histnostore
 # Remove superfluous blanks from each command line being added to the history list.
 setopt histreduceblanks
+setopt histverify
 # Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
 # setopt ignoreeof
 # Print the exit value of programs with non-zero exit status.
-setopt printexitvalue
+# setopt printexitvalue
 # Do not share history
-setopt no_share_history
+# setopt no_share_history
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
 # Vim mode

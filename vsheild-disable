@@ -1,0 +1,6 @@
+
+sudo /usr/local/McAfee/AntiMalware/VSControl stopoas
+
+sudo defaults write /Library/Preferences/com.mcafee.ssm.antimalware.plist OAS_Enable -bool False
+sudo /usr/local/McAfee/AntiMalware/VSControl stop
+sudo /usr/local/McAfee/AntiMalware/VSControl reload
