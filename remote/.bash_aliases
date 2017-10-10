@@ -176,3 +176,23 @@ fi
 
 [[ -d ".bash_plugins" ]] && PLUGINS=($(find $HOME/.bash_plugins/ -iname init.sh -type f))
 [[ "${PLUGINS}" ]]; for thing in ${PLUGINS[@]}; do source $thing; done
+
+
+check_disks() {
+    if ! grep -q hypervisor /proc/cpuinfo; then
+        if grep -q "Personalities : \\[" /proc/mdstat; then
+            grep "_" /proc/mdstat
+        fi
+        if /opt/bin/megacli -PDList -aALL | grep "Firmware state" | grep -q "JBOD"; then
+            for disk in $(lshw -quiet -c DISK | grep "logical name" | awk '{print $3}'); do
+                smartctl -H -d megaraid,32 $disk | awk '/SMART Health/ { print $NF }' | grep -v "OK"
+            done
+        elif [[ $(/opt/bin/megacli -PDList -aALL | wc -l) -gt 3 ]]; then
+            /opt/bin/megacli -PDList -aALL | grep "Firmware state" | grep -v "Online"
+        else
+            for disk in $(lshw -quiet -c DISK | grep "logical name" | awk '{print $3}'); do
+                smartctl -H $disk | awk '/SMART overall/ { print $NF }' | grep -v "PASSED"
+            done
+        fi
+    fi
+}

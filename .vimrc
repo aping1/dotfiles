@@ -205,6 +205,7 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 "au FileType json exe ":silent 1, $!jq . - 2> /dev/null"
 
 let g:airline_powerline_fonts = 1
+set guifont=Source\ Code\ Pro\ for\ Powerline:h12
 set term=xterm-256color
 set background=dark
 try

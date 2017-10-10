@@ -43,6 +43,8 @@ export CLICOLOR=1
 export EDITOR='vim'
 export PAGER='less'
 
+export TERM="xterm-256color"
+
 # Homebrew
 # This is one of examples why I want to keep my dotfiles private
 #export HOMEBREW_GITHUB_API_TOKEN=MY_GITHUB_TOKEN
