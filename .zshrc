@@ -220,3 +220,4 @@ export LC_ALL=en_US.UTF-8
 #    zle && zle .reset-prompt && zle -R
 #}
 bindkey -v
+export PATH="/usr/local/opt/qt/bin:$PATH"
