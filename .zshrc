@@ -228,7 +228,8 @@ export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.4/site-packages"
 #export LC_ALL=en_US.UTF-8
 
 # Powerline
-# source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
+#source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
+source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
 #
 # Fix 
 #TRAPWINCH() {
