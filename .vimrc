@@ -1,6 +1,6 @@
 "
 "
-" ~/.vimrc (remote shell)
+" ~/.vimrc (local shell)
 "
 
 set nocompatible              " be iMproved, required
@@ -61,7 +61,9 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'saltstack/salt-vim'
 Plugin 'scrooloose/syntastic'
+Plugin 'Valloric/YouCompleteMe'
 Plugin 'scrooloose/nerdtree'
+Plugin 'vim-scripts/ag.vim'
 
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
@@ -72,6 +74,10 @@ Plugin 'vim-scripts/pdbvim'
 
 Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+
+" uses pygtk
+" Plugin 'vim-scripts/VIM-Color-Picker' " A simple color picker for VIM, based on GTK color chooser dialog.
+Plugin 'vim-scripts/ColorX' " A script that lets you insert hex color codes by using OS X's color picker
 
 call vundle#end()
 filetype plugin indent on     " required
@@ -96,6 +102,9 @@ endif
 """""""""""""""""""""""""""
 " http://vim.wikia.com/wiki/Highlight_unwanted_spaces
 :highlight ExtraWhitespace ctermbg=red guibg=red
+" Colorize listchars to be black
+:highlight SpecialKey ctermfg=232
+:highlight Nontext ctermfg=26
 " Using before the first colorscheme command will ensure that the highlight group gets created and is not cleared by future colorscheme commands
 :autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 " Show trailing whitespace:
@@ -138,6 +147,7 @@ highlight PmenuSel ctermbg=black ctermfg=white
 " pyflakes
 let g:khuno_ignore="E501"
 
+let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 "
 " pymode options
 "
@@ -173,7 +183,7 @@ autocmd! bufwritepost vimrc source ~/.vimrc
 "execute "match OverLength /\%".linelen."v.\+/"
 
 " Tell VIM which tags file to use.
-set tags=./tags,tags;$HOME
+set tags=./.tags,./tags,tags;$HOME
 let g:easytags_dynamic_files = 1
 
 " Tell VIM to use ack instead of grep.
@@ -199,14 +209,25 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 "au FileType xml exe ":silent 1, $!xmllint --format --recover - 2> /dev/null"
 "au FileType json exe ":silent 1, $!jq . - 2> /dev/null"
 
-let g:airline_powerline_fonts = 1
-set term=xterm-256color
-set background=dark
+" 
 try
-  " Solarized options
-  syntax enable
-"  https://github.com/lifepillar/vim-solarized8
+  if has('gui_running')
+    set background=light
+    set guifont=Source\ Code\ Pro\ for\ Powerline:h12
+    let base17colorspace=256        " Access colors present in 256 colorspace
+    colorscheme macvim
+  else
+    set background=dark
+  endif
+  " Configure UI {
+  set term=xterm-256color
+  " set term=screen-256color
+  set t_Co=256
   colorscheme solarized8_dark
+  "set nofoldenable                " disable code folding
+  syntax enable
+" }
+"  https://github.com/lifepillar/vim-solarized8
   let g:solarized_term = 1
   let g:solarized_visibility = "high"
   let g:solarized_contrast   = "high"
@@ -220,6 +241,7 @@ try
   if !exists('g:airline_symbols')
       let g:airline_symbols = {}
   endif
+  let g:airline_powerline_fonts = 1
   let g:airline_symbols.space = "\ua0"
   let g:airline_powerline_fonts = 1
   let g:minBufExplForceSyntaxEnable = 1
@@ -239,4 +261,6 @@ imap OC <ESC>li
 imap OD <ESC>hi
 
 " Pythong Templates
+"
 " au BufNewFile *.py 0r ~/.vim/python.skel | let IndentStyle = "python"
+au BufNewFile COMMIT_EDITING let syntax = diff
