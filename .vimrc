@@ -74,6 +74,8 @@ Plugin 'vim-scripts/pdbvim'
 
 Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+" Local Shortccuts
+Plugin 'file://~/bundle/allieshortcuts'|
 
 " uses pygtk
 " Plugin 'vim-scripts/VIM-Color-Picker' " A simple color picker for VIM, based on GTK color chooser dialog.
@@ -103,20 +105,19 @@ endif
 " http://vim.wikia.com/wiki/Highlight_unwanted_spaces
 :highlight ExtraWhitespace ctermbg=red guibg=red
 " Colorize listchars to be black
-:highlight SpecialKey ctermfg=232
-:highlight Nontext ctermfg=26
 " Using before the first colorscheme command will ensure that the highlight group gets created and is not cleared by future colorscheme commands
+:autocmd ColorScheme * highlight SpecialKey ctermfg=232
 :autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+:autocmd ColorScheme * highlight SpecialKey ctermfg=8 ctermbg=0
 
 " Show trailing whitespace:
 :match ExtraWhitespace /\s\+$/
 " Show trailing whitespace and spaces before a tab:
 :match ExtraWhitespace /\s\+$\| \+\ze\t/
 " Show tabs that are not at the start of a line:
-:match ExtraWhitespace /[^\t]\zs\t\+/
+":match ExtraWhitespace /[^\t]\zs\t\+/
 " Show spaces used for indenting (so you use only tabs for indenting).
-:match ExtraWhitespace /^\t*\zs \+/
-" Use ag for vimgrep
+":match ExtraWhitespace /^\t*\zs \+/
 " The following pattern will match trailing whitespace, except when typing at the end of a line.
 :match ExtraWhitespace /\s\+\%#\@<!$/
 " Switch off :match highlighting.
@@ -220,6 +221,7 @@ try
     colorscheme solarized8_high
     " FIXME: the following fixes some out of order colorscheme load
     :autocmd BufWinEnter * colorscheme solarized8_high
+    :autocmd BufWinEnter * set clipboard=unnamed
   endif
   " Configure UI {
   set term=xterm-256color
