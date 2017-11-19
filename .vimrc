@@ -50,7 +50,7 @@ set hlsearch
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
-set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+"set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
@@ -107,6 +107,7 @@ endif
 :highlight Nontext ctermfg=26
 " Using before the first colorscheme command will ensure that the highlight group gets created and is not cleared by future colorscheme commands
 :autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+
 " Show trailing whitespace:
 :match ExtraWhitespace /\s\+$/
 " Show trailing whitespace and spaces before a tab:
@@ -115,6 +116,7 @@ endif
 :match ExtraWhitespace /[^\t]\zs\t\+/
 " Show spaces used for indenting (so you use only tabs for indenting).
 :match ExtraWhitespace /^\t*\zs \+/
+" Use ag for vimgrep
 " The following pattern will match trailing whitespace, except when typing at the end of a line.
 :match ExtraWhitespace /\s\+\%#\@<!$/
 " Switch off :match highlighting.
@@ -186,9 +188,6 @@ autocmd! bufwritepost vimrc source ~/.vimrc
 set tags=./.tags,./tags,tags;$HOME
 let g:easytags_dynamic_files = 1
 
-" Tell VIM to use ack instead of grep.
-set grepprg=grep
-
 " Make underscores part of words.
 "set iskeyword-=_
 set iskeyword+=-
@@ -218,12 +217,15 @@ try
     colorscheme macvim
   else
     set background=dark
+    colorscheme solarized8_high
+    " FIXME: the following fixes some out of order colorscheme load
+    :autocmd BufWinEnter * colorscheme solarized8_high
   endif
   " Configure UI {
   set term=xterm-256color
   " set term=screen-256color
   set t_Co=256
-  colorscheme solarized8_dark
+  colorscheme solarized8_high
   "set nofoldenable                " disable code folding
   syntax enable
 " }
@@ -233,6 +235,7 @@ try
   let g:solarized_contrast   = "high"
   let g:solarized_termtrans = 1
   let g:solarized_termcolors=16
+  let g:solarized_statusline=1
 catch
 endtry
 " Airline
@@ -245,7 +248,7 @@ try
   let g:airline_symbols.space = "\ua0"
   let g:airline_powerline_fonts = 1
   let g:minBufExplForceSyntaxEnable = 1
-  :let g:airline_theme='solarized'
+  let g:airline_theme='solarized'
 catch
 endtry
 
@@ -260,7 +263,12 @@ imap OB <ESC>ji
 imap OC <ESC>li
 imap OD <ESC>hi
 
-" Pythong Templates
+:map <F2> :colorscheme solarized8_high
+
+" Pythong Template =s
 "
 " au BufNewFile *.py 0r ~/.vim/python.skel | let IndentStyle = "python"
 au BufNewFile COMMIT_EDITING let syntax = diff
+" Use ag for vimgrep
+set grepprg=ag\ --vimgrep\ $* 
+set grepformat=%f:%l:%c:%m
