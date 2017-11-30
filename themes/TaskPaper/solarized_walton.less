@@ -1,0 +1,91 @@
+// See http://guide.taskpaper.com/creating_themes.html to get started.
+// Solarized Dark Theme by Walton Jones
+// Inspired by Solarized (http://ethanschoonover.com/solarized)
+//
+window {
+  appearance: NSAppearanceNameVibrantDark;
+}
+
+
+
+// Variables
+@user-font-size: 20;
+@text-color: rgb(129, 130, 132);
+@background-color: rgb(4, 32, 41);
+@tint-colori : rgb(10,41,51);
+@selection-color: rgb(10, 41, 51);
+@invisibles-color: @selection-color;
+@line-height-multiple: 1.3;
+
+
+// Basics
+item[data-type="note"] {
+    >   run[display] {
+        font-family: "Source Sans Pro Light";
+        font-style: italic;
+        font-size: @user-font-size*0.9;
+        color: rgb(71, 91, 98);
+    }
+    >   run[link] {
+        color: rgb(33, 118, 199);
+        font-style: normal;
+    }
+}
+
+run[link] {
+  color: rgb(33, 118, 199);
+  text-decoration: underline;
+}
+
+run[link^="button"] {
+    color: @text-color;
+    text-expansion: 1;
+    text-decoration: none;
+}
+
+run[link^="filter"] {
+    color: @text-color;
+    text-decoration: none;
+}
+
+item[data-type="project"] {
+    font-weight: bold;
+    font-size: @user-font-size*1.1;
+    color: rgb(37, 146, 134);
+ }
+
+// Tags
+run[tag] {
+    font-style: normal;
+    font-weight: normal;
+    color: mix(@text-color, @background-color, 50%);
+ }
+
+item[data-today], run[tag=data-today] {
+     color: rgb(209, 28, 36);
+}
+
+item[data-next], run[tag=data-next] {
+     color: rgb(165, 119, 6);
+}
+
+item[data-waiting], run[tag=data-waiting] {
+    color: rgb(89, 90, 183);
+}
+
+item[data-hold], run[tag=data-hold] {
+    color: rgb(89, 90, 183);
+}
+
+item[data-done], run[tag=data-done] {
+    color: rgba(10, 41, 51, 0.5);
+    >   run[display] {
+         text-strikethrough: NSUnderlineStyleSingle;
+         text-strikethrough-color: rgba(10, 41, 51, 0.5);
+     }
+ }
+
+// Sidebar
+sidebar {
+    search-item-prefix: "🔍 ";
+}
