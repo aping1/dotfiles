@@ -2,6 +2,15 @@
 #  Customize BASH PS1 prompt to show current GIT repository and branch.
 #  by Mike Stewart - http://MediaDoneRight.com
 
+
+has_key () 
+{  
+    local _KEY="$1"
+    local _FILE=$2
+    [[ ${FILE} && -f "$_FILE" ]]  || return 1 
+    grep -Po "(?<=^"${_KEY}").*" "${_FILE}"
+}
+
 #  SETUP CONSTANTS
 #  Bunch-o-predefined colors.  Makes reading code easier than escape sequences.
 ##  I don't remember where I found this.  o_O
@@ -123,23 +132,39 @@ PathFull="\W"
 NewLine="\n"
 Jobs="\j"
 
+fb_param () {
+    if [[ -f /etc/fb-release ]]; then
+        ( . /etc/fb-release
+            printenv $_KEY) )
+    fi
+}
+
+fb_oa_param () {
+    if [[ -f /etc/fb-os-release ]]; then
+        ( . /etc/fb-os-release
+            printenv $_KEY) )
+    fi
+}
+
 _utc_date () {
     echo -n "$(date -u '+%m/%d/%y %k:%M:%S')"
 }
 
-_gaikai_release () {
-	if [[ -f /etc/gaikai-release ]]; then
-		: ${GKRELEASE:=$(cat /etc/gaikai-release | awk -F'-' 'END{print $NF}' )}
-		export GKRELEASE
+[[ -f '/etc/fb-os-release' ]] && 
+_fb_release () {
+	if [[ -f /etc/fb-release ]]; then
+        . /etc/fbrelease
+        FBRELEASE=$VERSION
 	fi
-	echo -n	${GKRELEASE:-'-'}
+	echo -n	${FBRELEASE:-'-'}
 }
 
-_gaikai_host_type () {
-	if [[ -f /etc/gaikai-host-type ]]; then
-		: ${GKHOST_TYPE:=$(cat /etc/gaikai-host-type)}
-	fi
-	echo -n ${GKHOST_TYPE:-'-'}
+_fb_host_type () {
+	if [[ -f /etc/fb-os-release ]]; then
+        printf '%s\n' "$( . /etc/fb-os-release;
+                        printfenv PLATFORM) )"
+    fi
+	echo -n ${FBHOST_TYPE:-'-'}
 
 }
 
@@ -166,7 +191,7 @@ _git_status () {
 }
 PREFIX_SPECIAL='╭─'
 # Export prompt_command='echo $date -u'
-export PROMPT_COMMAND='printf "$PREFIX_SPECIAL [$(color_text $Blue %s)] %s ($(color_text $Yellow %s)) ($(color_text $Yellow %s)) [$(_git_status)$Color_Off] \n" "$(_utc_date)" "${HOSTNAME}" "$(_gaikai_host_type)" "$(_gaikai_release)"'
+export PROMPT_COMMAND='printf "$PREFIX_SPECIAL [$(color_text $Blue %s)] %s ($(color_text $Yellow %s)) ($(color_text $Yellow %s)) [$(_git_status)$Color_Off] \n" "$(_utc_date)" "${HOSTNAME}" "$(_fb_host_type)" "$(_fb_release)"'
 if [[ "${SUDO_USER:-x}" != x || $(whoami) == root ]]; then
     export PS1='╰─\w ('"$Red"'\u'"$TestEnd"') $ '
 else
@@ -196,3 +221,5 @@ check_disks() {
         fi
     fi
 }
+
+alias vimlog='vim -nr'

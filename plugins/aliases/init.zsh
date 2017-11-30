@@ -11,3 +11,22 @@ alias vmware-dhcp-restart='sudo /Applications/VMware\ Fusion.app/Contents/Librar
 sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop && \
 sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start'
 
+alias vimlog='vim -nr'
+alias nvim='vim +NERDTree'
+alias jsosascript='osascript -l JavaScript'
+
+gen_tags() {
+    find . -name "*.py" | etags --output TAGS - 
+    }
+
+last_dir () {
+    dir_stack 0
+}
+
+dir_stack (){
+    d | grep '^'"$1" | cut -f2 
+}
+
+
+alias ctags="$(brew --prefix)/bin/ctags"
+alias lst='ls -R | grep ":$" | sed -e '"'"'s/:$//'"'"' -e '"'"'s/[^-][^\/]*\//--/g'"'"' -e '"'"'s/^/   /'"'"' -e '"'"'s/-/|/'"'"

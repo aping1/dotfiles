@@ -8,7 +8,7 @@ SCRIPTPATH="$(dirname "$SCRIPT")"
 
 ln -s "${DEPFILES}/zgen" "${HOME}/.zgen"
 mkdir -p $HOME/.config/
-ln -s "${DOTFILES}/.powerline_config" ".config/powerline"
+ln -s "${DOTFILES}/powerline_config" ".config/powerline"
 
 # Absolute path this script is in, thus /home/user/bin
 # link new dot files
@@ -36,3 +36,5 @@ ln -s ${DOTFILES}/prezto "${ZDOTDIR:-$HOME}/.zprezto"
 # TODO: Install .zpreztorc
 
 "${DEPFILES}/fonts/install.sh"
+ln -s "${HOME}/Library/Containers/com.hogbaysoftware.TaskPaper3/Data/Library/Application Support/TaskPaper/StyleSheets/solarized_walton.less" "${DOTFILES}/themes/TaskPaper/solarized_walton.less"
+

@@ -1,14 +1,12 @@
 #!/bin/zsh
 sentials() {
+  brew install reattach-user-namespace
   brew install psutil
   brew install cloc
   brew install cmake
   brew install coreutils
   brew install ctags
   brew install cv
-#  brew install docker
-#  brew install docker-compose
-#  brew install docker-machine
   brew install git
   brew install tig
 #  brew install gotags
@@ -17,7 +15,7 @@ sentials() {
 #  brew install icdiff
   brew install jq
   brew install lnav
-#  brew install mercurial
+  brew install mercurial
   brew install ncdu
   brew install node
   brew install p7zip

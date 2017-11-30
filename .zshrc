@@ -20,6 +20,14 @@ path=(
     $path
 )
 
+
+# PYTHON INCLUDE
+if which python3.5 &>/dev/null; then
+    export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.5/site-packages"
+elif which python3.6 &>/dev/null; then
+    export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.6/site-packages"
+fi
+
 # Brew for OSX
 if [[ "${DISTRO}" == "Darwin" ]] && command -v brew &>/dev/null; then
 path=(
@@ -54,9 +62,9 @@ export TERM="xterm-256color"
 # Autoenv https://github.com/Tarrasch/zsh-autoenv
 # Great plugin to automatically modify path when it sees .env file
 # I use it for example to automatically setup docker/rbenv/pyenv environments
-AUTOENV_FILE_ENTER=.env
-AUTOENV_HANDLE_LEAVE=1 # Turn on/off handling leaving an env
-AUTOENV_FILE_LEAVE=.envl
+#AUTOENV_FILE_ENTER=.env
+#AUTOENV_HANDLE_LEAVE=1 # Turn on/off handling leaving an env
+#AUTOENV_FILE_LEAVE=.envl
 
 # tmux plugin settings
 # this always starts tmux
@@ -148,6 +156,8 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/zpython
         zgen load $DOTFILES/plugins/brew-helpers
         zgen load $DOTFILES/plugins/pyenv
+        zgen load $DOTFILES/plugins/fbtools
+        zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
@@ -223,17 +233,25 @@ bindkey -v
 # TMUXINATOR='/Library/Ruby/Gems/2.0.0/gems/tmuxinator-0.8.1/completion/tmuxinator.zsh'
 # [[ -f $TMUXINATOR ]] && source ${TMUXINATOR} || echo "Warning: Could not instatiate tmuxinator"
 
-export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.4/site-packages"
 
 #export LC_CTYPE=en_US.UTF-8
 #export LC_ALL=en_US.UTF-8
 
 # Powerline
 #source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
-source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
+#source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
 #
 # Fix 
 #TRAPWINCH() {
 #    zle && zle .reset-prompt && zle -R
 #}
 bindkey -v
+export FBANDROID_DIR=/Users/aping1/fbsource/fbandroid
+alias quicklog_update=/Users/aping1/fbsource/fbandroid/scripts/quicklog/quicklog_update.sh
+alias qlu=quicklog_update
+
+# added by setup_fb4a.sh
+export ANDROID_SDK=/opt/android_sdk
+export ANDROID_NDK_REPOSITORY=/opt/android_ndk
+export ANDROID_HOME=${ANDROID_SDK}
+export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools

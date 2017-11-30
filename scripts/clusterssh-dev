@@ -57,7 +57,7 @@ PANE_START_RE='(^[0-9][0-9]*|^)'
 PANE_RANGE_RE='(~p?[0-9]+$|$)'
 
 CLUSTER_RE='(^[0-9]+[a-z]?|av1)\.([a-z]{2,3}[abc0-9]?)'
-DOMAIN_RE='gaikai.(org|net)'
+DOMAIN_RE='example.(org|net)'
 
 if which tmux &> /dev/null; then
 get_pane() {
