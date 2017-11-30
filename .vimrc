@@ -54,7 +54,8 @@ set rtp+=~/.vim/bundle/Vundle.vim
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
-
+Plugin 'applescript.vim'
+Plugin 'Tagbar'
 " other packages, run ' vim +PluginInstall +qall ' to up date them
 Plugin 'lifepillar/vim-solarized8'
 Plugin 'tpope/vim-fugitive'
@@ -64,6 +65,8 @@ Plugin 'scrooloose/syntastic'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/ag.vim'
+Plugin 'rizzatti/dash.vim'
+
 
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
@@ -109,6 +112,9 @@ endif
 :autocmd ColorScheme * highlight SpecialKey ctermfg=232
 :autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 :autocmd ColorScheme * highlight SpecialKey ctermfg=8 ctermbg=0
+
+highlight ColorColumn ctermbg=lightblue
+call matchadd('ColorColumn', '\%81v', 100)
 
 " Show trailing whitespace:
 :match ExtraWhitespace /\s\+$/
@@ -186,7 +192,7 @@ autocmd! bufwritepost vimrc source ~/.vimrc
 "execute "match OverLength /\%".linelen."v.\+/"
 
 " Tell VIM which tags file to use.
-set tags=./.tags,./tags,tags;$HOME
+set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
 let g:easytags_dynamic_files = 1
 
 " Make underscores part of words.
