@@ -16,7 +16,7 @@ done
 
 function dev_server () {
     if grep -qi NXDOMAIN <<<  "${DEV_SERVER=$(host $(whoami).sb | head -n1)}"; then
-        DEV_SERVER="$(echo "${DEV_SERVER}" | awk '{print $NF}' | sed ' s/\.$//g'r)"
+        DEV_SERVER="$(echo "${DEV_SERVER}" | awk '{print $NF}' | sed 's/\.$//g')"
         [[ ${DEV_SERVER} ]] || return 1
         printf "%s" "${DEV_SERVER}\n"
     fi 

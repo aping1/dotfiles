@@ -22,12 +22,10 @@ function is_valid_task () {
 
 function current_task () {
     if ! [[ -h ${TASK_LINK} ]] ; then
+        printf 'ERROR: No current task link is set\n' 
         return 1
     fi
     echo "${_CURRENT_LINK:="$(basename $(realpath -e ${TASK_LINK}))"}"
-   # for task in ${tasks}; do
-   #     pwd | grep -q "${task}" && printf "%s" ${task}
-   # done
 }
 
 function set_task () {
@@ -47,11 +45,11 @@ function set_task () {
 if [[ -h ${TASK_LINK} ]] ; then
    _CURRENT_TASK_LINK="$(basename $(realpath -e ${TASK_LINK}))"
 elif [[ -e ${TASK_LINK} ]] ; then
-    printf 'ERROR: current is not link'
+    printf 'ERROR: current is not link\n' >&2
     return 1
 else
     #TODO: Choose task
-    printf 'INFO: no current task set'
+    printf 'INFO: no current task set\n' >&2
 fi
 
 function set_tmux_session_to_task () {
