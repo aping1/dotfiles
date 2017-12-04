@@ -186,9 +186,9 @@ let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 autocmd! bufwritepost vimrc source ~/.vimrc
 
 " Set max line length.
-"let linelen = 100
-"execute "set colorcolumn=".linelen
-"highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+let linelen =80 
+execute "set colorcolumn=".linelen
+highlight OverLength ctermbg=red ctermfg=white guibg=#592929
 "execute "match OverLength /\%".linelen."v.\+/"
 
 " Tell VIM which tags file to use.
