@@ -152,11 +152,12 @@ if [ ! $TERM = dumb ]; then
 
         # my own plugins each of these folders use init.zsh entry point
         zgen load $DOTFILES/plugins/aliases
+        zgen load $DOTFILES/plugins/bootstrap
         zgen load $DOTFILES/plugins/dotfiles
         zgen load $DOTFILES/plugins/zpython
-        zgen load $DOTFILES/plugins/brew-helpers
         zgen load $DOTFILES/plugins/pyenv
         zgen load $DOTFILES/plugins/fbtools
+        zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
 
@@ -255,3 +256,4 @@ export ANDROID_SDK=/opt/android_sdk
 export ANDROID_NDK_REPOSITORY=/opt/android_ndk
 export ANDROID_HOME=${ANDROID_SDK}
 export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
+
