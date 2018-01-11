@@ -54,48 +54,42 @@ set rtp+=~/.vim/bundle/Vundle.vim
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'severin-lemaignan/vim-minimap'
-Plugin 'tpope/vim-scriptease'
-Plugin 'applescript.vim'
-Plugin 'Tagbar'
-Plugin 'vim-flake8'
-Plugin 'SimpylFold'
+"Plugin 'applescript.vim'
+"Plugin 'Tagbar'
 " other packages, run ' vim +PluginInstall +qall ' to up date them
-Plugin 'lifepillar/vim-solarized8'
-Plugin 'tpope/vim-fugitive'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'saltstack/salt-vim'
-Plugin 'scrooloose/syntastic'
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'scrooloose/nerdtree'
-Plugin 'vim-scripts/ag.vim'
-Plugin 'rizzatti/dash.vim'
-
-
-Plugin 'godlygeek/tabular'
-Plugin 'plasticboy/vim-markdown'
-Plugin 'tpope/vim-obsession'
-Plugin 'vim-scripts/vim-misc'
-Plugin 'vim-scripts/gitdiff.vim'
-Plugin 'vim-scripts/pdbvim'
-Plugin 'solarnz/thrift.vim'
-
-
-Plugin 'bling/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
+"Plugin 'lifepillar/vim-solarized8'
+"Plugin 'tpope/vim-fugitive'
+"Plugin 'airblade/vim-gitgutter'
+"Plugin 'saltstack/salt-vim'
+"Plugin 'scrooloose/syntastic'
+"Plugin 'Valloric/YouCompleteMe'
+"Plugin 'scrooloose/nerdtree'
+"Plugin 'vim-scripts/ag.vim'
+"Plugin 'rizzatti/dash.vim'
+"
+"
+"Plugin 'godlygeek/tabular'
+"Plugin 'plasticboy/vim-markdown'
+"Plugin 'tpope/vim-obsession'
+"Plugin 'vim-scripts/vim-misc'
+"Plugin 'vim-scripts/gitdiff.vim'
+"Plugin 'vim-scripts/pdbvim'
+"
+"Plugin 'bling/vim-airline'
+"Plugin 'vim-airline/vim-airline-themes'
 " Local Shortccuts
-Plugin 'file:///Users/aping1/.dotfiles/vim/allieshortcuts'|
-Plugin 'file:///Users/aping1/.dotfiles/vim/dotfiles.local'
+" Plugin 'file://~/bundle/allieshortcuts'|
 
 " uses pygtk
 " Plugin 'vim-scripts/VIM-Color-Picker' " A simple color picker for VIM, based on GTK color chooser dialog.
-Plugin 'vim-scripts/ColorX' " A script that lets you insert hex color codes by using OS X's color picker
+" Plugin 'vim-scripts/ColorX' " A script that lets you insert hex color codes by using OS X's color picker
 
 call vundle#end()
 filetype plugin indent on     " required
 
 " These lines setup the environment to show graphics and colors correctly.
 set nocompatible
+set t_Co=256
  
 " Quickly close in gui mode
 if ! has('gui_running') 
@@ -115,11 +109,10 @@ endif
 :highlight ExtraWhitespace ctermbg=red guibg=red
 " Colorize listchars to be black
 " Using before the first colorscheme command will ensure that the highlight group gets created and is not cleared by future colorscheme commands
-:autocmd ColorScheme * highlight SpecialKey ctermbg=0 ctermfg=232
-:autocmd ColorScheme * hi TagbarSignature ctermfg=3 ctermbg=0 cterm=bold
+:autocmd ColorScheme * highlight SpecialKey ctermfg=232
 :autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+:autocmd ColorScheme * highlight SpecialKey ctermfg=8 ctermbg=0
 
-:autocmd ColorScheme * hi CursorLine ctermfg=136 ctermbg=0 cterm=NONE
 highlight ColorColumn ctermbg=lightblue
 call matchadd('ColorColumn', '\%81v', 100)
 
@@ -128,20 +121,15 @@ call matchadd('ColorColumn', '\%81v', 100)
 " Show trailing whitespace and spaces before a tab:
 :match ExtraWhitespace /\s\+$\| \+\ze\t/
 " Show tabs that are not at the start of a line:
-" :match ExtraWhitespace /[^\t]\zs\t\+/
-
+":match ExtraWhitespace /[^\t]\zs\t\+/
 " Show spaces used for indenting (so you use only tabs for indenting).
-" :match ExtraWhitespace /^\t*\zs \+/
-
-" The following pattern will match trailing whitespace, except when typing at 
-" the end of a line.
+":match ExtraWhitespace /^\t*\zs \+/
+" The following pattern will match trailing whitespace, except when typing at the end of a line.
 :match ExtraWhitespace /\s\+\%#\@<!$/
 " Switch off :match highlighting.
 ":match
 
-" If you use this alternate pattern, you may want to consider using the 
-" following autocmd to let the highlighting show up as soon as you leave insert
-" mode after entering trailing whitespace:
+" If you use this alternate pattern, you may want to consider using the following autocmd to let the highlighting show up as soon as you leave insert mode after entering trailing whitespace:
 :autocmd InsertLeave * redraw!
 :au InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 :au InsertLeave * match ExtraWhitespace /\s\+$/
@@ -166,7 +154,7 @@ highlight Pmenu ctermbg=cyan ctermfg=white
 highlight PmenuSel ctermbg=black ctermfg=white
 
 " pyflakes
-"let g:khuno_ignore="E501"
+let g:khuno_ignore="E501"
 
 let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 "
@@ -198,28 +186,18 @@ let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 autocmd! bufwritepost vimrc source ~/.vimrc
 
 " Set max line length.
-let linelen = 80
+let linelen =80 
 execute "set colorcolumn=".linelen
 highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-execute "match OverLength /\%".linelen."v.\+/"
-
-" set highlight cursor
-"augroup CursorLine
-"  au!
-"  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-"  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
-"  au WinLeave * setlocal nocursorline
-"augroup END
-
+"execute "match OverLength /\%".linelen."v.\+/"
 
 " Tell VIM which tags file to use.
 set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
 let g:easytags_dynamic_files = 1
 
 " Make underscores part of words.
-autocmd BufNewFile,BufWinEnter *.[h|c] set iskeyword+=_
-"autocmd BufNewFile,BufWinEnter *.[h|c] set iskeyword="a-z,A-Z,48-57,_,.,-,>"
 
+set iskeyword-=_
 "set iskeyword+=-
 
 " When shifting always round to the correct indentation.
@@ -239,47 +217,49 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 "au FileType json exe ":silent 1, $!jq . - 2> /dev/null"
 
 " 
-if has('gui_running')
-set background=light
-set guifont=Source\ Code\ Pro\ for\ Powerline:h12
-let base17colorspace=256        " Access colors present in 256 colorspace
-colorscheme macvim
-colorscheme solarized8_high
-else
-set background=dark
-" FIXME: the following fixes some out of order colorscheme load
-:autocmd ColorScheme * colorscheme solarized8_high
-:autocmd BufWinEnter,BufNewFile * set clipboard=unnamed
-:autocmd ColorScheme * hi Comment cterm=NONE
-colorscheme solarized8_high
-endif
-" Configure UI {
-set term=xterm-256color
-" set term=screen-256color
-set t_Co=256
-" set t_Co=16
-colorscheme solarized8_high
-"set nofoldenable                " disable code folding
-syntax enable
+try
+  if has('gui_running')
+    set background=light
+    set guifont=Source\ Code\ Pro\ for\ Powerline:h12
+    let base17colorspace=256        " Access colors present in 256 colorspace
+    colorscheme macvim
+  else
+    set background=dark
+    colorscheme solarized8_high
+    " FIXME: the following fixes some out of order colorscheme load
+    autocmd BufNewFile, BufWinEnter * colorscheme solarized8_high
+    autocmd BufRead, BufNewFile * set clipboard=unnamed
+  endif
+  " Configure UI {
+  set term=xterm-256color
+  " set term=screen-256color
+  set t_Co=256
+  colorscheme solarized8_high
+  "set nofoldenable                " disable code folding
+  syntax enable
 " }
 "  https://github.com/lifepillar/vim-solarized8
-let g:solarized_term = 1
-let g:solarized_visibility = ""
-let g:solarized_contrast   = "high"
-let g:solarized_termtrans = 1
-let g:solarized_termcolors= 256
-let g:solarized_statusline=1
-let g:solarized_term_italics= 0
+  let g:solarized_term = 1
+  let g:solarized_visibility = "high"
+  let g:solarized_contrast   = "high"
+  let g:solarized_termtrans = 1
+  let g:solarized_termcolors=16
+  let g:solarized_statusline=1
+catch
+endtry
 " Airline
-let g:airline#extensions#tabline#enabled = 1
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
-let g:airline_powerline_fonts = 1
-let g:airline_symbols.space = "\ua0"
-let g:airline_powerline_fonts = 1
-let g:minBufExplForceSyntaxEnable = 1
-let g:airline_theme='solarized'
+try
+  let g:airline#extensions#tabline#enabled = 1
+  if !exists('g:airline_symbols')
+      let g:airline_symbols = {}
+  endif
+  let g:airline_powerline_fonts = 1
+  let g:airline_symbols.space = "\ua0"
+  let g:airline_powerline_fonts = 1
+  let g:minBufExplForceSyntaxEnable = 1
+  let g:airline_theme='solarized'
+catch
+endtry
 
 set mouse+=a
 if &term =~ '^screen' || &term =~ '^xterm'

@@ -1,4 +1,4 @@
-# === Profiling ===
+## === Profiling ===
 #if I see that zsh takes to much time to load I profile what has been changed,
 # I want to see my shell ready in not more than 1 second
 PROFILING=${PROFILING:-false}
@@ -13,6 +13,13 @@ DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 
 ## Setup PATH
 # Standard path includes
+path=(
+    /usr/local/{bin,sbin}
+    $DOTFILES/scripts
+    ${HOME}/bin
+    $path
+)
+
 
 # PYTHON INCLUDE
 if which python3.5 &>/dev/null; then
@@ -21,30 +28,16 @@ elif which python3.6 &>/dev/null; then
     export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.6/site-packages"
 fi
 
-path=(
-    /opt/homebrew/bin
-    /usr/local/{bin,sbin,opt}
-    $path
-)
 # Brew for OSX
-if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
-    # Add to start of path
-    path=(
-        $(brew --prefix coreutils)/libexec/gnubin
-        $(brew --prefix)/bin/
-        $path
-    )
-elif [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
-    echo "Install Homebrew" >&2
-    # add to end of path
-fi
-
+if [[ "${DISTRO}" == "Darwin" ]] && command -v brew &>/dev/null; then
 path=(
+    $(brew --prefix coreutils)/libexec/gnubin:${PATH}
+    $(brew --prefix)/bin/:${PATH}
     $path
-    ${DOTFILES}/scripts
-    ${HOME}/bin
 )
-
+elif [[ "${DISTRO}" == "Darwin" ]]; then
+    echo "Install Homebrew" >&2
+fi
 typeset -U path
 
 COMPLETION_WAITING_DOTS="true"
@@ -248,7 +241,6 @@ bindkey -v
 # Powerline
 #source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
 #source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
-source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
 #
 # Fix 
 #TRAPWINCH() {

@@ -54,10 +54,11 @@ function _fb_tmux_helper_session_exists_prefix() {
 
 function _fb_tmux_helper_switch_to_session() {
     : ${SESSION_NAME:="${1:-$(_fb_tmux_helper_get_session)}"}
+    [[ "${SESSION_NAME}" == "$(_fb_tmux_helper_get_session)" ]] && return 1
 	tmux switch-client -t "${SESSION_NAME}"
 }
 
 function _fb_tmux_helper_get_session() {
-    tmux display-message -p "\#{client_session}"
+    tmux display-message -p "#{client_session}"
 }
 

@@ -15,9 +15,11 @@ for PLUGIN_FILE in ${plugins}; do
 done
 
 function dev_server () {
-    if grep -qi NXDOMAIN <<<  "${DEV_SERVER=$(host $(whoami).sb | head -n1)}"; then
-        DEV_SERVER="$(echo "${DEV_SERVER}" | awk '{print $NF}' | sed 's/\.$//g')"
+    DEV_SERVER="$(host $(whoami).sb | head -n1 )"
+    if ! grep -qi NXDOMAIN <<< "$DEV_SERVER" ; then
         [[ ${DEV_SERVER} ]] || return 1
-        printf "%s" "${DEV_SERVER}\n"
+        DEV_SERVER="$(echo "${DEV_SERVER}" | awk '{print $NF}' | sed 's/\.$//g')"
+        printf "%s\n" "${DEV_SERVER}"
     fi 
+    [[ ${DEV_SERVER} ]] || return 2
 }

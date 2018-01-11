@@ -5,7 +5,7 @@
 "   :VimColorTest    "(for console/terminal Vim)
 function! VimColorTest(outfile, fgend, bgend)
   let result = []
-  for fg in range(a:fgend)
+  for fg in range(136, a:fgend)
     for bg in range(a:bgend)
       let kw = printf('%-7s', printf('c_%d_%d', fg, bg))
       let h = printf('hi %s ctermfg=%d ctermbg=%d', kw, fg, bg)
@@ -13,9 +13,13 @@ function! VimColorTest(outfile, fgend, bgend)
       call add(result, printf('%-32s | %s', h, s))
     endfor
   endfor
+  call put(result)
   call writefile(result, a:outfile)
   execute 'edit '.a:outfile
   source %
 endfunction
 " Increase numbers in next line to see more colors.
-command! VimColorTest call VimColorTest('vim-color-test.tmp', 1, 256)
+command! VimColorTest call VimColorTest('vim-color-test.tmp', 256, 256)
+
+
+
