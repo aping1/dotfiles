@@ -1,11 +1,5 @@
-#!/usr/bin/env zsh
-# some sanity check
-# setopt xtrace
-
-
-# install .z
-# TOOD: Run vim +BundleInstall +Qall
-
+#!/bin/zsh
+[[ "${_REALPWD="$(realpath ${PWD})"}" == "$(realpath ${HOME})" ]] || printf 'ERROR: pwd should be \${HOME} not \"%s\"' "${_REALPWD}"
 unsetopt function_argzero
 
 # Requerys formst
