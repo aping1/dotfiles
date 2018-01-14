@@ -4,18 +4,6 @@
 [submodule "tpm"]
 	path = deps/tpm
 	url = https://github.com/tmux-plugins/tpm.git
-[submodule "vim-solarized8"]
-	path = deps/vim-solarized8
-	url = https://github.com/lifepillar/vim-solarized8.git
-[submodule "deps/dircolors-solarized"]
-	path = deps/dircolors-solarized
-	url = https://github.com/seebi/dircolors-solarized.git
-[submodule "plug.vim"]
-    path = deps/plug.vim
-	url = https://github.com/junegunn/vim-plug.git
 [submodule "prezto"]
 	path = deps/prezto
 	url = https://github.com/sorin-ionescu/prezto.git
-[submodule "deps/Vundle.vim"]
-	path = deps/Vundle.vim
-	url = https://github.com/VundleVim/Vundle.vim.git
