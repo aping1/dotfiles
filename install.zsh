@@ -38,3 +38,25 @@ ln -s ${DOTFILES}/prezto "${ZDOTDIR:-$HOME}/.zprezto"
 "${DEPFILES}/fonts/install.sh"
 ln -s "${HOME}/Library/Containers/com.hogbaysoftware.TaskPaper3/Data/Library/Application Support/TaskPaper/StyleSheets/solarized_walton.less" "${DOTFILES}/themes/TaskPaper/solarized_walton.less"
 
+# Steps for configuring automagically
+
+mkdir ~/code ~/project
+
+#if [[ $ZSH_IS_USED ]]; then
+#    git clone https://github.com/zsh-users/antigen.git 03-github.zsh-users/antigen
+#    ln -s ~/code/03-github.zsh-users.antigen/antigen ~/.antigen
+#    git clone https://github.com/VundleVim/Vundle.vim.git 04-github.vundlevim.vundle/
+#    mkdir -p ~/.vim/bundle/
+#    ln -s ~/code/04-github.vundlevim.vundle/ ~/.vim/bundle/Vundle.vim
+#    vim +BundleInstall +qall
+#
+#fi
+#
+#===
+## Prezto config
+#
+#git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+#setopt EXTENDED_GLOB
+#for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+#   ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+#done
