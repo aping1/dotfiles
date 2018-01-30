@@ -43,8 +43,8 @@ function _fb_tmux_helper_get_socket() {
 }
 
 function _fb_tmux_helper_session_exists() {
-    : ${SESSION_NAME:="${1:-$(_fb_tmux_helper_get_session)}"}
-	tmux has-session -t "=${SESSION_NAME}" >/dev/null 2>&1
+    local _SESSION_NAME="${1:-$(_fb_tmux_helper_get_session)}"
+	tmux has-session -t "=${_SESSION_NAME}" >/dev/null 2>&1
 }
 
 function _fb_tmux_helper_session_exists_prefix() {
@@ -60,5 +60,29 @@ function _fb_tmux_helper_switch_to_session() {
 
 function _fb_tmux_helper_get_session() {
     tmux display-message -p "#{client_session}"
+}
+
+function _fb_tmux_helper_new_session() {
+    # _fb_tmux_helper_new_session session_name , start dir, _groupname
+    local _SESNAME=${1:-$(_fb_tmux_helper_get_session)}
+    local _COUNT=1 _NEW_SESSION="${_SESNAME#\d*}"
+    local _start_dir=$( [[ ${2} ]] && printf '-c %s' "${2}" )
+    local _group_name="$([[ ${_SESNAME} =~ ^([0-9]+) && ${3} ]] \
+        && printf '-t %s' "${3#[0-9]*}")"
+    [[ ${match[1]} ]] && _COUNT="${match[1]}"
+    while _fb_tmux_helper_session_exists ${_NEW_SESSION}; do
+        _NEW_SESSION="$((_COUNT++))${_SESNAME##\d*}"
+    done
+    tmux -S "$(_fb_tmux_helper_get_socket)" \
+        new-session  -d -s "${_NEW_SESSION}" ${_start} ${_group_name}
+    print '%s' "${_NEW_SESSION}"
+}
+
+function _fb_tmux_helper_clone_session() {
+    local _SESNAME=${1:-$(_fb_tmux_helper_get_session)}
+    _NEW_SESSION=$(_fb_tmux_helper_new_session "${_SESNAME}" "${2}" "${_SESNAME}")
+    if [[ ${_NEW_SESSION} =~ "$(_fb_tmux_helper_get_session)" ]]; then
+        _fb_tmux_helper_switch_to_session "${_NEW_SESSION}"
+    fi
 }
 

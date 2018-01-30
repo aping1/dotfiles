@@ -36,7 +36,6 @@ if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
     )
 elif [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
     echo "Install Homebrew" >&2
-    # add to end of path
 fi
 
 path=(
