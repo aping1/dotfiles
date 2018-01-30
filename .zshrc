@@ -11,48 +11,49 @@ fi
 DOTFILES=$HOME/.dotfiles
 DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 
-## Setup PATH
-# Standard path includes
+# === Setup PATH ===
 
-# PYTHON INCLUDE
-if which python3.5 &>/dev/null; then
-    export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.5/site-packages"
-elif which python3.6 &>/dev/null; then
-    export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.6/site-packages"
-fi
-
-path=(
-    /opt/homebrew/bin
-    /usr/local/{bin,sbin,opt}
-    $path
-)
-# Brew for OSX
-if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
-    # Add to start of path
+if [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
     path=(
-        $(brew --prefix coreutils)/libexec/gnubin
-        $(brew --prefix)/bin/
+        /opt/homebrew/bin
+        /usr/local/{bin,sbin,opt}
         $path
     )
-elif [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
-    echo "Install Homebrew" >&2
+
+    # Brew for OSX
+    if command -v brew &>/dev/null; then
+        # Add to start of path
+        path=(
+            $(brew --prefix coreutils)/libexec/gnubin
+            $(brew --prefix)/bin/
+            $path
+        )
+        # Homebrew
+        # This is one of examples why I want to keep my dotfiles private
+        #export HOMEBREW_GITHUB_API_TOKEN=MY_GITHUB_TOKEN
+        #export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    else
+        echo "Install Homebrew" >&2
+    fi
+
 fi
 
+# My posix paths
 path=(
     $path
     ${DOTFILES}/scripts
     ${HOME}/bin
 )
 
+# Set the new path
 typeset -U path
 
 COMPLETION_WAITING_DOTS="true"
 
-# change the size of history files
-export HISTSIZE=32768;
-export HISTFILESIZE=$HISTSIZE;
 
-# Shell
+# === Shell Options ===
+# Vim mode
+bindkey -v
 export CLICOLOR=1
 export EDITOR='vim'
 export VISUAL='vim'
@@ -60,10 +61,6 @@ export PAGER='less'
 
 export TERM="xterm-256color"
 
-# Homebrew
-# This is one of examples why I want to keep my dotfiles private
-#export HOMEBREW_GITHUB_API_TOKEN=MY_GITHUB_TOKEN
-#export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
 # Autoenv https://github.com/Tarrasch/zsh-autoenv
 # Great plugin to automatically modify path when it sees .env file
@@ -136,7 +133,7 @@ if [ ! $TERM = dumb ]; then
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
-        zgen oh-my-zsh plugins/bower
+        # zgen oh-my-zsh plugins/bower
         zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh plugins/git
         zgen oh-my-zsh plugins/git-extras
@@ -148,11 +145,14 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/tmuxinator
         zgen oh-my-zsh plugins/urltools
         zgen oh-my-zsh plugins/vundle
+        zgen oh-my-zsh plugins/vi-mode
         zgen oh-my-zsh plugins/web-search
         zgen oh-my-zsh plugins/z
-
+        zgen load unixorn/tumult.plugin.zsh
+        zgen load zsh-users/zsh-history-substring-search
+        zgen load zsh-users/zsh-syntax-highlighting
+        zgen load zsh-users/zsh-autosuggestions
         # https://github.com/Tarrasch/zsh-autoenv
-        zgen load Tarrasch/zsh-autoenv
         # https://github.com/zsh-users/zsh-completions
         zgen load zsh-users/zsh-completions src
 
@@ -168,16 +168,10 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/tpm
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        # load https://github.com/bhilburn/powerlevel9k theme for zsh
         zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme next
-        zgen oh-my-zsh plugins/vi-mode
-        # async update vim mode
-        # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
-
-        # zgen load christian-schulze/powerlevel9k powerlevel9k.zsh-theme
 
         # It takes control, so load last
-        zgen load $DOTFILES/plugins/my-tmux
+        # zgen load $DOTFILES/plugins/my-tmux
 
         zgen save
     fi
@@ -186,60 +180,43 @@ if [ ! $TERM = dumb ]; then
     vundle-init
 fi
 
-# specific for machine configuration, which I don't sync
-if [ -f ~/.machinerc ]; then
-    source ~/.machinerc
-fi
-
-## zsh Option
-
+## === zsh Options ===
 ## Auto complete from anywhere in word
 setopt COMPLETE_IN_WORD
-
 ## keep background processes at full speed
 #setopt NOBGNICE
 ## restart running processes on exit
 #setopt HUP
-
-## history
-setopt APPEND_HISTORY
-## for sharing history between zsh processes
-setopt INC_APPEND_HISTORY
-setopt SHARE_HISTORY
-
 ## never ever beep ever
 #setopt NO_BEEP
-
 ## automatically decide when to page a list of completions
 #LISTMAX=0
-
-## disable mail checking
-#MAILCHECK=0
-# if you want red dots to be displayed while waiting for completion
-
-# additional configuration for zsh
+# Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
+#setopt ignoreeof
+# Print the exit value of programs with non-zero exit status.
+#setopt printexitvalue
+#
+#===History Options===
+# change the size of history files
+export HISTSIZE=32768;
+export HISTFILESIZE=$HISTSIZE;
+# sharing history between zsh processes
+setopt APPEND_HISTORY
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
+# Do not share history
+#setopt no_share_history
 # Remove the history (fc -l) command from the history list when invoked.
 # setopt histnostore
 # Remove superfluous blanks from each command line being added to the history list.
 setopt histreduceblanks
 setopt histverify
-# Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
-# setopt ignoreeof
-# Print the exit value of programs with non-zero exit status.
-# setopt printexitvalue
-# Do not share history
-# setopt no_share_history
+#
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
-# Vim mode
-bindkey -v
-# set -o vi
+# load ls colors
 [[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which dircolors &> /dev/null && eval $(dircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
 [[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which gdircolors &> /dev/null && eval $(gdircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
-
-# TMUXINATOR='/Library/Ruby/Gems/2.0.0/gems/tmuxinator-0.8.1/completion/tmuxinator.zsh'
-# [[ -f $TMUXINATOR ]] && source ${TMUXINATOR} || echo "Warning: Could not instatiate tmuxinator"
-
 
 #export LC_CTYPE=en_US.UTF-8
 #export LC_ALL=en_US.UTF-8
@@ -247,20 +224,4 @@ bindkey -v
 # Powerline
 #source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
 #source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
-source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
 #
-# Fix 
-#TRAPWINCH() {
-#    zle && zle .reset-prompt && zle -R
-#}
-bindkey -v
-export FBANDROID_DIR=/Users/aping1/fbsource/fbandroid
-alias quicklog_update=/Users/aping1/fbsource/fbandroid/scripts/quicklog/quicklog_update.sh
-alias qlu=quicklog_update
-
-# added by setup_fb4a.sh
-export ANDROID_SDK=/opt/android_sdk
-export ANDROID_NDK_REPOSITORY=/opt/android_ndk
-export ANDROID_HOME=${ANDROID_SDK}
-export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
-
