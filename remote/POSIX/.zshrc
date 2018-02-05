@@ -164,11 +164,6 @@ if [ ! $TERM = dumb ]; then
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
         zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme next
-        zgen oh-my-zsh plugins/vi-mode
-        # async update vim mode
-        # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
-
-        # zgen load christian-schulze/powerlevel9k powerlevel9k.zsh-theme
 
         # It takes control, so load last
         zgen load $DOTFILES/plugins/my-tmux
@@ -242,18 +237,3 @@ bindkey -v
 #source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
 #source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
 #
-# Fix 
-#TRAPWINCH() {
-#    zle && zle .reset-prompt && zle -R
-#}
-bindkey -v
-export FBANDROID_DIR=/Users/aping1/fbsource/fbandroid
-alias quicklog_update=/Users/aping1/fbsource/fbandroid/scripts/quicklog/quicklog_update.sh
-alias qlu=quicklog_update
-
-# added by setup_fb4a.sh
-export ANDROID_SDK=/opt/android_sdk
-export ANDROID_NDK_REPOSITORY=/opt/android_ndk
-export ANDROID_HOME=${ANDROID_SDK}
-export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
-
