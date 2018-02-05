@@ -37,7 +37,7 @@ function _fb_projects_helper_is_valid_project() {
 
 #  create project directory
 function _fb_projects_helper_get_project_home() {
-    _RET=""
+    local _RET=""
     local _SOMEID _PROJNAME _NEW_TASK
     _fb_projects_helper_project_shortname ${1:-$(_fb_tmux_helper_get_session)} \
         | read _SOMEID _PROJNAME _NEW_TASK
@@ -77,6 +77,7 @@ function _fb_projects_helper_add_task_to_project() {
         return 4
     else
         (
+        trap ':' SIGINT
         TASK_REL="../../tasks"
         cd $(_fb_projects_helper_get_project_home P+${_PROJNAME}) &>/dev/null || exit 1
         # add task link to project
@@ -98,9 +99,10 @@ function _fb_projects_helper_add_task_to_project() {
         mkdir -p "${_VCS_DEST}"
         _PROJECT_VCS_ROOT="$(realpath -e "${_PROJECT_VCS_ROOT}")"
         # Create a new working direcotry if it doesnt exists
-        [[ -e ${_VCS_DEST} && ! -d ${_VCS_DEST}/.hg ]] && \
+        [[ -e ${_VCS_DEST} && ! -d ${_VCS_DEST}/.hg ]] && (\
             /opt/facebook/hg/bin/hg-new-workdir \
                 "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}"
+            )
         # the rel localtion in the workin copy
         DIFF_PATH="${_PROJECT_VCS##"${_PROJECT_VCS_ROOT}"}"
         printf 'project.path=./%s' "${DIFF_PATH#/}" \
@@ -109,7 +111,7 @@ function _fb_projects_helper_add_task_to_project() {
            >> "${_TASK_ROOT_DIR}/.project"
         # TODO: link the project directory in the work directory
         pushd ${_VCS_DEST:h}
-            # ${_PROJNAME}
+            # Create a link to the same rel path as the original
             DOT_PATH=${DIFF_PATH:gs/\//.}
             DOT_PATH=${DOT_PATH#.}
             if [[ -h ${DOT_PATH} ]] ; then
@@ -120,7 +122,10 @@ function _fb_projects_helper_add_task_to_project() {
                return 2
             fi
             ln -s workdir/${DIFF_PATH#/} "${DOT_PATH}"
-            command -v arc && (cd "${DOT_PATH}"; arc feature ${_NEW_TASK};)
+            command -v arc >&2 && (cd "${_VCS_DEST}" &>/dev/null; \
+                if ! hg update ${_NEW_TASK} ; then
+                    hg update master && hg book ${_NEW_TASK}
+                fi )
         popd
 
         printf 'project_dir=%s' "$(pwd -P)" \
