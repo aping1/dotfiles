@@ -1,1 +1,0 @@
-remote/.bash_aliases
