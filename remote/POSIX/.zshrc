@@ -164,11 +164,6 @@ if [ ! $TERM = dumb ]; then
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
         zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme next
-        zgen oh-my-zsh plugins/vi-mode
-        # async update vim mode
-        # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
-
-        # zgen load christian-schulze/powerlevel9k powerlevel9k.zsh-theme
 
         # It takes control, so load last
         zgen load $DOTFILES/plugins/my-tmux
