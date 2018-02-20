@@ -2,18 +2,26 @@
 
 command -v realpath &>/dev/null || return 1
 
-_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
-_tmux_scripts="$(realpath -e ${_local_script%/}/../tmux/scripts)"
+if [[ $0 == /bin/bash ]] ; then
+    _fbtools_tasks_local_script=${HOME}/.dotfiles/plugins/fbtools/tasks
+    exec zsh $_fbtools_tasks_local_script/init.zsh
+else 
+    _fbtools_tasks_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+fi
+if ! [[ ${_fbtools_tasks_local_script} =~ fbtools ]]; then
+    _fbtools_tasks_local_script=${HOME}/.dotfiles/plugins/fbtools/tasks
+fi
+_tmux_scripts="$(realpath -e ${_fbtools_tasks_local_script%/}/../tmux/scripts)"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 
-TASK_REGEX=-?T([0-9][0-9]*)$
-source ${_tmux_scripts}/../helpers.zsh
+TASK_REGEX='-?T([0-9][0-9]*)$'
+[[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../helpers.zsh
 
 : ${TASK_ROOT_DIR:="${HOME}/tasks"}
 export TASK_ROOT_DIR
 : ${TASK_LINK:=${TASK_ROOT_DIR}/current}
 
-_proj_scripts="$(realpath -e ${_local_script%/}/../projects/init.zsh)"
+_proj_scripts="$(realpath -e ${_fbtools_tasks_local_script%/}/../projects/init.zsh)"
 
 function _fb_tasks_helper_list_tasks () {
     find "${TASK_ROOT_DIR}" -maxdepth 1 -regex ".*[PT][0-9].*" \
@@ -29,7 +37,7 @@ function _fb_tasks_helper_is_valid_task () {
 
 function _fb_tasks_helper_is_current_task () {
     local _TASK_ARG=$1
-    if {_fb_tasks_helper_is_valid_task "${_TASK_ARG}" || return 2;} then
+    if _fb_tasks_helper_is_valid_task "${_TASK_ARG}" || return 2; then
         _CURRENT_LINK="$(basename $(realpath -e ${TASK_LINK}))"
         [[ ${_TASK_ARG} == ${_CURRENT_LINK} ]] && return 0
         return 1
@@ -58,24 +66,21 @@ function _fb_tasks_helper_get_current_task () {
 }
 
 function _fb_tasks_helper_task_root {
-    _NEW_TASK=$(basename ${1:-$(current_task)})
+    _NEW_TASK=${1:-$(current_task)}
+    [[  $_NEW_TASK =~ '/' ]] && _NEW_TASK=$(basename ${_NEW_TASK})
     _fb_tasks_helper_is_valid_task ${_NEW_TASK} || return 1
     realpath -e "${TASK_ROOT_DIR%/}/${_CURRENT_LINK}"
 }
 
 function _fb_tasks_helper_set_task () {
-    local _NEW_TASK=$(basename $1)
-    local _tmux_session=$(_fb_tmux_helper_get_session)
-    if [[ ${_NEW_TASK} =~ ${TASK_REGEX} ]]; then
-        _NEW_TASK=T${match[1]}
-    else
-        return 2
-    fi
+    local _NEW_TASK=${1}
+    [[  $_NEW_TASK =~ '/' ]] && _NEW_TASK=$(basename ${_NEW_TASK})
+    _fb_projects_helper_project_shortname ${_NEW_TASK} | read _SOME_ID _PROJNAME _TASK
     (
     [[ -h ${TASK_LINK} ]] && rm ${TASK_LINK%/}
     cd "${TASK_ROOT_DIR:="${HOME}/tasks"}" &>/dev/null
     mkdir "${_NEW_TASK}"
-    ln -s "$(basename ${_NEW_TASK%%/*})" "${TASK_LINK}"
+    ln -s "$(basename ${_NEW_TASK})" "${TASK_LINK}"
     ) &>/dev/null || return
     _fb_tasks_helper_change_session_to_cur_task ${_NEW_TASK}
 }
@@ -94,17 +99,14 @@ fi
 
 function _fb_tasks_helper_change_session_to_cur_task () {
     local _SOMEID _PROJNAME _NEW_TASK
-    local _tmux_session="$(_fb_tmux_helper_get_session)"
-    _fb_projects_helper_project_shortname ${_tmux_session} \
-            | read _SOMEID _PROJNAME _OLD_TASK
-    _NEW_TASK=$(_fb_tasks_helper_get_current_task)
-    _PROJNAME=P+${_PROJNAME:='None'}
+    _fb_projects_helper_project_shortname ${1} \
+            | read _SOMEID _PROJNAME _OLD_TASK || return 2
     : ${_NEW_TASK:=$(_fb_tasks_helper_get_current_task)}
     if _fb_tasks_helper_is_valid_task ${_NEW_TASK}; then
-        if _fb_tmux_helper_session_exists "${_PROJNAME}-${_NEW_TASK#-}"; then
-            bash "${_tmux_scripts%/}/switch_or_loop.sh"  "${_PROJNAME}-${_NEW_TASK#-}" || return 128
+        if _fb_tmux_helper_session_exists "P+${_PROJNAME}-${_NEW_TASK#-}"; then
+            bash "${_tmux_scripts%/}/switch_or_loop.sh"  "P+${_PROJNAME}-${_NEW_TASK#-}" || return 128
         else
-            bash "${_tmux_scripts%/}/new_session.sh"  "${_PROJNAME}-${_NEW_TASK#-}" || return 129
+            bash "${_tmux_scripts%/}/new_session.sh"  "P+${_PROJNAME}-${_NEW_TASK#-}" || return 129
         fi
     fi
     return 2

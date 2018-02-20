@@ -1,12 +1,15 @@
 #!/usr/bin/env zsh
 #
 #
-export _SCRIPT_DIR="$( cd ${SCRIPT_DIR:-"$(dirname "$0")"} &>/dev/null ; pwd -P )"
+_fbtools_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+if [[ $0 == /bin/bash || ! ${_fbtools_local_script} =~ fbtools ]] ; then
+    _fbtools_local_script=""
+fi
 #source "${_SCRIPT_DIR}/tasks/init.zsh"
 
 declare -a plugins
-source "${_SCRIPT_DIR}/utils.zsh"
-plugins=( $(find "${_SCRIPT_DIR}"  -mindepth 2 -name "init.zsh" 2>/dev/null ) )
+source "${_fbtools_local_script:=${HOME}/.dotfiles/plugins/fbtools}/utils.zsh"
+plugins=( $(find "${_fbtools_local_script}"  -mindepth 2 -name "init.zsh" 2>/dev/null ) )
 for PLUGIN_FILE in ${plugins[@]}; do
     #printf "Sourcing ${PLUGIN_FILE}..."
     source "${PLUGIN_FILE}"
@@ -18,9 +21,10 @@ if [ -f /opt/facebook/hg/share/scm-prompt.sh ]; then
   #zstyle ':vcs_info:hg*+set-message:*' hooks scm-prompt
 fi
 
-
+if command -v zstyle &>/dev/null; then
 zstyle ':vcs_info:hg+set-hgrev-format:*' hooks hg-storerev
 #zstyle ':vcs_info:hg+set-message:*' hooks hg-branchhead
+fi
 
 # The hash is available in the hgrev-format hook, store a copy of it in the
 # user_data array so we can access it in the second function

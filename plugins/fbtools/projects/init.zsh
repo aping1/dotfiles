@@ -1,17 +1,28 @@
 #! /usr/local/bin/zsh || /usr/bin/zsh
 
 command -v realpath &>/dev/null || return 2
-_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
-_tmux_scripts="$(realpath -e ${_local_script%/}/../tmux/scripts)"
-_tasks_scripts="$(realpath -e ${_local_script%/}/../tasks/)"
+if [[ $0 == /bin/bash ]] ; then
+    _fbtools_project_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
+    exec zsh $_fbtools_project_local_script/init.zsh
+else
+    _fbtools_project_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+fi
+if ! [[ ${_fbtools_project_local_script} =~ fbtools ]];then 
+    _fbtools_project_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
+fi
+_tmux_scripts="$(realpath -e ${_fbtools_project_local_script%/}/../tmux/scripts)"
+_tasks_scripts="$(realpath -e ${_fbtools_project_local_script%/}/../tasks/)"
+_fbtools_scripts="$(realpath -e ${_fbtools_project_local_script%/}/../)"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 #
+
+source ${_fbtools_scripts}/utils.zsh || return 10
 
 
 PROJECT_RX_SIMP='[_A-Za-z0-9]+'
 PROJECT_RX='P([0-9]*)\+('${PROJECT_RX_SIMP}')'
 
-source ${_tmux_scripts}/../helpers.zsh
+[[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../helpers.zsh
 
 : ${PROJECT_ROOT_DIR:="${HOME}/projects"}
 export PROJECT_ROOT_DIR
@@ -20,9 +31,35 @@ export PROJECT_ROOT_DIR
 
 function _fb_projects_helper_list_projects () {
     find "${PROJECT_ROOT_DIR}" -maxdepth 1 -mindepth 1 -type d \
-        -exec basename {} \; | while read file; do
+        -exec basename {} \; 2>/dev/null | while read file; do
             printf 'P+%s\n' "${file}"
         done 2>/dev/null
+}
+
+function _fb_project_helper_init_project_here () {
+    local CUR_DIR=$(pwd -P)
+    local _NEW_TASK _PROJNAME="P+$(basename ${CUR_DIR})"
+    _fb_projects_helper_is_valid_project "${_PROJNAME}" || return 3
+    [[ -e .envrc && -x "${CUR_DIR}/.venv/${_PROJNAME}/bin/activate" ]] && \
+        return 0
+    _fb_projects_helper_project_shortname $_PROJNAME | read _b _PROJNAME _a || return $?
+    _fb_helper_util_layout_python python3 ${_PROJNAME}
+    _fb_helper_util_layout_python python2 ${_PROJNAME}
+    sed 's/^    //g' > .envrc << _EOF
+    #!/bin/bash
+    [[ -d "${CUR_DIR}/.env/venv" ]] || mkdir -p "${CUR_DIR}/.env/venv"
+    export VENV_DIR="${CUR_DIR}/.env/venv"
+    for _VENV_VERS in \$(find ${CUR_DIR}/.env -ipath /${CUR_DIR#/}/.env/venv/\*/bin/activate ); do
+        [[ \${_VENV_VERS} =~ ${CUR_DIR}/.env/venv/([0-9.]*)-${_PROJNAME}/bin/activate ]] && source "\${_VENV_VERS}"
+        [[ \${BASH_REMATCH} ]] && echo \${BASH_REMATCH[1]} 
+        [[ \${match} ]] && echo \${match[1]}
+        break;
+    done
+_EOF
+    (
+    cd $(realpath -e "${CUR_DIR}") &>/dev/null
+    direnv allow .
+    )
 }
 
 function _fb_projects_helper_is_valid_project() {
@@ -33,6 +70,19 @@ function _fb_projects_helper_is_valid_project() {
         return 0
     fi
     return 1
+}
+
+function _fb_projects_helper_get_project_home() {
+    local _RET=""
+    local _SOMEID _PROJNAME _NEW_TASK
+    _fb_projects_helper_project_shortname ${1:-$(_fb_tmux_helper_get_session)} \
+        | read _SOMEID _PROJNAME _NEW_TASK
+    [[ ${_PROJNAME} ]] || return 4
+    if ! _fb_projects_helper_is_valid_project ${_PROJNAME} ; then
+        [[ ${_RET:=$?} == 2 ]] && return 2
+        mkdir -p "${HOME}/projects/${_PROJNAME}"
+    fi
+    realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
 }
 
 #  create project directory
@@ -48,6 +98,8 @@ function _fb_projects_helper_get_project_home() {
     fi
     realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
 }
+
+alias new_project='_fb_projects_helper_get_project_home'
 
 function _fb_projects_helper_project_shortname() {
     local _PROJNAME=$1 _NEW_TASK=$2
@@ -84,33 +136,41 @@ function _fb_projects_helper_add_task_to_project() {
         if [[ ${TASK_REL} -ef ${TASK_ROOT_DIR} ]]; then
             ln -s "${TASK_REL}/${_NEW_TASK}" 2>/dev/null
         else
-            ln -s "${TASK_ROOT_DIR}/${_NEW_TASK}" 2>/dev/null
+            TASK_REL="${TASK_ROOT_DIR}/${_NEW_TASK}"
+            ln -s ${TASK_REL} 2>/dev/null
         fi
-        _TASK_ROOT_DIR=$(realpath -e "${_NEW_TASK}")
+        _fb_tasks_helper_is_valid_task ${NEW_TASK} || return 4
+        _TASK_ROOT_DIR=$(realpath -e "${TASK_REL%/}/${_NEW_TASK}")
         # Look for root working dir
         _PROJECT_VCS=$(realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME%/}/${_PROJNAME:l}")
         _PROJECT_VCS_ROOT="${_PROJECT_VCS}"
-        while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]] do
+        while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]]; do
             [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' ]] && return 5
             _PROJECT_VCS_ROOT=${_PROJECT_VCS_ROOT:h}
         done
+
         # Create new working dir
         _VCS_DEST="${_TASK_ROOT_DIR}/.workdir"
         mkdir -p "${_VCS_DEST}"
         _PROJECT_VCS_ROOT="$(realpath -e "${_PROJECT_VCS_ROOT}")"
         # Create a new working direcotry if it doesnt exists
         [[ -e ${_VCS_DEST} && ! -d ${_VCS_DEST}/.hg ]] && (\
-            /opt/facebook/hg/bin/hg-new-workdir \
-                "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}"
-            )
-        # the rel localtion in the workin copy
+            if [[ -x /opt/facebook/hg/bin/hg-new-workdir ]]; then
+                _HG_CLONE=/opt/facebook/hg/bin/hg-new-workdir
+            fi
+            #echo "HG COMMAND ${_HG_CLONE:-hg-new-workdir}" \
+            # "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}"
+            ${_HG_CLONE:-hg-new-workdir} "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
+        )
+        # the relitive localtion in the workin copy of the project link
         DIFF_PATH="${_PROJECT_VCS##"${_PROJECT_VCS_ROOT}"}"
+        # save some metadata for later
         printf 'project.path=./%s' "${DIFF_PATH#/}" \
            >> "${_TASK_ROOT_DIR}/.project"
         printf 'project.import=%s' "${DIFF_PATH:gs/\//.}" \
            >> "${_TASK_ROOT_DIR}/.project"
-        # TODO: link the project directory in the work directory
-        pushd ${_VCS_DEST:h}
+        # Move to the task directory
+        pushd "${TASK_ROOT_DIR}/${_NEW_TASK}"
             # Create a link to the same rel path as the original
             DOT_PATH=${DIFF_PATH:gs/\//.}
             DOT_PATH=${DOT_PATH#.}
@@ -121,8 +181,9 @@ function _fb_projects_helper_add_task_to_project() {
                printf "ERROR: diff path \"%s\" exists and is not a link\n" ${DOT_PATH} >&2
                return 2
             fi
-            ln -s workdir/${DIFF_PATH#/} "${DOT_PATH}"
+            ln -s .workdir/${DIFF_PATH#/} "${DOT_PATH}"
             command -v arc >&2 && (cd "${_VCS_DEST}" &>/dev/null; \
+                hg sparse --enable-profile .hgsparse-fbcode
                 if ! hg update ${_NEW_TASK} ; then
                     hg update master && hg book ${_NEW_TASK}
                 fi )
@@ -130,7 +191,7 @@ function _fb_projects_helper_add_task_to_project() {
 
         printf 'project_dir=%s' "$(pwd -P)" \
            >> "${_TASK_ROOT_DIR}/.project"
-        )
+        ) &
         return $?
     fi
 }
@@ -138,7 +199,7 @@ function _fb_projects_helper_add_task_to_project() {
 function _fb_projects_helper_verify_project() {
     local _PROJNAME=${1:-$(_fb_tmux_helper_get_session)}
     (
-        cd $(_fb_projects_helper_get_project_home ${_PROJNAME}) 1>/dev/null
+        cd $(_fb_projects_helper_get_project_home P+${_PROJNAME}) 1>/dev/null
         while read line; do
             _PARAM="" _VAL=""
             if [[ line =~ ^([A-Za-z_][A-Za-z0-9]*)=(.*)#?$ ]]; then
@@ -191,7 +252,14 @@ function _fb_projects_helper_add_project_to_project() {
     fi
 }
 
+function _fb_projects_helper_session_task () {
+    local _SOMEID _PROJNAME _NEW_TASK
+    _fb_projects_helper_project_shortname | read _SOMEID _PROJNAME _NEW_TASK || return 2
+    _fb_tasks_helper_set_task $_NEW_TASK || return 3
+    _fb_projects_helper_add_task_to_project ${_NEW_TASK} P+${_PROJNAME}
+    cd $(_fb_projects_helper_get_project_home P+${_PROJNAME})/${_NEW_TASK}
+}
+
 alias add_task_to_project='_fb_projects_helper_add_task_to_project'
 alias get_project_home='_fb_projects_helper_get_project_home'
-alias go_home='cd $(get_project_home)'
-
+alias session_task_override='_fb_projects_helper_session_task'
