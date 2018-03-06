@@ -15,7 +15,7 @@ _tmux_scripts="$(realpath -e ${_fbtools_tasks_local_script%/}/../tmux/scripts)"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 
 TASK_REGEX='-?T([0-9][0-9]*)$'
-[[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../helpers.zsh
+[[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../init.zsh
 
 : ${TASK_ROOT_DIR:="${HOME}/tasks"}
 export TASK_ROOT_DIR
@@ -136,5 +136,5 @@ function _fb_tasks_helper_set_task_description() {
 alias task_list='_fb_tasks_helper_list_tasks'
 alias cur_task='_fb_tasks_helper_get_current_task'
 alias task_home='[[ -h ${TASK_LINK} ]] && cd $(realpath -e ${TASK_LINK})'
-alias task_from_tmux='_fb_tasks_helper_set_task_from_session_name'
-alias go_to_task='_fb_tasks_helper_change_session_to_cur_task'
+alias set_task_from_session='_fb_tasks_helper_set_task_from_session_name'
+alias goto_task_session='_fb_tasks_helper_change_session_to_cur_task'

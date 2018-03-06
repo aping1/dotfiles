@@ -2,17 +2,17 @@
 
 command -v realpath &>/dev/null || return 2
 if [[ $0 == /bin/bash ]] ; then
-    _fbtools_project_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
-    exec zsh $_fbtools_project_local_script/init.zsh
+    _fbtools_projects_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
+    exec zsh $_fbtools_projects_local_script/init.zsh
 else
-    _fbtools_project_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+    _fbtools_projects_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
 fi
-if ! [[ ${_fbtools_project_local_script} =~ fbtools ]];then 
-    _fbtools_project_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
+if ! [[ ${_fbtools_projects_local_script} =~ fbtools ]];then
+    _fbtools_projects_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
 fi
-_tmux_scripts="$(realpath -e ${_fbtools_project_local_script%/}/../tmux/scripts)"
-_tasks_scripts="$(realpath -e ${_fbtools_project_local_script%/}/../tasks/)"
-_fbtools_scripts="$(realpath -e ${_fbtools_project_local_script%/}/../)"
+_tmux_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../tmux/scripts)"
+_tasks_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../tasks/)"
+_fbtools_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../)"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 #
 
@@ -22,7 +22,7 @@ source ${_fbtools_scripts}/utils.zsh || return 10
 PROJECT_RX_SIMP='[_A-Za-z0-9]+'
 PROJECT_RX='P([0-9]*)\+('${PROJECT_RX_SIMP}')'
 
-[[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../helpers.zsh
+[[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../init.zsh
 
 : ${PROJECT_ROOT_DIR:="${HOME}/projects"}
 export PROJECT_ROOT_DIR
@@ -36,7 +36,7 @@ function _fb_projects_helper_list_projects () {
         done 2>/dev/null
 }
 
-function _fb_project_helper_init_project_here () {
+function _fb_projects_helper_init_projects_here () {
     local CUR_DIR=$(pwd -P)
     local _NEW_TASK _PROJNAME="P+$(basename ${CUR_DIR})"
     _fb_projects_helper_is_valid_project "${_PROJNAME}" || return 3
@@ -65,14 +65,27 @@ _EOF
 function _fb_projects_helper_is_valid_project() {
     local _PROJNAME _id _a
     _fb_projects_helper_project_shortname ${1:-$(_fb_tmux_helper_get_session)} \
-        | read _b _PROJNAME _a || return $?
+        | read _id _PROJNAME _a || return $?
     if _fb_projects_helper_list_projects | grep -q "^P[+]${_PROJNAME}\$" ; then
         return 0
     fi
     return 1
 }
 
-function _fb_projects_helper_get_project_home() {
+function _fb_projects_helper_cd_to_project_home () {
+    local _PROJNAME _id _TASKNAME
+    _fb_projects_helper_project_shortname ${1:-$(_fb_tmux_helper_get_session)} \
+        | read _id _PROJNAME _TASKNAME || return $?
+    local _PROJ_HOME="$(_fb_projects_helper_get_projects_home ${1})"
+    [[ ${_PROJ_HOME} ]] || return 2
+    if [[ ${_TASKNAME} && -h "${_PROJ_HOME%/}/${_TASKNAME}" ]]; then
+        cd "${_PROJ_HOME%/}/${_TASKNAME}"
+    else
+        cd  "${_PROJ_HOME}"
+    fi
+}
+
+function _fb_projects_helper_get_projects_home() {
     local _RET=""
     local _SOMEID _PROJNAME _NEW_TASK
     _fb_projects_helper_project_shortname ${1:-$(_fb_tmux_helper_get_session)} \
@@ -86,7 +99,7 @@ function _fb_projects_helper_get_project_home() {
 }
 
 #  create project directory
-function _fb_projects_helper_get_project_home() {
+function _fb_projects_helper_get_projects_home() {
     local _RET=""
     local _SOMEID _PROJNAME _NEW_TASK
     _fb_projects_helper_project_shortname ${1:-$(_fb_tmux_helper_get_session)} \
@@ -99,14 +112,15 @@ function _fb_projects_helper_get_project_home() {
     realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
 }
 
-alias new_project='_fb_projects_helper_get_project_home'
+alias new_project='_fb_projects_helper_get_projects_home'
 
 function _fb_projects_helper_project_shortname() {
-    local _PROJNAME=$1 _NEW_TASK=$2
+    local _PROJNAME=${1#[0-9]*}  _NEW_TASK=$2
     if [[ ${_PROJNAME} =~ ^${TASK_REGEX:-"T(.*)"}$ ]]; then
         _NEW_TASK="T${match[1]}"
         _PROJNAME="$(_fb_tmux_helper_get_session)"
     fi
+    echo ${_PROJNAME} >&2
     if ! [[ ${_PROJNAME} =~ ^${PROJECT_RX}[-]? ]] ; then
         return 1
     elif [[ ${_PROJNAME} =~ ^${PROJECT_RX}${TASK_REGEX:-"(.*)"} ]]; then
@@ -120,9 +134,10 @@ function _fb_projects_helper_project_shortname() {
 
 function _fb_projects_helper_add_task_to_project() {
     local  _SOMEID _NEW_TASK=$1
-    local _PROJNAME _LONGNAME=${2:-$(_fb_tmux_helper_get_session)} 
-    _fb_projects_helper_project_shortname ${_LONGNAME} ${_NEW_TASK} \
-            | read _SOMEID _PROJNAME _NEW_TASK
+    local _PROJNAME _LONGNAME=${2:-$(_fb_tmux_helper_get_session)}
+    _fb_projects_helper_project_shortname ${_LONGNAME} ${_NEW_TASK} | \
+        read _SOMEID _PROJNAME _NEW_TASK
+    echo $_SOMEID $_PROJNAME $_NEW_TASK
     [[ ${_PROJNAME} ]] || return 1
 
     if ! _fb_projects_helper_is_valid_project "P+${_PROJNAME}-${_NEW_TASK}" >/dev/null; then
@@ -131,7 +146,7 @@ function _fb_projects_helper_add_task_to_project() {
         (
         trap ':' SIGINT
         TASK_REL="../../tasks"
-        cd $(_fb_projects_helper_get_project_home P+${_PROJNAME}) &>/dev/null || exit 1
+        cd $(_fb_projects_helper_get_projects_home P+${_PROJNAME}) &>/dev/null || exit 1
         # add task link to project
         if [[ ${TASK_REL} -ef ${TASK_ROOT_DIR} ]]; then
             ln -s "${TASK_REL}/${_NEW_TASK}" 2>/dev/null
@@ -139,7 +154,7 @@ function _fb_projects_helper_add_task_to_project() {
             TASK_REL="${TASK_ROOT_DIR}/${_NEW_TASK}"
             ln -s ${TASK_REL} 2>/dev/null
         fi
-        _fb_tasks_helper_is_valid_task ${NEW_TASK} || return 4
+        _fb_tasks_helper_is_valid_task ${_NEW_TASK} || return 4
         _TASK_ROOT_DIR=$(realpath -e "${TASK_REL%/}/${_NEW_TASK}")
         # Look for root working dir
         _PROJECT_VCS=$(realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME%/}/${_PROJNAME:l}")
@@ -199,7 +214,7 @@ function _fb_projects_helper_add_task_to_project() {
 function _fb_projects_helper_verify_project() {
     local _PROJNAME=${1:-$(_fb_tmux_helper_get_session)}
     (
-        cd $(_fb_projects_helper_get_project_home P+${_PROJNAME}) 1>/dev/null
+        cd $(_fb_projects_helper_get_projects_home P+${_PROJNAME}) 1>/dev/null
         while read line; do
             _PARAM="" _VAL=""
             if [[ line =~ ^([A-Za-z_][A-Za-z0-9]*)=(.*)#?$ ]]; then
@@ -226,7 +241,7 @@ function _fb_projects_helper_verify_project() {
     )
 }
 
-function _fb_projects_helper_add_project_to_project() {
+function _fb_projects_helper_add_projects_to_project() {
     local  _SOMEID _NEW_TASK=$1
     local _PROJNAME _LONGNAME=${2:-$(_fb_tmux_helper_get_session)} \
     _fb_projects_helper_project_shortname ${_LONGNAME} ${_NEW_TASK} \
@@ -239,7 +254,7 @@ function _fb_projects_helper_add_project_to_project() {
     else
         (
         TASK_REL="../projects"
-        cd $(_fb_projects_helper_get_project_home "P+${_PROJNAME}") &>/dev/null || exit 1
+        cd $(_fb_projects_helper_get_projects_home "P+${_PROJNAME}") &>/dev/null || exit 1
         if [[ ${TASK_REL} -ef ${PROJECT_ROOT_DIR} ]]; then
             ln -s "${TASK_REL}/${_NEW_TASK}" 2>/dev/null
         else
@@ -257,9 +272,10 @@ function _fb_projects_helper_session_task () {
     _fb_projects_helper_project_shortname | read _SOMEID _PROJNAME _NEW_TASK || return 2
     _fb_tasks_helper_set_task $_NEW_TASK || return 3
     _fb_projects_helper_add_task_to_project ${_NEW_TASK} P+${_PROJNAME}
-    cd $(_fb_projects_helper_get_project_home P+${_PROJNAME})/${_NEW_TASK}
+    cd $(_fb_projects_helper_get_projects_home P+${_PROJNAME})/${_NEW_TASK}
 }
 
 alias add_task_to_project='_fb_projects_helper_add_task_to_project'
-alias get_project_home='_fb_projects_helper_get_project_home'
+alias get_projects_home='_fb_projects_helper_get_projects_home'
 alias session_task_override='_fb_projects_helper_session_task'
+alias cd_to_project_home='_fb_projects_helper_cd_to_project_home'
