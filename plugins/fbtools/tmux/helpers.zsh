@@ -1,5 +1,5 @@
 #!/usr/local/env zsh
-export _FB_TMUX_HELPER_H=1
+_FB_TMUX_HELPER_H=1
 #
 # tmux show-option "q" (quiet) flag does not set return value to 1, even though
 # the option does not exist. This function patches that.
