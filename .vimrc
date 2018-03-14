@@ -56,6 +56,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'severin-lemaignan/vim-minimap'
 Plugin 'tpope/vim-scriptease'
+Plugin 'cocoa.vim'
 Plugin 'applescript.vim'
 Plugin 'Tagbar'
 Plugin 'vim-flake8'
@@ -71,6 +72,8 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/ag.vim'
 Plugin 'rizzatti/dash.vim'
 
+Plugin 'LucHermitte/lh-vim-lib'
+Plugin 'LucHermitte/alternate-lite'
 
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'

@@ -1,7 +1,7 @@
 # === Profiling ===
 #if I see that zsh takes to much time to load I profile what has been changed,
 # I want to see my shell ready in not more than 1 second
-PROFILING=${PROFILING:-false}
+PROFILING=${PROFILING:-true}
 if $PROFILING; then
     zmodload zsh/zprof
 fi
@@ -19,6 +19,7 @@ if [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
         /usr/local/{bin,sbin,opt}
         $path
     )
+    export GOPATH=${HOME}/.go/bin
 
     # Brew for OSX
     if command -v brew &>/dev/null; then
@@ -78,13 +79,16 @@ ZSH_TMUX_AUTOQUIT=false
 
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
 export DEFAULT_USER=awampler
+PROMT_SUBST=true
 POWERLEVEL9K_CONTEXT_TEMPLATE="%n@`hostname -f`"
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(ssh vi_mode virtualenv context dir vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status history time)
 POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
-POWERLEVEL9K_DIR_BACKGROUND='238'
-POWERLEVEL9K_DIR_FOREGROUND='252'
+# POWERLEVEL9K_DIR_BACKGROUND='238'
+# POWERLEVEL9K_DIR_FOREGROUND='252'
+POWERLEVEL9K_DIR_BACKGROUND='cyan'
+POWERLEVEL9K_DIR_FOREGROUND='red'
 POWERLEVEL9K_STATUS_BACKGROUND='238'
 POWERLEVEL9K_STATUS_FOREGROUND='252'
 POWERLEVEL9K_CONTEXT_BACKGROUND='240'
@@ -93,6 +97,15 @@ POWERLEVEL9K_TIME_BACKGROUND='238'
 POWERLEVEL9K_TIME_FOREGROUND='252'
 POWERLEVEL9K_HISTORY_BACKGROUND='240'
 POWERLEVEL9K_HISTORY_FOREGROUND='252'
+POWERLEVEL9K_SHOW_CHANGESET=true
+#POWERLEVEL9K_MODE='awesome-fontconfig'
+POWERLEVEL9K_VCS_HG_HOOKS=scm-prompt
+POWERLEVEL9K_VCS_CLEAN_BACKGROUND='240'
+POWERLEVEL9K_VCS_CLEAN_FOREGROUND='252'
+POWERLEVER9k_VCS_ACTIONFORMAT_FOREGROUND='252'
+POWERLEVER9k_VCS_ACTIONFORMAT_BACKGROUND='240'
+
+
 #POWERLEVEL9K_VI_MODE_INSERT_FOREGROUND='teal'
 
 
@@ -166,6 +179,8 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
+        zgen load $DOTFILES/plugins/remote
+        zgen load $DOTFILES/plugins/iterm2
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
         zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme next
@@ -198,8 +213,13 @@ setopt COMPLETE_IN_WORD
 #
 #===History Options===
 # change the size of history files
-export HISTSIZE=32768;
+export HISTSIZE=132768;
 export HISTFILESIZE=$HISTSIZE;
+setopt HIST_FIND_NO_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt HIST_SAVE_NO_DUPS
+
 # sharing history between zsh processes
 setopt APPEND_HISTORY
 setopt INC_APPEND_HISTORY

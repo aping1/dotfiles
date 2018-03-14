@@ -1,1 +1,1 @@
-remote/.bash_profile
+remote/POSIX/.bash_profile
