@@ -2,7 +2,7 @@
 #[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 #if I see that zsh takes to much time to load I profile what has been changed,
 # I want to see my shell ready in not more than 1 second
-PROFILING=${PROFILING:-false}
+PROFILING=${PROFILING:-true}
 if $PROFILING; then
     zmodload zsh/zprof
 fi
@@ -35,8 +35,29 @@ if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
         $(brew --prefix)/bin/
         $path
     )
+<<<<<<< HEAD
 elif [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
     echo "Install Homebrew" >&2
+=======
+    export GOPATH=${HOME}/.go/bin
+
+    # Brew for OSX
+    if command -v brew &>/dev/null; then
+        # Add to start of path
+        path=(
+            $(brew --prefix coreutils)/libexec/gnubin
+            $(brew --prefix)/bin/
+            $path
+        )
+        # Homebrew
+        # This is one of examples why I want to keep my dotfiles private
+        #export HOMEBREW_GITHUB_API_TOKEN=MY_GITHUB_TOKEN
+        #export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    else
+        echo "Install Homebrew" >&2
+    fi
+
+>>>>>>> 98c9b55... Updates
 fi
 
 path=(
@@ -83,6 +104,7 @@ ZSH_TMUX_AUTOQUIT=false
 
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
 export DEFAULT_USER=awampler
+<<<<<<< HEAD
 P9K_CONTEXT_TEMPLATE="%n@$(hostname -s)"
 P9K_PROMPT_ON_NEWLINE=true
 export PYENV_VIRTUALENV_DISABLE_PROMPT=1
@@ -101,6 +123,36 @@ P9K_TIME_FOREGROUND='252'
 P9K_HISTORY_BACKGROUND='240'
 P9K_HISTORY_FOREGROUND='252'
 #P9K_VI_MODE_INSERT_FOREGROUND='teal'
+=======
+PROMT_SUBST=true
+POWERLEVEL9K_CONTEXT_TEMPLATE="%n@`hostname -f`"
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(ssh vi_mode virtualenv context dir vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status history time)
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
+# POWERLEVEL9K_DIR_BACKGROUND='238'
+# POWERLEVEL9K_DIR_FOREGROUND='252'
+POWERLEVEL9K_DIR_BACKGROUND='cyan'
+POWERLEVEL9K_DIR_FOREGROUND='red'
+POWERLEVEL9K_STATUS_BACKGROUND='238'
+POWERLEVEL9K_STATUS_FOREGROUND='252'
+POWERLEVEL9K_CONTEXT_BACKGROUND='240'
+POWERLEVEL9K_CONTEXT_FOREGROUND='252'
+POWERLEVEL9K_TIME_BACKGROUND='238'
+POWERLEVEL9K_TIME_FOREGROUND='252'
+POWERLEVEL9K_HISTORY_BACKGROUND='240'
+POWERLEVEL9K_HISTORY_FOREGROUND='252'
+POWERLEVEL9K_SHOW_CHANGESET=true
+#POWERLEVEL9K_MODE='awesome-fontconfig'
+POWERLEVEL9K_VCS_HG_HOOKS=scm-prompt
+POWERLEVEL9K_VCS_CLEAN_BACKGROUND='240'
+POWERLEVEL9K_VCS_CLEAN_FOREGROUND='252'
+POWERLEVER9k_VCS_ACTIONFORMAT_FOREGROUND='252'
+POWERLEVER9k_VCS_ACTIONFORMAT_BACKGROUND='240'
+
+
+#POWERLEVEL9K_VI_MODE_INSERT_FOREGROUND='teal'
+>>>>>>> 98c9b55... Updates
 
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
@@ -171,7 +223,12 @@ if [ ! $TERM = dumb ]; then
         # zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
+<<<<<<< HEAD
         zgen load $DOTFILES/helpers
+=======
+        zgen load $DOTFILES/plugins/remote
+        zgen load $DOTFILES/plugins/iterm2
+>>>>>>> 98c9b55... Updates
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
@@ -213,12 +270,35 @@ setopt SHARE_HISTORY
 
 ## automatically decide when to page a list of completions
 #LISTMAX=0
+<<<<<<< HEAD
 
 ## disable mail checking
 #MAILCHECK=0
 # if you want red dots to be displayed while waiting for completion
 
 # additional configuration for zsh
+=======
+# Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
+#setopt ignoreeof
+# Print the exit value of programs with non-zero exit status.
+#setopt printexitvalue
+#
+#===History Options===
+# change the size of history files
+export HISTSIZE=132768;
+export HISTFILESIZE=$HISTSIZE;
+setopt HIST_FIND_NO_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt HIST_SAVE_NO_DUPS
+
+# sharing history between zsh processes
+setopt APPEND_HISTORY
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
+# Do not share history
+#setopt no_share_history
+>>>>>>> 98c9b55... Updates
 # Remove the history (fc -l) command from the history list when invoked.
 # setopt histnostore
 # Remove superfluous blanks from each command line being added to the history list.

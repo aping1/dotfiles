@@ -1,0 +1,1 @@
+remote/POSIX/.color.sh

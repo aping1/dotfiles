@@ -8,3 +8,4 @@ TEMPDIR=$(mktemp  "/tmp/$VERSION-XXX".pkglist)
 curl -X GET http://releng.gaikai.org/images/$VERSION.pkglist > $TEMPDIR
 echo $TEMPDIR
 }
+OSA_LIBRARY_PATH=/Users/aping1/.dotfiles/scripts/libs
