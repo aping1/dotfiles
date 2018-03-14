@@ -3,7 +3,13 @@
 # These are the commands available in an .envrc context
 #
 set -e
-direnv="/usr/local/Cellar/direnv/2.13.1/bin/direnv"
+if [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
+    direnv="/usr/local/Cellar/direnv/2.13.1/bin/direnv"
+else
+    direnv=$(which direnv)
+    [[ "${direnv}" ]] || return 3
+fi
+
 
 # Config, change in the direnvrc
 DIRENV_LOG_FORMAT="${DIRENV_LOG_FORMAT-direnv: %s}"
