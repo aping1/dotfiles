@@ -19,28 +19,31 @@ for file in ${=dotfiles}; do
     ln -s "${DOTFILES}/$(basename $file)" &>/dev/null && printf 'Created Link for \"%s\"' "${file}"
 done
 
-
-# Do special to sync sublime settings on OS X
-if [[ "$OSTYPE" =~ "darwin" && -d '~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User' ]]; then
-  rm ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User
-  ln -s ~/.dotfiles/settings/SublimeText/User ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/User
-fi
-
 ln -s ${DOTFILES}/prezto "${ZDOTDIR:-$HOME}/.zprezto"
 
-# install powerline fonts
-~/.dotfiles/powerline-fonts/install.sh
 
 # TODO: Install vim-solarized8
 # TODO: Install https://github.com/gabrielelana/awesome-terminal-fonts 
 # TODO: Install .zpreztorc
 
+# Font installd
+# install powerline fonts
+~/.dotfiles/powerline-fonts/install.sh
 "${DEPFILES}/fonts/install.sh"
+
+# Solarize Taskpaper
 ln -s "${HOME}/Library/Containers/com.hogbaysoftware.TaskPaper3/Data/Library/Application Support/TaskPaper/StyleSheets/solarized_walton.less" "${DOTFILES}/themes/TaskPaper/solarized_walton.less"
 
-# Steps for configuring automagically
-
-mkdir ~/code ~/project
+# Insstall .chunkwm
+install_chunkwm () {
+    if which brew && chunkwm $(brew services list) =~ chunkwm ]] ; then
+        brew tap crisidev/homebrew-chunkwm
+        brew install chunkwm
+    fi
+    # /usr/local/opt/chunkwm/share/chunkwm/examples/chunkwmrc
+    ln -s ${DOTFILES}/.chunkwmrc ${HOME}/.chunkwmrc
+}
+install_chunkwm
 
 #if [[ $ZSH_IS_USED ]]; then
 #    git clone https://github.com/zsh-users/antigen.git 03-github.zsh-users/antigen
