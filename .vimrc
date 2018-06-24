@@ -53,6 +53,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 " set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 
 call vundle#begin()
+Plugin 'tmux-plugins/vim-tmux'
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'flazz/vim-colorschemes'
 "Plugin 'severin-lemaignan/vim-minimap'
@@ -72,6 +73,7 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/ag.vim'
 Plugin 'rizzatti/dash.vim'
+Plugin 'christoomey/vim-tmux-navigator'
 
 
 Plugin 'godlygeek/tabular'
