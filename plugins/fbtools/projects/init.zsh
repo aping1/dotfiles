@@ -145,7 +145,7 @@ function _fb_projects_helper_add_task_to_project() {
         return 4
     else
         (
-        setopt xtrace
+        #setopt xtrace
         trap ':' SIGINT
         TASK_REL="../../tasks"
         cd $(_fb_projects_helper_get_projects_home P+${_PROJNAME}) &>/dev/null || exit 1
@@ -168,47 +168,59 @@ function _fb_projects_helper_add_task_to_project() {
                 _PROJECT_VCS_ROOT=${_PROJECT_VCS_ROOT:h}
             done
             # get the name of the root repo dir
-            DIFF_ROOT="${_PROJECT_VCS_ROOT:t}"
-            [[ ${DIFF_ROOT} ]] && DIFF_ROOT="-${DIFF_ROOT}"
+            REPO_NAME="${_PROJECT_VCS_ROOT:t}"
+            [[ ${REPO_NAME} ]] && REPO_NAME="-${REPO_NAME}"
 
             # Create new working dir
-            _VCS_DEST="${_TASK_ROOT_DIR}/.workdir${DIFF_ROOT}"
-            mkdir -p "${_VCS_DEST}"
-            _PROJECT_VCS_ROOT="$(realpath -e "${_PROJECT_VCS_ROOT}")"
-            # Create a new working direcotry if it doesnt exists
-            [[ -e ${_VCS_DEST} && ! -d ${_VCS_DEST}/.hg ]] && (\
-                if [[ -x /opt/facebook/hg/bin/hg-new-workdir ]]; then
-                    _HG_CLONE=/opt/facebook/hg/bin/hg-new-workdir
-                fi
-                #echo "HG COMMAND ${_HG_CLONE:-hg-new-workdir}" \
-                # "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}"
-                ${_HG_CLONE:-hg-new-workdir} "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
-            )
+            _VCS_DEST="${_TASK_ROOT_DIR}/.workdir${REPO_NAME}"
+            if ! [[ -d ${_VCS_DEST} ]]
+                mkdir -p "${_VCS_DEST}"
+                _PROJECT_VCS_ROOT="$(realpath -e "${_PROJECT_VCS_ROOT}")"
+                # Create a new working direcotry if it doesnt exists
+                [[ -e ${_VCS_DEST} && ! -d ${_VCS_DEST}/.hg ]] && (\
+                    printf '\n### CLONING HG DIR %s -> %s ###\n' \
+                        "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}"
+                    if [[ -x /opt/facebook/hg/bin/hg-new-workdir ]]; then
+                        _HG_CLONE=/opt/facebook/hg/bin/hg-new-workdir
+                    fi
+                    ${_HG_CLONE:-hg-new-workdir} "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
+                )
             # the relitive localtion in the workin copy of the project link
             DIFF_REPO="$(realpath -e ${repo})"
-            DIFF_PATH="${DIFF_REPO##"${_PROJECT_VCS_ROOT}"}"
+            declare -a DIFF_PATH=("${(s./.)DIFF_REPO##${_PROJECT_VCS_ROOT}}")
+            shift DIFF_PATH
             # save some metadata for later
-            printf 'project.path[%s]=./%s' "${DIFF_ROOT}" "${DIFF_PATH#/}" \
-            >> "${_TASK_ROOT_DIR}/.project"
-            printf 'project.import=%s' "${DIFF_PATH:gs/\//.}" \
-            >> "${_TASK_ROOT_DIR}/.project"
+            printf 'project.path[%s]=./%s\n' "${DIFF_PATH[0]}" "${(j:.:)DIFF_PATH}" \
+                >> "${_TASK_ROOT_DIR}/.project"
+            printf 'project.import=%s\n' "${(j:.:)DIFF_PATH}" \
+                >> "${_TASK_ROOT_DIR}/.project"
             # Move to the task directory
             pushd "${TASK_ROOT_DIR}/${_NEW_TASK}"
+                [[ -h ${REPO_NAME#-} ]] || ln -s .workdir${REPO_NAME} "${REPO_NAME#-}"
                 # Create a link to the same rel path as the original
-                DOT_PATH=${DIFF_PATH:gs/\//.}
+                DOT_PATH=${(j:.:)DIFF_PATH#.}
                 DOT_PATH=${DOT_PATH#.}
-                if [[ -h ${DOT_PATH} ]] ; then
-                printf "WARN: diff path \"%s\" exists; deleting link\n" ${DOT_PATH} >&2
-                rm ${DOT_PATH}
-                elif [[ -e ${DOT_PATH} ]] ; then
-                printf "ERROR: diff path \"%s\" exists and is not a link\n" ${DOT_PATH} >&2
-                return 2
+                echo ${_BUCK_VCS_ROOT} ${DOT_PATH} ${(j:/:)DIFF_PATH}
+                if [[ ${DOT_PATH} ]]; then
+                    if [[ -h ${DOT_PATH} ]] ; then
+                        printf "WARN: diff path \"%s\" exists; deleting link\n" ${DOT_PATH} >&2
+                        rm ${DOT_PATH}
+                    elif [[ -e ${DOT_PATH} ]] ; then
+                        printf "ERROR: diff path \"%s\" exists and is not a link\n" ${DOT_PATH} >&2
+                    else
+                        # link to the same rel path as our main link
+                        ln -vs .workdir${REPO_NAME}/${(j./.)DIFF_PATH} "${DOT_PATH}"
+                        # link to buck
+                        _BUCK_VCS_ROOT="$(realpath -e "${repo}")"
+                        while ! [[ -e "${_BUCK_VCS_ROOT%/}/.buckconfig" ]]; do
+                            [[ "${_BUCK_VCS_ROOT}" -ef "${HOME}" || "${_BUCK_VCS_ROOT}" -ef '/' ]] && { _NOPE=1; break; }
+                            _BUCK_VCS_ROOT=${_BUCK_VCS_ROOT:h}
+                        done
+                        [[ -e ${_BUCK_VCS_ROOT}/.buckconfig ]] && \
+                        ln -vs .workdir${REPO_NAME}/${DIFF_PATH[1]}/buck-out/gen/${(j./.)DIFF_PATH[2,-1]} "buck.${DOT_PATH}"
+                   fi
                 fi
-                # link to the same rel path as our main link
-                ln -s .workdir${DIFF_ROOT} "${DIFF_ROOT#-}"
-                ln -s .workdir${DIFF_ROOT}/${DIFF_PATH#/} "${DOT_PATH}"
-                ln -s .workdir${DIFF_ROOT}/buck-out/gen/${DIFF_PATH#/} "buck.${DOT_PATH}"
-                [[ ${DIFF_ROOT} =~ fbsource ]] || command -v arc >&2 \
+                [[ ${REPO_NAME} =~ fbsource ]] || command -v arc >&2 \
                     && (cd "${_VCS_DEST}" &>/dev/null; \
                     hg sparse --enable-profile .hgsparse-fbcode
                 if ! hg update ${_NEW_TASK} ; then
@@ -220,8 +232,8 @@ function _fb_projects_helper_add_task_to_project() {
         printf 'project_dir=%s' "$(pwd -P)" \
            >> "${_TASK_ROOT_DIR}/.project"
 
-        unsetopt xtrace
-        ) 
+        #unsetopt xtrace
+        )
         return $?
     fi
 }
