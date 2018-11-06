@@ -219,26 +219,6 @@ setopt COMPLETE_IN_WORD
 # Print the exit value of programs with non-zero exit status.
 #setopt printexitvalue
 #
-#===History Options===
-# change the size of history files
-export HISTSIZE=132768;
-export HISTFILESIZE=$HISTSIZE;
-setopt HIST_FIND_NO_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_REDUCE_BLANKS
-setopt HIST_SAVE_NO_DUPS
-
-# sharing history between zsh processes
-setopt APPEND_HISTORY
-setopt INC_APPEND_HISTORY
-setopt SHARE_HISTORY
-# Do not share history
-#setopt no_share_history
-# Remove the history (fc -l) command from the history list when invoked.
-# setopt histnostore
-# Remove superfluous blanks from each command line being added to the history list.
-setopt histreduceblanks
-setopt histverify
 #
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
@@ -253,3 +233,28 @@ setopt histverify
 #source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
 #source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
 #
+#===History Options===
+# change the size of history files
+export HISTSIZE=132768;
+export HISTFILESIZE=$HISTSIZE
+# skip over repeating histor
+setopt HIST_FIND_NO_DUPS
+# remove previosu commdn from history
+# setopt HIST_IGNORE_ALL_DUPS 
+setopt HIST_REDUCE_BLANKS
+setopt HIST_SAVE_NO_DUPS
+# stage autocomlettion
+export HIST_VERIFY
+
+# sharing history between zsh processes
+# and dont wait to write history
+setopt INC_APPEND_HISTORY 
+# setopt SHARE_HISTORY
+# Do not share history
+#setopt no_share_history
+# Remove the history (fc -l) command from the history list when invoked.
+# setopt histnostore
+# Remove superfluous blanks from each command line being added to the history list.
+# Store commented lines
+setopt interactivecomments
+#=== END History OPTIONS ===
