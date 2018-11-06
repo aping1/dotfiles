@@ -54,6 +54,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 
 call vundle#begin()
 Plugin 'tmux-plugins/vim-tmux'
+Plugin 'javascript.vim'
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'flazz/vim-colorschemes'
 "Plugin 'severin-lemaignan/vim-minimap'

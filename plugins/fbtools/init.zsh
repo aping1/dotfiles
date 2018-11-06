@@ -63,6 +63,7 @@ export ANDROID_NDK_REPOSITORY=/opt/android_ndk
 export ANDROID_HOME=${ANDROID_SDK}
 export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
 
+export ADMIN_SCRIPTS=/mnt/vol/engshare/admin/scripts/
 
 function update_iterm_title () {
     _iterm_hooks_rename_both "$(_fb_tmux_helper_get_session)"
