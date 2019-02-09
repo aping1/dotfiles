@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 # some sanity check
- setopt xtrace
+# setopt xtrace
 
 
 
@@ -59,11 +59,9 @@ install_zprezto () {
 
 ## using .dotfiles
 echo ${PWD}
-_TMPR=$(mktemp /tmp/tmp_scripts_XXXX || echo ./this_tmp.tmp)
-_TMPF=$(mktemp /tmp/tmp_diff_XXXX || echo ./this_tmp.tmp)
+_TMPR=$(mktemp /tmp/tmp_scripts_XXXX || echo ./temp_script.tmp)
+_TMP_DIFF=$(mktemp /tmp/tmp_diff_XXXX || echo ./temp_diff.tmp)
 printf '#!/usr/bin/env bash\n' >>${_TMPR}
-printf -- 'git apply -p6 --reject %s || exit 1\n' "${_TMPF}"  >>${_TMPR}
-printf 'cd $HOME\n ' >>${_TMPR}
 
 sed -r 's/#.*$//g' ${DOTFILES%/}/.dotfiles | sed '/^$/d;'  | while read GLOB DEST; do
 	[[ ${_DEBUG} ]] && printf 'DOTFILES: %s GLOB: %s DEST: %s\n' "${DOTFILES%/}"  "${GLOB}"  "${DEST}"  >&2
@@ -74,22 +72,30 @@ sed -r 's/#.*$//g' ${DOTFILES%/}/.dotfiles | sed '/^$/d;'  | while read GLOB DES
 	else
 		ls -l ${DOTFILES%/}/${GLOB} | awk '{print $NF}' | \
 			while read this; do
-				rel_this="${this##"${HOME}/"}"
+				unsetopt xtrace
+				rel_this="${this##"${PWD}/"}"
 				DEST=${HOME%/}/${DEST:-${rel_this:t}}
-				[[ ${DEST} ]] && printf 'Failed to install %s %s: exists\n' "${DOTFILES%/}/${GLOB%/}" "${DEST}" >&2
 				if [[ -e $DEST ]] ; then
 				   # If the same or link then rm
-			   	   if [[ -h ${DEST} ]] || cmp -s "${HOMe%/}/${rel_this}" "${DEST}" ; then
-				     # a link exists at dest or they are identical
-				     echo "[No-op] ${DEST} ${HOME%/}/${rel_this}"  >&2
-				   else 
-				     # otherwise ${DEST} exists
-				     #diff -ud "${this}" "${DEST}" | sed 's/-[^-](.*)/ $1/g' |  grep '^\(+\|$\|\ \|--\)' >> "${_TMPF}" 
-				     diff -ud "${this}" "${DEST}" >> "${_TMPF}" 
-				      printf 'Failed to install %s %s: exists\n' "${DOTFILES%/}/${GLOB%/}" "${DEST}" >&2
-			   	 	printf -- 'rm -i %s\n' "${DEST}"
+				   setopt xtrace
+			   	   if [[ -h ${DEST} ]]; then
+				     # echo "[No-op] ${DEST} ${HOME%/}/${rel_this}"  >&2
+				     continue 
+				   elif cmp -s "${this}" "${DEST}" ; then
+				     # they are identical, remove the bad one
+				     printf -- 'rm -i %s' "${DEST}"
+				   elif [[ -f ${DEST} ]]; then
+					printf '%s vs %s\n' ${rel_this} ${rel_this:t} >&2
+				     diff -wud ${rel_this} ../${rel_this:t} >> "${_TMP_DIFF}-${rel_this:t}"  
+				     printf -- 'cd %s && git apply -p1 -R %s || exit 1\n' "${DOTFILES}"  "${_TMP_DIFF}-${rel_this:t}"  
+				     printf -- '( cd %s; git diff HEAD -- %s; printf "Revert[Y/n]?" && read -n 1 e; if [[ ${e} =~ [yY] ]]; then git checkout HEAD  -- %s; else rm -i %s; fi)\n' "${DOTFILES}" "${this}" "${this}" "${DEST}"
 				     continue
+				   else
+				     printf 'Failed to install %s %s: Unknown filetype\n' "${DOTFILES%/}/${GLOB%/}" "${DEST}" >&2
 			           fi
+			   	   if ! [[ -h ${DEST} ]]; then
+				     #printf 'Failed to install %s %s: exists\n' "${DOTFILES%/}/${GLOB%/}" "${DEST}" >&2
+				   fi
 				fi
 				## Doing it
 				echo ln -sv "${rel_this}" "$( if [[ "${DEST}" ]] ; then printf '%s' "${DEST:a}"; fi )" 
@@ -97,11 +103,8 @@ sed -r 's/#.*$//g' ${DOTFILES%/}/.dotfiles | sed '/^$/d;'  | while read GLOB DES
 	fi
 done >> "${_TMPR}"
 
-if [[ ! -s ${_TMPF} ]]; then
-    printf 'Empty file %s\n' "${_TMPF}"
-    [[ ${_TMPF:t} =~ ^tmp_ && ! ${NOCLEAN:="N"} =~ [Yy] ]] && rm ${_TMPF} 
-else	
-	cat ${_TMPF}
+if ls ${_TMP_DIFF}*; then
+	cat ${_TMP_DIFF}*
 	echo '##############'
 	cat ${_TMPR}
 	exec bash -x "${_TMPR}" || echo "$?"
