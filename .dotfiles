@@ -1,0 +1,104 @@
+# .dotfiles config
+# create a list of all files that should be managed by this, one glob per line, 
+# Profile
+
+# $PWD ./.dotfiles <- Create ˜/.dotfiles || ln -s ${PWD} ˜/.dotfiles
+
+.zprofile 
+.zsh_aliasses
+.zpreztorc
+.zshrc
+deps/zgen .zgen
+
+deps/tpm .tmux/plugins/tpm
+
+# tmux 
+.tmux.conf
+
+# vim/colors/*
+# env_template.sh
+
+# Vim
+.vimrc
+deps/Vundle.vim .vim/Vundle.vim
+vim-solarized8 .vim/colors/vim-solarized8
+
+
+# Globals/Ignore
+.gitconfig
+.global_gitignore
+.gitignore_global
+.gitignore
+
+.zsh_aliases
+
+# zpython.zsh
+.gdbinit
+
+
+# tmux/zoom
+# tmux/helpers/powerline-helper.zsh
+
+# tools/*
+
+# ./install.zsh
+# Helpers
+#
+# helpers/of-helpers.plugins.zsh
+# helpers/inventory.helper.zsh
+# helpers/zpyton.plugin.zsh
+# helpers/emerge-helpers.plugin.zsh
+# helpers/pip-helpers.zsh
+# helpers/ssh-agent.helper.sh
+# helpers/vmware-fushion.helper.zsh
+
+# Plugins
+# plugins/my-tmux/*
+# plugins/bootstrap/*
+# plugins/direnv/*
+# plugins/tpm/*
+# plugins/urltools/*
+# plugins/aliases/*
+# plugins/softlinks/*
+# plugins/pyenv/*
+# plugins/fbtools/tmux/*
+# plugins/fbtools/**
+# plugins/dotfiles/**/*.zsh
+# plugins/queues/**/*.zsh
+
+# Remote
+# remote/.zshrc
+# remote/.bash_profile
+# remote/.tmux.conf
+# remote/.bash_aliases
+# remote/man.conf
+# remote/.gdbinit
+# remote/.bash_plugins/aliases/init.sh
+# remote/redhat/bash_profile
+# remote/redhat/bash_aliases
+# remote/redhat/.bash_profile
+# remote/redhat/.bash_aliases
+# remote/bootstrap.sh
+# remote/.vimrc
+
+# Dumb scripts
+# scripts/clusterssh-dev
+# scripts/[OF]\ SendOutlookToOmniFocus2\cO.scptd
+# scripts/Hazel/
+# scripts/padd_ag.vim
+
+# powerline ˜/.config/powerline_config
+powerline_config ./.config/powerline_config
+
+# Scripts
+#vsheild-disable
+
+# Docs
+# STEPS
+# readme.md
+
+# Ipython (vim enabled)
+# ipython/profile_default/ipython_config.py
+# ipython/profile_default/startup/README
+# ipython/profile_default/db/dhist
+
