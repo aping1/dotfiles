@@ -84,7 +84,7 @@ Plugin 'vim-scripts/pdbvim'
 Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 " Local Shortccuts
-Plugin 'file://.dotfiles/vim/colorscheme'
+Plugin 'file:///home/aping1/.dotfiles/vim/colorscheme'
 
 " uses pygtk
 " A simple color picker for VIM, based on GTK color chooser dialog.
