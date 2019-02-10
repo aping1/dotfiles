@@ -14,15 +14,14 @@ DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 ## Setup PATH
 # Standard path includes
 
-# PYTHON INCLUDE
-if which python3.5 &>/dev/null; then
-    export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.5/site-packages"
-elif which python3.6 &>/dev/null; then
-    export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.6/site-packages"
-fi
+# # PYTHON INCLUDE
+# if which python3.5 &>/dev/null; then
+#     export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.5/site-packages"
+# elif which python3.6 &>/dev/null; then
+#     export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.6/site-packages"
+# fi
 
 path=(
-    /opt/homebrew/bin
     /usr/local/{bin,sbin,opt}
     $path
 )
@@ -137,8 +136,8 @@ if [ ! $TERM = dumb ]; then
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
-        zgen oh-my-zsh plugins/bower
-        zgen oh-my-zsh plugins/brew
+        # zgen oh-my-zsh plugins/bower
+        # zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh plugins/git
         zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
@@ -248,7 +247,7 @@ bindkey -v
 # Powerline
 #source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
 #source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
-source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
+#source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
 #
 # Fix 
 #TRAPWINCH() {
@@ -265,3 +264,6 @@ export ANDROID_NDK_REPOSITORY=/opt/android_ndk
 export ANDROID_HOME=${ANDROID_SDK}
 export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
 
+# Lines configured by zsh-newuser-install
+setopt extendedglob nomatch
+# End of lines configured by zsh-newuser-install
