@@ -21,7 +21,7 @@ source ${_fbtools_scripts}/utils.zsh || return 10
 
 
 PROJECT_RX_SIMP='[_A-Za-z0-9]+'
-PROJECT_RX='P([0-9]*)\+('${PROJECT_RX_SIMP}')'
+PROJECT_RX='\d*P([0-9]*)\+('${PROJECT_RX_SIMP}')'
 
 [[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../init.zsh
 
@@ -103,40 +103,56 @@ function _fb_projects_helper_get_projects_home() {
 
 function _fb_projects_helper_project_shortname() {
     local _PROJNAME=${1#[0-9]*}  _NEW_TASK=$2
-    if [[ ${_PROJNAME} =~ ^${TASK_REGEX:-"T(.*)"}$ ]]; then
-        _NEW_TASK="T${match[1]}"
-        _PROJNAME="$(_fb_tmux_helper_get_session)"
-    fi
-    if ! [[ ${_PROJNAME} =~ ^${PROJECT_RX}[-]? ]] ; then
+    # the case where ends with a task
+    printf '%s == %s \n' "${_PROJNAME}" "${TASK_REGEX:-"(\w)(\d+)$"}" >&2
+    if [[ ${_PROJNAME} =~ ${TASK_REGEX:-"(\w)(\d+)$"} ]]; then
+        # is this inheritance? |_//// 0^0
+        _NEW_TASK="${_NEW_TASK:-"$(_fb_tasks_helper_task_shortname $*)"}"
+        _PROJNAME="${_PROJECTNAME:-$(_fb_tmux_helper_get_session)}"
+    elif ! [[ ${_PROJNAME} =~ ^${PROJECT_RX}[-]? ]] ; then
+        # doesnt contain a project
         return 1
-    elif [[ ${_PROJNAME} =~ ^${PROJECT_RX}${TASK_REGEX:-"(.*)"} ]]; then
-        _NEW_TASK="${_NEW_TASK:-$match[3]}"
-        _NEW_TASK="T${_NEW_TASK#T}"
     fi
-    _PROJNAME=$match[2]
-    _SOMEID=${_SOMEID:-$match[1]}
-    printf '%s %s %s\n' "${_SOMEID:-"None"}" "${_PROJNAME:-"None"}" "${_NEW_TASK}"
+    if [[ ${_PROJNAME} =~ ^${PROJECT_RX}${TASK_REGEX:-"(\w)(\d+)"} ]]; then
+        _NEW_TASK="${_NEW_TASK:-"$(_fb_projects_helper_project_shortname)"}"
+        _PROJNAME=${match[2]}
+        _SOMEID=${_SOMEID:-$match[1]}
+    else
+    fi
+    printf '%s %s %s\n' "${_SOMEID:-"None"}"h "${_PROJNAME:-"None"}" "${_NEW_TASK}"
 }
 
 function _fb_projects_helper_add_task_to_project() {
+    if [[ ${DRYRUN} || ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
+        export DEBUG=Y
+        alias ln='echo'
+    fi
+    if [[ ${DEBUG} =~ ^[Yy](es$|$) ]]; then
+        setopt xtrace
+        trap 'unsetopt xtrace' EXIT SIGTERM SIGHUP
+    fi
     local  _SOMEID _NEW_TASK=$1
     local _PROJNAME _LONGNAME=${2:-$(_fb_tmux_helper_get_session)}
     _fb_projects_helper_project_shortname ${_LONGNAME} ${_NEW_TASK} 2>/dev/null | \
         read _SOMEID _PROJNAME _NEW_TASK
     printf 'Adding %s to project %s (id %s)\n' "$_NEW_TASK" "$_PROJNAME" "$_SOMEID"
     [[ ${_PROJNAME} ]] || return 1
-
     if _fb_projects_helper_is_valid_project "P+${_PROJNAME}-${_NEW_TASK}" >/dev/null; then
         (
-        [[ ${DEBUG} ]] && setopt xtrace
+        [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]] && alias ln='echo'
+        if [[ ${DEBUG} =~ ^[Yy](es$|$) ]]; then
+            setopt xtrace
+            trap 'unsetopt xtrace' EXIT SIGTERM SIGHUP
+        fi
         TASK_REL="../../tasks"
         # add task link to project
         if ! [[ ${TASK_REL} -ef ${TASK_ROOT_DIR} ]]; then
             # use relative link
             TASK_REL="${TASK_ROOT_DIR}"
+            TASK_ABS="${TASK_ROOT_DIR:A}"
         fi
         # go to project home based on the project name
-        cd $(_fb_projects_helper_get_projects_home "P+${_PROJNAME}") &>/dev/null || exit 1
+        # cd $(_fb_projects_helper_get_projects_home "P+${_PROJNAME}") &>/dev/null || exit 1
         _TASK_ROOT_DIR=$(realpath -e "${TASK_REL%/}/${_NEW_TASK}")
         [[ ${_TASK_ROOT_DIR} ]] && \
             printf 'task.root[%s]=exists\n' "$(pwd -P)${TASK_REL%/}${_NEW_TASK}" >>"${_TASK_ROOT_DIR}/.project" \
@@ -175,15 +191,19 @@ function _fb_projects_helper_add_task_to_project() {
                 [[ -e ${_VCS_DEST} && ! -d ${_VCS_DEST}/.hg ]] && (\
                     printf '\n### CLONING HG DIR %s -> %s ###\n' \
                         "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" >&2
+                    # set eden or hg-new-workdir
                     if [[ -x /usr/local/bin/eden ]]; then
                         _HG_CLONE="/usr/local/bin/eden clone"
                     elif [[ -x /opt/facebook/hg/bin/hg-new-workdir ]]; then
                         _HG_CLONE=/opt/facebook/hg/bin/hg-new-workdir
                     fi
+                    # Timeout for 5 min
                     TIMEOUT="timeout 300"
                     printf '[INFO] Command to run: %s\n' "${TIMEOUT} ${_HG_CLONE:-echo} ${_PROJECT_VCS_ROOT} ${_VCS_DEST}" >&2
-                    eval ${TIMEOUT} ${_HG_CLONE:-hg-new-workdir} \
-                        "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
+                    if [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
+                        eval ${TIMEOUT} ${_HG_CLONE:-hg-new-workdir} \
+                            "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
+                    fi
                 )
             fi
             # the relitive localtion in the workin copy of the project link
@@ -229,7 +249,7 @@ function _fb_projects_helper_add_task_to_project() {
                         if [[ ${#_INT_DIFF} -le 1 ]]; then
                             ln -vs .workdir${REPO_NAME}/buck-out/gen/${(j./.)DIFF_PATH[2,-1]} "buck-${DOT_PATH}" &>/dev/null
                         else
-                            ln -vs .workdir${REPO_NAME}/${(0j:/:)_INT_DIFF[1,-2]}/buck-out/gen/${(j./.)DIFF_PATH[2,-1]} "buck-${(0j:.:)_INT_DIFF[1,-2]}-${DOT_PATH}" &>/dev/null
+                            ln -vs .workdir${REPO_NAME}/${(0j:/:)_INT_DIFF[1,-2]}/buck-out/gen/${(j./.)DIFF_PATH[2,-1]} "buck-${(0j:.:)_INT_DIFF}-${DOT_PATH}" &>/dev/null
                         fi
                     fi
                 fi
@@ -249,13 +269,32 @@ function _fb_projects_helper_add_task_to_project() {
             ##### pop
             popd &>/dev/null
         done
-
-
-        [[ ${DEBUG} ]] && unsetopt xtrace
         )
         return $?
     fi
     return 4
+}
+
+function _fb_project_helper_clean_task() {
+        tasks summary $1 2>/dev/null | awk '/CLOSED/{print $1,$4}' | read TASK STATUS
+        if [[ $STATUS == "CLOSED" ]]; then
+            read -q "REPLY?Are you sure you want to clean $1?[Y/n]"
+            echo
+            if [[ $REPLY =~ ^[nN]$ ]]; then
+                return 0
+            fi
+            echo $TASK will close $2 >&2
+            if [[ -d $2 ]]; then
+                eden rm $2
+            fi
+
+        fi
+}
+
+function _fb_projects_helper_clean() {
+    autoload -U zargs
+    #FIXME: Hard coded path
+    zargs -n2 -- $(eden list | awk -F/ '/^\/home\/aping1\/tasks\/T[^0]/{print $5,$0}' ) -- _fb_project_helper_clean_task
 }
 
 function _fb_projects_helper_add_bookmarks_from_list() {
@@ -387,7 +426,7 @@ function _fb_projects_helper_session_task () {
     local _SOMEID _PROJNAME _NEW_TASK
     _fb_projects_helper_project_shortname 2>/dev/null | read _SOMEID _PROJNAME _NEW_TASK  || return 2
     _fb_tasks_helper_set_task $_NEW_TASK || return 3
-    _fb_projects_helper_add_task_to_project ${_NEW_TASK} P+${_PROJNAME}
+    _fb_projects_helper_add_task_to_project "${_NEW_TASK}" "P+${_PROJNAME}"
     cd $(_fb_projects_helper_get_projects_home P+${_PROJNAME})/${_NEW_TASK}
 }
 
@@ -399,10 +438,26 @@ function project_from_tmux() {
     printf '%s' "${_PROJNAME}"
 }
 
+function prune_tasks () {
+    cd $(_fb_projects_helper_get_projects_home) || return 1
+    do_something=${1:-":"}
+    for i in T*[^0](@); do
+        tasks details $i | awk -F':' '/State :/{print $2}' | read STATE;
+        if [[ $STATE == 'CLOSED' ]]; then
+            echo "callikng ${do_something} on ${i}"
+            export TASK_DIR=$i
+            eval "${do_something} $TASK_DIR"
+        fi
+    done
+}
+
+
 alias add_task_to_project='_fb_projects_helper_add_task_to_project'
 alias get_projects_home='_fb_projects_helper_get_projects_home'
 alias session_task_override='_fb_projects_helper_session_task'
 alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
+alias cdp='cd_to_project_task_home'
 alias cd_to_task_home='cd $(realpath -e $(_fb_projects_helper_project_task_home))'
+alias cdt='cd_to_task_home'
 alias project_task_home='_fb_projects_helper_project_task_home'
 alias new_project='_fb_projects_helper_get_projects_home'

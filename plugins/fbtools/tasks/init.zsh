@@ -14,7 +14,7 @@ fi
 _tmux_scripts="$(realpath -e ${_fbtools_tasks_local_script%/}/../tmux/scripts)"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 
-TASK_REGEX='-?T([0-9][0-9]*)$'
+TASK_REGEX='-?([A-Z])([0-9][0-9]*)$'
 [[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../init.zsh
 
 : ${TASK_ROOT_DIR:="${HOME}/tasks"}
@@ -27,23 +27,25 @@ _proj_scripts="$(realpath -e ${_fbtools_tasks_local_script%/}/../projects/init.z
 #
 function _fb_tasks_helper_task_shortname() {
     local _PROJNAME=${1#[0-9]*}  _NEW_TASK=$2
-    if [[ ${_PROJNAME} =~ ^([[:graph:]]*)${TASK_REGEX:-"T([[:digit:]]*)"}$ ]]; then
-        _NEW_TASK="T${match[2]}"
+    if [[ ${_PROJNAME} =~ ^([[:graph:]]*)${TASK_REGEX:-"([A-Z])([[:digit:]]*)"}$ ]]; then
+        _NEW_TASK="${match[2]}${match[3]}"
         _PROJNAME="${match[1]}"
     fi
     printf '%s\n' "${_NEW_TASK}"
 }
 
 function _fb_tasks_helper_list_tasks () {
-    find "${TASK_ROOT_DIR}" -maxdepth 1 -regex ".*[PT][0-9].*" \
+    find "${TASK_ROOT_DIR}" -maxdepth 1 -regex ".*${TASK_REGEX}.*" \
         -exec basename {} \; 2>/dev/null
+    [[ 1 == 1 ]] && return 0
 }
 
 function _fb_tasks_helper_is_valid_task () {
     # TODO: check project
     local _NEW_TASK=${1:-${NEW_TASK}}
     [[ $_NEW_TASK =~ ^${TASK_REGEX}$ ]] || return 1
-    _fb_tasks_helper_list_tasks | grep -qi ${_NEW_TASK} &>/dev/null || return 2
+    _fb_tasks_helper_list_tasks | grep -qi ${_NEW_TASK} &>/dev/null
+    return 0
 }
 
 function _fb_tasks_helper_is_current_task () {

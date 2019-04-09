@@ -25,7 +25,7 @@ DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 
 # === Setup PATH ===
 
-if [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
+if [[ "${OS_TYPE:="DARWIN"}" == "DARWIN" ]]; then
     path=(
         /opt/homebrew/bin
         /usr/local/{bin,sbin,opt}
@@ -258,3 +258,4 @@ setopt INC_APPEND_HISTORY
 # Store commented lines
 setopt interactivecomments
 #=== END History OPTIONS ===
+export PATH="/usr/local/opt/ncurses/bin:$PATH"

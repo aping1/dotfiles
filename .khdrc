@@ -3,8 +3,8 @@
 shift + alt - f: chunkc tiling::window --toggle float
 
 # change layout of desktop
-alt - e : chunkc tiling::desktop --layout bsp
-alt - s : chunkc tiling::desktop --layout monocle
+alt - b : chunkc tiling::desktop --layout bsp
+alt - m : chunkc tiling::desktop --layout monocle
 alt - f : chunkc tiling::desktop --layout float
 
 # kill focused window
