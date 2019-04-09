@@ -64,6 +64,7 @@ Plugin 'applescript.vim'
 Plugin 'Tagbar'
 Plugin 'vim-flake8'
 Plugin 'SimpylFold'
+Plugin 'itspriddle/vim-marked'
 " other packages, run ' vim +PluginInstall +qall ' to up date them
 Plugin 'lifepillar/vim-solarized8'
 Plugin 'tpope/vim-fugitive'
@@ -85,6 +86,7 @@ Plugin 'vim-scripts/gitdiff.vim'
 Plugin 'vim-scripts/pdbvim'
 "Plugin 'solarnz/thrift.vim'
 
+Plugin 'Markdown'
 
 Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -224,3 +226,6 @@ au BufNewFile COMMIT_EDITING let syntax = diff
 " Use ag for vimgrep
 set grepprg=ag\ --vimgrep\ $* 
 set grepformat=%f:%l:%c:%m
+
+" Open markd
+
