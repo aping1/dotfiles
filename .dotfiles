@@ -23,11 +23,11 @@ deps/tpm .tmux/plugins/tpm
 deps/Vundle.vim .vim/Vundle.vim
 vim-solarized8 .vim/colors/vim-solarized8
 
+# Git
 
 # Globals/Ignore
 .gitconfig
 .global_gitignore
-.gitignore_global
 .gitignore
 
 .zsh_aliases

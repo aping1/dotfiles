@@ -8,6 +8,8 @@ setopt xtrace
 
 unsetopt function_argzero
 
+# Requerys formst
+setopt PROMPT_SUBST
 export DOTFILES=${(%):-$(realpath "${(%):-%x}")}
 export DOTFILES=${DOTFILES:h}
 export DOTFILES_SCRIPTPATH="$(dirname "$SCRIPT")"
@@ -20,6 +22,9 @@ mkdir -p $HOME/.config/
 # Absolute path this script is in, thus /home/user/bin
 # link new dot files
 #
+pushd ${DOTFILES} 
+git submodule init && submodule update
+popd
 pushd ${HOME}
 
 install_zgen () {
