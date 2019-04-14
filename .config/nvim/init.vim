@@ -3,14 +3,13 @@
 " ~/.vimrc (local shell)
 "
 
-set nocompatible              " be iMproved, required
-filetype off                  " required
+
 
 set ruler
 set ignorecase
 set smartcase
 
-set shell=/bin/bash
+set shell=/usr/local/bin/zsh
 set encoding=utf8
 set ffs=unix,dos,mac
 set nobackup
@@ -47,54 +46,72 @@ set sw=4
 set ai
 set expandtab
 set hlsearch
+set termguicolors
 
 " set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
+" set rtp+=~/.vim/bundle/Vundle.vim
 " set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 
-call vundle#begin()
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'flazz/vim-colorschemes'
-"Plugin 'severin-lemaignan/vim-minimap'
-Plugin 'tpope/vim-scriptease'
-"Plugin 'applescript.vim'
-Plugin 'Tagbar'
-Plugin 'vim-flake8'
-Plugin 'SimpylFold'
-" other packages, run ' vim +PluginInstall +qall ' to up date them
-Plugin 'lifepillar/vim-solarized8'
-Plugin 'tpope/vim-fugitive'
-Plugin 'airblade/vim-gitgutter'
-"Plugin 'saltstack/salt-vim'
-"Plugin 'scrooloose/syntastic'
-"Plugin 'Valloric/YouCompleteMe'
-Plugin 'scrooloose/nerdtree'
-Plugin 'vim-scripts/ag.vim'
-Plugin 'rizzatti/dash.vim'
+call plug#begin()
+Plug 'flazz/vim-colorschemes'
 
 
-Plugin 'godlygeek/tabular'
-Plugin 'plasticboy/vim-markdown'
-Plugin 'tpope/vim-obsession'
-Plugin 'vim-scripts/vim-misc'
-Plugin 'vim-scripts/gitdiff.vim'
-Plugin 'vim-scripts/pdbvim'
+Plug 'iCyMind/NeoSolarized'
+
+
+Plug 'bfredl/nvim-ipy'
+
+Plug 'zchee/deoplete-jedi'
+let g:deoplete#enable_at_startup = 1
+" use tab
+inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+
+" disable autocompletion, cause we use deoplete for completion
+let g:jedi#completions_enabled = 0
+
+" open the go-to function in split, not another buffer
+let g:jedi#use_splits_not_buffers = "right"
+" <leader>d: go to definition
+" K: check documentation of class or method
+" <leader>n: show the usage of a name in current file
+" <leader>r: rename a name
+Plug 'davidhalter/jedi-vim'
+ 
+" Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+" let g:airline_theme='<theme>' " <theme> is a valid theme name
+"
+let g:airline_solarized_bg='dark'
+
+" let g:airline_theme='<theme>' " <theme> is a valid theme name
+
+" Auto format
+Plug 'sbdchd/neoformat'
+Plug 'neomake/neomake'
+Plug 'tmhedberg/SimpylFold'
+
+
+"Plugin 'tpope/vim-obsession'
+"Plugin 'vim-scripts/vim-misc'
+"Plugin 'vim-scripts/gitdiff.vim'
+"Plugin 'vim-scripts/pdbvim'
 "Plugin 'solarnz/thrift.vim'
 
-
-Plugin 'bling/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
 " Local Shortccuts
-Plugin 'file:///home/aping1/.dotfiles/vim/colorscheme'
-
 " uses pygtk
 " A simple color picker for VIM, based on GTK color chooser dialog.
 " Plugin 'vim-scripts/VIM-Color-Picker'
-" A script that lets you insert hex color codes by using OS X's color picker
 " Plugin 'vim-scripts/ColorX'
 
-call vundle#end()
+call plug#end()
 filetype plugin indent on     " required
+
+colorscheme NeoSolarized
+"
+" newomake automagic check
+call neomake#configure#automake('nrwi', 500)
 
 " These lines setup the environment to show graphics and colors correctly.
 set nocompatible
@@ -114,13 +131,8 @@ let python_space_errors = 1
 "blet ruby_space_errors = 1
 "let java_space_errors = 1
 
-" memory leak problem
-if version >= 702
-    autocmd BufWinLeave * call clearmatches()
-endif
-
+:au BufNewFile,BufRead AirlineTheme luna
 :au BufNewFile,BufRead *.jinja set filetype=jinja
-
 :au BufNewFile,BufRead *.input set filetype=json
 
 " Change the Pmenu colors so they're more readable.
@@ -130,7 +142,7 @@ highlight PmenuSel ctermbg=black ctermfg=white
 " pyflakes
 "let g:khuno_ignore="E501"
 
-let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
+" let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 "
 " pymode options
 "
@@ -139,13 +151,14 @@ let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 "call pymode#Default("g:pymode_folding", 0)
 
 " OPTION: g:pymode_syntax -- bool. Enable python-mode syntax for pyfiles.
-"call pymode#Default("g:pymode_syntax", 1)
+" call pymode#Default("g:pymode_syntax", 1)
 
 " OPTION: g:pymode_indent -- bool. Enable/Disable pymode PEP8 indentation
-"call pymode#Default("g:pymode_indent", 1)
+" call pymode#Default("g:pymode_indent", 1)
 
 " OPTION: g:pymode_utils_whitespaces -- bool. Remove unused whitespaces on save
-"call pymode#Default("g:pymode_utils_whitespaces", 1)
+" call pymode#Default("g:pymode_utils_whitespaces", 1)
+" let g:pymode_python = 'python3'
 
 " OPTION: g:pymode_options -- bool. To set some python options.
 "call pymode#Default("g:pymode_options", 1)

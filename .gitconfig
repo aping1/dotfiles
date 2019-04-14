@@ -1,14 +1,24 @@
 [user]
 	name = Allison Wampler
-	email = allison.wampler@sony.com
+	email = allisonmarw@gmail.com
 [core]
 	excludesfile = ~/.gitignore_global
-	editor = /usr/bin/vim
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
+	editor = nvim
+	page = nvim -R
+[merge]
+	tool = vimdiff
+[mergetool]
+	prompt = true
+[mergetool "vimdiff"]
+	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool]
+	promp= false
+[diff]
+	tool = vimdiff
 [mergetool "sourcetree"]
 	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
 [commit]
 	template = /Users/awampler/.stCommitMsg
+[color]
+	pager = no
