@@ -35,6 +35,8 @@ vim-solarized8 .vim/colors/vim-solarized8
 # zpython.zsh
 .gdbinit
 
+.khdrc
+.chunckwm
 
 # tmux/zoom
 # tmux/helpers/powerline-helper.zsh
