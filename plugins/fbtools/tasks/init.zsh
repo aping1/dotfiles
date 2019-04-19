@@ -1,29 +1,56 @@
-command -v realpath &>/dev/null || return 1
-_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+# /usr/local/bin/zsh || /usr/bin/zsh
 
-_tmux_scripts="$(realpath -e ${_local_script%/}/../tmux/scripts)"
+command -v realpath &>/dev/null || return 2
+
+if [[ $0 == /bin/bash ]] ; then
+    _fbtools_tasks_local_script=${HOME}/.dotfiles/plugins/fbtools/tasks
+    exec zsh $_fbtools_tasks_local_script/init.zsh
+else
+    _fbtools_tasks_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+fi
+if ! [[ ${_fbtools_tasks_local_script} =~ fbtools ]]; then
+    _fbtools_tasks_local_script=${HOME}/.dotfiles/plugins/fbtools/tasks
+fi
+_tmux_scripts="$(realpath -e ${_fbtools_tasks_local_script%/}/../tmux/scripts)"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 
-source ${_tmux_scripts}/../helpers.zsh
+TASK_REGEX='-?([A-Z])([0-9][0-9]*)$'
+[[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../init.zsh
 
 : ${TASK_ROOT_DIR:="${HOME}/tasks"}
 export TASK_ROOT_DIR
 : ${TASK_LINK:=${TASK_ROOT_DIR}/current}
 
-function _fb_tasks_helper_list_tasks () {
-    find "${TASK_ROOT_DIR}" -maxdepth 1 -regex ".*[PT][0-9].*" \
-        -exec basename {} \; 2>/dev/null
+_proj_scripts="$(realpath -e ${_fbtools_tasks_local_script%/}/../projects/init.zsh)"
+
+### START FUNCTIONS =====
+#
+function _fb_tasks_helper_task_shortname() {
+    local _PROJNAME=${1#[0-9]*}  _NEW_TASK=$2
+    if [[ ${_PROJNAME} =~ ^([[:graph:]]*)${TASK_REGEX:-"([A-Z])([[:digit:]]*)"}$ ]]; then
+        _NEW_TASK="${match[2]}${match[3]}"
+        _PROJNAME="${match[1]}"
+    fi
+    printf '%s\n' "${_NEW_TASK}"
 }
 
+function _fb_tasks_helper_list_tasks () {
+    find "${TASK_ROOT_DIR}" -maxdepth 1 -regex ".*${TASK_REGEX}.*" \
+        -exec basename {} \; 2>/dev/null
+    [[ 1 == 1 ]] && return 0
+}
 
 function _fb_tasks_helper_is_valid_task () {
-    [[ ${1:-${NEW_TASK}} =~ ^[PT][0-9][0-9]* ]] || return 1
-    _fb_tasks_helper_list_tasks | grep -qi ${1:-${NEW_TASK}} &>/dev/null || return 2
+    # TODO: check project
+    local _NEW_TASK=${1:-${NEW_TASK}}
+    [[ $_NEW_TASK =~ ^${TASK_REGEX}$ ]] || return 1
+    _fb_tasks_helper_list_tasks | grep -qi ${_NEW_TASK} &>/dev/null
+    return 0
 }
 
 function _fb_tasks_helper_is_current_task () {
     local _TASK_ARG=$1
-    if {_fb_tasks_helper_is_valid_task "${_TASK_ARG}" || return 2;} then
+    if _fb_tasks_helper_is_valid_task "${_TASK_ARG}" || return 2; then
         _CURRENT_LINK="$(basename $(realpath -e ${TASK_LINK}))"
         [[ ${_TASK_ARG} == ${_CURRENT_LINK} ]] && return 0
         return 1
@@ -33,37 +60,45 @@ function _fb_tasks_helper_is_current_task () {
 function _fb_tasks_helper_get_current_task () {
     local _CURRENT_LINK
     local _RET
-    if ! [[ -h ${TASK_LINK} ]] ; then
-        printf 'ERROR: No current task link is set\n' 
-        return 1
-    fi
+    local _NEW_TASK
+    _fb_tasks_helper_task_shortname ${1:-$(_fb_tmux_helper_get_session)} \
+        2> /dev/null | read _NEW_TASK
     _CURRENT_LINK="$(basename $(realpath -e ${TASK_LINK}))"
-    # IF the task is not rvalid but ret is 1
-    export TASK_HOME="${TASK_ROOT_DIR%/}/${_CURRENT_LINK}"
-    if ! _fb_tasks_helper_is_valid_task "${_CURRENT_LINK}" && [[ ${_RET:=$?} == 1 ]] ; then
+    if [[ ! -h ${TASK_LINK} ]] && [[ ! ${_NEW_TASK} ]] && _fb_tasks_helper_is_valid_task "${_CURRENT_LINK}"; then
+        export TASK_HOME="${TASK_ROOT_DIR%/}/${_CURRENT_LINK}"
+    elif ! _fb_tasks_helper_is_valid_task "${_CURRENT_LINK}" && [[ ${_RET:=$?} == 1 ]] ; then
         # Abort with non valid task
         printf 'ERROR: current task link not set to task\n'
         return 2
-    elif  [[ ! -d ${TASK_HOME} ]] && [[ ${_RET} == 2 ]]; then
+    fi
+    # IF the task is not rvalid but ret is 1
+    export TASK_HOME="${TASK_ROOT_DIR%/}/${_NEW_TASK}"
+    if  [[ ! -d ${TASK_HOME} ]] && [[ ${_RET} == 2 ]]; then
         mkdir -p "${TASK_HOME}"
     fi
     echo "${_CURRENT_LINK}"
 
 }
 
-function _fb_tasks_helper_set_task () {
-    export _NEW_TASK=$(basename $1)
-    _fb_tasks_helper_is_current_task ${_NEW_TASK} && return 0
+function _fb_tasks_helper_task_root {
+    _NEW_TASK=${1:-$(current_task)}
+    [[  $_NEW_TASK =~ '/' ]] && _NEW_TASK=$(basename ${_NEW_TASK})
     _fb_tasks_helper_is_valid_task ${_NEW_TASK} || return 1
-    [[ -h ${TASK_LINK} ]] && rm ${TASK_LINK%/}
-    # _fb_tasks_helper_list_tasks | grep -qi "${_NEW_TASK}" || echo "Creating task ${_NEW_TASK}" 
+    realpath -e "${TASK_ROOT_DIR%/}/${_CURRENT_LINK}"
+}
+
+function _fb_tasks_helper_set_task () {
+    local _NEW_TASK
+    _fb_tasks_helper_task_shortname ${1:-$(_fb_tmux_helper_get_session)} \
+        2> /dev/null | read _NEW_TASK
     (
     cd "${TASK_ROOT_DIR:="${HOME}/tasks"}" &>/dev/null
-    mkdir "${_NEW_TASK}" 
-    ln -s "$(basename ${_NEW_TASK%%/*})" "${TASK_LINK}" 
-    _fb_tasks_helper_set_task_to_session ${1}
-    ) &>/dev/null
-    return $?
+    mkdir "${_NEW_TASK}"
+    # [[ -h ${TASK_LINK} ]] && rm ${TASK_LINK%/}
+    # ln -s "$(basename ${_NEW_TASK})" "${TASK_LINK}"
+    mkdir "${_NEW_TASK}"
+    ) &>/dev/null 
+    _fb_tasks_helper_change_session_to_cur_task ${_NEW_TASK}
 }
 
 alias set_task='_fb_tasks_helper_set_task'
@@ -78,28 +113,28 @@ else
     printf 'INFO: no current task set\n' >&2
 fi
 
-function _fb_tasks_helper_set_task_to_session () {
-    local _NEW_TASK="$(basename ${1})"
-    _tmux_session="$(_fb_tmux_helper_get_session)"
-    _fb_tasks_helper_is_valid_task "${_tmux_session}" || return 1
+function _fb_tasks_helper_change_session_to_cur_task () {
+    local _SOMEID _PROJNAME _NEW_TASK=${1}
+    _fb_projects_helper_project_shortname ${1:-$(_fb_tmux_helper_get_session)} \
+            | read _SOMEID _PROJNAME _OLD_TASK || return 2
+    : ${_NEW_TASK:=$(_fb_tasks_helper_get_current_task $_NEW_TASK)}
     if _fb_tasks_helper_is_valid_task ${_NEW_TASK}; then
-        if _fb_tmux_helper_session_exists "${_NEW_TASK}"; then
-            bash "${_tmux_scripts%/}/switch_or_loop.sh"  "${_NEW_TASK}" || return 128
+        if _fb_tmux_helper_session_exists "P+${_PROJNAME}-${_NEW_TASK#-}"; then
+            bash "${_tmux_scripts%/}/switch_or_loop.sh"  "P+${_PROJNAME}-${_NEW_TASK#-}" || return 128
         else
-            bash "${_tmux_scripts%/}/new_session.sh"  "${_NEW_TASK}" || return 129
+            bash "${_tmux_scripts%/}/new_session.sh"  "P+${_PROJNAME}-${_NEW_TASK#-}" || return 129
         fi
     fi
     return 2
 }
 
-function go_to_current_task () {
-    _fb_tasks_helper_set_task_to_session "$(_fb_tasks_helper_get_current_task)"
-}
-
-function _fb_tasks_helper_set_task_from_tmux () {
-    _tmux_session="$(_fb_tmux_helper_get_session)"
-    if _fb_tasks_helper_is_valid_task "${_tmux_session}" ;then
-        _fb_tasks_helper_set_task ${_tmux_session} && return
+function _fb_tasks_helper_set_task_from_session_name () {
+    local _NEW_TASK
+    local _tmux_session="$(_fb_tmux_helper_get_session)"
+    _fb_tasks_helper_task_shortname ${1:-$(_fb_tmux_helper_get_session)} \
+        2> /dev/null | read _NEW_TASK
+    if _fb_tasks_helper_is_valid_task "${_NEW_TASK}" ;then
+        _fb_tasks_helper_set_task ${_NEW_TASK} && return
     fi
     return 1
 }
@@ -114,6 +149,17 @@ function _fb_tasks_helper_set_task_description() {
     fi
 }
 
+function task_from_tmux() {
+    local _TASK
+    local _tmux_session="$(_fb_tmux_helper_get_session)"
+    _fb_tasks_helper_task_shortname ${1:-$(_fb_tmux_helper_get_session)} \
+        2> /dev/null | read _TASK
+    printf "%s" "${_TASK}"
+}
+
+
 alias task_list='_fb_tasks_helper_list_tasks'
 alias cur_task='_fb_tasks_helper_get_current_task'
-alias task_home='cd $(realpath -e ${TASK_LINK})'
+alias task_home='printf "%s\n" "${TASK_ROOT_DIR:="${HOME}/tasks"}/$(task_from_tmux)"'
+alias set_task_from_session='_fb_tasks_helper_set_task_from_session_name'
+alias goto_task_session='_fb_tasks_helper_change_session_to_cur_task'

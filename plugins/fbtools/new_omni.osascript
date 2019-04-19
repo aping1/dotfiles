@@ -1,0 +1,26 @@
+on alfred_script(q)
+	set isRunning to false
+
+	tell application "System Events"
+		if exists process "OmniFocus" then
+			set isRunning to true
+		end if
+	end tell
+
+	if isRunning is false then
+		tell application "OmniFocus" to activate
+	end if
+
+	tell application "OmniFocus"
+		parse tasks into default document with transport text q
+	end tell
+
+end alfred_script
+
+on run argv
+    set finalString to ""
+    repeat with thisItem in argv
+        set finalString to finalString & thisItem & return -- the return creates a new line
+    end repeat
+    my alfred_script(finalString)
+end run
