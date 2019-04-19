@@ -25,7 +25,11 @@ PROJECT_RX='\d*P([0-9]*)\+('${PROJECT_RX_SIMP}')'
 
 [[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../init.zsh
 
-: ${PROJECT_ROOT_DIR:="${HOME}/projects"}
+: ${PROJECT_FOLDER_NAME:="projects"}
+: ${PROJECT_PREFIX:="${HOME}/${PROJECT_FOLDER_NAME}"}
+if ! [[ -d  ${PROJECT_ROOT_DIR:=${PROJECT_PREFIX:A}} ]]; then
+    return 1 
+fi
 export PROJECT_ROOT_DIR
 : ${PROJECT_LINK:=${PROJECT_ROOT_DIR}/current}
 [[ ${TASK_ROOT_DIR} ]] || source ${_tasks_scripts}/init.zsh
@@ -38,7 +42,20 @@ function _fb_projects_helper_list_projects () {
         done 2>/dev/null
 }
 
-function _fb_projects_helper_init_projects_here () {
+
+function _fb_projects_helper_resolve_relative_path() {
+    # relative link between $1 and $2
+    [[ ${1} && ${2} ]] || return 1
+    # Get the real path of A
+    _PATH_ROOT="${1:A}"
+    while ! [[ -d "${2:A}" || -d "${2}" ]]; do
+        [[ "${_PATH_ROOT}" -ef "${HOME}" || "${_PATH_ROOT}" -ef '/' ]] && return 5
+        _PATH_ROOT=${_PATH_ROOT:h}
+    done
+    printf '%s\n' "${_PATH_ROOT}"
+}
+
+function _fb_projects_helper_init_projects_here () o
     local CUR_DIR=$(pwd -P)
     local _NEW_TASK _PROJNAME="P+$(basename ${CUR_DIR})"
     _fb_projects_helper_is_valid_project "${_PROJNAME}" || return 3
@@ -122,7 +139,7 @@ function _fb_projects_helper_project_shortname() {
     printf '%s %s %s\n' "${_SOMEID:-"None"}"h "${_PROJNAME:-"None"}" "${_NEW_TASK}"
 }
 
-function _fb_projects_helper_add_task_to_project() {
+function _fb_projects_helper_clone_project_task() {
     if [[ ${DRYRUN} || ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
         export DEBUG=Y
         alias ln='echo'
@@ -275,28 +292,6 @@ function _fb_projects_helper_add_task_to_project() {
     return 4
 }
 
-function _fb_project_helper_clean_task() {
-        tasks summary $1 2>/dev/null | awk '/CLOSED/{print $1,$4}' | read TASK STATUS
-        if [[ $STATUS == "CLOSED" ]]; then
-            read -q "REPLY?Are you sure you want to clean $1?[Y/n]"
-            echo
-            if [[ $REPLY =~ ^[nN]$ ]]; then
-                return 0
-            fi
-            echo $TASK will close $2 >&2
-            if [[ -d $2 ]]; then
-                eden rm $2
-            fi
-
-        fi
-}
-
-function _fb_projects_helper_clean() {
-    autoload -U zargs
-    #FIXME: Hard coded path
-    zargs -n2 -- $(eden list | awk -F/ '/^\/home\/aping1\/tasks\/T[^0]/{print $5,$0}' ) -- _fb_project_helper_clean_task
-}
-
 function _fb_projects_helper_add_bookmarks_from_list() {
     # FIXME: this function is pre-alpha
     local _SOMEID
@@ -409,7 +404,7 @@ function _fb_projects_helper_add_projects_to_project() {
         return 4
     else
         (
-        TASK_REL="../projects"
+        TASK_REL="../${PROJECT_FOLDER_NAME}"
         cd $(_fb_projects_helper_get_projects_home "P+${_PROJNAME}") &>/dev/null || exit 1
         if [[ ${TASK_REL} -ef ${PROJECT_ROOT_DIR} ]]; then
             ln -s "${TASK_REL}/${_NEW_TASK}" 2>/dev/null
@@ -426,7 +421,7 @@ function _fb_projects_helper_session_task () {
     local _SOMEID _PROJNAME _NEW_TASK
     _fb_projects_helper_project_shortname 2>/dev/null | read _SOMEID _PROJNAME _NEW_TASK  || return 2
     _fb_tasks_helper_set_task $_NEW_TASK || return 3
-    _fb_projects_helper_add_task_to_project "${_NEW_TASK}" "P+${_PROJNAME}"
+    _fb_projects_helper_clone_project_task "${_NEW_TASK}" "P+${_PROJNAME}"
     cd $(_fb_projects_helper_get_projects_home P+${_PROJNAME})/${_NEW_TASK}
 }
 
@@ -451,8 +446,7 @@ function prune_tasks () {
     done
 }
 
-
-alias add_task_to_project='_fb_projects_helper_add_task_to_project'
+alias create_project_task='_fb_projects_helper_clone_project_task'
 alias get_projects_home='_fb_projects_helper_get_projects_home'
 alias session_task_override='_fb_projects_helper_session_task'
 alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
