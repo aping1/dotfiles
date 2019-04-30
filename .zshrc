@@ -83,7 +83,7 @@ ZSH_TMUX_AUTOQUIT=false
 export DEFAULT_USER=awampler
 P9K_CONTEXT_TEMPLATE="%n@`hostname -f`"
 P9K_PROMPT_ON_NEWLINE=true
-P9K_LEFT_PROMPT_ELEMENTS=(ssh vi_mode virtualenv context dir vcs)
+P9K_LEFT_PROMPT_ELEMENTS=(ssh vi_mode virtualenv pyenv context dir vcs)
 P9K_RIGHT_PROMPT_ELEMENTS=(status history time)
 P9K_DIR_SHORTEN_LENGTH=35
 P9K_DIR_BACKGROUND='238'
@@ -149,6 +149,7 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/urltools
         zgen oh-my-zsh plugins/vundle
         zgen oh-my-zsh plugins/web-search
+        zgen load joel-porquet/zsh-dircolors-solarized
         zgen oh-my-zsh plugins/z
 
         # https://github.com/Tarrasch/zsh-autoenv
@@ -267,3 +268,7 @@ export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
 # Lines configured by zsh-newuser-install
 setopt extendedglob nomatch
 # End of lines configured by zsh-newuser-install
+#
+#export PYENV_ROOT="~/projects/virtualenvs"
+
+export PYENV_ROOT=/Users/aping1/.pyenv/

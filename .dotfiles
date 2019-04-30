@@ -4,6 +4,11 @@
 
 # $PWD ./.dotfiles <- Create ˜/.dotfiles || ln -s ${PWD} ˜/.dotfiles
 
+remote/* .remote
+
+dircolors
+
+
 .zprofile 
 .zsh_aliasses
 .zpreztorc
@@ -36,7 +41,7 @@ vim-solarized8 .vim/colors/vim-solarized8
 .gdbinit
 
 .khdrc
-.chunckwm
+.chunkwmrc
 
 # tmux/zoom
 # tmux/helpers/powerline-helper.zsh
