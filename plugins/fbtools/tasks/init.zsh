@@ -171,3 +171,5 @@ alias task_home='[[ -h ${TASK_LINK} ]] && cd $(realpath -e ${TASK_LINK})'
 >>>>>>> 4fd8a41... fbtools: update imports
 alias set_task_from_session='_fb_tasks_helper_set_task_from_session_name'
 alias goto_task_session='_fb_tasks_helper_change_session_to_cur_task'
+alias cd_to_task_home='cd $(realpath -e $(task_home))'
+alias cdt='cd_to_task_home'

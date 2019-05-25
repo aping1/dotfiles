@@ -451,3 +451,5 @@ alias cd_to_task_home='cd $(realpath -e $(_fb_projects_helper_project_task_home)
 alias cdt='cd_to_task_home'
 alias project_task_home='_fb_projects_helper_project_task_home'
 alias new_project='_fb_projects_helper_get_projects_home'
+alias summary='tasks summary $(task_from_tmux)'
+alias all_tasks_summary='ls -d $(get_projects_home)/T[^0]*/ | while read task; do tasks summary ${task%/}; done'

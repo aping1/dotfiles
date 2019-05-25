@@ -85,3 +85,22 @@ end
 nvim.nvim_command("command! -nargs=0 PickRepl lua set_preferred_repl()")
 nvim.nvim_command("command! -nargs=0 PickVirtualenv lua set_virtualenv()")
 
+=======
+
+local iron = require('iron')
+
+iron.core.add_repl_definitions {
+  clojure = {
+    lein_connect = {
+      command = {"lein", "repl", ":connect"}
+    }
+  }
+}
+
+iron.core.set_config {
+  preferred = {
+    python = "ipython",
+    clojure = "lein"
+  }
+}
+>>>>>>> e4d36b0... Clean task fix, cleanup zshrc, .tmux.conf
