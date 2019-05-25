@@ -7,4 +7,3 @@ cd()
 #    alias clusterssh-remote='clusterssh-dev -i ${HOME}/.dotfiles/remote/.bash_aliases -i ${HOME}/.dotfiles/remote/.bash_profile -i ${HOME}/.dotfiles/remote/.tmux.conf -i ${HOME}/.dotfiles/remote/bin -i ${HOME}/.dotfiles/remote/.bash_plugins -i ${HOME}/.dotfiles/remote/.gdbinit'
 #fi
 
-source ~/.dotfiles/helpers/inventory.helper.zsh

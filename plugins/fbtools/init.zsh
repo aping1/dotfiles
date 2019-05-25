@@ -63,3 +63,5 @@ function update_iterm_title () {
     _iterm_hooks_rename_both "$(_fb_tmux_helper_get_session)"
 }
 add-zsh-hook periodic update_iterm_title
+
+

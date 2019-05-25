@@ -200,9 +200,11 @@ function _fb_projects_helper_add_task_to_project() {
                     # Timeout for 5 min
                     TIMEOUT="timeout 300"
                     printf '[INFO] Command to run: %s\n' "${TIMEOUT} ${_HG_CLONE:-echo} ${_PROJECT_VCS_ROOT} ${_VCS_DEST}" >&2
-                    if [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
+                    if ! [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
                         eval ${TIMEOUT} ${_HG_CLONE:-hg-new-workdir} \
                             "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
+                    else
+                        printf 'Dry Run...\n'
                     fi
                 )
             fi
@@ -275,26 +277,34 @@ function _fb_projects_helper_add_task_to_project() {
     return 4
 }
 
-function _fb_project_helper_clean_task() {
-        tasks summary $1 2>/dev/null | awk '/CLOSED/{print $1,$4}' | read TASK STATUS
+function _fb_projects_helper_clean_task() {
+        tasks summary $1 2>/dev/null | tr -d '\t' | read TASK user STATUS pri info
         if [[ $STATUS == "CLOSED" ]]; then
-            read -q "REPLY?Are you sure you want to clean $1?[Y/n]"
+            read -q "REPLY?Are you sure you want to clean $1: \"${info}\"?[Y/n]"
             echo
             if [[ $REPLY =~ ^[nN]$ ]]; then
                 return 0
             fi
-            echo $TASK will close $2 >&2
-            if [[ -d $2 ]]; then
-                eden rm $2
+            EDENPATH=${2:-"$(_fb_projects_helper_project_task_home $1)/.workdir-*"}
+            for _edenpath in ${~EDENPATH}; do
+                if [[ -d $_edenpath ]]; then
+                    read -q "REPLY?Are you sure you want to clean $_edenpath?[Y/n]"
+                    if [[ $REPLY =~ ^[Yy]$ ]]; then
+                        echo "Removing $_edenpath" >&2
+                        eden rm $_edenpath
+                    fi
             fi
-
+        done
+        else
+            echo "No clean: ${1} \"${info}\" is still ${STATUS}" >&2
         fi
+
 }
 
 function _fb_projects_helper_clean() {
     autoload -U zargs
     #FIXME: Hard coded path
-    zargs -n2 -- $(eden list | awk -F/ '/^\/home\/aping1\/tasks\/T[^0]/{print $5,$0}' ) -- _fb_project_helper_clean_task
+    zargs -n2 -- $(eden list | awk -F/ '/^'"$(project_task_home)"'T[^0]/{print $5,$0}' ) -- _fb_projects_helper_clean_task
 }
 
 function _fb_projects_helper_add_bookmarks_from_list() {
@@ -457,7 +467,7 @@ alias get_projects_home='_fb_projects_helper_get_projects_home'
 alias session_task_override='_fb_projects_helper_session_task'
 alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
 alias cdp='cd_to_project_task_home'
-alias cd_to_task_home='cd $(realpath -e $(_fb_projects_helper_project_task_home))'
-alias cdt='cd_to_task_home'
 alias project_task_home='_fb_projects_helper_project_task_home'
 alias new_project='_fb_projects_helper_get_projects_home'
+alias summary='tasks summary $(task_from_tmux)'
+alias all_tasks_summary='ls -d $(get_projects_home)/T[^0]*/ | while read task; do tasks summary ${task%/}; done'

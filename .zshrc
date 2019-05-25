@@ -259,3 +259,10 @@ setopt INC_APPEND_HISTORY
 setopt interactivecomments
 #=== END History OPTIONS ===
 export PATH="/usr/local/opt/ncurses/bin:$PATH"
+
+
+if [[ -d ${DOTFILES%/}/helpers ]]; then 
+    for HELPER in ${DOTFILES%/}/helpers/*; do
+        source $HELPER || printf 'Failed souce of %s' "${HELPER}"
+    done
+fi

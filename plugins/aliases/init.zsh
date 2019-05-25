@@ -12,7 +12,6 @@ sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop && \
 sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start'
 
 alias vimlog='vim -nr'
-alias nvim='vim +NERDTree'
 alias jsosascript='osascript -l JavaScript'
 
 gen_tags() {
