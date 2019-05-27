@@ -83,9 +83,10 @@ ZSH_TMUX_AUTOQUIT=false
 
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
 export DEFAULT_USER=awampler
-P9K_CONTEXT_TEMPLATE="%n@`hostname -f`"
+P9K_CONTEXT_TEMPLATE="%n@$(hostname -s)"
 P9K_PROMPT_ON_NEWLINE=true
-P9K_LEFT_PROMPT_ELEMENTS=(ssh vi_mode virtualenv pyenv context dir vcs)
+P9K_LEFT_PROMPT_ELEMENTS=(host ssh user dir dir_writable vcs newline vi_mode virtualenv pyenv )
+P9K_RPROMPT_ON_NEWLINE=true
 P9K_RIGHT_PROMPT_ELEMENTS=(status history time)
 P9K_DIR_SHORTEN_LENGTH=35
 P9K_DIR_BACKGROUND='238'
@@ -155,7 +156,7 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/z
 
         # https://github.com/Tarrasch/zsh-autoenv
-        zgen load Tarrasch/zsh-autoenv
+        #zgen load Tarrasch/zsh-autoenv
         # https://github.com/zsh-users/zsh-completions
         zgen load zsh-users/zsh-completions src
 
