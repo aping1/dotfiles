@@ -1,4 +1,5 @@
 # === Profiling ===
+#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 #if I see that zsh takes to much time to load I profile what has been changed,
 # I want to see my shell ready in not more than 1 second
 PROFILING=${PROFILING:-false}
@@ -54,11 +55,12 @@ export HISTFILESIZE=$HISTSIZE;
 
 # Shell
 export CLICOLOR=1
-export EDITOR='vim'
-export VISUAL='vim'
+export EDITOR='nvim'
+export VISUAL='nvim'
 export PAGER='less'
 
 export TERM="xterm-256color"
+export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 
 # Homebrew
 # This is one of examples why I want to keep my dotfiles private
@@ -272,3 +274,14 @@ setopt extendedglob nomatch
 #export PYENV_ROOT="~/projects/virtualenvs"
 
 export PYENV_ROOT=/Users/aping1/.pyenv/
+[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+
+# Use ~~ as the trigger sequence instead of the default **
+export FZF_COMPLETION_TRIGGER='~~'
+
+# Options to fzf command
+export FZF_COMPLETION_OPTS='+c -x'
+
+if which setupsolarized &>/dev/null; then
+setupsolarized dircolors.256dark
+fi

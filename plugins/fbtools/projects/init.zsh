@@ -55,7 +55,7 @@ function _fb_projects_helper_resolve_relative_path() {
     printf '%s\n' "${_PATH_ROOT}"
 }
 
-function _fb_projects_helper_init_projects_here () o
+function _fb_projects_helper_init_projects_here () {
     local CUR_DIR=$(pwd -P)
     local _NEW_TASK _PROJNAME="P+$(basename ${CUR_DIR})"
     _fb_projects_helper_is_valid_project "${_PROJNAME}" || return 3
@@ -75,10 +75,6 @@ function _fb_projects_helper_init_projects_here () o
         break;
     done
 _EOF
-    (
-    cd $(realpath -e "${CUR_DIR}") &>/dev/null
-    direnv allow .
-    )
 }
 
 function _fb_projects_helper_is_valid_project() {

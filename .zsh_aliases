@@ -6,3 +6,5 @@
 for HELPER in ~/.dotfiles/helpers/*.zsh; do 
     [[ -n $HELPER && -f $HELPER ]] && source $HELPER
 done
+
+alias ls='gls --color -G'
