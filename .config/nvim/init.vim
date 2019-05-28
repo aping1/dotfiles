@@ -44,24 +44,50 @@ set sw=4
 set ai
 set expandtab
 set hlsearch
-set termguicolors
+
 
 " set the runtime path to include Vundle and initialize
 "
 " set rtp+=~/.vim/bundle/Vundle.vim
-" set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+" set rtp+=~/.vim/autoload/plug.vim
+"set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+"
+call plug#begin('~/.config/nvim/plugged')
 
-call plug#begin()
+" mecurial client
+Plug 'ludovicchabant/vim-lawrencium'
+Plug 'jacoborus/tender.vim'
+
+
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+
+Plug 'junegunn/fzf.vim'
 Plug 'flazz/vim-colorschemes'
+Plug 'Olical/vim-enmasse'
+Plug 'scrooloose/nerdtree'
+let NERDTreeShowBookmarks=1
+let NERDTreeChDirMode=2
+let NERDTreeQuitOnOpen=0
+
+let NERDTreeShowHidden=1
+let NERDTreeIgnore=['\.pyc','\~$','\.swo$','\.swp$','\.git','\.hg','\.svn','\.bzr']
+let NERDTreeKeepTreeInNewTab=1
 
 Plug 'iCyMind/NeoSolarized'
 
-Plug 'bfredl/nvim-ipy'
+"Plug 'bfredl/nvim-ipy'
+
+" Requires pynvim
+Plug 'Shougo/denite.nvim'
+Plug 'Shougo/unite.vim'
+Plug 'Shougo/unite-outline'
 
 Plug 'plytophogy/vim-virtualenv'
 Plug 'lambdalisue/vim-pyenv'
 Plug 'zchee/deoplete-jedi'
 Plug 'itspriddle/vim-marked'
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
 let g:deoplete#enable_at_startup = 1
 " use tab
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
@@ -74,7 +100,7 @@ let g:jedi#use_splits_not_buffers = "right"
 " <leader>n: show the usage of a name in current file
 " <leader>r: rename a name
 Plug 'davidhalter/jedi-vim'
- 
+
 " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 
 Plug 'vim-airline/vim-airline'
@@ -87,19 +113,22 @@ let g:airline_solarized_bg='dark'
 
 " Auto format
 Plug 'sbdchd/neoformat'
-Plug 'neomake/neomake'
 Plug 'tmhedberg/SimpylFold'
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 Plug 'Vigemus/iron.nvim'
 
 " Indent lines
 Plug 'nathanaelkane/vim-indent-guides'
+Plug 'w0rp/ale'
+
+Plug 'Shougo/deoplete.nvim'
 
 Plug 'junegunn/fzf.vim'
 Plug 'numkil/ag.nvim'
 
 " Git gutter
 Plug 'mhinz/vim-signify'
+Plug 'ap/vim-css-color'
 
 
 "Plugin 'tpope/vim-obsession'
@@ -119,7 +148,7 @@ filetype plugin indent on     " required
 
 " vim-indent-guides
 let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_guide_size = 4
+let g:indent_guides_guide_size = 1
 let g:indent_guides_start_level = 1
 
 " base 00
@@ -129,11 +158,9 @@ autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=8 guibg=#002b36
 " base 02
 autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=0 guibg=#073642 
 
-
-colorscheme NeoSolarized
+colorscheme tender
 "
 " newomake automagic check
-call neomake#configure#automake('nrwi', 500)
 
 " These lines setup the environment to show graphics and colors correctly.
 set nocompatible
@@ -143,7 +170,8 @@ let python_space_errors = 1
 "blet ruby_space_errors = 1
 "let java_space_errors = 1
 
-:au BufNewFile,BufRead AirlineTheme luna
+let g:airline_theme = 'tenderplus'
+
 :au BufNewFile,BufRead *.jinja set filetype=jinja
 
 " Change the Pmenu colors so they're more readable.
@@ -215,12 +243,20 @@ set grepformat=%f:%l:%c:%m
 if exists("$VIRTUAL_ENV")
     let g:python3_host_prog=substitute(system("which -a python3 | head -n1 | tail -n1"), "\n", '', 'g')
 else
-    let g:python3_host_prog=substitute(system("which python3"), "\n", '', 'g')
+    let g:python3_host_prog=substitute(system("which -a python3.4 | head -n1 | tail -n1"), "\n", '', 'g')
 endif
-luafile $HOME/.config/nvim/iron.plugin.lua
+"luafile $HOME/.config/nvim/iron.plugin.lua
 
 set foldenable          " enable folding
 set foldlevelstart=10   " open most folds by default
 set foldnestmax=10      " 10 nested fold max
 set foldmethod=indent   " fold based on indent level
 
+if (has("termguicolors"))
+ set termguicolors
+endif
+
+nmap <silent> <leader>m :Unite mapping<CR>
+nmap <silent> <F4> :Unite outline<CR>
+nmap <silent> <F3> :Semshi toggle<CR>
+let g:deoplete#auto_complete_delay = 100
