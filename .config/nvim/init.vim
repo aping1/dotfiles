@@ -1,4 +1,5 @@
 "
+"G
 "
 " ~/.vimrc (local shell)
 "
@@ -9,12 +10,12 @@ set smartcase
 
 set shell=/usr/local/bin/zsh
 set encoding=utf8
+set ambiwidth=double
 set ffs=unix,dos,mac
 set nobackup
 set noswapfile
 set incsearch
-set title
-set showmode
+"set showmode
 set wildmenu
 set history=1000
 
@@ -45,6 +46,14 @@ set ai
 set expandtab
 set hlsearch
 
+:set number relativenumber
+
+:augroup numbertoggle
+:  autocmd!
+:  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+:  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+:augroup END
+
 " -----
 " 24-bit colors
 " -----
@@ -64,7 +73,6 @@ if (empty($TMUX))
     set termguicolors
   endif
 endif
-set termguicolors
 set clipboard=unnamedplus
 
 
@@ -77,13 +85,19 @@ call plug#begin()
 Plug 'flazz/vim-colorschemes'
 Plug 'tibabit/vim-templates'
 Plug 'iCyMind/NeoSolarized'
-
-Plug 'amiorin/vim-project'
-
 Plug 'rakr/vim-one'
 
-Plug 'scrooloose/nerdcommenter'
+" Projects
+Plug 'amiorin/vim-project'
+
+" Auto color hex
+Plug 'lilydjwg/Colorizer'
+
+" NERD Tree
 Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdcommenter'
+
+" fuzzy find 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
 Plug 'SidOfc/mkdx'
@@ -96,8 +110,9 @@ Plug 'plytophogy/vim-virtualenv', { 'for' : 'python' }
 Plug 'lambdalisue/vim-pyenv', { 'for' : 'python' }
 Plug 'scrooloose/nerdtree'
 
-Plug 'zchee/deoplete-jedi'
+Plug 'zchee/deoplete-jedi' 
 Plug 'deoplete-plugins/deoplete-go', { 'for' : 'go', 'do': 'make'}
+Plug 'tweekmonster/deoplete-clang2'
 Plug 'Shougo/denite.nvim'
 
 if has('nvim')
@@ -107,11 +122,13 @@ else
     Plug 'roxma/nvim-yarp'
     Plug 'roxma/vim-hug-neovim-rpc'
 endif
-Plug 'davidhalter/jedi-vim'
+
+Plug 'davidhalter/jedi-vim', { 'branch': 'master' }
  
 " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
+Plug 'ryanoasis/vim-devicons'
 
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
@@ -138,7 +155,7 @@ Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh \| UpdateRemotePlugins' }
 " Git gutter
 Plug 'mhinz/vim-signify'
 
-Plug '~/.doftiles/projects'
+Plug '~/.doftiles/vim/projects'
 
 " Session 
 "Plug 'tpope/vim-obsession'
@@ -304,44 +321,102 @@ let g:jedi#use_splits_not_buffers = "right"
 " <leader>r: rename a name
 
 if jedi#init_python()
-  function! s:python_from_env() 
-    if exists("$VIRTUAL_ENV")
-        let g:python3_host_prog=substitute(system("which -a python3 | head -n1 | tail -n1"), "\n", '', 'g')
-    jelse
-        let g:python3_host_prog=substitute(system("which python3"), "\n", '', 'g')
-    endif
-  endfunction
   function! s:jedi_auto_force_py_version() abort
     let g:jedi#force_py_version = pyenv#python#get_internal_major_version()
+    let g:python_host_prog  = '/usr/local/bin/python'
+    if empty(glob(g:python_host_prog))
+        " Fallback if not exists
+        let g:python_host_prog = '/usr/bin/python'
+    endif
+    let g:python3_host_prog = ''
+    if executable("python3")
+        " get local python from $PATH (virtualenv/anaconda or system python)
+        let s:python3_local = substitute(system("which python3"), '\n\+$', '', '')
+        " detect whether neovim package is installed
+        let s:python3_neovim_path = substitute(system("python3 -c 'import neovim; print(neovim.__path__)' 2>/dev/null"), '\n\+$', '', '')
+        if !empty(s:python3_neovim_path)
+            " neovim available, use it as a host python3
+            let g:python3_host_prog = s:python3_local
+        endif
+    else
+        let s:python3_local = ''
+    endif
+
+    " Fallback to system python3 (if not exists)
+    if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = '~/.envs/shim/python3'   | endif
+    if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = '/usr/local/bin/python3' | endif
+    if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = '/usr/bin/python3'       | endif
+    if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = s:python3_local          | endif
+
+    " VimR support {{{
+    " @see https://github.com/qvacua/vimr/wiki#initvim
+    if has('gui_vimr')
+        set title
+    endif
+    " }}}
+    if exists("$VIRTUAL_ENV")
+        let g:python_host_prog=substitute(system("which -a python3 | head -n2 | tail -n1"), '\n', '', 'g')
+    else
+        let g:python_host_prog=substitute(system("which python3"), '\n', '', 'g')
+    endif
   endfunction
   augroup vim-pyenv-custom-augroup
     autocmd! *
     autocmd User vim-pyenv-activate-post   call s:jedi_auto_force_py_version()
     autocmd User vim-pyenv-deactivate-post call s:jedi_auto_force_py_version()
-    autocmd User vim-pyenv-activate-post call s:python_from_env()
   augroup END
 endif
+
+"----------------------------------------------
+" Plugin 'zchee/deoplete-jedi'
+"----------------------------------------------
 
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 " use tab
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
+
+
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
-" Error and warning signs.
-let g:ale_sign_error = '⤫'
+" Gutter Error and warning signs.
+let g:ale_sign_error = '⤫' 
 let g:ale_sign_warning = '⚠'
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
+
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
+let g:ale_open_list = 1
+" Set this if you want to.
+" This can be useful if you are combining ALE with
+" some other plugin which sets quickfix errors, etc.
+let g:ale_keep_list_window_open = 1
+" Set this if you want to.
 " Enable integration with " Check Python files with flake8 and pylint.
 let b:ale_linters = { 'python': ['flake8', 'pylint', 'mypy' ] }
 " Fix Python files with autopep8 and yapf.
-let b:ale_fixers = { 'python' : ['autopep8', 'yapf'] }
+let b:ale_fixers = { 'python' : ['autopep8', 'yapf'],
+            \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
+
+" user environment
+let g:ale_virtualenv_dir_names = []
+
+let g:ale_python_auto_pipenv =1
+
+
+:nmap ]a :ALENextWrap<CR>
+:nmap [a :ALEPreviousWrap<CR>
+:nmap ]A :ALELast
+:nmap [A :ALEFirst
 "
+"----------------------------------------------
+" Plugin 'ryanoasis/vim-devicons'
+"----------------------------------------------
+let g:webdevicons_enable_denite = 1
+
 "----------------------------------------------
 " Plugin: 'itchyny/lightline.vim'
 "----------------------------------------------
@@ -355,40 +430,69 @@ let b:ale_warn_about_trailing_whitespace = 0
 
 let g:lightline = {
       \ 'active': {
-      \   'left': [ [  'mode', 'paste' ],
-      \             [ 'readonly', 'filename', 'modified', 'spell' ] ],
-      \   'right': [ [ 'gitbranch', 'filename', 'lineno', 
-      \                'linter_checking', 'linter_errors',
-      \                'linter_warnings', 'linter_ok', 'percent' ] ],
+      \   'left': [ [  'mode', 'paste', 'spell' ],
+      \             [ 'pyenv', 'pyenv_active' ],
+      \             ['gitbranch', 'fugitive' ] ],
+      \   'right': [ ['filename', 'lineno', 'percent' ], 
+      \              [ 'filetype', 'fileformat', 'readonly' ],
+      \              [ 'linter_checking', 'linter_errors',
+      \                'linter_warnings', 'linter_ok'  ]
+      \            ]
       \ },
-      \ 'colorscheme' : 'one'
-      \ }
-
-
-function! LightlineFilename()
-  let filename = expand('%:t') !=# '' ? expand('%:t') : '[No Name]'
-  let modified = &modified ? ' +' : ''
-  return filename . modified
-endfunction
-
-let g:lightline#ale#indicator_checking = "\uf110 "
-let g:lightline#ale#indicator_warnings = "\uf071 "
-let g:lightline#ale#indicator_errors = "\uf05e "
-let g:lightline#ale#indicator_ok = "\uf00c "
-let g:lightline.component_expand = {
+      \ 'seperator' : { 'right': '', 'left': '' },
+      \ 'subseperator' : { 'right': '', 'left': '' },
+      \ 'component_expand' : {
       \  'linter_checking': 'lightline#ale#checking',
       \  'linter_warnings': 'lightline#ale#warnings',
       \  'linter_errors': 'lightline#ale#errors',
       \  'linter_ok': 'lightline#ale#ok',
-      \   'filename': 'LightlineFilename',
-      \   'gitbranch': 'fugitive#head'
-      \ }
-let g:lightline.component_type = {
+      \  'pyenv': 'pyenv#pyenv#get_activated_env',
+      \  'gitbranch': 'fugitive#head'
+      \ },
+      \ 'component': {
+      \   'spell': '%{&spell?&spelllang:""}',
+      \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
+      \   'fugitive': '%{&filetype=="help"?"":exists("*FugitiveStatusline")?FugitiveStatusline():""}',
+      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?"\uf00c":""}'
+      \ },
+      \ 'component_visible_condition': {
+      \   'readonly': '(&filetype!="help"&& &readonly)',
+      \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
+      \   'fugitive': '(&filetype!="help"&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
+      \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())'
+      \ },
+      \ 'component_type': {
       \     'linter_checking': 'left',
       \     'linter_warnings': 'warning',
       \     'linter_errors': 'error',
       \     'linter_ok': 'left',
+      \     'pyenv_active': 'ok'
+      \ },
+      \ 'component_function': {
+      \   'filetype': 'MyFiletype',
+      \   'fileformat': 'MyFileformat',
+      \   'method': 'NearestMethodOrFunction'
+      \ },
+      \ 'colorscheme' : 'one',
       \ }
+
+function! NearestMethodOrFunction() abort
+  return get(b:, 'vista_nearest_method_or_function', '')
+endfunction
+
+function! MyFiletype()
+return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+endfunction
+
+function! MyFileformat()
+return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
+endfunction
+
+
+let g:lightline#ale#indicator_checking = "\uf110"
+let g:lightline#ale#indicator_warnings = "\uf071"
+let g:lightline#ale#indicator_errors = "\uf05e"
+let g:lightline#ale#indicator_ok = "\uf00c"
 
 "----------------------------------------------
 " Plugin: bling/vim-go
@@ -490,6 +594,10 @@ highlight PmenuSel ctermbg=black ctermfg=white
 "  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
 "  au WinLeave * setlocal nocursorline
 "augroup END
+"
+" --------------------------------------------
+" Plugin: 'numirias/semshi'
+" --------------------------------------------
 function! SemhiOneHighlights()
 hi semshiLocal           ctermfg=209 guifg=#e06c75
 hi semshiGlobal          ctermfg=214 guifg=#56b6c2
@@ -501,10 +609,11 @@ hi semshiBuiltin         ctermfg=207 guifg=#c678dd
 hi semshiAttribute       ctermfg=49  guifg=#98c379
 hi semshiSelf            ctermfg=249 guifg=#abb2bf
 hi semshiUnresolved      ctermfg=226 guifg=#e5c07b cterm=underline gui=underline
-hi semshiSelected        ctermfg=231 guifg=#ffffff ctermbg=161 guibg=#d7005f
+hi semshiSelected        ctermfg=231 guifg=#ffffff ctermbg=161 guibg=#C61C6F
 
-hi semshiErrorSign       ctermfg=231 guifg=#ffffff ctermbg=160 guibg=#e06c75
-hi semshiErrorChar       ctermfg=231 guifg=#ffffff ctermbg=160 guibg=#e06c75
+hi semshiErrorSign       ctermfg=231 guifg=#000000 ctermbg=160 guibg=#e06c75
+hi semshiErrorChar       ctermfg=231 guifg=#000000 ctermbg=160 guibg=#e06c75
 endfunction
+
 autocmd FileType python call SemhiOneHighlights()
 
