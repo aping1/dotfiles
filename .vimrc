@@ -53,18 +53,14 @@ set rtp+=~/.vim/bundle/Vundle.vim
 " set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 
 call vundle#begin()
-Plugin 'tmux-plugins/vim-tmux'
-Plugin 'javascript.vim'
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'flazz/vim-colorschemes'
 "Plugin 'severin-lemaignan/vim-minimap'
 Plugin 'tpope/vim-scriptease'
-Plugin 'cocoa.vim'
-Plugin 'applescript.vim'
+"Plugin 'applescript.vim'
 Plugin 'Tagbar'
 Plugin 'vim-flake8'
 Plugin 'SimpylFold'
-Plugin 'itspriddle/vim-marked'
 " other packages, run ' vim +PluginInstall +qall ' to up date them
 Plugin 'lifepillar/vim-solarized8'
 Plugin 'tpope/vim-fugitive'
@@ -75,7 +71,6 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/ag.vim'
 Plugin 'rizzatti/dash.vim'
-Plugin 'christoomey/vim-tmux-navigator'
 
 
 Plugin 'godlygeek/tabular'
@@ -86,7 +81,6 @@ Plugin 'vim-scripts/gitdiff.vim'
 Plugin 'vim-scripts/pdbvim'
 "Plugin 'solarnz/thrift.vim'
 
-Plugin 'Markdown'
 
 Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -226,6 +220,3 @@ au BufNewFile COMMIT_EDITING let syntax = diff
 " Use ag for vimgrep
 set grepprg=ag\ --vimgrep\ $* 
 set grepformat=%f:%l:%c:%m
-
-" Open markd
-
