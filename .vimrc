@@ -50,34 +50,28 @@ set hlsearch
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
-"set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+" set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 
 call vundle#begin()
-Plugin 'tmux-plugins/vim-tmux'
-Plugin 'javascript.vim'
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'severin-lemaignan/vim-minimap'
+Plugin 'flazz/vim-colorschemes'
+"Plugin 'severin-lemaignan/vim-minimap'
 Plugin 'tpope/vim-scriptease'
-Plugin 'cocoa.vim'
-Plugin 'applescript.vim'
+"Plugin 'applescript.vim'
 Plugin 'Tagbar'
 Plugin 'vim-flake8'
 Plugin 'SimpylFold'
-Plugin 'itspriddle/vim-marked'
 " other packages, run ' vim +PluginInstall +qall ' to up date them
 Plugin 'lifepillar/vim-solarized8'
 Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'saltstack/salt-vim'
-Plugin 'scrooloose/syntastic'
-Plugin 'Valloric/YouCompleteMe'
+"Plugin 'saltstack/salt-vim'
+"Plugin 'scrooloose/syntastic'
+"Plugin 'Valloric/YouCompleteMe'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/ag.vim'
 Plugin 'rizzatti/dash.vim'
-Plugin 'christoomey/vim-tmux-navigator'
 
-Plugin 'LucHermitte/lh-vim-lib'
-Plugin 'LucHermitte/alternate-lite'
 
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
@@ -85,28 +79,28 @@ Plugin 'tpope/vim-obsession'
 Plugin 'vim-scripts/vim-misc'
 Plugin 'vim-scripts/gitdiff.vim'
 Plugin 'vim-scripts/pdbvim'
-Plugin 'solarnz/thrift.vim'
+"Plugin 'solarnz/thrift.vim'
 
-Plugin 'Markdown'
 
 Plugin 'bling/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 " Local Shortccuts
-Plugin 'file:///Users/aping1/.dotfiles/vim/allieshortcuts'|
-Plugin 'file:///Users/aping1/.dotfiles/vim/dotfiles.local'
+Plugin 'file:///home/aping1/.dotfiles/vim/colorscheme'
 
 " uses pygtk
-" Plugin 'vim-scripts/VIM-Color-Picker' " A simple color picker for VIM, based on GTK color chooser dialog.
-Plugin 'vim-scripts/ColorX' " A script that lets you insert hex color codes by using OS X's color picker
+" A simple color picker for VIM, based on GTK color chooser dialog.
+" Plugin 'vim-scripts/VIM-Color-Picker'
+" A script that lets you insert hex color codes by using OS X's color picker
+" Plugin 'vim-scripts/ColorX'
 
 call vundle#end()
 filetype plugin indent on     " required
 
 " These lines setup the environment to show graphics and colors correctly.
 set nocompatible
- 
+
 " Quickly close in gui mode
-if ! has('gui_running') 
+if ! has('gui_running')
    set ttimeoutlen=10
    augroup FastEscape
       autocmd!
@@ -115,50 +109,10 @@ if ! has('gui_running')
    augroup END
 endif
 
-
-""""""""""""""""""""""""""""
-"""" Format ExtraWhitespace
-"""""""""""""""""""""""""""
-" http://vim.wikia.com/wiki/Highlight_unwanted_spaces
-:highlight ExtraWhitespace ctermbg=red guibg=red
-" Colorize listchars to be black
-" Using before the first colorscheme command will ensure that the highlight group gets created and is not cleared by future colorscheme commands
-:autocmd ColorScheme * highlight SpecialKey ctermbg=0 ctermfg=232
-:autocmd ColorScheme * hi TagbarSignature ctermfg=3 ctermbg=0 cterm=bold
-:autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
-
-:autocmd ColorScheme * hi CursorLine ctermfg=136 ctermbg=0 cterm=NONE
-highlight ColorColumn ctermbg=lightblue
-call matchadd('ColorColumn', '\%81v', 100)
-
-" Show trailing whitespace:
-:match ExtraWhitespace /\s\+$/
-" Show trailing whitespace and spaces before a tab:
-:match ExtraWhitespace /\s\+$\| \+\ze\t/
-" Show tabs that are not at the start of a line:
-" :match ExtraWhitespace /[^\t]\zs\t\+/
-
-" Show spaces used for indenting (so you use only tabs for indenting).
-" :match ExtraWhitespace /^\t*\zs \+/
-
-" The following pattern will match trailing whitespace, except when typing at 
-" the end of a line.
-:match ExtraWhitespace /\s\+\%#\@<!$/
-" Switch off :match highlighting.
-":match
-
-" If you use this alternate pattern, you may want to consider using the 
-" following autocmd to let the highlighting show up as soon as you leave insert
-" mode after entering trailing whitespace:
-:autocmd InsertLeave * redraw!
-:au InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-:au InsertLeave * match ExtraWhitespace /\s\+$/
-
 "let c_space_errors = 0
 let python_space_errors = 1
 "blet ruby_space_errors = 1
 "let java_space_errors = 1
-
 
 " memory leak problem
 if version >= 702
@@ -246,49 +200,6 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 "au FileType xml exe ":silent 1, $!xmllint --format --recover - 2> /dev/null"
 "au FileType json exe ":silent 1, $!jq . - 2> /dev/null"
 
-" 
-if has('gui_running')
-set background=light
-set guifont=Source\ Code\ Pro\ for\ Powerline:h12
-let base17colorspace=256        " Access colors present in 256 colorspace
-colorscheme macvim
-colorscheme solarized8_high
-else
-set background=dark
-" FIXME: the following fixes some out of order colorscheme load
-:autocmd ColorScheme * colorscheme solarized8_high
-:autocmd BufWinEnter,BufNewFile * set clipboard=unnamed
-:autocmd ColorScheme * hi Comment cterm=NONE
-colorscheme solarized8_high
-endif
-" Configure UI {
-set term=xterm-256color
-" set term=screen-256color
-set t_Co=256
-" set t_Co=16
-colorscheme solarized8_high
-"set nofoldenable                " disable code folding
-syntax enable
-" }
-"  https://github.com/lifepillar/vim-solarized8
-let g:solarized_term = 1
-let g:solarized_visibility = ""
-let g:solarized_contrast   = "high"
-let g:solarized_termtrans = 1
-let g:solarized_termcolors= 256
-let g:solarized_statusline=1
-let g:solarized_term_italics= 0
-" Airline
-let g:airline#extensions#tabline#enabled = 1
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
-let g:airline_powerline_fonts = 1
-let g:airline_symbols.space = "\ua0"
-let g:airline_powerline_fonts = 1
-let g:minBufExplForceSyntaxEnable = 1
-let g:airline_theme='solarized'
-
 set mouse+=a
 if &term =~ '^screen' || &term =~ '^xterm'
     " tmux knows the extended mouse mode
@@ -309,6 +220,3 @@ au BufNewFile COMMIT_EDITING let syntax = diff
 " Use ag for vimgrep
 set grepprg=ag\ --vimgrep\ $* 
 set grepformat=%f:%l:%c:%m
-
-" Open markd
-

@@ -12,7 +12,12 @@
         cmd = opendiff \"$LOCAL\" \"$REMOTE\"
         path = 
 [mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
+        cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+            trustExitCode = true
 [commit]
-	template = /Users/awampler/.stCommitMsg
+        template = /Users/aping1/.stCommitMsg
+
+[http]
+	proxy = fwdproxy:8080
+[https]
+	proxy = fwdproxy:8080
