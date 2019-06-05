@@ -1,3 +1,4 @@
+#! /usr/bin/env zsh
 # Python stuff
 
 if whence pyenv &>/dev/null; then
