@@ -1,14 +1,14 @@
 #!/usr/bin/env zsh
 #
-#
-#
 if [[ $0 == /bin/bash ]] ; then
     _remote_local_script=${HOME}/.dotfiles/plugins/remote
     exec zsh $_remote_local_script/init.zsh
 else
-    _remote_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+    _remote_local_script="$( cd $(dirname "${0:A}") &>/dev/null; pwd -P;)"
 fi
-source "${_remote_local_script}/utils.zsh"
+if [[ -x "${_remote_local_script}/utils.zsh" ]] ; then
+    source "${_remote_local_script}/utils.zsh"
+fi
 
 plugins=( $(find "${_remote_local_script}"  -mindepth 2 -name "init.zsh" 2>/dev/null ) )
 for PLUGIN_FILE in ${plugins[@]}; do

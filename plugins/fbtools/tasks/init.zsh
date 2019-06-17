@@ -1,17 +1,16 @@
 # /usr/local/bin/zsh || /usr/bin/zsh
 
-command -v realpath &>/dev/null || return 2
-
 if [[ $0 == /bin/bash ]] ; then
     _fbtools_tasks_local_script=${HOME}/.dotfiles/plugins/fbtools/tasks
     exec zsh $_fbtools_tasks_local_script/init.zsh
 else
-    _fbtools_tasks_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+    _fbtools_tasks_local_script="$( cd $(dirname "${0:A}") &>/dev/null; pwd -P;)"
 fi
 if ! [[ ${_fbtools_tasks_local_script} =~ fbtools ]]; then
     _fbtools_tasks_local_script=${HOME}/.dotfiles/plugins/fbtools/tasks
 fi
-_tmux_scripts="$(realpath -e ${_fbtools_tasks_local_script%/}/../tmux/scripts)"
+_tmux_scripts="${_fbtools_tasks_local_script%/}/../tmux/scripts"
+_tmux_scripts="${_tmux_scripts:A}"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 
 <<<<<<< HEAD
@@ -25,7 +24,8 @@ TASK_REGEX='-?T([0-9][0-9]*)$'
 export TASK_ROOT_DIR
 : ${TASK_LINK:=${TASK_ROOT_DIR}/current}
 
-_proj_scripts="$(realpath -e ${_fbtools_tasks_local_script%/}/../projects/init.zsh)"
+_proj_scripts="{_fbtools_tasks_local_script%/}/../projects/init.zsh"
+_proj_scripts=${_proj_scripts:A}
 
 ### START FUNCTIONS =====
 #
@@ -55,7 +55,7 @@ function _fb_tasks_helper_is_valid_task () {
 function _fb_tasks_helper_is_current_task () {
     local _TASK_ARG=$1
     if _fb_tasks_helper_is_valid_task "${_TASK_ARG}" || return 2; then
-        _CURRENT_LINK="$(basename $(realpath -e ${TASK_LINK}))"
+        _CURRENT_LINK="$(basename ${TASK_LINK:A})"
         [[ ${_TASK_ARG} == ${_CURRENT_LINK} ]] && return 0
         return 1
     fi
@@ -88,7 +88,8 @@ function _fb_tasks_helper_task_root {
     _NEW_TASK=${1:-$(current_task)}
     [[  $_NEW_TASK =~ '/' ]] && _NEW_TASK=$(basename ${_NEW_TASK})
     _fb_tasks_helper_is_valid_task ${_NEW_TASK} || return 1
-    realpath -e "${TASK_ROOT_DIR%/}/${_CURRENT_LINK}"
+    local task_link="${TASK_ROOT_DIR%/}/${_CURRENT_LINK}"
+    echo "${task_link:A}"
 }
 
 function _fb_tasks_helper_set_task () {
@@ -108,7 +109,7 @@ function _fb_tasks_helper_set_task () {
 alias set_task='_fb_tasks_helper_set_task'
 
 if [[ -h ${TASK_LINK} ]] ; then
-   _CURRENT_TASK_LINK="$(basename $(realpath -e ${TASK_LINK}))"
+   _CURRENT_TASK_LINK="$(basename ${TASK_LINK:A})"
 elif [[ -e ${TASK_LINK} ]] ; then
     printf 'ERROR: current is not link\n' >&2
     return 1
@@ -171,5 +172,5 @@ alias task_home='[[ -h ${TASK_LINK} ]] && cd $(realpath -e ${TASK_LINK})'
 >>>>>>> 4fd8a41... fbtools: update imports
 alias set_task_from_session='_fb_tasks_helper_set_task_from_session_name'
 alias goto_task_session='_fb_tasks_helper_change_session_to_cur_task'
-alias cd_to_task_home='cd $(realpath -e $(task_home))'
+alias cd_to_task_home='cd $(cd $(task_home) && pwd -P)'
 alias cdt='cd_to_task_home'

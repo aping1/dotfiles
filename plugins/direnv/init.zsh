@@ -5,7 +5,7 @@
 #     _direnv_local_script=${HOME}/.dotfiles/plugins/direnv
 #     exec $_direnv_local_script/init.zsh
 # else
-#     _direnv_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+#     _direnv_local_script="$( cd $(dirname "${0}") &>/dev/null; pwd -P;)"
 # fi
 # if [[ ! ${_direnv_local_script} =~ direnv ]]; then
 #     _direnv_local_script=${HOME}/.dotfiles/plugins/direnv
