@@ -286,11 +286,12 @@ function _fb_projects_helper_add_task_to_project() {
 }
 
 function _fb_projects_helper_clean_task() {
+        local _FORCE
+        [[ ${1} == '-f' ]] && _FORCE="Y" && shift
         tasks summary $1 2>/dev/null | tr -d '\t' | read TASK user STATUS pri info
-        if [[ $STATUS == "CLOSED" ]]; then
+        if [[ ${_FORCE} =~ ^[yY] ||  $STATUS == "CLOSED" ]]; then
             read -q "REPLY?Are you sure you want to clean $1: \"${info}\"?[Y/n]"
-            echo
-            if [[ $REPLY =~ ^[nN]$ ]]; then
+            if [[ ${REPLY} =~ ^[nN]$ ]]; then
                 return 0
             fi
             EDENPATH=${2:-"$(_fb_projects_helper_project_task_home $1)/.workdir-*"}
