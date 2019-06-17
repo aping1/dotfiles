@@ -15,6 +15,7 @@ _tmux_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../tmux/scripts
 _tasks_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../tasks/)"
 _fbtools_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../)"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
+# dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 #
 
 source ${_fbtools_scripts}/utils.zsh || return 10
@@ -63,6 +64,24 @@ function _fb_projects_helper_init_projects_here () {
     _fb_projects_helper_is_valid_project "${_PROJNAME}" || return 3
     [[ -e .envrc && -x "${CUR_DIR}/.venv/${_PROJNAME}/bin/activate" ]] && \
         return 0
+export PROJECT_ROOT_DIR
+: ${PROJECT_LINK:=${PROJECT_ROOT_DIR}/current}
+[[ ${TASK_ROOT_DIR} ]] || source ${_tasks_scripts}/init.zsh
+[[ ${TASK_ROOT_DIR} ]] || return 10
+
+function _fb_projects_helper_list_projects () {
+    find "${PROJECT_ROOT_DIR}" -maxdepth 1 -mindepth 1 -type d \
+        -exec basename {} \; 2>/dev/null | while read file; do
+            printf 'P+%s\n' "${file}"
+        done 2>/dev/null
+}
+
+function _fb_projects_helper_init_projects_here () {
+    local CUR_DIR=$(pwd -P)
+    local _NEW_TASK _PROJNAME="P+$(basename ${CUR_DIR})"
+    _fb_projects_helper_is_valid_project "${_PROJNAME}" || return 3
+    [[ -e .envrc && -x "${CUR_DIR}/.venv/${_PROJNAME}/bin/activate" ]] && \
+        return 0
     _fb_projects_helper_project_shortname $_PROJNAME 2>/dev/null | read _b _PROJNAME _a || return $?
     _fb_helper_util_layout_python python3 ${_PROJNAME}
     _fb_helper_util_layout_python python2 ${_PROJNAME}
@@ -77,6 +96,9 @@ function _fb_projects_helper_init_projects_here () {
         break;
     done
 _EOF
+}
+
+function _fb_projects_helper_is_valid_project() {
 }
 
 function _fb_projects_helper_is_valid_project() {
@@ -114,6 +136,7 @@ function _fb_projects_helper_get_projects_home() {
     fi
     realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
 }
+}
 
 
 function _fb_projects_helper_project_shortname() {
@@ -132,6 +155,7 @@ function _fb_projects_helper_project_shortname() {
         _NEW_TASK="${_NEW_TASK:-"$(_fb_projects_helper_project_shortname)"}"
         _PROJNAME=${match[2]}
         _SOMEID=${_SOMEID:-$match[1]}
+    fi
     fi
     printf '%s %s %s\n' "${_SOMEID:-"None"}"h "${_PROJNAME:-"None"}" "${_NEW_TASK}"
 }
@@ -217,6 +241,8 @@ function _fb_projects_helper_clone_project_task() {
                     if [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
                         eval ${TIMEOUT} ${_HG_CLONE:-hg-new-workdir} \
                             "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
+                    fi
+                )
                     fi
                 )
             fi
@@ -319,6 +345,36 @@ function _fb_projects_helper_add_bookmarks_from_list() {
             # get the name of the root repo dir
             REPO_NAME="${_PROJECT_VCS_ROOT:t}"
             [[ ${REPO_NAME} ]] && REPO_NAME="-${REPO_NAME}"
+function _fb_projects_helper_add_bookmarks_from_list() {
+    # FIXME: this function is pre-alpha
+    local _SOMEID
+    local _PROJNAME _LONGNAME=$(_fb_tmux_helper_get_session)
+    _fb_projects_helper_project_shortname ${_LONGNAME} ${_NEW_TASK} 2>/dev/null | \
+        read _SOMEID _PROJNAME _NEW_TASK
+    [[ ${_PROJNAME} ]] || return 1
+    echo $# $*
+    while  [[ "$#" > 0 ]] ; do
+        local repo="${1}"
+        shift
+        if _fb_projects_helper_is_valid_project "P+${_PROJNAME}-${_NEW_TASK}" >/dev/null; then
+            # add task link to project
+            # go to project home based on the project name
+            pushd $(_fb_projects_helper_get_projects_home "P+${_PROJNAME}") &>/dev/null || return 1
+            # setopt xtrace
+            # Look for root working dir
+            _PROJECT_VCS=$(realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}")
+            # Fore each stdin
+            printf 'Finding repo for %s' "${REPO}"
+            ## The repo root, find it
+            REPO_LINK_PATH="$(realpath -e ${repo})"
+            _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
+            while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]]; do
+                [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' || -z "${_PROJECT_VCS_ROOT}" ]] && continue
+                _PROJECT_VCS_ROOT=${_PROJECT_VCS_ROOT:h}
+            done
+            # get the name of the root repo dir
+            REPO_NAME="${_PROJECT_VCS_ROOT:t}"
+            [[ ${REPO_NAME} ]] && REPO_NAME="-${REPO_NAME}"
 
             # the relitive localtion in the workin copy of the project link
             declare -a DIFF_PATH=("${(s./.)REPO_LINK_PATH##${_PROJECT_VCS_ROOT}}")
@@ -366,6 +422,7 @@ function _fb_projects_helper_verify_project() {
         while read line; do
             _PARAM="" _VAL=""
             # Must match A[bcd]=soemthing
+            if [[ line =~ ^([A-Za-z_][A-Za-z0-9]*)=(.*)#?$ ]]; then
             if [[ line =~ ^([A-Za-z_][A-Za-z0-9]*)=(.*)#?$ ]]; then
                 _VAL=match[2]
                 case ${_PARAM:=match[1]} in
@@ -453,6 +510,8 @@ alias cd_to_task_home='cd $(realpath -e $(_fb_projects_helper_project_task_home)
 alias cdt='cd_to_task_home'
 alias project_task_home='_fb_projects_helper_project_task_home'
 alias new_project='_fb_projects_helper_get_projects_home'
+alias project_task_home='_fb_projects_helper_project_task_home'
+alias new_project='_fb_projects_helper_get_projects_home'
 <<<<<<< HEAD
 
 
@@ -460,3 +519,5 @@ alias new_project='_fb_projects_helper_get_projects_home'
 alias summary='tasks summary $(task_from_tmux)'
 alias all_tasks_summary='ls -d $(get_projects_home)/T[^0]*/ | while read task; do tasks summary ${task%/}; done'
 >>>>>>> Clean task fix, cleanup zshrc, .tmux.conf
+alias summary='tasks summary $(task_from_tmux)'
+alias all_tasks_summary='ls -d $(get_projects_home)/T[^0]*/ | while read task; do tasks summary ${task%/}; done'

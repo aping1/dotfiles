@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 #
 #
-_fbtools_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+_fbtools_local_script="$( cd $(dirname "${0:A}") &>/dev/null; pwd -P;)"
 if [[ $0 == /bin/bash || ! ${_fbtools_local_script} =~ fbtools ]] ; then
     _fbtools_local_script=""
 fi
