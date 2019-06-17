@@ -10,7 +10,7 @@ unsetopt function_argzero
 
 # Requerys formst
 setopt PROMPT_SUBST
-export DOTFILES=${(%):-$(realpath "${(%):-%x}")}
+export DOTFILES=${(%):-"${${(%):-%x}:A}"}
 export DOTFILES=${DOTFILES:h}
 export DOTFILES_SCRIPTPATH="$(dirname "$SCRIPT")"
 
