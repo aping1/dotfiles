@@ -1,19 +1,23 @@
 #! /usr/bin/bash
 #! /usr/local/bin/zsh || /usr/bin/zsh
 
-command -v realpath &>/dev/null || return 2
+
 if [[ $0 == /bin/bash ]] ; then
     _fbtools_projects_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
     exec zsh $_fbtools_projects_local_script/init.zsh
 else
-    _fbtools_projects_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+    _fbtools_projects_local_script="$( cd $(dirname "${0:A}") &>/dev/null; pwd -P;)"
 fi
 if ! [[ ${_fbtools_projects_local_script} =~ fbtools ]];then
     _fbtools_projects_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
 fi
-_tmux_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../tmux/scripts)"
-_tasks_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../tasks/)"
-_fbtools_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../)"
+_tmux_scripts="${_fbtools_projects_local_script%/}/../tmux/scripts"
+_tmux_scripts="${_tmux_scripts:A}"
+_tasks_scripts="${_fbtools_projects_local_script%/}/../tasks/"
+_tasks_scripts="${_tasks_scripts:A}"
+_fbtools_scripts="${_fbtools_projects_local_script%/}/../"
+_fbtools_scripts="${_fbtools_scripts:A}"
+
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 #
 
@@ -59,7 +63,7 @@ function _fb_projects_helper_init_projects_here () {
     done
 _EOF
     (
-    cd $(realpath -e "${CUR_DIR}") &>/dev/null
+    cd "${CUR_DIR:A}" &>/dev/null
     direnv allow .
     )
 }
@@ -97,7 +101,9 @@ function _fb_projects_helper_get_projects_home() {
         [[ ${_RET:=$?} == 2 ]] && return 2
         mkdir -p "${HOME}/projects/${_PROJNAME}"
     fi
-    realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
+    local l_path="${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
+    echo "${l_path:A}"
+
 }
 
 
@@ -153,7 +159,8 @@ function _fb_projects_helper_add_task_to_project() {
         fi
         # go to project home based on the project name
         # cd $(_fb_projects_helper_get_projects_home "P+${_PROJNAME}") &>/dev/null || exit 1
-        _TASK_ROOT_DIR=$(realpath -e "${TASK_REL%/}/${_NEW_TASK}")
+        _TASK_ROOT_DIR="${TASK_REL%/}/${_NEW_TASK}"
+        _TASK_ROOT_DIR="${_TASK_ROOT_DIR:A}"
         [[ ${_TASK_ROOT_DIR} ]] && \
             printf 'task.root[%s]=exists\n' "$(pwd -P)${TASK_REL%/}${_NEW_TASK}" >>"${_TASK_ROOT_DIR}/.project" \
             || mkdir -p ${_TASK_ROOT_DIR:=${TASK_REL%/}/${_NEW_TASK}}
@@ -163,7 +170,8 @@ function _fb_projects_helper_add_task_to_project() {
         # create a link to the task in the tasks directory
         [[ -h ${_NEW_TASK} ]] || ln -s "${TASK_REL}/${_NEW_TASK}" &>/dev/null || echo "Failed to link task" >&2
         # Look for root working dir
-        _PROJECT_VCS=$(realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}")
+        _PROJECT_VCS="${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
+        _PROJECT_VCS="${_PROJECT_VCS:A}"
         # for each <project-dir>/repo-name
         # for each link that starts with $_PROJNAME
         printf ';[%s]\n' "$(date -u)" >>"${_TASK_ROOT_DIR}/.project"
@@ -171,8 +179,8 @@ function _fb_projects_helper_add_task_to_project() {
         for repo in "${_PROJECT_VCS%/}/${_PROJNAME:l}"-?*; do
             [[ -h ${repo} ]] || continue
             ## The repo root, find it
-            REPO_LINK_PATH="$(realpath -e ${repo})"
-            _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
+            REPO_LINK_PATH="${repo:A}"
+            _PROJECT_VCS_ROOT="${REPO_LINK_PATH:A}"
             while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]]; do
                 [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' ]] && exit 5
                 _PROJECT_VCS_ROOT=${_PROJECT_VCS_ROOT:h}
@@ -328,7 +336,7 @@ function _fb_projects_helper_add_bookmarks_from_list() {
             # Fore each stdin
             printf 'Finding repo for %s' "${REPO}"
             ## The repo root, find it
-            REPO_LINK_PATH="$(realpath -e ${repo})"
+            REPO_LINK_PATH="${repo:A}"
             _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
             while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]]; do
                 [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' || -z "${_PROJECT_VCS_ROOT}" ]] && continue
