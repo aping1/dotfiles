@@ -2,6 +2,37 @@ local nvim = vim.api
 local impromptu = require("impromptu")
 local iron = require("iron")
 
+_G.repl_globs = function()
+    local globs = _G.split(nvim.nvim_eval('glob(\'/home/aping1/projects/Katchin/*/buck-fbcode.fbsource-fbcode.datainfra.katchin/*/*-ipython.par\')'))
+    local t = "ipython"
+    local nopts = {}
+    local cb = nvim.nvim_get_current_buf()
+    local ft = nvim.nvim_buf_get_option(cb, 'filetype')
+    if not ( ft == 'python' ) then
+        return
+    end
+    for _, kv in ipairs(globs) do
+        nopts[kv] = {
+            description = kv
+        }
+    end
+    impromptu.ask{
+        title = "Select preferred ipython exe",
+        options = nopts,
+        handler = function(_, opt)
+            local repl = iron.ll.get_preferred_repl(ft)
+            if repl ~= nil then
+                repl['command'] = opt.description
+                iron.core.add_repl_definitions{[ft] = { ipython = repl }}
+                iron.core.set_config{preferred = {[ft] = "ipython"}}
+                return true
+            else
+                return false
+            end
+        end
+    }   
+end
+
 _G.set_preferred_repl = function()
     local cb = nvim.nvim_get_current_buf()
     local ft = nvim.nvim_buf_get_option(cb, 'filetype')
@@ -84,6 +115,7 @@ end
 
 nvim.nvim_command("command! -nargs=0 PickRepl lua set_preferred_repl()")
 nvim.nvim_command("command! -nargs=0 PickVirtualenv lua set_virtualenv()")
+nvim.nvim_command("command! -nargs=0 PickIPython lua repl_globs()")
 
 =======
 

@@ -89,6 +89,7 @@ call plug#begin()
 Plug 'flazz/vim-colorschemes'
 Plug 'tibabit/vim-templates'
 Plug 'iCyMind/NeoSolarized'
+Plug 'jacoborus/tender.vim'
 Plug 'rakr/vim-one'
 Plug 'Chiel92/vim-autoformat'
 Plug 'leshill/vim-json'
@@ -438,7 +439,10 @@ inoremap <silent><expr> <TAB>
       \ <SID>check_back_space() ? "\<TAB>" :
       \ deoplete#manual_complete()
 
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
+<<<<<<< HEAD
 augroup deopleteExtre
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
