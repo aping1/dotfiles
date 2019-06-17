@@ -75,6 +75,13 @@ if (empty($TMUX))
 endif
 set clipboard=unnamedplus
 
+if exists("$VIRTUAL_ENV")
+    let g:python_host_prog=substitute(system("which -a python3 | head -n2 | tail -n1"), '\n', '', 'g')
+    let g:python3_host_prog=g:python_host_prog
+else
+    let g:python_host_prog=substitute(system("which python3"), '\n', '', 'g')
+    let g:python3_host_prog=g:python_host_prog
+endif
 
 "
 " -----------------------
@@ -319,6 +326,7 @@ let g:jedi#completions_enabled = 0
 let g:jedi#use_splits_not_buffers = "right"
 " <leader>n: show the usage of a name in current file
 " <leader>r: rename a name
+
 
 if jedi#init_python()
   function! s:jedi_auto_force_py_version() abort
