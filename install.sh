@@ -1,7 +1,7 @@
 #!/bin/zsh
-[[ "${_REALPWD="$(realpath ${PWD})"}" == "$(realpath ${HOME})" ]] || printf 'ERROR: pwd should be \${HOME} not \"%s\"' "${_REALPWD}"
+[[ "${PWD:A}"}" -ef "${HOME}" ]] || printf 'ERROR: pwd should be \${HOME} not \"%s\"' "${_REALPWD}"
 unsetopt function_argzero
-SCRIPT="$(realpath "${(%):-%x}")"
+SCRIPT="${${(%):-%x}:A)"
 SCRIPTPATH="$(dirname "$SCRIPT")"
 : "${DOTFILES:="$HOME/.dotfiles"}"
 : "${DEPFILES:="$HOME/.dotfiles/deps"}"
@@ -87,7 +87,7 @@ ln -s ${DOTFILES}/prezto "${ZDOTDIR:-$HOME}/.zprezto"
 ~/.dotfiles/powerline-fonts/install.sh
 
 # TODO: Install vim-solarized8
-# TODO: Install https://github.com/gabrielelana/awesome-terminal-fonts 
+# TODO: Install https://github.com/gabrielelana/awesome-terminal-fonts
 
 "${DEPFILES}/fonts/install.sh"
 ln -s "${HOME}/Library/Containers/com.hogbaysoftware.TaskPaper3/Data/Library/Application Support/TaskPaper/StyleSheets/solarized_walton.less" "${DOTFILES}/themes/TaskPaper/solarized_walton.less"
