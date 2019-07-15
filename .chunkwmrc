@@ -140,6 +140,8 @@ chunkc tiling::rule --owner Finder --name Copy --state float &
 chunkc tiling::rule --owner \"App Store\" --state float &
 chunkc tiling::rule --owner \"Alfred Preferences\" --state float &
 chunkc tiling::rule --owner \"iTunes\" --state float &
+chunkc tiling::rule --owner \"VMware Fusion\" --state float &
+chunkc tiling::rule --owner \"Ubuntu 64-bit\" --state float &
 chunkc tiling::rule --owner \"MenuBar Stats\" --state float &
 chunkc tiling::rule --owner \"1Password 7\" --state float &
 chunkc tiling::rule --owner Emacs --except "^$" --state tile &

@@ -1,23 +1,20 @@
-"
-"G
-"
 " ~/.vimrc (local shell)
-"
 
 set ruler
 set ignorecase
+
 set smartcase
 
 set shell=/usr/local/bin/zsh
 set encoding=utf8
 set ambiwidth=double
-set ffs=unix,dos,mac
+set fileformats=unix,dos,mac
 set nobackup
 set noswapfile
 set incsearch
 "set showmode
 set wildmenu
-set history=1000
+set history=10000
 
 try
     set undodir=~/.vim_runtime/undodir
@@ -40,9 +37,9 @@ set foldcolumn=2
 set laststatus=2
 set number
 
-set ts=4
-set sw=4
-set ai
+set tabstop=4
+set shiftwidth=4
+set autoindent 
 set expandtab
 set hlsearch
 
@@ -62,14 +59,14 @@ set hlsearch
 "If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
 "(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
 if (empty($TMUX))
-  if (has("nvim"))
+  if (has('nvim'))
   "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
   let $NVIM_TUI_ENABLE_TRUE_COLOR=1
   endif
   "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
   "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
   " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
-  if (has("termguicolors"))
+  if (has('termguicolors'))
     set termguicolors
   endif
 endif
@@ -77,6 +74,13 @@ set clipboard=unnamedplus
 
 
 "
+if exists('$VIRTUAL_ENV')
+    let g:python_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
+    let g:python3_host_prog=g:python_host_prog
+else
+    let g:python_host_prog=substitute(system('which python3'), '\n', '', 'g')
+    let g:python3_host_prog=g:python_host_prog
+endif
 " -----------------------
 
 call plug#begin()
@@ -86,6 +90,8 @@ Plug 'flazz/vim-colorschemes'
 Plug 'tibabit/vim-templates'
 Plug 'iCyMind/NeoSolarized'
 Plug 'rakr/vim-one'
+Plug 'Chiel92/vim-autoformat'
+Plug 'leshill/vim-json'
 
 " Projects
 Plug 'amiorin/vim-project'
@@ -108,12 +114,17 @@ Plug 'w0rp/ale'
 Plug 'bfredl/nvim-ipy', { 'for' : 'python' }
 Plug 'plytophogy/vim-virtualenv', { 'for' : 'python' }
 Plug 'lambdalisue/vim-pyenv', { 'for' : 'python' }
-Plug 'scrooloose/nerdtree'
+Plug 'jeetsukumaran/vim-pythonsense', { 'for' : 'python' }
 
 Plug 'zchee/deoplete-jedi' 
 Plug 'deoplete-plugins/deoplete-go', { 'for' : 'go', 'do': 'make'}
 Plug 'tweekmonster/deoplete-clang2'
-Plug 'Shougo/denite.nvim'
+
+Plug 'Shougo/denite.nvim', { 'branch': 'master' }
+Plug 'dunstontc/denite-mapping'
+
+Plug 'Shougo/neoinclude.vim'
+Plug 'Shougo/context_filetype.vim'
 
 if has('nvim')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -129,6 +140,8 @@ Plug 'davidhalter/jedi-vim', { 'branch': 'master' }
 Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
 Plug 'ryanoasis/vim-devicons'
+Plug 'povilasb/neovim-ascii-diagram'
+Plug '~/code/vim-mikrotik', { 'for': 'rsc' }
 
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
@@ -137,12 +150,14 @@ Plug 'scrooloose/nerdtree'
 Plug 'sbdchd/neoformat'
 Plug 'neomake/neomake'
 Plug 'tmhedberg/SimpylFold'
+Plug 'Konfekt/FastFold'
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 Plug 'Vigemus/iron.nvim'
 
 
 Plug 'Vigemus/impromptu.nvim'
 Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoUpdateBinaries' }
+
 
 " Indent lines
 Plug 'nathanaelkane/vim-indent-guides'
@@ -154,6 +169,12 @@ Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh \| UpdateRemotePlugins' }
 
 " Git gutter
 Plug 'mhinz/vim-signify'
+
+
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 
 Plug '~/.doftiles/vim/projects'
 
@@ -202,7 +223,7 @@ let g:nvimgdb_config_override = {
   \ 'key_continue': 'c',
   \ 'key_until': 'u',
   \ 'key_breakpoint': 'b',
-  \ 'set_tkeymaps': "NvimGdbNoTKeymaps",
+  \ 'set_tkeymaps': 'NvimGdbNoTKeymaps',
   \ }
 
 "----------------------------------------------
@@ -233,7 +254,7 @@ fun! s:MkdxFzfQuickfixHeaders()
     " this allows you to create a 'source' for fzf.
     " first we map each item (formatted for quickfix use) using the function MkdxFormatHeader()
     " then, we strip out any remaining empty headers.
-    let headers = filter(map(mkdx#QuickfixHeaders(0), function('<SID>MkdxFormatHeader')), 'v:val != ""')
+    let headers = filter(map(mkdx#QuickfixHeaders(0), function('<SID>MkdxFormatHeader')), 'v:val !=? ""')
 
     " run the fzf function with the formatted data and as a 'sink' (action to execute on selected entry)
     " supply the MkdxGoToHeader() function which will parse the line, extract the line number and move the cursor to it.
@@ -245,10 +266,27 @@ endfun
 " finally, map it -- in this case, I mapped it to overwrite the default action for toggling quickfix (<PREFIX>I)
 nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
 
-let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
+
+let g:mkdx#settings = { 'highlight': { 'enable': 1 },
+                        \ 'enter': { 'shift': 1 },
+                        \ 'links': { 'external': { 'enable': 1 } },
+                        \ 'toc': { 'text': 'Table of Contents', 'update_on_write': 1 },
+                        \ 'fold': { 'enable': 1 },
+                        \ 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 
 " newomake automagic check
-call neomake#configure#automake('nrwi', 500)
+call neomake#configure#automake('nrw', 500)
+let g:neomake_open_list = 2
+
+" function! MyOnBattery()
+"   return readfile('/sys/class/power_supply/AC/online') == ['0']
+" endfunction
+" 
+" if MyOnBattery()
+"   call neomake#configure#automake('w')
+" else
+"   call neomake#configure#automake('nw', 1000)
+" endif
 
 "----------------------------------------------
 " Whitespace options
@@ -259,7 +297,6 @@ let python_space_errors = 1
 "blet ruby_space_errors = 1
 "let java_space_errors = 1
 
-:au BufNewFile,BufRead *.jinja set filetype=jinja
 
 " Tell VIM which tags file to use.
 set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
@@ -280,14 +317,18 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 set mouse+=a
 
 " Reload .vimrc immediately when edited
-autocmd! bufwritepost .vim,.vimrc source ~/.config/nvim/init.vim
+set autoread
 
 imap OA <ESC>ki
 imap OB <ESC>ji
 imap OC <ESC>li
 imap OD <ESC>hi
+map gn :bn<cr>
+map gp :bp<cr>
+map gd :bd<cr>  
 
-au BufNewFile COMMIT_EDITING let syntax = diff
+
+
 " Use ag for vimgrep
 set grepprg=ag\ --vimgrep\ $* 
 set grepformat=%f:%l:%c:%m
@@ -310,15 +351,27 @@ nnoremap gR gD:%s/<C-R>///gc<left><left><left>
 luafile $HOME/.config/nvim/iron.plugin.lua
 
 "----------------------------------------------
+" Plugin: 'tmhedberg/SimpylFold'
+"----------------------------------------------
+let g:SimpylFold_docstring_preview=1
+
+"----------------------------------------------
 " Plugin: 'davidhalter/jedi-vim'
 "----------------------------------------------
 " disable autocompletion, cause we use deoplete for completion
 let g:jedi#completions_enabled = 0
 
 " open the go-to function in split, not another buffer
-let g:jedi#use_splits_not_buffers = "right"
+let g:jedi#use_splits_not_buffers = 'right'
 " <leader>n: show the usage of a name in current file
 " <leader>r: rename a name
+
+if exists('$VIRTUAL_ENV')
+    let g:python_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
+    let g:python3_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
+else
+    let g:python_host_prog=substitute(system('which python3'), '\n', '', 'g')
+endif
 
 if jedi#init_python()
   function! s:jedi_auto_force_py_version() abort
@@ -328,25 +381,23 @@ if jedi#init_python()
         " Fallback if not exists
         let g:python_host_prog = '/usr/bin/python'
     endif
-    let g:python3_host_prog = ''
-    if executable("python3")
+    let s:python3_local = ''
+    if executable('python3')
         " get local python from $PATH (virtualenv/anaconda or system python)
-        let s:python3_local = substitute(system("which python3"), '\n\+$', '', '')
+        let g:python3_host_prog
         " detect whether neovim package is installed
         let s:python3_neovim_path = substitute(system("python3 -c 'import neovim; print(neovim.__path__)' 2>/dev/null"), '\n\+$', '', '')
         if !empty(s:python3_neovim_path)
             " neovim available, use it as a host python3
             let g:python3_host_prog = s:python3_local
         endif
-    else
-        let s:python3_local = ''
-    endif
+    endif 
 
     " Fallback to system python3 (if not exists)
+    if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = s:python3_local          | endif
     if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = '~/.envs/shim/python3'   | endif
     if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = '/usr/local/bin/python3' | endif
     if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = '/usr/bin/python3'       | endif
-    if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = s:python3_local          | endif
 
     " VimR support {{{
     " @see https://github.com/qvacua/vimr/wiki#initvim
@@ -354,10 +405,11 @@ if jedi#init_python()
         set title
     endif
     " }}}
-    if exists("$VIRTUAL_ENV")
-        let g:python_host_prog=substitute(system("which -a python3 | head -n2 | tail -n1"), '\n', '', 'g')
+    if exists('$VIRTUAL_ENV')
+        let g:python_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
     else
-        let g:python_host_prog=substitute(system("which python3"), '\n', '', 'g')
+        let g:python_host_prog=substitute(system('which python3'), '\n', '', 'g')
     endif
   endfunction
   augroup vim-pyenv-custom-augroup
@@ -377,6 +429,33 @@ let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
 
+augroup deopleteExtre
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+augroup  END
+
+"----------------------------------------------
+" Plugin Shougo/denite.nvim'
+"----------------------------------------------
+
+augroup DeniteAction
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
+  nnoremap <silent><buffer><expr> <CR>
+  \ denite#do_map('do_action')
+  nnoremap <silent><buffer><expr> d
+  \ denite#do_map('do_action', 'delete')
+  nnoremap <silent><buffer><expr> p
+  \ denite#do_map('do_action', 'preview')
+  nnoremap <silent><buffer><expr> q
+  \ denite#do_map('quit')
+  nnoremap <silent><buffer><expr> i
+  \ denite#do_map('open_filter_buffer')
+  nnoremap <silent><buffer><expr> <Space>
+  \ denite#do_map('toggle_select').'j'
+endfunction
+augroup END
+
 
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
@@ -394,17 +473,25 @@ let g:ale_open_list = 1
 let g:ale_keep_list_window_open = 1
 " Set this if you want to.
 " Enable integration with " Check Python files with flake8 and pylint.
-let b:ale_linters = { 'python': ['flake8', 'pylint', 'mypy' ] }
+let g:ale_linters = { 'python': ['flake8', 'mypy' ],
+            \ 'vim' : ['vint'] }
+
 " Fix Python files with autopep8 and yapf.
-let b:ale_fixers = { 'python' : ['autopep8', 'yapf'],
-            \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
+let g:ale_fixers = { 'python' : ['black'], 
+            \'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
 
 " user environment
 let g:ale_virtualenv_dir_names = []
 
-let g:ale_python_auto_pipenv =1
+let g:ale_python_auto_pipenv = 1
+" Disable this for deoplete completion
+let g:ale_completion_enabled = 0
+let g:ale_python_flake8_options = '--max-line-length=120'
+
+let g:neomake_enabled_makers = { 'python': [] }
+let b:neomake_python_enabled_makers = []
 
 
 :nmap ]a :ALENextWrap<CR>
@@ -412,6 +499,19 @@ let g:ale_python_auto_pipenv =1
 :nmap ]A :ALELast
 :nmap [A :ALEFirst
 "
+"----------------------------------------------
+" Plugin 'bfredl/nvim-ipy'
+"----------------------------------------------
+let g:nvim_ipy_perform_mappings = 0
+map <silent> <leader>ipy <Plug>(IPy-Run)
+map <silent> <leader>ipc <Plug>(IPy-RunCell)
+map <silent> <leader>ipa <Plug>(IPy-RunAll)
+map <silent> <leader>pf <Plug>(IPy-Complete)
+map <silent> <leader>p? <Plug>(IPy-WordObjInfo)
+map <silent> <leader>p<C-c> <Plug>(IPy-Interrupt)
+map <silent> <leader>pq <Plug>(IPy-Terminate)
+
+
 "----------------------------------------------
 " Plugin 'ryanoasis/vim-devicons'
 "----------------------------------------------
@@ -430,17 +530,17 @@ let g:webdevicons_enable_denite = 1
 
 let g:lightline = {
       \ 'active': {
-      \   'left': [ [  'mode', 'paste', 'spell' ],
+      \   'left': [ [ 'mode', 'paste', 'spell' ],
       \             [ 'pyenv', 'pyenv_active' ],
-      \             ['gitbranch', 'fugitive' ] ],
+      \             [ 'fugitive' ] ],
       \   'right': [ ['filename', 'lineno', 'percent' ], 
       \              [ 'filetype', 'fileformat', 'readonly' ],
       \              [ 'linter_checking', 'linter_errors',
       \                'linter_warnings', 'linter_ok'  ]
       \            ]
       \ },
-      \ 'seperator' : { 'right': '', 'left': '' },
-      \ 'subseperator' : { 'right': '', 'left': '' },
+      \ 'separator' : { 'right': '«', 'left': '»' },
+      \ 'subseparator' : { 'right': '‖', 'left': '⁞' },
       \ 'component_expand' : {
       \  'linter_checking': 'lightline#ale#checking',
       \  'linter_warnings': 'lightline#ale#warnings',
@@ -473,6 +573,10 @@ let g:lightline = {
       \   'fileformat': 'MyFileformat',
       \   'method': 'NearestMethodOrFunction'
       \ },
+      \ 'tab' : { 
+      \ 'active': [ 'tabnum', 'modified', 'filename'  ],
+      \ 'inactive': [ 'tabnum', 'modified', 'filename' ]
+      \ },
       \ 'colorscheme' : 'one',
       \ }
 
@@ -499,8 +603,9 @@ let g:lightline#ale#indicator_ok = "\uf00c"
 "----------------------------------------------
 "
 let g:go_auto_sameids = 1
-let g:go_fmt_command = "goimports"
+let g:go_fmt_command = 'goimports'
 
+augroup GoHooks
 au FileType go nmap <leader>gt :GoDeclsDir<cr>
 au Filetype go nmap <leader>ga <Plug>(go-alternate-edit)
 " Test coverage
@@ -512,13 +617,14 @@ au Filetype go nmap <leader>gav <Plug>(go-alternate-vertical)
 let g:go_auto_type_info = 1
 au FileType go nmap <Leader>d <Plug>(go-def)
 " Snake case or camel case
-let g:go_addtags_transform = "snakecase"
+let g:go_addtags_transform = 'snakecase'
 
+augroup GoHooks
 "----------------------------------------------
 " Plugin: christoomey/vim-tmux-navigator
 "----------------------------------------------
 " tmux will send xterm-style keys when its xterm-keys option is on
-if &term =~ '^screen'
+if &term =~# '^screen'
     execute "set <xUp>=\e[1;*A"
     execute "set <xDown>=\e[1;*B"
     execute "set <xRight>=\e[1;*C"
@@ -537,6 +643,12 @@ nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <c-\> :TmuxNavigatePrevious<cr>
 
 "----------------------------------------------
+" Plugin: 'Konfekt/FastFold'
+"----------------------------------------------
+let g:fastfold_fold_command_suffixes = []
+
+
+"----------------------------------------------
 " Plugin: scrooloose/nerdtree
 "----------------------------------------------
 nnoremap <leader>d :NERDTreeToggle<cr>
@@ -553,7 +665,14 @@ let NERDTreeIgnore = [
 \]
 
 " Close vim if NERDTree is the only opened window.
+
+augroup nerdtree_extra
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+augroup END
+
+augroup commit_extra
+au BufNewFile COMMIT_EDITING let syntax = diff
+augroup END
 
 " Show hidden files by default.
 let NERDTreeShowHidden = 1
@@ -571,12 +690,14 @@ map <F3> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 let g:one_allow_italics = 1 " I love italic for comments
 colorscheme one
 
+augroup IndentGuests
 " base 00
 autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=8 guibg=#002b36
 " base 01
 "autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=8 guibg=#586e75
 " base 02
 autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=0 guibg=#073642 
+augroup END
 
 " Change the Pmenu colors so they're more readable.
 highlight Pmenu ctermbg=cyan ctermfg=white
@@ -596,6 +717,10 @@ highlight PmenuSel ctermbg=black ctermfg=white
 "augroup END
 "
 " --------------------------------------------
+" Plugin: 'leshill/vim-json'
+" --------------------------------------------
+let g:vim_json_syntax_conceal = 2
+" --------------------------------------------
 " Plugin: 'numirias/semshi'
 " --------------------------------------------
 function! SemhiOneHighlights()
@@ -611,9 +736,40 @@ hi semshiSelf            ctermfg=249 guifg=#abb2bf
 hi semshiUnresolved      ctermfg=226 guifg=#e5c07b cterm=underline gui=underline
 hi semshiSelected        ctermfg=231 guifg=#ffffff ctermbg=161 guibg=#C61C6F
 
-hi semshiErrorSign       ctermfg=231 guifg=#000000 ctermbg=160 guibg=#e06c75
+hi semshiErrorSign       ctermfg=231 guifg=#000000 ctermbg=160 guibg=##d19a66
 hi semshiErrorChar       ctermfg=231 guifg=#000000 ctermbg=160 guibg=#e06c75
 endfunction
 
-autocmd FileType python call SemhiOneHighlights()
 
+augroup OneSystanx
+    autocmd FileType python call SemhiOneHighlights()
+augroup END
+
+function! TabMessage(cmd)
+  redir => message
+  silent execute a:cmd
+  redir END
+  if empty(message)
+    echoerr 'no output'
+  else
+    " use "new" instead of "tabnew" below if you prefer split windows instead of tabs
+    tabnew
+    setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nomodified
+    silent put=message
+
+  endif
+endfunction
+command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+" When using `dd` in the quickfix list, remove the item from the quickfix list.
+function! RemoveQFItem()
+  let curqfidx = line('.') - 1
+  let qfall = getqflist()
+  call remove(qfall, curqfidx)
+  call setqflist(qfall, 'r')
+  execute curqfidx + 1 . 'cfirst'
+  :copen
+endfunction
+:command! RemoveQFItem :call RemoveQFItem()
+" Use map <buffer> to only map dd in the quickfix window. Requires +localmap
+autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
