@@ -24,6 +24,8 @@ sentials() {
 #  brew install ranger
 #  brew install rbenv
 #  brew install ruby-build
+  brew tap homebrew/cask-fonts
+  brew cask install font-hack-nerd-font
   brew install sqlite
   brew install ssh-copy-id
   brew install the_silver_searcher

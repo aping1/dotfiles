@@ -9,6 +9,7 @@ fi
 
 # === PATHS and EVNS 
 # Location of my dotfiles
+
 DOTFILES=$HOME/.dotfiles
 DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 
@@ -171,6 +172,7 @@ if [ ! $TERM = dumb ]; then
         # zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
+        zgen load $DOTFILES/helpers/tpm
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
         # load https://github.com/bhilburn/powerlevel9k theme for zsh

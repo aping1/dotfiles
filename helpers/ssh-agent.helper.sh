@@ -66,6 +66,8 @@ function sshagent_init {
     ssh-add -l
 }
 
+if ! [[ "${SSH_AUTH_SOCK}" ]]; then
 alias sagent="sshagent_init"
-
 sagent; return ${?}
+fi
+

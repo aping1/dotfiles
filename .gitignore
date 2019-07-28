@@ -44,3 +44,5 @@ tmux/plugins/*
 
 .config/nvim/.netrwhist
 .config/nvim/plugged/
+
+.mypy_cache

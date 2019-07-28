@@ -1,4 +1,4 @@
-" ~/.vimrc (local shell)
+" vim: :scriptencoding utf-8
 
 set ruler
 set ignorecase
@@ -66,9 +66,9 @@ if (empty($TMUX))
   "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
   "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
   " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
-  if (has('termguicolors'))
-    set termguicolors
-  endif
+endif
+if (has('termguicolors'))
+set termguicolors
 endif
 set clipboard=unnamedplus
 
@@ -154,6 +154,7 @@ Plug 'Konfekt/FastFold'
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 Plug 'Vigemus/iron.nvim'
 
+Plug 'deoplete-plugins/deoplete-zsh'
 
 Plug 'Vigemus/impromptu.nvim'
 Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoUpdateBinaries' }
@@ -426,7 +427,14 @@ endif
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 " use tab
-inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+function! s:check_back_space() abort "{{{
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction"}}}
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ deoplete#manual_complete()
 
 
 augroup deopleteExtre
@@ -528,6 +536,9 @@ let g:webdevicons_enable_denite = 1
 " let g:airline#extensions#tabline#enabled = 1
 " let g:airline#extensions#ale#enabled = 1
 
+      " 'separator' : { 'right': '«', 'left': '»' },
+      " 'subseparator' : { 'right': '‖', 'left': '⁞' },
+
 let g:lightline = {
       \ 'active': {
       \   'left': [ [ 'mode', 'paste', 'spell' ],
@@ -539,8 +550,6 @@ let g:lightline = {
       \                'linter_warnings', 'linter_ok'  ]
       \            ]
       \ },
-      \ 'separator' : { 'right': '«', 'left': '»' },
-      \ 'subseparator' : { 'right': '‖', 'left': '⁞' },
       \ 'component_expand' : {
       \  'linter_checking': 'lightline#ale#checking',
       \  'linter_warnings': 'lightline#ale#warnings',
@@ -688,7 +697,6 @@ colorscheme one
 set background=dark " for the light version
 map <F3> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 let g:one_allow_italics = 1 " I love italic for comments
-colorscheme one
 
 augroup IndentGuests
 " base 00
