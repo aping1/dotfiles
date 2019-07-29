@@ -57,17 +57,16 @@ export FBANDROID_DIR=/Users/aping1/fbsource/fbandroid
 alias quicklog_update=/Users/aping1/fbsource/fbandroid/scripts/quicklog/quicklog_update.sh
 alias qlu=quicklog_update
 
-# added by setup_fb4a.sh
-export ANDROID_SDK=/opt/android_sdk
-export ANDROID_NDK_REPOSITORY=/opt/android_ndk
-export ANDROID_HOME=${ANDROID_SDK}
-export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
+# export ANDROID_SDK=/opt/android_sdk
+# export ANDROID_NDK_REPOSITORY=/opt/android_ndk
+# export ANDROID_HOME=${ANDROID_SDK}
+# export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
 
-export ADMIN_SCRIPTS=/mnt/vol/engshare/admin/scripts/
+# export ADMIN_SCRIPTS=/mnt/vol/engshare/admin/scripts/
 
 function update_iterm_title () {
     _iterm_hooks_rename_both "$(_fb_tmux_helper_get_session)"
 }
-add-zsh-hook periodic update_iterm_title
+# add-zsh-hook periodic update_iterm_title
 
 

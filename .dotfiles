@@ -9,7 +9,7 @@ remote/* .remote
 dircolors
 
 
-.zprofile 
+.zprofile
 .zsh_aliasses
 .zpreztorc
 .zshrc
@@ -41,7 +41,7 @@ vim-solarized8 .vim/colors/vim-solarized8
 .gdbinit
 
 .khdrc
-.chunkwmrc
+.yabairc
 
 # tmux/zoom
 # tmux/helpers/powerline-helper.zsh
