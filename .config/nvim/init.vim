@@ -159,6 +159,8 @@ Plug 'deoplete-plugins/deoplete-zsh'
 Plug 'Vigemus/impromptu.nvim'
 Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoUpdateBinaries' }
 
+Plug 'jez/vim-superman'
+
 
 " Indent lines
 Plug 'nathanaelkane/vim-indent-guides'

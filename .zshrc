@@ -172,7 +172,7 @@ if [ ! $TERM = dumb ]; then
         # zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
-        zgen load $DOTFILES/helpers/tpm
+        zgen load $DOTFILES/helpers
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
