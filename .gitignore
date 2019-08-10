@@ -46,3 +46,7 @@ tmux/plugins/*
 .config/nvim/plugged/
 
 .mypy_cache
+
+.tmux
+.vim
+.zgen
