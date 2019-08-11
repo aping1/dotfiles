@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+
+# https://tools.ietf.org/html/rfc3986
+# $$URL$$ The complete url
+# schema://someone@
+readonly URI_REGEX='^(([^:/?#]+):)?(//?((([^:/?#]+)@)?([^:/?#]+)(:([0-9]+))?))?(/([^?#]*))(\?([^#]*))?(#(.*))?'
+#                    ↑↑            ↑  ↑↑↑            ↑         ↑ ↑            ↑ ↑        ↑  ↑        ↑ ↑
+#                    |2 scheme     |  ||6 userinfo   7 host    | 9 port       | 11 rpath |  13 query | 15 fragment 1 scheme:     |  |5 userinfo@             8 :…           10 path    12 ?…       14 #…
+#                                  |  4 authority
+#                                  3 //…
+
+parse_scheme () {
+    [[ "$@" =~ $URI_REGEX ]] && echo "${BASH_REMATCH[2]}"
+}
+
+parse_abs_path() {
+    # hier-part   = "//" authority path-abempty
+    [[ "$@" =~ $URI_REGEX ]] && echo "${BASH_REMATCH[3]}"
+}
+
+parse_authority () {
+    [[ "$@" =~ $URI_REGEX ]] && echo "${BASH_REMATCH[4]}"
+}
+
+parse_user () {
+    [[ "$@" =~ $URI_REGEX ]] && echo "${BASH_REMATCH[6]}"
+}
+
+parse_host () {
+    [[ "$@" =~ $URI_REGEX ]] && echo "${BASH_REMATCH[7]}"
+}
+
+parse_port () {
+    [[ "$@" =~ $URI_REGEX ]] && echo "${BASH_REMATCH[9]}"
+}
+
+parse_path () {
+    [[ "$@" =~ $URI_REGEX ]] && echo "${BASH_REMATCH[10]}"
+}
+
+parse_rpath () {
+    # URI         = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+    # hier-part   = "//" authority path-abempty
+    #             / path-absolute
+    #             / path-rootless
+    #             / path-empty
+    [[ "$@" =~ $URI_REGEX ]] && echo "${BASH_REMATCH[11]}"
+}
+
+parse_query () {
+    # URI         = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+    # hier-part   = "//" authority path-abempty
+    #             / path-absolute
+    #             / path-rootless
+    #             / path-empty
+    [[ "$@" =~ $URI_REGEX ]] && echo "${BASH_REMATCH[13]}"
+}
+
+parse_fragment () {
+    # URI         = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+    # hier-part   = "//" authority path-abempty
+    #             / path-absolute
+    #             / path-rootless
+    #             / path-empty
+
+    [[ "$@" =~ $URI_REGEX ]] && echo "${BASH_REMATCH[15]}"
+}
+
+# $$HOST$$ The host portion of a url like scheme://host/
+# $$USER$$ The username portion of a url like scheme://user@host/
+# $$PASSWORD$$ The password portion of a url like scheme://user:password@host/
+# $$PORT$$ The port number of a url like scheme://host:port/
+# $$PATH$$ The path portion of a url like scheme://host/path
+# $$RES$$ The portion of a url following the scheme.
+
+if [[ ${1} ]]; then 
+    [[ -d "${HOME}/.ssh/controlmasters" ]] || mkdir "${HOME}/.ssh/controlmasters"  || exit 1 
+    set -x 
+    _ABS_PATH="$(parse_abs_path "${1}")" # $$PATH$$
+    _RPATH="$(parse_rpath "${1}")" # $$PATH$$
+    _HOST_URL="$(parse_authority "${1}")"
+    readonly PATH_REGEX='^((([^:/?#]+)@)?([^:/?#]+)(:([0-9]+))?)(/([^?#]*))(\?([^#]*))?(#(.*))?'
+    #                     ↑↑            ↑         ↑ ↑            ↑ ↑        ↑  ↑        ↑ ↑
+    #                     ||4 userinfo   5 host    | 6 port       | 8 rpath |  10 query | 12 fragment 1 scheme:     |  |5 userinfo@             8 :…           10 path    12 ?…       14 #…
+    #                      2 authority
+    _FRAGMENT="$(parse_fragment "${1}")"
+    _QUERY="$(parse_query "${1}")"
+    _PATH="$(parse_rpath "${1}")"
+
+    shift
+    _ROOT=${_PATH%%/*}
+    if [[ ${_HOST_URL} || ${_ROOT} =~ ^(-h\|new\|check\|forward\|exit\|stop\|cancel)$ ]]; then
+        if [[ ${_ROOT} == '-h' ]]; then
+            exec man ssh 
+        elif [[ ${_ROOT} == new ]]; then
+            ssh -oControlPath='~/.ssh/controlmasters/%r@%h:%p.sock' \
+            -O check "${_HOST_URL}" && ssh -oControlPath='~/.ssh/controlmasters/%r@%h:%p.sock' \
+                -O exit "${_HOST_URL}" && \
+            exec ssh -oControlMaster=yes \
+                -oControlPath='~/.ssh/controlmasters/%r@%h:%p.sock' \
+                -oControlPersist=10m \
+                "$_HOST_URL" -- ${*}
+        else
+            exec ssh -oControlPath='~/.ssh/controlmasters/%r@%h:%p.sock' \
+                -O "${_ROOT}" \
+                "$_HOST_URL"
+        fi
+    elif [[ ! ${_HOST_URL} && ${_ROOT} == "${_PATH}" ]]; then
+        if ssh -oControlPath='~/.ssh/controlmasters/%r@%h:%p.sock' \
+            -O check "${_ROOT}" ; then
+            exec ssh \
+                -oControlPath='~/.ssh/controlmasters/%r@%h:%p.sock' \
+                "${_ROOT}" -- ${*}
+        else
+            ssh -t "${_ROOT}" -- ${*}
+        fi
+    else
+        echo '-h check forward exist stop cancel'
+    fi
+   set +x
+fi
+
