@@ -154,7 +154,6 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/urltools
         zgen oh-my-zsh plugins/vundle
         zgen oh-my-zsh plugins/web-search
-        zgen load joel-porquet/zsh-dircolors-solarized
         zgen oh-my-zsh plugins/z
 
         # https://github.com/Tarrasch/zsh-autoenv
@@ -286,6 +285,4 @@ export FZF_COMPLETION_TRIGGER='~~'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
 
-if which setupsolarized &>/dev/null; then
-setupsolarized dircolors.256dark
-fi
+alias vim=nvim
