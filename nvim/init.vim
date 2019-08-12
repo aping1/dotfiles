@@ -125,6 +125,7 @@ Plug 'Shougo/deoplete.nvim'
 Plug 'davidhalter/jedi-vim'
 Plug 'zchee/deoplete-jedi'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'aping1/deoplete-zsh', { 'branch': 'fix_completion' }
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 
 Plug 'Vigemus/impromptu.nvim'
@@ -154,6 +155,7 @@ Plug 'ap/vim-css-color'
 
 
 Plug 'aping1/deoplete-zsh', {'branch': 'fix-completion'}
+Plug 'roxma/vim-tmux-clipboard'
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
@@ -405,6 +407,9 @@ let g:ale_sign_warning = '⚠'
 
 let g:ale_linters_explicit = 1
 let b:ale_linters = { 'python' : ['flake8', 'pyre'] }
+let b:ale_linters = { 'python' : ['flake8', 'pyre'], 
+            \       'sh' : ['shellcheck'],
+            \       'terraform' : ['tflint'] }
 " " Fix Python files with autopep8 and yapf.
 let g:ale_fixers = { 'python' : ['black' ] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
@@ -422,7 +427,8 @@ let g:ale_keep_list_window_open = 1
 let b:ale_linters = { 'python': ['flake8', 'mypy' ] }
 " Fix Python files with autopep8 and yapf.
 let b:ale_fixers = { 'python' : ['black'],
-            \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
+            \       'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
+
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
 

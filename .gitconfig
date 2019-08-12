@@ -6,14 +6,10 @@
         smudge = git-lfs smudge -- %f
         process = git-lfs filter-process
         required = true
-[core]
-	excludesfile = /Users/awampler/.gitignore_global
 [difftool "vimrdiff"]
-    cmd = vimr --wait --nvim -d $LOCAL $REMOTE
+    cmd = vimr --wait --nvim -d -o $LOCAL $REMOTE
 [diff]
     tool = vimrdiff
-[commit]
-	template = /Users/aping1/.stCommitMsg
 [mergetool "vimrdiff"]
   cmd = vimr --nvim --wait -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [merge]

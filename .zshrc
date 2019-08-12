@@ -31,6 +31,7 @@ if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
     # Add to start of path
     path=(
         $(brew --prefix coreutils)/libexec/gnubin
+        $(brew --prefix python)/libexec/bin
         $(brew --prefix)/bin/
         $path
     )
@@ -113,7 +114,7 @@ if [ ! $TERM = dumb ]; then
     fi
 
     # load zgen
-    source $DOTFILESDEPS/zgen/zgen.zsh
+    source $HOME/.zgen/zgen.zsh
     if [[ ${ZGENRESET:-N} =~ ^[Yy]$ ]]; then
         zgen reset
     fi
@@ -136,7 +137,7 @@ if [ ! $TERM = dumb ]; then
         # zgen prezto tmux
         # zgen prezto fasd
         # zgen prezto history-substring-search
-        # zgen prezto syntax-highlighting
+        zgen prezto syntax-highlighting
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
@@ -145,6 +146,7 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/git
         zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
+        zgen oh-my-zsh plugins/git-completion
         zgen oh-my-zsh plugins/osx
         zgen oh-my-zsh plugins/pip
         zgen oh-my-zsh plugins/python
@@ -286,3 +288,5 @@ export FZF_COMPLETION_OPTS='+c -x'
 if which setupsolarized &>/dev/null; then
 setupsolarized dircolors.256dark
 fi
+
+alias vim=nvim

@@ -95,8 +95,8 @@ vim-solarized8 .vim/colors/vim-solarized8
 # scripts/padd_ag.vim
 
 # powerline ˜/.config/powerline_config
-powerline_config ./.config/powerline_config
-nvim ./.config/nvim
+powerline_config ~/.config/powerline_config
+nvim ~/.config/nvim
 
 # Scripts
 #vsheild-disable
