@@ -7,9 +7,4 @@ for HELPER in ~/.dotfiles/helpers/*.zsh; do
     [[ -n $HELPER && -f $HELPER ]] && source $HELPER
 done
 
-if command -v lsd &>/dev/null; then
-    alias ls='lsd' 
-else
-    alias ls='gls --color -G'
-fi
 alias _script_path='{ time ( [[ ${0} =~ ^-  ]] || cd ${0}; pwd -P; )  2>/dev/null }'
