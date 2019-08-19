@@ -27,6 +27,6 @@ dir_stack (){
 }
 
 
-alias ctags="$(brew --prefix)/bin/ctags"
+# alias ctags="$(brew --prefix)/bin/ctags"
 alias lst='ls -R | grep ":$" | sed -e '"'"'s/:$//'"'"' -e '"'"'s/[^-][^\/]*\//--/g'"'"' -e '"'"'s/^/   /'"'"' -e '"'"'s/-/|/'"'"
 alias sync_dotfiles='rsync -avz ${HOME}/.dotfiles/plugins/fbtools dev:.dotfiles/plugins/'
