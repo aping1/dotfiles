@@ -49,51 +49,51 @@ set expandtab
 set hlsearch
 
 " set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
 " set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 
-call vundle#begin()
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'flazz/vim-colorschemes'
-"Plugin 'severin-lemaignan/vim-minimap'
-Plugin 'tpope/vim-scriptease'
-"Plugin 'applescript.vim'
-Plugin 'Tagbar'
-Plugin 'vim-flake8'
-Plugin 'SimpylFold'
-" other packages, run ' vim +PluginInstall +qall ' to up date them
-Plugin 'lifepillar/vim-solarized8'
-Plugin 'tpope/vim-fugitive'
-Plugin 'airblade/vim-gitgutter'
-"Plugin 'saltstack/salt-vim'
-"Plugin 'scrooloose/syntastic'
-"Plugin 'Valloric/YouCompleteMe'
-Plugin 'scrooloose/nerdtree'
-Plugin 'vim-scripts/ag.vim'
-Plugin 'rizzatti/dash.vim'
+call plug#begin('~/.vim/plugged')
+Plug 'VundleVim/Vundle.vim'
+Plug 'flazz/vim-colorschemes'
+"Plug 'severin-lemaignan/vim-minimap'
+Plug 'tpope/vim-scriptease'
+"Plug 'applescript.vim'
+Plug 'Tagbar'
+Plug 'vim-flake8'
+Plug 'SimpylFold'
+" other packages, run ' vim +PlugInstall +qall ' to up date them
+Plug 'lifepillar/vim-solarized8'
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+"Plug 'saltstack/salt-vim'
+"Plug 'scrooloose/syntastic'
+"Plug 'Valloric/YouCompleteMe'
+Plug 'scrooloose/nerdtree'
+Plug 'vim-scripts/ag.vim'
+Plug 'rizzatti/dash.vim'
 
 
-Plugin 'godlygeek/tabular'
-Plugin 'plasticboy/vim-markdown'
-Plugin 'tpope/vim-obsession'
-Plugin 'vim-scripts/vim-misc'
-Plugin 'vim-scripts/gitdiff.vim'
-Plugin 'vim-scripts/pdbvim'
-"Plugin 'solarnz/thrift.vim'
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
+Plug 'tpope/vim-obsession'
+Plug 'vim-scripts/vim-misc'
+Plug 'vim-scripts/gitdiff.vim'
+Plug 'vim-scripts/pdbvim'
+"Plug 'solarnz/thrift.vim'
 
 
-Plugin 'bling/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
+Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'hashivim/vim-terraform'
 " Local Shortccuts
-Plugin 'file:///home/aping1/.dotfiles/vim/colorscheme'
+Plug 'file:///home/aping1/.dotfiles/vim/colorscheme'
 
 " uses pygtk
 " A simple color picker for VIM, based on GTK color chooser dialog.
-" Plugin 'vim-scripts/VIM-Color-Picker'
+" Plug 'vim-scripts/VIM-Color-Picker'
 " A script that lets you insert hex color codes by using OS X's color picker
-" Plugin 'vim-scripts/ColorX'
+" Plug 'vim-scripts/ColorX'
 
-call vundle#end()
+call plug#end()
 filetype plugin indent on     " required
 
 " These lines setup the environment to show graphics and colors correctly.
