@@ -17,7 +17,3 @@
 [commit]
         template = /Users/aping1/.stCommitMsg
 
-[http]
-	proxy = fwdproxy:8080
-[https]
-	proxy = fwdproxy:8080

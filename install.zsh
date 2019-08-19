@@ -10,7 +10,7 @@ unsetopt function_argzero
 
 # Requerys formst
 setopt PROMPT_SUBST
-export DOTFILES=${(%):-"${${(%):-%x}:A}"}
+export DOTFILES=${(%):-$(realpath "${(%):-%x}")}
 export DOTFILES=${DOTFILES:h}
 export DOTFILES_SCRIPTPATH="$(dirname "$SCRIPT")"
 
@@ -128,8 +128,7 @@ function handle_pathmatches() {
     # Dest is the home given DEST or $2 or $HOME/$(basename $1)
     local DEST=""
     local _FORCE_DIR=n
-    DEST="$(rel_path "${2:-"${DOTFILES}/${rel_this:t}"}" "${DOTFILES}")"
-    [[ ${DEST} ]] && printf 'Starting install %s -> %s \n' "${rel_this}" "${DEST}" >&2
+    DEST="$(rel_path "${2:-"${DOTFILES}/${rel_this:t}"}"  "${DOTFILES}")"
     if [[ "${DEST}" != "${DEST%/}" ]]; then
         if [[ ! -e "${HOME}/${DEST}" ]]; then
             # rel path to this from .dotfiles
@@ -207,7 +206,6 @@ function handle_pathmatches() {
 
 # for eacch line <src:glob> <dest> <COMMAND>
 sed -e 's/#.*$//' -e '/^$/d' "${DOTFILES%/}/.dotfiles" | while read GLOB DEST OTHER; do
-    [[ ${_DEBUG} ]] && printf 'DOTFILES: %s GLOB: %s DEST: %s\n' "${DOTFILES%/}"  "${GLOB}"  "${DEST}"  >&2
     ## Check if the glob is a dir
     local GLOB_PATH=""
     _SRC=( ${~${GLOB_PATH:="${DOTFILES}/${GLOB%/}"}} )

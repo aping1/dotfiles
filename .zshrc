@@ -24,6 +24,7 @@ DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 
 path=(
     /usr/local/{bin,sbin,opt}
+    /var/lib/snapd/snap/bin
     $path
 )
 # Brew for OSX
@@ -143,6 +144,7 @@ if [ ! $TERM = dumb ]; then
         # zgen oh-my-zsh plugins/bower
         # zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh plugins/git
+        zgen oh-my-zsh plugins/kubectl
         zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
         zgen oh-my-zsh plugins/osx
@@ -167,14 +169,14 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/dotfiles
         zgen load $DOTFILES/plugins/zpython
         zgen load $DOTFILES/plugins/pyenv
-        zgen load $DOTFILES/plugins/fbtools
+        # zgen load $DOTFILES/plugins/fbtools
         # zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme next
+        zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
         # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
