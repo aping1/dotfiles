@@ -125,19 +125,22 @@ if [ ! $TERM = dumb ]; then
         # zgen will load oh-my-zsh and download it if required
         zgen oh-my-zsh
 
-        # zgen prezto
-        # zgen prezto editor key-bindings 'vi'
-        # zgen prezto '*:*' color 'yes'
+        zgen prezto
+        zgen prezto editor key-bindings 'vi'
+        zgen prezto '*:*' color 'yes'
         # zgen prezto tmux:auto-start local 'yes'
         # zgen prezto '*:*' case-sensitive 'yes'
         # zgen prezto prompt theme 'off'
-        # zgen prezto git
+        zgen prezto git
         # zgen prezto editor key-bindings 'vi'
         # zgen prezto command-not-found
-        # zgen prezto tmux
+        zgen prezto tmux
+        zgen prezto docker
         # zgen prezto fasd
         # zgen prezto history-substring-search
-        # zgen prezto syntax-highlighting
+        zgen prezto syntax-highlighting
+
+        zgen prezto prompt theme spaceship
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
