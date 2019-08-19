@@ -167,8 +167,7 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/aliases
         zgen load $DOTFILES/plugins/bootstrap
         zgen load $DOTFILES/plugins/dotfiles
-        zgen load $DOTFILES/plugins/zpython
-        zgen load $DOTFILES/plugins/pyenv
+        # zgen load $DOTFILES/plugins/zpython
         # zgen load $DOTFILES/plugins/fbtools
         # zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools

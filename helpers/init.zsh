@@ -1,3 +1,3 @@
 export _HELPER_PLUGIN_DIR="${0:a:h}/helpers.d"
 
-source ${~_HELPER_PLUGIN_DIR}/*.zsh(.)      # regular files
+source ${_HELPER_PLUGIN_DIR}/
