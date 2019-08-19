@@ -125,19 +125,17 @@ if [ ! $TERM = dumb ]; then
         # zgen will load oh-my-zsh and download it if required
         zgen oh-my-zsh
 
-        # zgen prezto
-        # zgen prezto editor key-bindings 'vi'
-        # zgen prezto '*:*' color 'yes'
+        zgen prezto
+        zgen prezto editor key-bindings 'vi'
+        zgen prezto '*:*' color 'yes'
         # zgen prezto tmux:auto-start local 'yes'
-        # zgen prezto '*:*' case-sensitive 'yes'
-        # zgen prezto prompt theme 'off'
-        # zgen prezto git
-        # zgen prezto editor key-bindings 'vi'
-        # zgen prezto command-not-found
-        # zgen prezto tmux
-        # zgen prezto fasd
-        # zgen prezto history-substring-search
-        # zgen prezto syntax-highlighting
+        zgen prezto '*:*' case-sensitive 'yes'
+        zgen prezto prompt theme 'off'
+        zgen prezto git
+        zgen prezto tmux
+        zgen prezto fasd
+        zgen prezto history-substring-search
+        zgen prezto syntax-highlighting
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
@@ -173,17 +171,8 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/tpm
         zgen load $DOTFILES/helpers
 
-        # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme next
         zgen oh-my-zsh plugins/vi-mode
-        # async update vim mode
-        # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
-
-        # zgen load christian-schulze/powerlevel9k powerlevel9k.zsh-theme
-
-        # It takes control, so load last
-        zgen load $DOTFILES/plugins/my-tmux
+        zgen load denysdovhan/spaceship-prompt spaceship
 
         zgen save
     fi

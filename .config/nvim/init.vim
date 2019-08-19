@@ -1,4 +1,4 @@
-" vim: :scriptencoding utf-8
+" vim scriptencoding=utf-8
 
 set ruler
 set ignorecase
@@ -95,9 +95,13 @@ Plug 'leshill/vim-json'
 
 " Projects
 Plug 'amiorin/vim-project'
+Plug 'tpope/vim-projectionist'
 
 " Auto color hex
 Plug 'lilydjwg/Colorizer'
+" Hide sum and such as unicode 
+Plug 'ehamberg/vim-cute-python'
+Plug 'merlinrebrovic/focus.vim'
 
 " NERD Tree
 Plug 'scrooloose/nerdtree'
@@ -135,6 +139,7 @@ else
 endif
 
 Plug 'davidhalter/jedi-vim', { 'branch': 'master' }
+Plug 'janko/vim-test'
  
 " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 Plug 'itchyny/lightline.vim'
@@ -155,6 +160,8 @@ Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 Plug 'Vigemus/iron.nvim'
 
 Plug 'deoplete-plugins/deoplete-zsh'
+" deoplete autocomplete
+Plug 'Shougo/neco-vim'
 
 Plug 'Vigemus/impromptu.nvim'
 Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoUpdateBinaries' }
@@ -483,12 +490,16 @@ let g:ale_open_list = 1
 let g:ale_keep_list_window_open = 1
 " Set this if you want to.
 " Enable integration with " Check Python files with flake8 and pylint.
-let g:ale_linters = { 'python': ['flake8', 'mypy' ],
-            \ 'vim' : ['vint'] }
+let g:ale_linters = { 
+            \'python': ['flake8', 'mypy' ],
+            \'vim' : ['vint'] 
+            \}
 
 " Fix Python files with autopep8 and yapf.
-let g:ale_fixers = { 'python' : ['black'], 
-            \'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
+let g:ale_fixers = { 
+            \'python' : ['black'], 
+            \'lua' : ['trimwhitespace', 'remove_trailing_lines']
+            \}
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
 
@@ -690,6 +701,22 @@ let NERDTreeShowHidden = 1
 
 " Allow NERDTree to change session root.
 let g:NERDTreeChDirMode = 2
+
+" --------------------------------------------
+" Pluging 'janko/vim-test'
+" --------------------------------------------
+"
+let test#strategy = "neomake"
+
+" these "Ctrl mappings" work well when Caps Lock is mapped to Ctrl
+nmap <silent> t<C-n> :TestNearest<CR>
+nmap <silent> t<C-f> :TestFile<CR>
+nmap <silent> t<C-s> :TestSuite<CR>
+nmap <silent> t<C-l> :TestLast<CR>
+nmap <silent> t<C-g> :TestVisit<CR>
+
+let test#python#runner = 'pytest'
+" Runners available are 'pytest', 'nose', 'nose2', 'djangotest', 'djangonose' and Python's built-in 'unittest'
 
 " --------------------------------------------
 " Colorscheme 

@@ -37,11 +37,13 @@ export PROJECT_ROOT_DIR
 
 function _fb_projects_helper_list_projects () {
     find "${PROJECT_ROOT_DIR}" -maxdepth 1 -mindepth 1 -type d \
-        -exec basename {} \; 2>/dev/null | while read file; do
-            printf 'P+%s\n' "${file}"
-        done 2>/dev/null
+        -exec basename {} \; 2>/dev/null
 }
 
+function _fb_projects_helper_list_project_tasks () {
+    find "${project_from_tmux}" -maxdepth 1 -mindepth 1 -type l \
+        -exec basename {} \; 2>/dev/null 
+}
 
 function _fb_projects_helper_resolve_relative_path() {
     # relative link between $1 and $2
@@ -117,8 +119,8 @@ function _fb_projects_helper_get_projects_home() {
 function _fb_projects_helper_project_shortname() {
     local _PROJNAME=${1#[0-9]*}  _NEW_TASK=$2
     # the case where ends with a task
-    printf '%s == %s \n' "${_PROJNAME}" "${TASK_REGEX:-"(\w)(\d+)$"}" >&2
-    if [[ ${_PROJNAME} =~ ${TASK_REGEX:-"(\w)(\d+)$"} ]]; then
+    printf '%s == %s \n' "${_PROJNAME}" "${TASK_REGEX:-"(\w)-?(\d+)$"}" >&2
+    if [[ ${_PROJNAME} =~ ${TASK_REGEX:-"(\w).?(\d+)$"} ]]; then
         # is this inheritance? |_//// 0^0
         _NEW_TASK="${_NEW_TASK:-"$(_fb_tasks_helper_task_shortname $*)"}"
         _PROJNAME="${_PROJECTNAME:-$(_fb_tmux_helper_get_session)}"
@@ -126,11 +128,10 @@ function _fb_projects_helper_project_shortname() {
         # doesnt contain a project
         return 1
     fi
-    if [[ ${_PROJNAME} =~ ^${PROJECT_RX}${TASK_REGEX:-"(\w)(\d+)"} ]]; then
+    if [[ ${_PROJNAME} =~ ^${PROJECT_RX}${TASK_REGEX:-"(\w)-?(\d+)"} ]]; then
         _NEW_TASK="${_NEW_TASK:-"$(_fb_projects_helper_project_shortname)"}"
         _PROJNAME=${match[2]}
         _SOMEID=${_SOMEID:-$match[1]}
-    else
     fi
     printf '%s %s %s\n' "${_SOMEID:-"None"}"h "${_PROJNAME:-"None"}" "${_NEW_TASK}"
 }
@@ -364,6 +365,7 @@ function _fb_projects_helper_verify_project() {
         cd $(_fb_projects_helper_get_projects_home P+${_PROJNAME}) 1>/dev/null
         while read line; do
             _PARAM="" _VAL=""
+            # Must match A[bcd]=soemthing
             if [[ line =~ ^([A-Za-z_][A-Za-z0-9]*)=(.*)#?$ ]]; then
                 _VAL=match[2]
                 case ${_PARAM:=match[1]} in
@@ -432,7 +434,7 @@ function project_from_tmux() {
 function prune_tasks () {
     cd $(_fb_projects_helper_get_projects_home) || return 1
     do_something=${1:-":"}
-    for i in T*[^0](@); do
+    for i in $(_fb_projects_helper_list_project_tasks); do
         tasks details $i | awk -F':' '/State :/{print $2}' | read STATE;
         if [[ $STATE == 'CLOSED' ]]; then
             echo "callikng ${do_something} on ${i}"
@@ -451,3 +453,5 @@ alias cd_to_task_home='cd $(realpath -e $(_fb_projects_helper_project_task_home)
 alias cdt='cd_to_task_home'
 alias project_task_home='_fb_projects_helper_project_task_home'
 alias new_project='_fb_projects_helper_get_projects_home'
+
+

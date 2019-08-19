@@ -110,3 +110,5 @@ nvim ./.config/nvim
 # ipython/profile_default/startup/README
 # ipython/profile_default/db/dhist
 
+.config/nvim/plugged/vim-superman/bin/vman .local/bin/
+https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto" { 'args': '--recursive' }

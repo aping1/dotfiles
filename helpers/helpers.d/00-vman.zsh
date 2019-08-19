@@ -1,7 +1,14 @@
 #! /usr/bin/env zsh
-export PATH="$PATH:${XDG_CONFIG_HOME:-$HOME/.confi/nvim}/plugged/.nvim/vim-superman/bin"
+
+SUPERMANDIR="${XDG_CONFIG_HOME:-$HOME/.config/nvim}/plugged/vim-superman/bin"
+if [[ -d ${SUPERMANDIR} ]]; then 
+    export PATH="$PATH:${SUPERMAN}"
+else
+    echo Failed to load "${SUPERMANDIR}"
+fi
 
 if command -v vman &>/dev/null ; then
+alias man="vman"
 compdef vman="man"
 # Completion
 complete -o default -o nospace -F _man vman
