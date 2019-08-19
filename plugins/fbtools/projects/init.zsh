@@ -201,7 +201,8 @@ function _fb_projects_helper_clone_project_task() {
         # create a link to the task in the tasks directory
         [[ -h ${_NEW_TASK} ]] || ln -s "${TASK_REL}/${_NEW_TASK}" &>/dev/null || echo "Failed to link task" >&2
         # Look for root working dir
-        _PROJECT_VCS=$(realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}")
+        _PROJECT_VCS="${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
+        _PROJECT_VCS="${_PROJECT_VCS:A}"
         # for each <project-dir>/repo-name
         # for each link that starts with $_PROJNAME
         printf ';[%s]\n' "$(date -u)" >>"${_TASK_ROOT_DIR}/.project"
@@ -209,8 +210,8 @@ function _fb_projects_helper_clone_project_task() {
         for repo in "${_PROJECT_VCS%/}/${_PROJNAME:l}"-?*; do
             [[ -h ${repo} ]] || continue
             ## The repo root, find it
-            REPO_LINK_PATH="$(realpath -e ${repo})"
-            _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
+            REPO_LINK_PATH="${repo:A}"
+            _PROJECT_VCS_ROOT="${REPO_LINK_PATH:A}"
             while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]]; do
                 [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' ]] && exit 5
                 _PROJECT_VCS_ROOT=${_PROJECT_VCS_ROOT:h}
@@ -313,6 +314,37 @@ function _fb_projects_helper_clone_project_task() {
         return $?
     fi
     return 4
+}
+
+function _fb_projects_helper_clean_task() {
+        local _FORCE
+        [[ ${1} == '-f' ]] && _FORCE="Y" && shift
+        tasks summary $1 2>/dev/null | tr -d '\t' | read TASK user STATUS pri info
+        if [[ ${_FORCE} =~ ^[yY] ||  $STATUS == "CLOSED" ]]; then
+            read -q "REPLY?Are you sure you want to clean $1: \"${info}\"?[Y/n]"
+            if [[ ${REPLY} =~ ^[nN]$ ]]; then
+                return 0
+            fi
+            EDENPATH=${2:-"$(_fb_projects_helper_project_task_home $1)/.workdir-*"}
+            for _edenpath in ${~EDENPATH}; do
+                if [[ -d $_edenpath ]]; then
+                    read -q "REPLY?Are you sure you want to clean $_edenpath?[Y/n]"
+                    if [[ $REPLY =~ ^[Yy]$ ]]; then
+                        echo "Removing $_edenpath" >&2
+                        eden rm $_edenpath
+                    fi
+            fi
+        done
+        else
+            echo "No clean: ${1} \"${info}\" is still ${STATUS}" >&2
+        fi
+
+}
+
+function _fb_projects_helper_clean() {
+    autoload -U zargs
+    #FIXME: Hard coded path
+    zargs -n2 -- $(eden list | awk -F/ '/^'"$(project_task_home)"'T[^0]/{print $5,$0}' ) -- _fb_projects_helper_clean_task
 }
 
 function _fb_projects_helper_add_bookmarks_from_list() {
@@ -422,7 +454,6 @@ function _fb_projects_helper_verify_project() {
         while read line; do
             _PARAM="" _VAL=""
             # Must match A[bcd]=soemthing
-            if [[ line =~ ^([A-Za-z_][A-Za-z0-9]*)=(.*)#?$ ]]; then
             if [[ line =~ ^([A-Za-z_][A-Za-z0-9]*)=(.*)#?$ ]]; then
                 _VAL=match[2]
                 case ${_PARAM:=match[1]} in
