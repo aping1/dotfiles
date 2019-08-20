@@ -82,28 +82,6 @@ ZSH_TMUX_AUTOSTART_ONCE=true
 ZSH_TMUX_FIXTERM=true
 ZSH_TMUX_AUTOQUIT=false
 
-# Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
-export DEFAULT_USER=awampler
-P9K_CONTEXT_TEMPLATE="%n@$(hostname -s)"
-P9K_PROMPT_ON_NEWLINE=true
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-P9K_LEFT_PROMPT_ELEMENTS=(host ssh user dir dir_writable vcs newline vi_mode pyenv )
-P9K_RPROMPT_ON_NEWLINE=true
-P9K_RIGHT_PROMPT_ELEMENTS=(status history time)
-P9K_DIR_SHORTEN_LENGTH=35
-P9K_DIR_BACKGROUND='238'
-P9K_DIR_FOREGROUND='252'
-P9K_STATUS_BACKGROUND='238'
-P9K_STATUS_FOREGROUND='252'
-P9K_CONTEXT_BACKGROUND='240'
-P9K_CONTEXT_FOREGROUND='252'
-P9K_TIME_BACKGROUND='238'
-P9K_TIME_FOREGROUND='252'
-P9K_HISTORY_BACKGROUND='240'
-P9K_HISTORY_FOREGROUND='252'
-#P9K_VI_MODE_INSERT_FOREGROUND='teal'
-
-
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
 if [ ! $TERM = dumb ]; then
     ZGEN_AUTOLOAD_COMPINIT=true
@@ -123,47 +101,45 @@ if [ ! $TERM = dumb ]; then
     if ! zgen saved; then
 
         # zgen will load oh-my-zsh and download it if required
-        zgen oh-my-zsh
 
         zgen prezto
         zgen prezto editor key-bindings 'vi'
         zgen prezto '*:*' color 'yes'
-        # zgen prezto tmux:auto-start local 'yes'
         zgen prezto '*:*' case-sensitive 'yes'
-        zgen prezto prompt theme 'off'
         zgen prezto git
         zgen prezto tmux
         zgen prezto fasd
         zgen prezto history-substring-search
         zgen prezto syntax-highlighting
+        zgen prezto prompt theme 'off'
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
         # zgen oh-my-zsh plugins/bower
         # zgen oh-my-zsh plugins/brew
-        zgen oh-my-zsh plugins/git
+        zgen oh-my-zsh
         zgen oh-my-zsh plugins/git-extras
-        zgen oh-my-zsh plugins/gitignore
-        zgen oh-my-zsh plugins/osx
-        zgen oh-my-zsh plugins/pip
-        zgen oh-my-zsh plugins/python
+        # zgen oh-my-zsh plugins/gitignore
+        # zgen oh-my-zsh plugins/osx
+        # zgen oh-my-zsh plugins/pip
+        # zgen oh-my-zsh plugins/python
         zgen oh-my-zsh plugins/sudo
-        zgen oh-my-zsh plugins/tmuxinator
+        # zgen oh-my-zsh plugins/tmuxinator
         zgen oh-my-zsh plugins/urltools
-        zgen oh-my-zsh plugins/vundle
         zgen oh-my-zsh plugins/web-search
         zgen oh-my-zsh plugins/z
+        zgen oh-my-zsh plugins/vi-mode
 
         # https://github.com/Tarrasch/zsh-autoenv
-        #zgen load Tarrasch/zsh-autoenv
+        # zgen load Tarrasch/zsh-autoenv
         # https://github.com/zsh-users/zsh-completions
         zgen load zsh-users/zsh-completions src
 
         # my own plugins each of these folders use init.zsh entry point
         zgen load $DOTFILES/plugins/aliases
-        zgen load $DOTFILES/plugins/bootstrap
+        # zgen load $DOTFILES/plugins/bootstrap
         zgen load $DOTFILES/plugins/dotfiles
-        zgen load $DOTFILES/plugins/zpython
+        # zgen load $DOTFILES/plugins/zpython
         zgen load $DOTFILES/plugins/pyenv
         zgen load $DOTFILES/plugins/fbtools
         # zgen load $DOTFILES/plugins/direnv
@@ -171,19 +147,11 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/tpm
         zgen load $DOTFILES/helpers
 
-        zgen oh-my-zsh plugins/vi-mode
         zgen load denysdovhan/spaceship-prompt spaceship
 
         zgen save
     fi
 
-    # Configure vundle
-    vundle-init
-fi
-
-# specific for machine configuration, which I don't sync
-if [ -f ~/.machinerc ]; then
-    source ~/.machinerc
 fi
 
 ## zsh Option

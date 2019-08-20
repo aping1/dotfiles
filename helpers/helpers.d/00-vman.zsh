@@ -1,8 +1,8 @@
 #! /usr/bin/env zsh
 
-SUPERMANDIR="${XDG_CONFIG_HOME:-$HOME/.config/nvim}/plugged/vim-superman/bin"
+SUPERMANDIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim/plugged/vim-superman/bin"
 if [[ -d ${SUPERMANDIR} ]]; then 
-    export PATH="$PATH:${SUPERMAN}"
+    export PATH="$PATH:${SUPERMANDIR}"
 else
     echo Failed to load "${SUPERMANDIR}"
 fi
