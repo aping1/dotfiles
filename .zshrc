@@ -100,36 +100,46 @@ if [ ! $TERM = dumb ]; then
     # configure zgen
     if ! zgen saved; then
 
-        # zgen will load oh-my-zsh and download it if required
+        zgen load denysdovhan/spaceship-prompt spaceship
 
-        zgen prezto
-        zgen prezto editor key-bindings 'vi'
-        zgen prezto '*:*' color 'yes'
-        zgen prezto '*:*' case-sensitive 'yes'
-        zgen prezto git
-        zgen prezto tmux
-        zgen prezto fasd
-        zgen prezto history-substring-search
-        zgen prezto syntax-highlighting
-        zgen prezto prompt theme 'off'
+        # zgen prezto
+        # zgen prezto editor key-bindings 'vi'
+        # zgen prezto '*:*' color 'yes'
+        # zgen prezto '*:*' case-sensitive 'yes'
+        # zgen prezto git
+        # zgen prezto tmux
+        # zgen prezto fasd
+        # zgen prezto history-substring-search
+        # zgen prezto prompt theme 'off'
+        # zgen prezto syntax-highlighting highlighters \
+        #     'main' \
+        #     'brackets' \
+        #     'pattern' \
+        #     'line' \
+        #     'cursor' \
+        #     'root'
+
+        # oh-my-zsh uses ZSH and prezto uses:
+		# ZSH=/Users/aping1/.zgen/sorin-ionescu/prezto-master<Paste>
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
-        # zgen oh-my-zsh plugins/bower
-        # zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh
-        zgen oh-my-zsh plugins/git-extras
+        # zgen oh-my-zsh plugins/bower
+        zgen oh-my-zsh plugins/brew
+        # zgen oh-my-zsh plugins/git-extras
         # zgen oh-my-zsh plugins/gitignore
-        # zgen oh-my-zsh plugins/osx
-        # zgen oh-my-zsh plugins/pip
+        zgen oh-my-zsh plugins/osx
+        zgen oh-my-zsh plugins/pip
         # zgen oh-my-zsh plugins/python
         zgen oh-my-zsh plugins/sudo
         # zgen oh-my-zsh plugins/tmuxinator
-        zgen oh-my-zsh plugins/urltools
-        zgen oh-my-zsh plugins/web-search
-        zgen oh-my-zsh plugins/z
+        # zgen oh-my-zsh plugins/urltools
+        # zgen oh-my-zsh plugins/web-search
+        # zgen oh-my-zsh plugins/z
         zgen oh-my-zsh plugins/vi-mode
 
+		zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
         # zgen load Tarrasch/zsh-autoenv
         # https://github.com/zsh-users/zsh-completions
@@ -147,7 +157,6 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/tpm
         zgen load $DOTFILES/helpers
 
-        zgen load denysdovhan/spaceship-prompt spaceship
 
         zgen save
     fi

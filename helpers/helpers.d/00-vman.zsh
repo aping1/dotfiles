@@ -8,8 +8,8 @@ else
 fi
 
 if command -v vman &>/dev/null ; then
-alias man="vman"
-compdef vman="man"
-# Completion
-complete -o default -o nospace -F _man vman
+    alias man="vman"
+    compdef vman="man"
+    # Completion
+    # complete -o default -o nospace -F _man vman
 fi

@@ -170,7 +170,8 @@ Plug 'jez/vim-superman'
 
 
 " Indent lines
-Plug 'nathanaelkane/vim-indent-guides'
+" Plug 'nathanaelkane/vim-indent-guides'
+Plug 'Yggdroot/indentLine'
 
 Plug 'junegunn/fzf.vim'
 Plug 'numkil/ag.nvim'
@@ -210,7 +211,7 @@ filetype plugin indent on     " required
 "----------------------------------------------
 "
 let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_guide_size = 1
+let g:indent_guides_guide_size = 2
 let g:indent_guides_start_level = 2
 
 "----------------------------------------------
@@ -478,8 +479,8 @@ augroup END
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
 " Gutter Error and warning signs.
-let g:ale_sign_error = '⤫' 
-let g:ale_sign_warning = '⚠'
+let g:ale_sign_error = '⤫ ' 
+let g:ale_sign_warning = '⚠ '
 
 let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
@@ -615,10 +616,10 @@ return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol())
 endfunction
 
 
-let g:lightline#ale#indicator_checking = "\uf110"
-let g:lightline#ale#indicator_warnings = "\uf071"
-let g:lightline#ale#indicator_errors = "\uf05e"
-let g:lightline#ale#indicator_ok = "\uf00c"
+let g:lightline#ale#indicator_checking = "\uf110 "
+let g:lightline#ale#indicator_warnings = "\uf071 "
+let g:lightline#ale#indicator_errors = "\uf05e "
+let g:lightline#ale#indicator_ok = "\uf00c "
 
 "----------------------------------------------
 " Plugin: bling/vim-go
