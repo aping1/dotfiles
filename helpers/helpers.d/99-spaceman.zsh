@@ -1,7 +1,6 @@
 
 # ORDER
 SPACESHIP_PROMPT_ORDER=(
-  time     #
   vi_mode  # these sections will be
   user     # before prompt char
   host     #
@@ -24,7 +23,11 @@ SPACESHIP_PROMPT_ORDER=(
   exec_time     # Execution time
   jobs          # Background jobs indicator
   exit_code     # Exit code section
+  time
 )
+
+SPACESHIP_TIME_SHOW=true
+SPACESHIP_TIME_PREFIX="${SPACESHIP_TIME_PREFIX:-"at "}\uf017 "
 SPACESHIP_GIT_LAST_COMMIT_SHOW=true
 SPACESHIP_VI_MODE_NORMAL="-"
 SPACESHIP_VI_MODE_INSERT=INS
@@ -32,8 +35,8 @@ SPACESHIP_VI_MODE_COLOR=white
 
 SPACESHIP_EXIT_CODE_SHOW=true
 
-SPACESHIP_EXIT_CODE_PREFIX="["
-SPACESHIP_EXIT_CODE_SYMBOL=""
+SPACESHIP_EXIT_CODE_PREFIX=""
+SPACESHIP_EXIT_CODE_SYMBOL="\uf071"
 
 # USER
 SPACESHIP_USER_PREFIX="i am" # remove `with` before username

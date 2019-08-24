@@ -1,6 +1,3 @@
-"
-"G
-"
 " ~/.vimrc (local shell)
 "
 
@@ -92,8 +89,11 @@ call plug#begin('~/.config/nvim/plugged')
 
 Plug 'gyim/vim-boxdraw'
 Plug 'mg979/vim-visual-multi'
+Plug 'hashivim/vim-terraform'
+Plug 'towolf/vim-helm'
 
 
+Plug 'jez/vim-superman'
 " --- Colorscheme ---
 Plug 'flazz/vim-colorschemes'
 Plug 'iCyMind/NeoSolarized'
@@ -125,7 +125,8 @@ Plug 'Shougo/deoplete.nvim'
 Plug 'davidhalter/jedi-vim'
 Plug 'zchee/deoplete-jedi'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'aping1/deoplete-zsh', { 'branch': 'fix_completion' }
+Plug 'aping1/deoplete-zsh', { 'branch': 'develop' }
+Plug 'juliosueiras/vim-terraform-completion'
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 
 Plug 'Vigemus/impromptu.nvim'
@@ -154,12 +155,7 @@ Plug 'mhinz/vim-signify'
 Plug 'ap/vim-css-color'
 
 
-Plug 'aping1/deoplete-zsh', {'branch': 'fix-completion'}
 Plug 'roxma/vim-tmux-clipboard'
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
 
 Plug '~/.doftiles/vim/projects'
 
@@ -398,6 +394,15 @@ let g:jedi#show_call_signatures = "1"
 
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'virtual'
+
+"----------------------------------------------
+" Plug 'juliosueiras/vim-terraform-completion'
+"----------------------------------------------
+
+let g:deoplete#omni_patterns = {}
+let g:deoplete#omni_patterns.terraform = '[^ *\t"{=$]\w*'
+
+call deoplete#initialize()
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
@@ -406,15 +411,16 @@ let g:ale_sign_error = '⤫'
 let g:ale_sign_warning = '⚠'
 
 let g:ale_linters_explicit = 1
-let b:ale_linters = { 'python' : ['flake8', 'pyre'] }
-let b:ale_linters = { 'python' : ['flake8', 'pyre'], 
+let g:ale_linters = { 'python' : ['flake8', 'pyre'], 
             \       'sh' : ['shellcheck'],
             \       'terraform' : ['tflint'] }
 " " Fix Python files with autopep8 and yapf.
-let g:ale_fixers = { 'python' : ['black' ] }
+let g:ale_fixers = { 'python' : ['black' ],
+            \       'lua' : ['trimwhitespace', 'remove_trailing_lines'], 
+            \        'terraform' : ['terraform'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
-let g:ale_fix_on_save=0
+let g:ale_fix_on_save=1
 let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
@@ -424,10 +430,6 @@ let g:ale_open_list = 1
 let g:ale_keep_list_window_open = 1
 " Set this if you want to.
 " Enable integration with " Check Python files with flake8 and pylint.
-let b:ale_linters = { 'python': ['flake8', 'mypy' ] }
-" Fix Python files with autopep8 and yapf.
-let b:ale_fixers = { 'python' : ['black'],
-            \       'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
 
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
@@ -480,15 +482,13 @@ let g:lightline = {
       \ 'active': {
       \   'left': [ [  'mode', 'paste', 'spell' ],
       \             [ 'pyenv', 'pyenv_active' ],
-      \             ['gitbranch', 'fugitive' ] ],
+      \             [ 'fugitive' ] ],
       \   'right': [ ['filename', 'lineno', 'percent' ], 
       \              [ 'filetype', 'fileformat', 'readonly' ],
       \              [ 'linter_checking', 'linter_errors',
       \                'linter_warnings', 'linter_ok'  ]
       \            ]
       \ },
-      \ 'seperator' : { 'right': '', 'left': '' },
-      \ 'subseperator' : { 'right': '', 'left': '' },
       \ 'component_expand' : {
       \  'linter_checking': 'lightline#ale#checking',
       \  'linter_warnings': 'lightline#ale#warnings',
@@ -500,7 +500,7 @@ let g:lightline = {
       \ 'component': {
       \   'spell': '%{&spell?&spelllang:""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{&filetype=="help"?"":exists("*FugitiveStatusline")?FugitiveStatusline():""}',
+      \   'fugitive': '%{&filetype=="help"?"":exists("*LightlineFugitive")?LightlineFugitive():""}',
       \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?"\uf00c":""}'
       \ },
       \ 'component_visible_condition': {
@@ -523,6 +523,17 @@ let g:lightline = {
       \ },
       \ 'colorscheme' : 'one',
       \ }
+
+function! LightlineFugitive()
+  if &ft !~? 'vimfiler' && exists('*fugitive#head')
+    let branch = fugitive#head()
+    if len(branch) < 25
+      return branch
+    endif
+    return branch[:15] . ' .. ' . branch[(len(branch)-15):]
+  endif
+  return ''
+endfunction
 
 function! NearestMethodOrFunction() abort
   return get(b:, 'vista_nearest_method_or_function', '')
