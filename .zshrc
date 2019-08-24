@@ -153,9 +153,9 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/sudo
         zgen oh-my-zsh plugins/tmuxinator
         zgen oh-my-zsh plugins/urltools
-        zgen oh-my-zsh plugins/vundle
+        zgen oh-my-zsh plugins/vault
         zgen oh-my-zsh plugins/web-search
-        zgen load joel-porquet/zsh-dircolors-solarized
+        # zgen load joel-porquet/zsh-dircolors-solarized
         zgen oh-my-zsh plugins/z
 
         # https://github.com/Tarrasch/zsh-autoenv
@@ -173,15 +173,13 @@ if [ ! $TERM = dumb ]; then
         # zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
+        zgen load $DOTFILES/plugins/helpers
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme next
+        
+        zgen load denysdovhan/spaceship-prompt spaceship
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
-        # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
-
-        # zgen load christian-schulze/powerlevel9k powerlevel9k.zsh-theme
 
         # It takes control, so load last
         zgen load $DOTFILES/plugins/my-tmux
@@ -189,8 +187,6 @@ if [ ! $TERM = dumb ]; then
         zgen save
     fi
 
-    # Configure vundle
-    vundle-init
 fi
 
 # specific for machine configuration, which I don't sync
@@ -290,3 +286,6 @@ setupsolarized dircolors.256dark
 fi
 
 alias vim=nvim
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/vault vault
