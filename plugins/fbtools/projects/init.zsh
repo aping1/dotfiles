@@ -14,7 +14,6 @@ _tmux_scripts="$(_realpath -e ${_fbtools_projects_local_script%/}/../tmux/script
 _tasks_scripts="$(_realpath -e ${_fbtools_projects_local_script%/}/../tasks/)"
 _fbtools_scripts="$(_realpath -e ${_fbtools_projects_local_script%/}/../)"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
-#
 
 source ${_fbtools_scripts}/utils.zsh || return 10
 
@@ -101,24 +100,24 @@ function _fb_projects_helper_get_projects_home() {
 
 
 function _fb_projects_helper_project_shortname() {
-    local _PROJNAME=${1#[0-9]*}  _NEW_TASK=$2
+    local _PROJNAME=${1}  _NEW_TASK=$2
     # the case where ends with a task
-    printf '%s == %s \n' "${_PROJNAME}" "${TASK_REGEX:-"(\w)-?(\d+)$"}" >&2
-    if [[ ${_PROJNAME} =~ ${TASK_REGEX:-"(\w)-?(\d+)$"} ]]; then
+    if [[ ${_PROJNAME} =~ ^${TASK_REGEX:-"(\w)-?(\d+)$"} ]]; then
         # is this inheritance? |_//// 0^0
         _NEW_TASK="${_NEW_TASK:-"$(_fb_tasks_helper_task_shortname $*)"}"
-        _PROJNAME="${_PROJECTNAME:-$(_fb_tmux_helper_get_session)}"
-    elif ! [[ ${_PROJNAME} =~ ^${PROJECT_RX}[-]? ]] ; then
+        _PROJNAME="$(_fb_tmux_helper_get_session)"
+    fi
+    if ! [[ ${_PROJNAME} =~ ${PROJECT_RX}-? ]] ; then
         # doesnt contain a project
         return 1
-    fi
-    if [[ ${_PROJNAME} =~ ^${PROJECT_RX}-?${TASK_REGEX:-"(\w)-?(\d+)"} ]]; then
-        _NEW_TASK="${_NEW_TASK:-"$(_fb_projects_helper_project_shortname)"}"
+    elif [[ ${_PROJNAME} =~ ${PROJECT_RX}-${TASK_REGEX:-"(\w)(-?)(\d+)"} ]]; then
+        _NEW_TASK="${_NEW_TASK:-"${match[3]}${match[4]}${match[5]}"}"
         _PROJNAME=${match[2]}
         _SOMEID=${_SOMEID:-$match[1]}
     else
+        return 1
     fi
-    printf '%s %s %s\n' "${_SOMEID:-"None"}"h "${_PROJNAME:-"None"}" "${_NEW_TASK}"
+    printf -- '%s %s %s\n' "${_SOMEID:-"None"}" "${_PROJNAME:-"None"}" "${_NEW_TASK}"
 }
 function _fb_projects_helper_clone_git() {
     local _PROJECT_VCS_ROOT=$1
@@ -155,7 +154,7 @@ function _fb_projects_helper_clone_hg() {
                 _HG_CLONE=/opt/facebook/hg/bin/hg-new-workdir
             fi
             printf '[INFO] Command to run: %s\n' "${TIMEOUT} ${_HG_CLONE:-echo} ${_PROJECT_VCS_ROOT} ${_VCS_DEST}" >&2
-            if !! [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
+            if ! [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
                 # clone into projects
                 eval ${TIMEOUT} ${_HG_CLONE:-hg-new-workdir} \
                     "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
@@ -231,7 +230,7 @@ function _fb_projects_helper_clone_project_task() {
             #======== repo root path
             REPO_LINK_PATH="$(_realpath -e ${repo_or_link})"
             _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
-            while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" && !! -d "${_PROJECT_VCS_ROOT%/}/.git" ]]; do
+            while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" && ! -d "${_PROJECT_VCS_ROOT%/}/.git" ]]; do
                 [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' ]] && exit 5
                 _PROJECT_VCS_ROOT=${_PROJECT_VCS_ROOT:h}
             done

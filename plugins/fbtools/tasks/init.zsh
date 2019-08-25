@@ -13,7 +13,7 @@ _tmux_scripts="${_fbtools_tasks_local_script%/}/../tmux/scripts"
 _tmux_scripts="${_tmux_scripts:A}"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 
-TASK_REGEX='-?([A-Z]{0,3})(-?)([0-9][0-9]*)$'
+TASK_REGEX='([A-Z]{0,3})(-?)([0-9][0-9]*)$'
 [[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../init.zsh
 
 : ${TASK_ROOT_DIR:="${HOME}/tasks"}
@@ -99,13 +99,14 @@ function _fb_tasks_helper_change_session_to_cur_task () {
     local _SOMEID _PROJNAME _NEW_TASK=${1}
     _fb_projects_helper_project_shortname ${1:-$(_fb_tmux_helper_get_session)} \
             | read _SOMEID _PROJNAME _OLD_TASK || return 2
-    : ${_NEW_TASK:=$(_fb_tasks_helper_get_current_task $_NEW_TASK)}
-    if _fb_tasks_helper_is_valid_task ${_NEW_TASK}; then
-        if _fb_tmux_helper_session_exists "P+${_PROJNAME}-${_NEW_TASK#-}"; then
-            bash "${_tmux_scripts%/}/switch_or_loop.sh"  "P+${_PROJNAME}-${_NEW_TASK#-}" || return 128
-        else
-            bash "${_tmux_scripts%/}/new_session.sh"  "P+${_PROJNAME}-${_NEW_TASK#-}" || return 129
-        fi
+    [[ ${_SOMEID} == None ]] && _SOMEID=""
+    PROJECT_SHIT="P${_SOMEID}+${_PROJNAME}-${_NEW_TASK}"
+    if _fb_tmux_helper_session_exists ${PROJECT_SHIT}; then
+        bash "${_tmux_scripts%/}/switch_or_loop.sh"  "${PROJECT_SHIT}" || return 128
+        return 0
+    else
+        bash "${_tmux_scripts%/}/new_session.sh"  "${PROJECT_SHIT}" || return 129
+        return 0
     fi
     return 2
 }
