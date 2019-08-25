@@ -133,6 +133,7 @@ Plug 'Vigemus/impromptu.nvim'
 Plug 'Vigemus/iron.nvim'
 Plug 'bfredl/nvim-ipy'
 Plug 'janko/vim-test'
+Plug 'majutsushi/tagbar'
 
 Plug 'Shougo/denite.nvim', { 'branch': 'master' }
 Plug 'dunstontc/denite-mapping'
@@ -482,7 +483,7 @@ let g:lightline = {
       \ 'active': {
       \   'left': [ [  'mode', 'paste', 'spell' ],
       \             [ 'pyenv', 'pyenv_active' ],
-      \             [ 'fugitive' ] ],
+      \             [ 'fugitive', 'tagbar' ] ],
       \   'right': [ ['filename', 'lineno', 'percent' ], 
       \              [ 'filetype', 'fileformat', 'readonly' ],
       \              [ 'linter_checking', 'linter_errors',
@@ -498,16 +499,18 @@ let g:lightline = {
       \  'gitbranch': 'fugitive#head'
       \ },
       \ 'component': {
+      \   'tagbar': '%{tagbar#currenttag("[%s]", "")}',
       \   'spell': '%{&spell?&spelllang:""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
       \   'fugitive': '%{&filetype=="help"?"":exists("*LightlineFugitive")?LightlineFugitive():""}',
-      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?"\uf00c":""}'
+      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?"\uf00c":""}',
       \ },
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
       \   'fugitive': '(&filetype!="help"&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
-      \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())'
+      \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
+      \   'tagbar': '(exists("tagbar#currenttag"))',
       \ },
       \ 'component_type': {
       \     'linter_checking': 'left',

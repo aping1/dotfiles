@@ -1,5 +1,5 @@
 
-if ! command -v vimr; then
+if ! command -v vimr &>/dev/null; then
     echo 'vimr not installed' >&2
     return 1
 fi

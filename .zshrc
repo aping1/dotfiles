@@ -1,5 +1,22 @@
 # === Profiling ===
-#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_BEEP
+
+# Use ~~ as the trigger sequence instead of the default **
+export FZF_COMPLETION_TRIGGER='~~'
+
+# Options to fzf command
+export FZF_COMPLETION_OPTS='+c -x'
+
 #if I see that zsh takes to much time to load I profile what has been changed,
 # I want to see my shell ready in not more than 1 second
 PROFILING=${PROFILING:-false}
@@ -273,13 +290,6 @@ setopt extendedglob nomatch
 #
 #export PYENV_ROOT="~/projects/virtualenvs"
 
-[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
-
-# Use ~~ as the trigger sequence instead of the default **
-export FZF_COMPLETION_TRIGGER='~~'
-
-# Options to fzf command
-export FZF_COMPLETION_OPTS='+c -x'
 
 if which setupsolarized &>/dev/null; then
 setupsolarized dircolors.256dark
