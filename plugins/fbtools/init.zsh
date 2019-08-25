@@ -1,5 +1,11 @@
 #!/usr/bin/env zsh
 #
+if command -v realpath &>/dev/null; then
+    alias _realpath='realpath'
+else
+    alias _realpath='() { while [[ $1 =~ ^- ]]; do shift; done;  echo "${1:A}"; } '
+fi
+#
 #
 if [[ -d /opt/facebook/hg/share/zsh/site-functions ]]; then
     fpath+="/opt/facebook/hg/share/zsh/site-functions"
@@ -31,5 +37,9 @@ function update_iterm_title () {
     _iterm_hooks_rename_both "$(_fb_tmux_helper_get_session)"
 }
 # add-zsh-hook periodic update_iterm_title
-
-
+FB_TOOLS_MAIN=$(cd $(dirname $0) &>/dev/null; pwd -P;)
+for module in ${FB_TOOLS_MAIN}/*/init.zsh; do
+ MODULE_NAME="${${module%.zsh}:h:t:u}"
+printf -- 'export FB_TOOLS_%s="%s"\n' "${MODULE_NAME}" "${module:h}"
+    source "${module}"
+done

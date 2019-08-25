@@ -13,11 +13,7 @@ _tmux_scripts="${_fbtools_tasks_local_script%/}/../tmux/scripts"
 _tmux_scripts="${_tmux_scripts:A}"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 
-<<<<<<< HEAD
-TASK_REGEX='-?([A-Z])([0-9][0-9]*)$'
-=======
-TASK_REGEX='-?T([0-9][0-9]*)$'
->>>>>>> 4fd8a41... fbtools: update imports
+TASK_REGEX='-?([A-Z]{0,3})(-?)([0-9][0-9]*)$'
 [[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../init.zsh
 
 : ${TASK_ROOT_DIR:="${HOME}/tasks"}
@@ -29,11 +25,12 @@ _proj_scripts=${_proj_scripts:A}
 
 ### START FUNCTIONS =====
 #
-function _fb_tasks_helper_task_shortname() {
-    local _PROJNAME=${1#[0-9]*}  _NEW_TASK=$2
-    if [[ ${_PROJNAME} =~ ^([[:graph:]]*)${TASK_REGEX:-"([A-Z])([[:digit:]]*)"}$ ]]; then
-        _NEW_TASK="${match[2]}${match[3]}"
-        _PROJNAME="${match[1]}"
+function _fb_tasks_helper_task_shortname() { local _PROJNAME=${1#[0-9]*}  _NEW_TASK=$2
+    if [[ ${_PROJNAME} =~ ^P\+\d*-?${TASK_REGEX:-"([A-Z]{,3})(-?)([[:digit:]]*)"}$ ]]; then
+        echo ${match[*]}
+        _NEW_TASK="${match[2]}${match[3]}${match[4]}"
+    elif [[ ${_PROJNAME} =~ ${TASK_REGEX:-"([A-Z]{,3})(-?)([[:digit:]]*)"}$ ]]; then
+        _NEW_TASK="${match[1]}${match[2]}${match[3]}"
     fi
     printf '%s\n' "${_NEW_TASK}"
 }
@@ -61,29 +58,6 @@ function _fb_tasks_helper_is_current_task () {
     fi
 }
 
-function _fb_tasks_helper_get_current_task () {
-    local _CURRENT_LINK
-    local _RET
-    local _NEW_TASK
-    _fb_tasks_helper_task_shortname ${1:-$(_fb_tmux_helper_get_session)} \
-        2> /dev/null | read _NEW_TASK
-    _CURRENT_LINK="$(basename $(realpath -e ${TASK_LINK}))"
-    if [[ ! -h ${TASK_LINK} ]] && [[ ! ${_NEW_TASK} ]] && _fb_tasks_helper_is_valid_task "${_CURRENT_LINK}"; then
-        export TASK_HOME="${TASK_ROOT_DIR%/}/${_CURRENT_LINK}"
-    elif ! _fb_tasks_helper_is_valid_task "${_CURRENT_LINK}" && [[ ${_RET:=$?} == 1 ]] ; then
-        # Abort with non valid task
-        printf 'ERROR: current task link not set to task\n'
-        return 2
-    fi
-    # IF the task is not rvalid but ret is 1
-    export TASK_HOME="${TASK_ROOT_DIR%/}/${_NEW_TASK}"
-    if  [[ ! -d ${TASK_HOME} ]] && [[ ${_RET} == 2 ]]; then
-        mkdir -p "${TASK_HOME}"
-    fi
-    echo "${_CURRENT_LINK}"
-
-}
-
 function _fb_tasks_helper_task_root {
     _NEW_TASK=${1:-$(current_task)}
     [[  $_NEW_TASK =~ '/' ]] && _NEW_TASK=$(basename ${_NEW_TASK})
@@ -96,14 +70,17 @@ function _fb_tasks_helper_set_task () {
     local _NEW_TASK
     _fb_tasks_helper_task_shortname ${1:-$(_fb_tmux_helper_get_session)} \
         2> /dev/null | read _NEW_TASK
+    if [[ ${_NEW_TASK} ]] ; then 
     (
-    cd "${TASK_ROOT_DIR:="${HOME}/tasks"}" &>/dev/null
+    cd "${TASK_ROOT_DIR:="${HOME}/tasks"}" >/dev/null
     mkdir "${_NEW_TASK}"
     # [[ -h ${TASK_LINK} ]] && rm ${TASK_LINK%/}
     # ln -s "$(basename ${_NEW_TASK})" "${TASK_LINK}"
     mkdir "${_NEW_TASK}"
-    ) &>/dev/null 
+    [[ -d "${_NEW_TASK}" ]] || exit 1
+    ) >/dev/null && \
     _fb_tasks_helper_change_session_to_cur_task ${_NEW_TASK}
+fi 
 }
 
 alias set_task='_fb_tasks_helper_set_task'
@@ -138,7 +115,7 @@ function _fb_tasks_helper_set_task_from_session_name () {
     local _tmux_session="$(_fb_tmux_helper_get_session)"
     _fb_tasks_helper_task_shortname ${1:-$(_fb_tmux_helper_get_session)} \
         2> /dev/null | read _NEW_TASK
-    if _fb_tasks_helper_is_valid_task "${_NEW_TASK}" ;then
+    if [[ ${_NEW_TASK} ]] ; then 
         _fb_tasks_helper_set_task ${_NEW_TASK} && return
     fi
     return 1
@@ -165,11 +142,7 @@ function task_from_tmux() {
 
 alias task_list='_fb_tasks_helper_list_tasks'
 alias cur_task='_fb_tasks_helper_get_current_task'
-<<<<<<< HEAD
 alias task_home='printf "%s\n" "${TASK_ROOT_DIR:="${HOME}/tasks"}/$(task_from_tmux)"'
-=======
-alias task_home='[[ -h ${TASK_LINK} ]] && cd $(realpath -e ${TASK_LINK})'
->>>>>>> 4fd8a41... fbtools: update imports
 alias set_task_from_session='_fb_tasks_helper_set_task_from_session_name'
 alias goto_task_session='_fb_tasks_helper_change_session_to_cur_task'
 alias cd_to_task_home='cd $(cd $(task_home) && pwd -P)'
