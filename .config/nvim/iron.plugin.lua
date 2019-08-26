@@ -113,7 +113,7 @@ end
 
 -- iron.core.set_config{preferred = {python = "venv_python"}}
 
-nvim.nvim_command("command! -nargs=0 PickRepl lua set_preferred_repl()")
+nvim.nvim_command("command! -nargs=0 PickRepl lua t_preferred_repl()")
 nvim.nvim_command("command! -nargs=0 PickVirtualenv lua set_virtualenv()")
 nvim.nvim_command("command! -nargs=0 PickIPython lua repl_globs()")
 

@@ -1,23 +1,19 @@
 #! /usr/bin/bash
 #! /usr/local/bin/zsh || /usr/bin/zsh
 
-
+command -v realpath &>/dev/null || return 2
 if [[ $0 == /bin/bash ]] ; then
     _fbtools_projects_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
     exec zsh $_fbtools_projects_local_script/init.zsh
 else
-    _fbtools_projects_local_script="$( cd $(dirname "${0:A}") &>/dev/null; pwd -P;)"
+    _fbtools_projects_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
 fi
 if ! [[ ${_fbtools_projects_local_script} =~ fbtools ]];then
     _fbtools_projects_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
 fi
-_tmux_scripts="${_fbtools_projects_local_script%/}/../tmux/scripts"
-_tmux_scripts="${_tmux_scripts:A}"
-_tasks_scripts="${_fbtools_projects_local_script%/}/../tasks/"
-_tasks_scripts="${_tasks_scripts:A}"
-_fbtools_scripts="${_fbtools_projects_local_script%/}/../"
-_fbtools_scripts="${_fbtools_scripts:A}"
-
+_tmux_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../tmux/scripts)"
+_tasks_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../tasks/)"
+_fbtools_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../)"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 #
 
@@ -29,7 +25,11 @@ PROJECT_RX='\d*P([0-9]*)\+('${PROJECT_RX_SIMP}')'
 
 [[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../init.zsh
 
-: ${PROJECT_ROOT_DIR:="${HOME}/projects"}
+: ${PROJECT_FOLDER_NAME:="projects"}
+: ${PROJECT_PREFIX:="${HOME}/${PROJECT_FOLDER_NAME}"}
+if ! [[ -d  ${PROJECT_ROOT_DIR:=${PROJECT_PREFIX:A}} ]]; then
+    return 1 
+fi
 export PROJECT_ROOT_DIR
 : ${PROJECT_LINK:=${PROJECT_ROOT_DIR}/current}
 [[ ${TASK_ROOT_DIR} ]] || source ${_tasks_scripts}/init.zsh
@@ -37,9 +37,24 @@ export PROJECT_ROOT_DIR
 
 function _fb_projects_helper_list_projects () {
     find "${PROJECT_ROOT_DIR}" -maxdepth 1 -mindepth 1 -type d \
-        -exec basename {} \; 2>/dev/null | while read file; do
-            printf 'P+%s\n' "${file}"
-        done 2>/dev/null
+        -exec basename {} \; 2>/dev/null
+}
+
+function _fb_projects_helper_list_project_tasks () {
+    find "${project_from_tmux}" -maxdepth 1 -mindepth 1 -type l \
+        -exec basename {} \; 2>/dev/null 
+}
+
+function _fb_projects_helper_resolve_relative_path() {
+    # relative link between $1 and $2
+    [[ ${1} && ${2} ]] || return 1
+    # Get the real path of A
+    _PATH_ROOT="${1:A}"
+    while ! [[ -d "${2:A}" || -d "${2}" ]]; do
+        [[ "${_PATH_ROOT}" -ef "${HOME}" || "${_PATH_ROOT}" -ef '/' ]] && return 5
+        _PATH_ROOT=${_PATH_ROOT:h}
+    done
+    printf '%s\n' "${_PATH_ROOT}"
 }
 
 function _fb_projects_helper_init_projects_here () {
@@ -62,10 +77,6 @@ function _fb_projects_helper_init_projects_here () {
         break;
     done
 _EOF
-    (
-    cd "${CUR_DIR:A}" &>/dev/null
-    direnv allow .
-    )
 }
 
 function _fb_projects_helper_is_valid_project() {
@@ -101,17 +112,15 @@ function _fb_projects_helper_get_projects_home() {
         [[ ${_RET:=$?} == 2 ]] && return 2
         mkdir -p "${HOME}/projects/${_PROJNAME}"
     fi
-    local l_path="${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
-    echo "${l_path:A}"
-
+    realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
 }
 
 
 function _fb_projects_helper_project_shortname() {
     local _PROJNAME=${1#[0-9]*}  _NEW_TASK=$2
     # the case where ends with a task
-    printf '%s == %s \n' "${_PROJNAME}" "${TASK_REGEX:-"(\w)(\d+)$"}" >&2
-    if [[ ${_PROJNAME} =~ ${TASK_REGEX:-"(\w)(\d+)$"} ]]; then
+    printf '%s == %s \n' "${_PROJNAME}" "${TASK_REGEX:-"(\w)-?(\d+)$"}" >&2
+    if [[ ${_PROJNAME} =~ ${TASK_REGEX:-"(\w).?(\d+)$"} ]]; then
         # is this inheritance? |_//// 0^0
         _NEW_TASK="${_NEW_TASK:-"$(_fb_tasks_helper_task_shortname $*)"}"
         _PROJNAME="${_PROJECTNAME:-$(_fb_tmux_helper_get_session)}"
@@ -119,16 +128,15 @@ function _fb_projects_helper_project_shortname() {
         # doesnt contain a project
         return 1
     fi
-    if [[ ${_PROJNAME} =~ ^${PROJECT_RX}${TASK_REGEX:-"(\w)(\d+)"} ]]; then
+    if [[ ${_PROJNAME} =~ ^${PROJECT_RX}${TASK_REGEX:-"(\w)-?(\d+)"} ]]; then
         _NEW_TASK="${_NEW_TASK:-"$(_fb_projects_helper_project_shortname)"}"
         _PROJNAME=${match[2]}
         _SOMEID=${_SOMEID:-$match[1]}
-    else
     fi
     printf '%s %s %s\n' "${_SOMEID:-"None"}"h "${_PROJNAME:-"None"}" "${_NEW_TASK}"
 }
 
-function _fb_projects_helper_add_task_to_project() {
+function _fb_projects_helper_clone_project_task() {
     if [[ ${DRYRUN} || ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
         export DEBUG=Y
         alias ln='echo'
@@ -159,8 +167,7 @@ function _fb_projects_helper_add_task_to_project() {
         fi
         # go to project home based on the project name
         # cd $(_fb_projects_helper_get_projects_home "P+${_PROJNAME}") &>/dev/null || exit 1
-        _TASK_ROOT_DIR="${TASK_REL%/}/${_NEW_TASK}"
-        _TASK_ROOT_DIR="${_TASK_ROOT_DIR:A}"
+        _TASK_ROOT_DIR=$(realpath -e "${TASK_REL%/}/${_NEW_TASK}")
         [[ ${_TASK_ROOT_DIR} ]] && \
             printf 'task.root[%s]=exists\n' "$(pwd -P)${TASK_REL%/}${_NEW_TASK}" >>"${_TASK_ROOT_DIR}/.project" \
             || mkdir -p ${_TASK_ROOT_DIR:=${TASK_REL%/}/${_NEW_TASK}}
@@ -170,8 +177,7 @@ function _fb_projects_helper_add_task_to_project() {
         # create a link to the task in the tasks directory
         [[ -h ${_NEW_TASK} ]] || ln -s "${TASK_REL}/${_NEW_TASK}" &>/dev/null || echo "Failed to link task" >&2
         # Look for root working dir
-        _PROJECT_VCS="${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
-        _PROJECT_VCS="${_PROJECT_VCS:A}"
+        _PROJECT_VCS=$(realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}")
         # for each <project-dir>/repo-name
         # for each link that starts with $_PROJNAME
         printf ';[%s]\n' "$(date -u)" >>"${_TASK_ROOT_DIR}/.project"
@@ -179,8 +185,8 @@ function _fb_projects_helper_add_task_to_project() {
         for repo in "${_PROJECT_VCS%/}/${_PROJNAME:l}"-?*; do
             [[ -h ${repo} ]] || continue
             ## The repo root, find it
-            REPO_LINK_PATH="${repo:A}"
-            _PROJECT_VCS_ROOT="${REPO_LINK_PATH:A}"
+            REPO_LINK_PATH="$(realpath -e ${repo})"
+            _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
             while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]]; do
                 [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' ]] && exit 5
                 _PROJECT_VCS_ROOT=${_PROJECT_VCS_ROOT:h}
@@ -208,11 +214,9 @@ function _fb_projects_helper_add_task_to_project() {
                     # Timeout for 5 min
                     TIMEOUT="timeout 300"
                     printf '[INFO] Command to run: %s\n' "${TIMEOUT} ${_HG_CLONE:-echo} ${_PROJECT_VCS_ROOT} ${_VCS_DEST}" >&2
-                    if ! [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
+                    if [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
                         eval ${TIMEOUT} ${_HG_CLONE:-hg-new-workdir} \
                             "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
-                    else
-                        printf 'Dry Run...\n'
                     fi
                 )
             fi
@@ -337,7 +341,7 @@ function _fb_projects_helper_add_bookmarks_from_list() {
             # Fore each stdin
             printf 'Finding repo for %s' "${REPO}"
             ## The repo root, find it
-            REPO_LINK_PATH="${repo:A}"
+            REPO_LINK_PATH="$(realpath -e ${repo})"
             _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
             while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]]; do
                 [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' || -z "${_PROJECT_VCS_ROOT}" ]] && continue
@@ -392,6 +396,7 @@ function _fb_projects_helper_verify_project() {
         cd $(_fb_projects_helper_get_projects_home P+${_PROJNAME}) 1>/dev/null
         while read line; do
             _PARAM="" _VAL=""
+            # Must match A[bcd]=soemthing
             if [[ line =~ ^([A-Za-z_][A-Za-z0-9]*)=(.*)#?$ ]]; then
                 _VAL=match[2]
                 case ${_PARAM:=match[1]} in
@@ -428,7 +433,7 @@ function _fb_projects_helper_add_projects_to_project() {
         return 4
     else
         (
-        TASK_REL="../projects"
+        TASK_REL="../${PROJECT_FOLDER_NAME}"
         cd $(_fb_projects_helper_get_projects_home "P+${_PROJNAME}") &>/dev/null || exit 1
         if [[ ${TASK_REL} -ef ${PROJECT_ROOT_DIR} ]]; then
             ln -s "${TASK_REL}/${_NEW_TASK}" 2>/dev/null
@@ -445,7 +450,7 @@ function _fb_projects_helper_session_task () {
     local _SOMEID _PROJNAME _NEW_TASK
     _fb_projects_helper_project_shortname 2>/dev/null | read _SOMEID _PROJNAME _NEW_TASK  || return 2
     _fb_tasks_helper_set_task $_NEW_TASK || return 3
-    _fb_projects_helper_add_task_to_project "${_NEW_TASK}" "P+${_PROJNAME}"
+    _fb_projects_helper_clone_project_task "${_NEW_TASK}" "P+${_PROJNAME}"
     cd $(_fb_projects_helper_get_projects_home P+${_PROJNAME})/${_NEW_TASK}
 }
 
@@ -460,7 +465,7 @@ function project_from_tmux() {
 function prune_tasks () {
     cd $(_fb_projects_helper_get_projects_home) || return 1
     do_something=${1:-":"}
-    for i in T*[^0](@); do
+    for i in $(_fb_projects_helper_list_project_tasks); do
         tasks details $i | awk -F':' '/State :/{print $2}' | read STATE;
         if [[ $STATE == 'CLOSED' ]]; then
             echo "callikng ${do_something} on ${i}"
@@ -470,8 +475,7 @@ function prune_tasks () {
     done
 }
 
-
-alias add_task_to_project='_fb_projects_helper_add_task_to_project'
+alias create_project_task='_fb_projects_helper_clone_project_task'
 alias get_projects_home='_fb_projects_helper_get_projects_home'
 alias session_task_override='_fb_projects_helper_session_task'
 alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
