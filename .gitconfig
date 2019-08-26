@@ -1,24 +1,32 @@
 [user]
-	name = Allison Wampler
-	email = allisonmarw@gmail.com
+    name = Allison Wampler
+    email = aping1@fb.com
 [core]
 	excludesfile = ~/.gitignore_global
 	editor = nvim
-	page = nvim -R
 [merge]
 	tool = vimdiff
 [mergetool]
 	prompt = true
+    conflictstyle = diff3
 [mergetool "vimdiff"]
 	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
-[difftool]
-	prompt = true
 [diff]
 	tool = vimdiff
-[commit]
-	template = /Users/awampler/.stCommitMsg
+[difftool]
+    prompt = false
+    conflictstyle = diff3
+    tool = vimdiff
+[difftool "opendiff"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[difftool "vimdiff"]
+	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
 [color]
-	pager = no
+	pager = yes
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f

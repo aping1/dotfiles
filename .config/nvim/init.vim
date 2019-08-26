@@ -89,6 +89,7 @@ call plug#begin()
 Plug 'flazz/vim-colorschemes'
 Plug 'tibabit/vim-templates'
 Plug 'iCyMind/NeoSolarized'
+Plug 'jacoborus/tender.vim'
 Plug 'rakr/vim-one'
 Plug 'Chiel92/vim-autoformat'
 Plug 'leshill/vim-json'
@@ -211,9 +212,13 @@ filetype plugin indent on     " required
 "----------------------------------------------
 "
 let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_guide_size = 2
-let g:indent_guides_start_level = 2
+let g:indent_guides_guide_size = 1
+let g:indent_guides_start_level = 1
 
+if exists('$TMUX')
+    autocmd BufEnter * call system("tmux rename-window '" . expand("%:t") . "'")
+    autocmd VimLeave * call system("tmux setw automatic-rename")
+endif
 "----------------------------------------------
 " Plugin: 'tpope/vim-obsession'
 "----------------------------------------------
@@ -277,6 +282,7 @@ endfun
 " finally, map it -- in this case, I mapped it to overwrite the default action for toggling quickfix (<PREFIX>I)
 nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
 
+let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 
 let g:mkdx#settings = { 'highlight': { 'enable': 1 },
                         \ 'enter': { 'shift': 1 },
@@ -285,6 +291,16 @@ let g:mkdx#settings = { 'highlight': { 'enable': 1 },
                         \ 'fold': { 'enable': 1 },
                         \ 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 
+" base 00
+" autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=8 guibg=#002b36
+" base 01
+"autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=8 guibg=#586e75
+" base 02
+" autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=0 guibg=#073642 
+
+
+" colorscheme NeoSolarized
+"
 " newomake automagic check
 call neomake#configure#automake('nrw', 500)
 let g:neomake_open_list = 2
@@ -307,6 +323,26 @@ let g:neomake_open_list = 2
 let python_space_errors = 1
 "blet ruby_space_errors = 1
 "let java_space_errors = 1
+
+highlight Pmenu ctermbg=cyan ctermfg=white
+highlight PmenuSel ctermbg=black ctermfg=white
+
+" Reload .vimrc immediately when edited
+autocmd! bufwritepost .vim,.vimrc source ~/.config/nvim/init.vim
+
+" Set max line length.
+let linelen = 120 
+execute "set colorcolumn=".linelen
+highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+execute "match OverLength /\%".linelen."v.\+/"
+
+" set highlight cursor
+"augroup CursorLine
+"  au!
+"  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+"  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
+"  au WinLeave * setlocal nocursorline
+"augroup END
 
 
 " Tell VIM which tags file to use.
@@ -387,40 +423,13 @@ endif
 if jedi#init_python()
   function! s:jedi_auto_force_py_version() abort
     let g:jedi#force_py_version = pyenv#python#get_internal_major_version()
-    let g:python_host_prog  = '/usr/local/bin/python'
-    if empty(glob(g:python_host_prog))
-        " Fallback if not exists
-        let g:python_host_prog = '/usr/bin/python'
-    endif
-    let s:python3_local = ''
-    if executable('python3')
-        " get local python from $PATH (virtualenv/anaconda or system python)
-        let g:python3_host_prog
-        " detect whether neovim package is installed
-        let s:python3_neovim_path = substitute(system("python3 -c 'import neovim; print(neovim.__path__)' 2>/dev/null"), '\n\+$', '', '')
-        if !empty(s:python3_neovim_path)
-            " neovim available, use it as a host python3
-            let g:python3_host_prog = s:python3_local
-        endif
-    endif 
-
-    " Fallback to system python3 (if not exists)
-    if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = s:python3_local          | endif
-    if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = '~/.envs/shim/python3'   | endif
-    if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = '/usr/local/bin/python3' | endif
-    if empty(glob(g:python3_host_prog)) | let g:python3_host_prog = '/usr/bin/python3'       | endif
-
-    " VimR support {{{
-    " @see https://github.com/qvacua/vimr/wiki#initvim
-    if has('gui_vimr')
-        set title
-    endif
-    " }}}
-    if exists('$VIRTUAL_ENV')
-        let g:python_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
-        let g:python3_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
+    if exists("$VIRTUAL_ENV")
+        let g:python_host_prog=substitute(system("which -a python | head -n1 | tail -n1"), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system("which -a python3 | head -n1 | tail -n1"), '\n', '', 'g')
+        let g:jedi#force_py_version='3'
     else
-        let g:python_host_prog=substitute(system('which python3'), '\n', '', 'g')
+        let g:python_host_prog=substitute(system("which python"), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system("which python3"), '\n', '', 'g')
     endif
   endfunction
   augroup vim-pyenv-custom-augroup
@@ -446,7 +455,10 @@ inoremap <silent><expr> <TAB>
       \ <SID>check_back_space() ? "\<TAB>" :
       \ deoplete#manual_complete()
 
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
+<<<<<<< HEAD
 augroup deopleteExtre
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
@@ -501,6 +513,8 @@ let g:ale_fixers = {
             \'python' : ['black'], 
             \'lua' : ['trimwhitespace', 'remove_trailing_lines']
             \}
+let g:ale_python_flake8_options = '--max-line-length=120'
+let g:ale_python_mypy_options = '--ignore-missing-imports'
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
 
@@ -510,7 +524,6 @@ let g:ale_virtualenv_dir_names = []
 let g:ale_python_auto_pipenv = 1
 " Disable this for deoplete completion
 let g:ale_completion_enabled = 0
-let g:ale_python_flake8_options = '--max-line-length=120'
 
 let g:neomake_enabled_makers = { 'python': [] }
 let b:neomake_python_enabled_makers = []
@@ -520,6 +533,7 @@ let b:neomake_python_enabled_makers = []
 :nmap [a :ALEPreviousWrap<CR>
 :nmap ]A :ALELast
 :nmap [A :ALEFirst
+nmap <F8> <Plug>(ale_fix)
 "
 "----------------------------------------------
 " Plugin 'bfredl/nvim-ipy'
@@ -538,6 +552,22 @@ map <silent> <leader>pq <Plug>(IPy-Terminate)
 " Plugin 'ryanoasis/vim-devicons'
 "----------------------------------------------
 let g:webdevicons_enable_denite = 1
+
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
+	nnoremap <silent><buffer><expr> <CR>
+				\ denite#do_map('do_action')
+	nnoremap <silent><buffer><expr> d
+				\ denite#do_map('do_action', 'delete')
+	nnoremap <silent><buffer><expr> p
+				\ denite#do_map('do_action', 'preview')
+	nnoremap <silent><buffer><expr> q
+				\ denite#do_map('quit')
+	nnoremap <silent><buffer><expr> i
+				\ denite#do_map('open_filter_buffer')
+	nnoremap <silent><buffer><expr> <Space>
+				\ denite#do_map('toggle_select').'j'
+endfunction
 
 "----------------------------------------------
 " Plugin: 'itchyny/lightline.vim'
@@ -774,10 +804,42 @@ hi semshiSelf            ctermfg=249 guifg=#abb2bf
 hi semshiUnresolved      ctermfg=226 guifg=#e5c07b cterm=underline gui=underline
 hi semshiSelected        ctermfg=231 guifg=#ffffff ctermbg=161 guibg=#C61C6F
 
-hi semshiErrorSign       ctermfg=231 guifg=#000000 ctermbg=160 guibg=##d19a66
-hi semshiErrorChar       ctermfg=231 guifg=#000000 ctermbg=160 guibg=#e06c75
+hi semshiErrorSign       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
+hi semshiErrorChar       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
 endfunction
 
+autocmd FileType python call SemhiOneHighlights()
+" 
+" if has('nvim')
+" 	hi g:terminal_color_0 guifg=#353a44 guibg=#353a44
+" 	hi g:terminal_color_8 guifg=#353a44 guibg=#353a44
+" 	hi g:terminal_color_1 guifg=#e88388 guibg=#e88388
+" 	hi g:terminal_color_9 guifg=#e88388 guibg=#e88388
+" 	hi g:terminal_color_2 guifg=#a7cc8c guibg=#a7cc8c
+" 	hi g:terminal_color_10 guifg=#a7cc8c guibg=#a7cc8c
+" 	hi g:terminal_color_3 guifg=#ebca8d guibg=#ebca8d
+" 	hi g:terminal_color_11 guifg=#ebca8d guibg=#ebca8d
+" 	hi g:terminal_color_4 guifg=#72bef2 guibg=#72bef2
+" 	hi g:terminal_color_12 guifg=#72bef2 guibg=#72bef2
+" 	hi g:terminal_color_5 guifg=#d291e4 guibg=#d291e4
+" 	hi g:terminal_color_13 guifg=#d291e4 guibg=#d291e4
+" 	hi g:terminal_color_6 guifg=#65c2cd guibg=#65c2cd
+" 	hi g:terminal_color_14 guifg=#65c2cd guibg=#65c2cd
+" 	hi g:terminal_color_7 guifg=#e3e5e9 guibg=#e3e5e9
+" 	hi g:terminal_color_15 guifg=#e3e5e9 guibg=#e3e5e9
+" endif
+" 
+" --------------------
+" Plugin 'janko/vim-test'
+" --------------------
+nmap <silent> t<C-n> :TestNearest<CR>
+nmap <silent> t<C-f> :TestFile<CR>
+nmap <silent> t<C-s> :TestSuite<CR>
+nmap <silent> t<C-l> :TestLast<CR>
+nmap <silent> t<C-g> :TestVisit<CR>
+let g:test#runner_commands = ['buck']
+let test#python#buck#executable = 'buck test'
+let test#python#runner = 'buck'
 
 augroup OneSystanx
     autocmd FileType python call SemhiOneHighlights()

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # .dotfiles config
 # create a list of all files that should be managed by this, one glob per line, 
 # Profile
@@ -111,4 +112,3 @@ nvim ./.config/nvim
 # ipython/profile_default/db/dhist
 
 .config/nvim/plugged/vim-superman/bin/vman .local/bin/
-https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto" { 'args': '--recursive' }
