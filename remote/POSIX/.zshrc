@@ -19,24 +19,7 @@ path=(
     ${HOME}/bin
 )
 
-
-# PYTHON INCLUDE
-if which python3.5 &>/dev/null; then
-    export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.5/site-packages"
-elif which python3.6 &>/dev/null; then
-    export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.6/site-packages"
-fi
-
-# Brew for OSX
-if [[ "${DISTRO}" == "Darwin" ]] && command -v brew &>/dev/null; then
-path=(
-    $(brew --prefix coreutils)/libexec/gnubin:${PATH}
-    $(brew --prefix)/bin/:${PATH}
-    $path
-)
-elif [[ "${DISTRO}" == "Darwin" ]]; then
-    echo "Install Homebrew" >&2
-fi
+# Set the new path
 typeset -U path
 
 COMPLETION_WAITING_DOTS="true"
@@ -60,6 +43,7 @@ ZSH_TMUX_AUTOQUIT=false
 
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
 export DEFAULT_USER=awampler
+<<<<<<< HEAD:remote/POSIX/.zshrc
 P9K_CONTEXT_TEMPLATE="%n@`hostname -f`"
 P9K_PROMPT_ON_NEWLINE=true
 P9K_LEFT_PROMPT_ELEMENTS=(ssh vi_mode virtualenv context dir vcs)
@@ -76,6 +60,45 @@ P9K_TIME_FOREGROUND='252'
 P9K_HISTORY_BACKGROUND='240'
 P9K_HISTORY_FOREGROUND='252'
 #P9K_VI_MODE_INSERT_FOREGROUND='teal'
+||||||| merged common ancestors:remote/.zshrc
+POWERLEVEL9K_CONTEXT_TEMPLATE="%n@`hostname -f`"
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(ssh vi_mode virtualenv context dir vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status history time)
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
+POWERLEVEL9K_DIR_BACKGROUND='238'
+POWERLEVEL9K_DIR_FOREGROUND='252'
+POWERLEVEL9K_STATUS_BACKGROUND='238'
+POWERLEVEL9K_STATUS_FOREGROUND='252'
+POWERLEVEL9K_CONTEXT_BACKGROUND='240'
+POWERLEVEL9K_CONTEXT_FOREGROUND='252'
+POWERLEVEL9K_TIME_BACKGROUND='238'
+POWERLEVEL9K_TIME_FOREGROUND='252'
+POWERLEVEL9K_HISTORY_BACKGROUND='240'
+POWERLEVEL9K_HISTORY_FOREGROUND='252'
+#POWERLEVEL9K_VI_MODE_INSERT_FOREGROUND='teal'
+=======
+PROMT_SUBST=true
+POWERLEVEL9K_CONTEXT_TEMPLATE="%n@`hostname -f`"
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(ssh vi_mode virtualenv context dir vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status history time)
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
+POWERLEVEL9K_DIR_BACKGROUND='cyan'
+POWERLEVEL9K_DIR_FOREGROUND='red'
+POWERLEVEL9K_STATUS_BACKGROUND='238'
+POWERLEVEL9K_STATUS_FOREGROUND='252'
+POWERLEVEL9K_CONTEXT_BACKGROUND='240'
+POWERLEVEL9K_CONTEXT_FOREGROUND='252'
+POWERLEVEL9K_TIME_BACKGROUND='238'
+POWERLEVEL9K_TIME_FOREGROUND='252'
+POWERLEVEL9K_HISTORY_BACKGROUND='240'
+POWERLEVEL9K_HISTORY_FOREGROUND='252'
+POWERLEVEL9K_SHOW_CHANGESET=true
+#POWERLEVEL9K_MODE='awesome-fontconfig'
+
+#POWERLEVEL9K_VI_MODE_INSERT_FOREGROUND='teal'
+>>>>>>> origin/master-fb:remote/POSIX/.zshrc
 
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
@@ -101,12 +124,18 @@ if [ ! $TERM = dumb ]; then
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
+<<<<<<< HEAD:remote/POSIX/.zshrc
 <<<<<<< HEAD
 ||||||| parent of d097df3... Add new working copy when connection tasks to a project
         zgen oh-my-zsh plugins/bower
 =======
         # zgen oh-my-zsh plugins/bower
 >>>>>>> d097df3... Add new working copy when connection tasks to a project
+||||||| merged common ancestors:remote/.zshrc
+        zgen oh-my-zsh plugins/bower
+=======
+        # zgen oh-my-zsh plugins/bower
+>>>>>>> origin/master-fb:remote/POSIX/.zshrc
         zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh plugins/git
         zgen oh-my-zsh plugins/git-extras

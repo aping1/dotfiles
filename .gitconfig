@@ -1,7 +1,6 @@
 [user]
     name = Allison Wampler
     email = aping1@fb.com
-[core]
 	excludesfile = ~/.gitignore_global
 	editor = nvim
 [merge]
@@ -31,4 +30,3 @@
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
-	required = true
