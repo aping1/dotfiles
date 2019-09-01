@@ -1,6 +1,6 @@
 [user]
     name = Allison Wampler
-    email = aping1@fb.com
+    email = aping1@apt-miss.com
 	excludesfile = ~/.gitignore_global
 	editor = nvim
 [merge]

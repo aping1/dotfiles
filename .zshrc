@@ -1,22 +1,12 @@
-# === Profiling ===
-#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-#if I see that zsh takes to much time to load I profile what has been changed,
-# I want to see my shell ready in not more than 1 second
-
-PROFILE_STARTUP=true
+## === Profiling ===
+PROFILE_STARTUP="${PROFILING:-false}"
 [[ "${PROFILE_STARTUP}" == true ]] && zmodload zsh/zprof
 
 PROFILE_STARTUP=false
-if [[ "$PROFILE_STARTUP" == true ]]; then
+if [[ "${PROFILE_STARTUP}" == true ]]; then
     # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
     PS4=$'%D{%M%S%.} %N:%i> '
-    exec 3>&2 2>$HOME/tmp/startlog.$$
     setopt xtrace prompt_subst
-fi
-# Entirety of my startup file... then
-if [[ "$PROFILE_STARTUP" == true ]]; then
-    unsetopt xtrace
-    exec 2>&3 3>&-
 fi
 
 # === PATHS and EVNS 
@@ -26,50 +16,29 @@ DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 
 ## Setup PATH
 # Standard path includes
-
-# # PYTHON INCLUDE
-# if which python3.5 &>/dev/null; then
-#     export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.5/site-packages"
-# elif which python3.6 &>/dev/null; then
-#     export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.6/site-packages"
-# fi
-
 path=(
-    /usr/local/{bin,sbin,opt}
-    /var/lib/snapd/snap/bin
-    $path
-)
-# Brew for OSX
-if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
-    # Add to start of path
-    path=(
-        $(brew --prefix coreutils)/libexec/gnubin
-        $(brew --prefix)/bin/
-        $path
-    )
-    export GOPATH=${HOME}/.go/bin
-
-    # Brew for OSX
-    if command -v brew &>/dev/null; then
-        # Add to start of path
-        path=(
-            $(brew --prefix coreutils)/libexec/gnubin
-            $(brew --prefix)/bin/
-            $path
-        )
-    else
-        echo "Install Homebrew" >&2
-    fi
-
-fi
-
-path=(
-    $path
-    ${DOTFILES}/scripts
+    /usr/local/{bin,sbin}
+    $DOTFILES/scripts
     ${HOME}/bin
+    $path
 )
 
+# Brew for OSX
+if [[ "${DISTRO}" == "Darwin" ]] && command -v brew &>/dev/null; then
+path=(
+    $(brew --prefix coreutils)/libexec/gnubin:${PATH}
+    $(brew --prefix)/bin/:${PATH}
+    $path
+)
 typeset -U path
+
+function is_osx() {
+  [[ "$OSTYPE" =~ ^darwin ]] || return 1
+}
+
+if is_osx && ! command -v 'brew' &>/dev/null then
+    echo "Install Homebrew" >&2
+fi
 
 COMPLETION_WAITING_DOTS="true"
 
@@ -79,12 +48,17 @@ export HISTFILESIZE=$HISTSIZE;
 
 # Shell
 export CLICOLOR=1
-export EDITOR='nvim'
-export VISUAL='nvim'
+if command -v 'nvim' &>/dev/null; then
+    export EDITOR='nvim'
+    export VISUAL='nvim'
+elif command -v 'vim' &>/dev/null; then
+    export EDITOR='vim'
+    export VISUAL='vim'
+elif command -v 'vi' &>/dev/null; then
+    export EDITOR='vim'
+    export VISUAL='vi'
+fi
 export PAGER='less'
-
-export TERM="xterm-256color"
-export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 
 # Homebrew
 # This is one of examples why I want to keep my dotfiles private
@@ -94,38 +68,14 @@ export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 # Autoenv https://github.com/Tarrasch/zsh-autoenv
 # Great plugin to automatically modify path when it sees .env file
 # I use it for example to automatically setup docker/rbenv/pyenv environments
-#AUTOENV_FILE_ENTER=.env
-#AUTOENV_HANDLE_LEAVE=1 # Turn on/off handling leaving an env
-#AUTOENV_FILE_LEAVE=.envl
 
 # tmux plugin settings
 # this always starts tmux
-ZSH_TMUX_AUTOSTART=true
 ZSH_TMUX_AUTOSTART_ONCE=true
 ZSH_TMUX_FIXTERM=true
 ZSH_TMUX_AUTOQUIT=false
 
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
-export DEFAULT_USER=awampler
-P9K_CONTEXT_TEMPLATE="%n@$(hostname -s)"
-P9K_PROMPT_ON_NEWLINE=true
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-P9K_LEFT_PROMPT_ELEMENTS=(host ssh user dir dir_writable vcs newline vi_mode pyenv )
-P9K_RPROMPT_ON_NEWLINE=true
-P9K_RIGHT_PROMPT_ELEMENTS=(status history time)
-P9K_DIR_SHORTEN_LENGTH=35
-P9K_DIR_BACKGROUND='238'
-P9K_DIR_FOREGROUND='252'
-P9K_STATUS_BACKGROUND='238'
-P9K_STATUS_FOREGROUND='252'
-P9K_CONTEXT_BACKGROUND='240'
-P9K_CONTEXT_FOREGROUND='252'
-P9K_TIME_BACKGROUND='238'
-P9K_TIME_FOREGROUND='252'
-P9K_HISTORY_BACKGROUND='240'
-P9K_HISTORY_FOREGROUND='252'
-#P9K_VI_MODE_INSERT_FOREGROUND='teal'
-
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
 if [ ! $TERM = dumb ]; then
@@ -138,74 +88,46 @@ if [ ! $TERM = dumb ]; then
 
     # load zgen
     source $DOTFILESDEPS/zgen/zgen.zsh
-    if [[ ${ZGENRESET:-N} =~ ^[Yy]$ ]]; then
-        zgen reset
-    fi
 
     # configure zgen
     if ! zgen saved; then
 
+        # https://github.com/denysdovhan/spaceship-prompt
+        # https://github.com/denysdovhan/spaceship-prompt/tree/master/docs
+        zgen load denysdovhan/spaceship-prompt spaceship
+
         # zgen will load oh-my-zsh and download it if required
         zgen oh-my-zsh
-
-        # zgen prezto
-        # zgen prezto editor key-bindings 'vi'
-        # zgen prezto '*:*' color 'yes'
-        # zgen prezto tmux:auto-start local 'yes'
-        # zgen prezto '*:*' case-sensitive 'yes'
-        # zgen prezto prompt theme 'off'
-        # zgen prezto git
-        # zgen prezto editor key-bindings 'vi'
-        # zgen prezto command-not-found
-        # zgen prezto tmux
-        # zgen prezto fasd
-        # zgen prezto history-substring-search
-        # zgen prezto syntax-highlighting
-
-        # list of plugins from zsh I use
-        # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
         # zgen oh-my-zsh plugins/bower
-        zgen oh-my-zsh
         zgen oh-my-zsh plugins/brew
+        zgen oh-my-zsh plugins/colored-man
         zgen oh-my-zsh plugins/git
-        zgen oh-my-zsh plugins/kubectl
         zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
-        zgen oh-my-zsh plugins/osx
+        is_osx && zgen oh-my-zsh plugins/osx
         zgen oh-my-zsh plugins/pip
         zgen oh-my-zsh plugins/python
         zgen oh-my-zsh plugins/sudo
-        zgen oh-my-zsh plugins/tmuxinator
+
         zgen oh-my-zsh plugins/urltools
-        zgen oh-my-zsh plugins/vundle
-        zgen oh-my-zsh plugins/web-search
-        zgen load joel-porquet/zsh-dircolors-solarized
         zgen oh-my-zsh plugins/z
 
+        zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
-        #zgen load Tarrasch/zsh-autoenv
+        zgen load Tarrasch/zsh-autoenv
         # https://github.com/zsh-users/zsh-completions
         zgen load zsh-users/zsh-completions src
 
         # my own plugins each of these folders use init.zsh entry point
         zgen load $DOTFILES/plugins/aliases
-        zgen load $DOTFILES/plugins/bootstrap
         zgen load $DOTFILES/plugins/dotfiles
         zgen load $DOTFILES/plugins/zpython
+        zgen load $DOTFILES/plugins/brew-helpers
         zgen load $DOTFILES/plugins/pyenv
-        # zgen load $DOTFILES/plugins/fbtools
+        zgen load $DOTFILES/plugins/fbtools
         # zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
-
-        # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme
-        zgen oh-my-zsh plugins/vi-mode
-        # async update vim mode
-        # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
-
-        # zgen load christian-schulze/powerlevel9k powerlevel9k.zsh-theme
 
         # It takes control, so load last
         zgen load $DOTFILES/plugins/my-tmux
@@ -213,8 +135,6 @@ if [ ! $TERM = dumb ]; then
         zgen save
     fi
 
-    # Configure vundle
-    vundle-init
 fi
 
 # specific for machine configuration, which I don't sync
@@ -232,74 +152,50 @@ setopt COMPLETE_IN_WORD
 ## restart running processes on exit
 #setopt HUP
 
-## history
-setopt APPEND_HISTORY
-## for sharing history between zsh processes
-setopt INC_APPEND_HISTORY
-setopt SHARE_HISTORY
+MAX_INT="$((X=(2**63)-1))"
+if [[ "$((X=(2**32)-1))" -gt 0 && "$((X=2**64))" -lt 0 ]]; then
+ MAX_INT="$((X=(2**32)-1))"
+fi
+
+HISTSIZE="${MAX_INT}"
+HISTFILE=~/.zsh_history     #Where to save history to disk
+#HISTDUP=erase               #Erase duplicates in the history file
+setopt    appendhistory     #Append history to the history file (no overwriting)
+setopt    sharehistory      #Share history across terminals
+setopt    incappendhistory  #Immediately append to the history file, not just when a term is killed
+#setopt histnostore
 
 ## never ever beep ever
-#setopt NO_BEEP
+# setopt NO_BEEP
 
 ## automatically decide when to page a list of completions
 #LISTMAX=0
 
 ## disable mail checking
-#MAILCHECK=0
+# MAILCHECK=0
 # if you want red dots to be displayed while waiting for completion
 
 # additional configuration for zsh
 # Remove the history (fc -l) command from the history list when invoked.
-# setopt histnostore
 # Remove superfluous blanks from each command line being added to the history list.
 setopt histreduceblanks
 setopt histverify
 # Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
-# setopt ignoreeof
+setopt ignoreeof
 # Print the exit value of programs with non-zero exit status.
-# setopt printexitvalue
 # Do not share history
-# setopt no_share_history
+# if profiling was on
+if ${PROFILING}; then
+    zmodload zsh/zprof 
+    zprof
+fi
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
 # Vim mode
 bindkey -v
-# set -o vi
 [[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which dircolors &> /dev/null && eval $(dircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
 [[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which gdircolors &> /dev/null && eval $(gdircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
 
-# TMUXINATOR='/Library/Ruby/Gems/2.0.0/gems/tmuxinator-0.8.1/completion/tmuxinator.zsh'
-# [[ -f $TMUXINATOR ]] && source ${TMUXINATOR} || echo "Warning: Could not instatiate tmuxinator"
-
-
-#export LC_CTYPE=en_US.UTF-8
-#export LC_ALL=en_US.UTF-8
-
-# Powerline
-#source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
-#source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
-#source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
-#
-# Fix 
-#TRAPWINCH() {
-#    zle && zle .reset-prompt && zle -R
-#}
-bindkey -v
-export FBANDROID_DIR=/Users/aping1/fbsource/fbandroid
-alias quicklog_update=/Users/aping1/fbsource/fbandroid/scripts/quicklog/quicklog_update.sh
-alias qlu=quicklog_update
-
-# added by setup_fb4a.sh
-export ANDROID_SDK=/opt/android_sdk
-export ANDROID_NDK_REPOSITORY=/opt/android_ndk
-export ANDROID_HOME=${ANDROID_SDK}
-export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
-
-# Lines configured by zsh-newuser-install
-setopt extendedglob nomatch
-# End of lines configured by zsh-newuser-install
-#
-#export PYENV_ROOT="~/projects/virtualenvs"
 
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 
@@ -309,6 +205,3 @@ export FZF_COMPLETION_TRIGGER='~~'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
 
-if which setupsolarized &>/dev/null; then
-setupsolarized dircolors.256dark
-fi

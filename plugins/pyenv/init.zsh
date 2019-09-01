@@ -4,7 +4,7 @@
 # #     brew install pyenv pyenv-virtualenv
 # # ln -s $(brew --cellar python)/* ~/.pyenv/versions/
 # fi
-which pyenv > /dev/null && eval "$(pyenv init -)"
-which pyenv-virtualenv-init > /dev/null && eval "$(pyenv virtualenv-init -)"
+command -v pyenv &> /dev/null && eval "$(pyenv init -)"
+command -v pyenv-virtualenv-init &> /dev/null && eval "$(pyenv virtualenv-init -)"
 
 export PYENV_ROOT=${HOME}/.pyenv/
