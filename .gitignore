@@ -50,3 +50,7 @@ tmux/plugins/*
 .tmux
 .vim
 .zgen
+
+.tup/**
+.python_version
+
