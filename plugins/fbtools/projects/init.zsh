@@ -100,19 +100,24 @@ function _fb_projects_helper_get_projects_home() {
 
 
 function _fb_projects_helper_project_shortname() {
-    local _PROJNAME=${1}  _NEW_TASK=$2
+    local _FULL_NAME="${1}" _NEW_TASK="${2}" _PROJNAME=""
     # the case where ends with a task
-    if [[ ${_PROJNAME} =~ ^${TASK_REGEX:-"(\w)-?(\d+)$"} ]]; then
+    if [[ ${_FULL_NAME} =~ ^${TASK_REGEX:-"(\w)-?(\d+)$"} ]]; then
         # is this inheritance? |_//// 0^0
         _NEW_TASK="${_NEW_TASK:-"$(_fb_tasks_helper_task_shortname $*)"}"
         _PROJNAME="$(_fb_tmux_helper_get_session)"
     fi
-    if ! [[ ${_PROJNAME} =~ ${PROJECT_RX}-? ]] ; then
+    # does the input have a project prefix? does the session name?
+    if [[ ${_FULL_NAME} =~ ${PROJECT_RX}-? ]] ; then
+        _PROJNAME=${match[2]}
+    elif [[ ${_PROJNAME} && ${_PROJNAME} =~ ${PROJECT_RX}-? ]] ; then
+        _PROJNAME=${match[2]}
+    else 
         # doesnt contain a project
         return 1
-    elif [[ ${_PROJNAME} =~ ${PROJECT_RX}-${TASK_REGEX:-"(\w)(-?)(\d+)"} ]]; then
+    fi
+    if [[ ${_FULL_NAME} =~ ${PROJECT_RX}-${TASK_REGEX:-"(\w)(-?)(\d+)"} ]]; then
         _NEW_TASK="${_NEW_TASK:-"${match[3]}${match[4]}${match[5]}"}"
-        _PROJNAME=${match[2]}
         _SOMEID=${_SOMEID:-$match[1]}
     else
         return 1
@@ -231,6 +236,7 @@ function _fb_projects_helper_clone_project_task() {
             REPO_LINK_PATH="$(_realpath -e ${repo_or_link})"
             _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
             while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" && ! -d "${_PROJECT_VCS_ROOT%/}/.git" ]]; do
+
                 [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' ]] && exit 5
                 _PROJECT_VCS_ROOT=${_PROJECT_VCS_ROOT:h}
             done

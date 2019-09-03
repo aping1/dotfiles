@@ -424,7 +424,7 @@ let g:ale_fixers = { 'python' : ['black' ],
             \        'terraform' : ['terraform'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
-let g:ale_fix_on_save=1
+let g:ale_fix_on_save = 1
 let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
@@ -490,8 +490,7 @@ let g:lightline = {
       \   'right': [ ['filename', 'lineno', 'percent' ], 
       \              [ 'filetype', 'fileformat', 'readonly' ],
       \              [ 'linter_checking', 'linter_errors',
-      \                'linter_warnings', 'linter_ok'  ]
-      \            ]
+      \                'linter_warnings', 'linter_ok'  ] ],
       \ },
       \ 'component_expand' : {
       \  'linter_checking': 'lightline#ale#checking',
@@ -719,6 +718,11 @@ autocmd FileType python call SemhiOneHighlights()
 " 	hi g:terminal_color_15 guifg=#e3e5e9 guibg=#e3e5e9
 " endif
 " 
+" --------------------
+" Plug 'bfredl/nvim-ipy'
+" --------------------
+let g:ipy_perform_mappings=1
+
 " --------------------
 " Plugin 'janko/vim-test'
 " --------------------

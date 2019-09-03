@@ -79,7 +79,7 @@ function _fb_tasks_helper_set_task () {
     mkdir "${_NEW_TASK}"
     [[ -d "${_NEW_TASK}" ]] || exit 1
     ) >/dev/null && \
-    _fb_tasks_helper_change_session_to_cur_task ${_NEW_TASK}
+    _fb_tasks_helper_change_session_to_cur_task "${1}"
 fi 
 }
 
@@ -100,7 +100,7 @@ function _fb_tasks_helper_change_session_to_cur_task () {
     _fb_projects_helper_project_shortname ${1:-$(_fb_tmux_helper_get_session)} \
             | read _SOMEID _PROJNAME _OLD_TASK || return 2
     [[ ${_SOMEID} == None ]] && _SOMEID=""
-    PROJECT_SHIT="P${_SOMEID}+${_PROJNAME}-${_NEW_TASK}"
+    PROJECT_SHIT="P${_SOMEID}+${_PROJNAME}-${_OLD_TASK}"
     if _fb_tmux_helper_session_exists ${PROJECT_SHIT}; then
         bash "${_tmux_scripts%/}/switch_or_loop.sh"  "${PROJECT_SHIT}" || return 128
         return 0
