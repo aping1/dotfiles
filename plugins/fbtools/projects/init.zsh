@@ -116,7 +116,9 @@ function _fb_projects_helper_project_shortname() {
         # doesnt contain a project
         return 1
     fi
-    if [[ ${_FULL_NAME} =~ ${PROJECT_RX}-${TASK_REGEX:-"(\w)(-?)(\d+)"} ]]; then
+    if [[ ${_PROJNAME} && ${_NEW_TASK} =~ ${TASK_REGEX:-"(\w)(-?)(\d+)\$"} ]]; then
+        :
+    elif [[ ${_FULL_NAME} =~ ${PROJECT_RX}-${TASK_REGEX:-"(\w)(-?)(\d+)"} ]]; then
         _NEW_TASK="${_NEW_TASK:-"${match[3]}${match[4]}${match[5]}"}"
         _SOMEID=${_SOMEID:-$match[1]}
     else
@@ -466,7 +468,7 @@ alias session_task_override='_fb_projects_helper_session_task'
 alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
 alias cdp='cd_to_project_task_home'
 alias cd_to_task_home='cd $(_realpath -e $(_fb_projects_helper_project_task_home))'
-alias cdt='cd_to_task_home'
+alias cd_to_project_home='cd $(_realpath -e $(_fb_projects_helper_get_projects_home))'
 alias project_task_home='_fb_projects_helper_project_task_home'
 alias new_project='_fb_projects_helper_get_projects_home'
 alias summary='tasks summary $(task_from_tmux)'
