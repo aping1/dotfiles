@@ -106,6 +106,8 @@ Plug 'gyim/vim-boxdraw'
 Plug 'tpope/vim-fugitive'
 " mecurial client
 Plug 'ludovicchabant/vim-lawrencium'
+Plug 'majutsushi/tagbar'
+
 
 Plug 'w0rp/ale'
 Plug 'Shougo/echodoc.vim'
@@ -113,8 +115,7 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'zchee/deoplete-jedi'
 Plug 'davidhalter/jedi-vim'
 
-" Linting, syntax, autocomplete, semantic highlighting
-Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
+" Linting, syntax, autocomplete, semantic highlighting Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 
 " Tools for repl
 Plug 'Vigemus/impromptu.nvim'
@@ -126,7 +127,6 @@ Plug 'lambdalisue/vim-pyenv'
 Plug 'bfredl/nvim-ipy'
 Plug 'janko/vim-test'
 
-
 Plug 'mtikekar/nvim-send-to-term'
 
 Plug 'tmhedberg/SimpylFold'
@@ -135,7 +135,7 @@ Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
 Plug 'ryanoasis/vim-devicons'
 
-
+Plug 'jez/vim-superman'
 
 " Indent lines
 Plug 'nathanaelkane/vim-indent-guides'
@@ -374,7 +374,7 @@ let g:ale_virtualenv_dir_names = []
 let g:ale_python_auto_pipenv = 1
 
 augroup vim_blacklist_blacklist
-autocmd FileType * ((index(s:blacklist, &bt) < 0)?call s:ale_settings() )
+autocmd FileType * call s:ale_settings()
 augroup END
 
 function! s:ale_settings()
@@ -422,8 +422,6 @@ let g:lightline = {
       \                'linter_warnings', 'linter_ok'  ]
       \            ]
       \ },
-      \ 'seperator' : { 'right': '', 'left': '' },
-      \ 'subseperator' : { 'right': '', 'left': '' },
       \ 'component_expand' : {
       \  'linter_checking': 'lightline#ale#checking',
       \  'linter_warnings': 'lightline#ale#warnings',
@@ -457,6 +455,8 @@ let g:lightline = {
       \   'method': 'NearestMethodOrFunction'
       \ },
       \ 'colorscheme' : 'one',
+      \   'separator': { 'left': ' ', 'right': '' },
+      \   'subseparator': { 'left': '', 'right': '' },
       \ }
 
 function! NearestMethodOrFunction() abort
@@ -650,7 +650,8 @@ autocmd FileType python call SemhiOneHighlights()
 " Plugin 'janko/vim-test'
 " --------------------
 "
-autocmd FileType * ((index(s:blacklist, &bt) < 0)?call s:vim_test_keymap())
+autocmd FileType * call s:vim_test_keymap()
+
 
 function! s:vim_test_keymap()
     nmap <silent> t<C-n> :TestNearest<CR>
