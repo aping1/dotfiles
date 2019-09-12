@@ -33,7 +33,7 @@ path=(
 typeset -U path
 
 function is_osx() {
-  [[ "$OSTYPE" =~ ^darwin ]] || return 1
+    [[ ${OSTYPE:-"$(uname -a)"} =~ [dD]arwin ]] || return 1
 }
 
 if is_osx && ! command -v 'brew' &>/dev/null then
@@ -48,6 +48,8 @@ export HISTFILESIZE=$HISTSIZE;
 
 # Shell
 export CLICOLOR=1
+
+# set editor to the best vim we can find
 if command -v 'nvim' &>/dev/null; then
     export EDITOR='nvim'
     export VISUAL='nvim'
@@ -75,10 +77,8 @@ ZSH_TMUX_AUTOSTART_ONCE=true
 ZSH_TMUX_FIXTERM=true
 ZSH_TMUX_AUTOQUIT=false
 
-# Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
-
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
-if [ ! $TERM = dumb ]; then
+if ! [[ "${TERM:=xterm-256}" == dumb ]]; then
     ZGEN_AUTOLOAD_COMPINIT=true
 
     # If user is root it can have some issues with access to competition files
@@ -87,7 +87,7 @@ if [ ! $TERM = dumb ]; then
     fi
 
     # load zgen
-    source $DOTFILESDEPS/zgen/zgen.zsh
+    source ${DOTFILESDEPS:-"${HOME}"}/zgen/zgen.zsh
 
     # configure zgen
     if ! zgen saved; then
@@ -130,7 +130,7 @@ if [ ! $TERM = dumb ]; then
         zgen load $DOTFILES/plugins/tpm
 
         # It takes control, so load last
-        zgen load $DOTFILES/plugins/my-tmux
+        zgen load $DOTFILES/plugins/tmux
 
         zgen save
     fi
