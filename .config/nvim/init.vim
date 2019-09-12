@@ -72,7 +72,7 @@ if exists("$VIRTUAL_ENV")
     let g:python_host_prog=substitute(system("which -a python3 | head -n2 | tail -n1"), '\n', '', 'g')
     let g:python3_host_prog=g:python_host_prog
 else
-    let g:python_host_prog=substitute(system("which python3"), '\n', '', 'g')
+    let g:python_host_prog=substitute(system("command -v python3 || command -v python"), '\n', '', 'g')
     let g:python3_host_prog=g:python_host_prog
 endif
 
@@ -84,6 +84,7 @@ Plug 'flazz/vim-colorschemes'
 Plug 'iCyMind/NeoSolarized'
 Plug 'jacoborus/tender.vim'
 Plug 'rakr/vim-one'
+Plug 'vimwiki/vimwiki'
 
 " Vim exploration Modifications
 Plug 'Shougo/denite.nvim'
@@ -186,6 +187,11 @@ let g:nvimgdb_config_override = {
   \ 'set_tkeymaps': "NvimGdbNoTKeymaps",
   \ }
 
+"----------------------------------------------
+" Plug 'vimwiki/vimwiki'
+"----------------------------------------------
+let g:vimwiki_list = [{'path': '~/wiki/',
+                     \ 'syntax': 'markdown', 'ext': '.md'}]
 "----------------------------------------------
 " Plugin: 'SidOfc/mkdx'
 "----------------------------------------------

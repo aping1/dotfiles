@@ -53,14 +53,17 @@ set hlsearch
 " set the runtime path to include Vundle and initialize
 " set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 
-call plug#begin('~/.vim/plugged')
+if isdirectory("~/.config/nvim/plugged") 
+    call plug#begin("~/.config/nvim/plugged")
 
+else
+    call plug#begin('~/.vim/plugged')
+endif 
+
+" --- Colorscheme(s) ---
 Plug 'flazz/vim-colorschemes'
-Plug 'tpope/vim-scriptease'
-Plug 'majutsushi/tagbar'
-Plug 'tmhedberg/SimpylFold'
-Plug 'lifepillar/vim-solarized8'
-
+Plug 'itchyny/lightline.vim'
+Plug 'ryanoasis/vim-devicons'
 " Git 
 Plug 'tpope/vim-fugitive'
 Plug 'ludovicchabant/vim-lawrencium'
@@ -69,21 +72,49 @@ Plug 'airblade/vim-gitgutter'
 "Plug 'scrooloose/syntastic'
 "Plug 'Valloric/YouCompleteMe'
 "
-Plug 'scrooloose/nerdtree'
-Plug 'vim-scripts/ag.vim'
+Plug 'tpope/vim-scriptease'
+Plug 'majutsushi/tagbar'
+Plug 'tmhedberg/SimpylFold'
+Plug 'lifepillar/vim-solarized8'
 
+" Vim exploration Modifications
 Plug 'Shougo/unite.vim'
-Plug 'Shougo/unite-outline.git'
+Plug 'Shougo/unite-outline'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 
+Plug 'vim-scripts/ag.vim'
+
+" Navigation
+Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdcommenter'
+Plug 'mg979/vim-visual-multi'
+
+" Writing
+Plug 'SidOfc/mkdx'
+Plug 'gyim/vim-boxdraw'
+
+" Version Control
+Plug 'tpope/vim-fugitive'
+" mecurial client
+Plug 'ludovicchabant/vim-lawrencium'
+Plug 'majutsushi/tagbar'
+
+Plug 'w0rp/ale'
+Plug 'Shougo/echodoc.vim'
+
+Plug 'tmhedberg/SimpylFold'
 Plug 'itchyny/lightline.vim'
-Plug 'ryanoasis/vim-devicons'
+Plug 'maximbaz/lightline-ale'
+
+Plug 'jez/vim-superman'
 
 " --- languages
-" Plug 'saltstack/salt-vim'
-" Plug 'applescript.vim'
+Plug 'saltstack/salt-vim'
+Plug 'vim-scripts/applescript.vim'
 Plug 'hashivim/vim-terraform'
 
 " Local Shortccuts
