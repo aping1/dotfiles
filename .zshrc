@@ -71,14 +71,9 @@ export PAGER='less'
 # Great plugin to automatically modify path when it sees .env file
 # I use it for example to automatically setup docker/rbenv/pyenv environments
 
-# tmux plugin settings
-# this always starts tmux
-ZSH_TMUX_AUTOSTART_ONCE=true
-ZSH_TMUX_FIXTERM=true
-ZSH_TMUX_AUTOQUIT=false
-
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
-if ! [[ "${TERM:=xterm-256}" == dumb ]]; then
+export TERM
+if ! [[ "${TERM:=dumb}" == dumb ]]; then
     ZGEN_AUTOLOAD_COMPINIT=true
 
     # If user is root it can have some issues with access to competition files
@@ -87,7 +82,8 @@ if ! [[ "${TERM:=xterm-256}" == dumb ]]; then
     fi
 
     # load zgen
-    source ${DOTFILESDEPS:-"${HOME}"}/zgen/zgen.zsh
+    [[ -x "${DOTFILESDEPS:-"${HOME}"}/zgen/zgen.zsh" ]] && \
+        source ${DOTFILESDEPS:-"${HOME}"}/zgen/zgen.zsh
 
     # configure zgen
     if ! zgen saved; then
@@ -100,18 +96,16 @@ if ! [[ "${TERM:=xterm-256}" == dumb ]]; then
         zgen oh-my-zsh
         # zgen oh-my-zsh plugins/bower
         zgen oh-my-zsh plugins/brew
-        zgen oh-my-zsh plugins/colored-man
         zgen oh-my-zsh plugins/git
         zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
-        is_osx && zgen oh-my-zsh plugins/osx
+        zgen oh-my-zsh plugins/osx
         zgen oh-my-zsh plugins/pip
         zgen oh-my-zsh plugins/python
         zgen oh-my-zsh plugins/sudo
+        zgen oh-my-zsh plugins/git-escape-magic
 
-        zgen oh-my-zsh plugins/urltools
-        zgen oh-my-zsh plugins/z
-
+        # zgen load hchbaw/auto-fu.zsh
         zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
         zgen load Tarrasch/zsh-autoenv
@@ -121,27 +115,20 @@ if ! [[ "${TERM:=xterm-256}" == dumb ]]; then
         # my own plugins each of these folders use init.zsh entry point
         zgen load $DOTFILES/plugins/aliases
         zgen load $DOTFILES/plugins/dotfiles
-        zgen load $DOTFILES/plugins/zpython
-        zgen load $DOTFILES/plugins/brew-helpers
         zgen load $DOTFILES/plugins/pyenv
         zgen load $DOTFILES/plugins/fbtools
+        # zgen load $DOTFILES/plugins/autocomplete-extra
         # zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
 
         # It takes control, so load last
-        zgen load $DOTFILES/plugins/tmux
+        # zgen load $DOTFILES/plugins/tmux
 
         zgen save
     fi
 
 fi
-
-# specific for machine configuration, which I don't sync
-if [ -f ~/.machinerc ]; then
-    source ~/.machinerc
-fi
-
 ## zsh Option
 
 ## Auto complete from anywhere in word
