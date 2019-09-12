@@ -112,3 +112,5 @@ nvim ./.config/nvim
 # ipython/profile_default/db/dhist
 
 .config/nvim/plugged/vim-superman/bin/vman .local/bin/
+"${HOME}/Library/Application Scripts/com.omnigroup.OmniFocus2.MacAppStore" .local/omnifocus-scripts
+
