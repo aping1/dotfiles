@@ -1,3 +1,8 @@
+#!/usr/bin/env zsh
+# Author: Allison Wanmpler <allison.wampler@apt-miss.com>
+
+# https://unix.stackexchange.com/questions/71253/what-should-shouldnt-go-in-zshenv-zshrc-zlogin-zprofile-zlogout
+# .zshrc is for interactive shell configuration. You set options for the interactive shell there with the setopt and unsetopt commands. You can also load shell modules, set your history options, change your prompt, set up zle and completion, et cetera. You also set any variables that are only used in the interactive shell (e.g. $LS_COLORS).
 ## === Profiling ===
 PROFILE_STARTUP="${PROFILING:-false}"
 [[ "${PROFILE_STARTUP}" == true ]] && zmodload zsh/zprof
@@ -46,7 +51,12 @@ COMPLETION_WAITING_DOTS="true"
 export HISTSIZE=32768;
 export HISTFILESIZE=$HISTSIZE;
 
-# Shell
+
+export HIST_IGNORE_ALL_DUPeS
+export HIST_EXPIRE_DUPS_FIRST
+
+# -- Shell --------------
+
 export CLICOLOR=1
 
 # set editor to the best vim we can find
@@ -63,13 +73,7 @@ fi
 export PAGER='less'
 
 # Homebrew
-# This is one of examples why I want to keep my dotfiles private
-#export HOMEBREW_GITHUB_API_TOKEN=MY_GITHUB_TOKEN
-#export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-
 # Autoenv https://github.com/Tarrasch/zsh-autoenv
-# Great plugin to automatically modify path when it sees .env file
-# I use it for example to automatically setup docker/rbenv/pyenv environments
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
 export TERM
@@ -103,24 +107,24 @@ if ! [[ "${TERM:=dumb}" == dumb ]]; then
         zgen oh-my-zsh plugins/pip
         zgen oh-my-zsh plugins/python
         zgen oh-my-zsh plugins/sudo
-        zgen oh-my-zsh plugins/git-escape-magic
+        #zgen oh-my-zsh plugins/git-escape-magic
 
-        # zgen load hchbaw/auto-fu.zsh
         zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
         zgen load Tarrasch/zsh-autoenv
         # https://github.com/zsh-users/zsh-completions
         zgen load zsh-users/zsh-completions src
+        zgen load zsh-users/zsh-autosuggestions
 
         # my own plugins each of these folders use init.zsh entry point
         zgen load $DOTFILES/plugins/aliases
         zgen load $DOTFILES/plugins/dotfiles
         zgen load $DOTFILES/plugins/pyenv
         zgen load $DOTFILES/plugins/fbtools
-        # zgen load $DOTFILES/plugins/autocomplete-extra
         # zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
         zgen load $DOTFILES/plugins/tpm
+        # zgen load $DOTFILES/plugins/autocomplete-extra
 
         # It takes control, so load last
         # zgen load $DOTFILES/plugins/tmux
@@ -129,15 +133,20 @@ if ! [[ "${TERM:=dumb}" == dumb ]]; then
     fi
 
 fi
-## zsh Option
 
+# -- Completion --------------
 ## Auto complete from anywhere in word
 setopt COMPLETE_IN_WORD
+
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=lightgrey,underline"
 
 ## keep background processes at full speed
 #setopt NOBGNICE
 ## restart running processes on exit
 #setopt HUP
+
+# -- History --------------
 
 MAX_INT="$((X=(2**63)-1))"
 if [[ "$((X=(2**32)-1))" -gt 0 && "$((X=2**64))" -lt 0 ]]; then
@@ -145,13 +154,18 @@ if [[ "$((X=(2**32)-1))" -gt 0 && "$((X=2**64))" -lt 0 ]]; then
 fi
 
 HISTSIZE="${MAX_INT}"
-HISTFILE=~/.zsh_history     #Where to save history to disk
-#HISTDUP=erase               #Erase duplicates in the history file
-setopt    appendhistory     #Append history to the history file (no overwriting)
-setopt    sharehistory      #Share history across terminals
-setopt    incappendhistory  #Immediately append to the history file, not just when a term is killed
-#setopt histnostore
-
+# Where to save history to disk
+HISTFILE=~/.zsh_history
+# Erase duplicates in the history file
+# HISTDUP=erase
+# Append history to the history file (no overwriting)
+setopt    appendhistory
+# Share history across terminals
+setopt    sharehistory
+#Immediately append to the history file, not just when a term is killed
+setopt    incappendhistory 
+# setopt histignorespace
+# setopt histnostore
 ## never ever beep ever
 # setopt NO_BEEP
 
@@ -165,13 +179,15 @@ setopt    incappendhistory  #Immediately append to the history file, not just wh
 # additional configuration for zsh
 # Remove the history (fc -l) command from the history list when invoked.
 # Remove superfluous blanks from each command line being added to the history list.
-setopt histreduceblanks
+#setopt histreduceblanks
 setopt histverify
 # Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
 setopt ignoreeof
 # Print the exit value of programs with non-zero exit status.
 # Do not share history
 # if profiling was on
+export ZSH_AUTOSUGGEST_USE_ASYNC="y"
+
 if ${PROFILING}; then
     zmodload zsh/zprof 
     zprof
@@ -191,4 +207,5 @@ export FZF_COMPLETION_TRIGGER='~~'
 
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
+
 
