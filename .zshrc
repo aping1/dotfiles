@@ -134,12 +134,22 @@ if ! [[ "${TERM:=dumb}" == dumb ]]; then
 
 fi
 
+# Bindkey ... autosuggest-*
+# autosuggest-accept: Accepts the current suggestion.
+# autosuggest-execute: Accepts and executes the current suggestion.
+# autosuggest-clear: Clears the current suggestion.
+# autosuggest-fetch: Fetches a suggestion (works even when suggestions are disabled).
+# autosuggest-disable: Disables suggestions.
+# autosuggest-enable: Re-enables suggestions.
+# autosuggest-toggle: Toggles between enabled/disabled suggestions.
+
 # -- Completion --------------
 ## Auto complete from anywhere in word
 setopt COMPLETE_IN_WORD
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=lightgrey,underline"
+# Red
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
 
 ## keep background processes at full speed
 #setopt NOBGNICE
@@ -174,7 +184,6 @@ setopt    incappendhistory
 
 ## disable mail checking
 # MAILCHECK=0
-# if you want red dots to be displayed while waiting for completion
 
 # additional configuration for zsh
 # Remove the history (fc -l) command from the history list when invoked.
@@ -196,10 +205,8 @@ fi
 
 # Vim mode
 bindkey -v
-[[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which dircolors &> /dev/null && eval $(dircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
-[[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which gdircolors &> /dev/null && eval $(gdircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
 
-
+# Fuzzy Finder fzf with Ctrl-R
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 
 # Use ~~ as the trigger sequence instead of the default **
