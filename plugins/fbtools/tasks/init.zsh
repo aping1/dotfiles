@@ -147,4 +147,14 @@ alias task_home='printf "%s\n" "${TASK_ROOT_DIR:="${HOME}/tasks"}/$(task_from_tm
 alias set_task_from_session='_fb_tasks_helper_set_task_from_session_name'
 alias goto_task_session='_fb_tasks_helper_change_session_to_cur_task'
 alias cd_to_task_home='cd $(cd $(task_home) && pwd -P)'
-alias cdt='cd_to_task_home'
+
+function _fb_tasks_local_kube () {
+    if [[ -d "${TASK_ROOT_DIR:-"${HOME}/tasks"}/$(task_from_tmux)/" ]]; then
+        export KUBECONFIG="${TASK_ROOT_DIR:-"${HOME}/tasks"}/$(task_from_tmux)/.kube_config"
+    fi
+}
+
+if [[ ${TMUX} && precmd_functions[(r)_fb_tasks_local_kube == _fb_tasks_local_kube ]]; then
+    precmd_functions[(r)_fb_tasks_local_kube]+=(_fb_tasks_local_kube)
+fi
+

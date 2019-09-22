@@ -115,6 +115,7 @@ Plug 'scrooloose/nerdcommenter'
 
 
 Plug 'SidOfc/mkdx'
+Plug 'vimwiki/vimwiki'
 Plug 'itspriddle/vim-marked'
 Plug 'tpope/vim-fugitive'
 " mecurial client
@@ -212,7 +213,21 @@ let g:nvimgdb_config_override = {
   \ 'key_breakpoint': 'b',
   \ 'set_tkeymaps': "NvimGdbNoTKeymaps",
   \ }
+"----------------------------------------------
+" Plugin: 'fzf.vim'
+"----------------------------------------------
 
+" Syntax highlight preview
+let g:fzf_preview_highlighter = "highlight -O xterm256 --line-number --style rdark --force"
+
+" Files with bat previewer
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'bat -p --color always {}']}, <bang>0)
+"----------------------------------------------
+" Plugin: vimwiki/vimwiki
+"----------------------------------------------
+let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
+                      \ 'syntax': 'markdown', 'ext': '.md'}]
 "----------------------------------------------
 " Plugin: 'SidOfc/mkdx'
 "----------------------------------------------
