@@ -79,6 +79,7 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
+Plug 'kevinhui/vim-docker-tools'
 " --- Colorscheme(s) ---
 Plug 'flazz/vim-colorschemes'
 Plug 'iCyMind/NeoSolarized'
@@ -144,6 +145,8 @@ Plug 'nathanaelkane/vim-indent-guides'
 Plug 'mhinz/vim-signify'
 " Highlight colors
 Plug 'ap/vim-css-color'
+Plug 'ekalinin/Dockerfile.vim'
+
 
 
 Plug 'tmux-plugins/vim-tmux-focus-events'

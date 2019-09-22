@@ -1,8 +1,6 @@
 #!/usr/bin/env zsh
 # some sanity check
 # setopt xtrace
-
-
 # install .z
 # TOOD: Run vim +BundleInstall +Qall
 
@@ -10,19 +8,19 @@ unsetopt function_argzero
 
 # Requerys formst
 setopt PROMPT_SUBST
-export DOTFILES=${(%):-$(realpath "${(%):-%x}")}
-export DOTFILES=${DOTFILES:h}
+export DOTFILES=${${(%):-$(realpath "${(%):-%x}")}:h}
 export DOTFILES_SCRIPTPATH="$(dirname "$SCRIPT")"
 
 : "${DOTFILES:="$HOME/.dotfiles"}"
 : "${DEPFILES:="$HOME/.dotfiles/deps"}"
 
+[[ -d "${DOTFILES}" && -d "${DEPFILES}" ]] || exit 1
+
 mkdir -p $HOME/.config/
 
 # Absolute path this script is in, thus /home/user/bin
 # link new dot files
-#
-pushd ${DOTFILES}
+pushd "${DOTFILES}"
 git submodule init && submodule update
 popd
 pushd ${HOME}

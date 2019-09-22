@@ -1,13 +1,11 @@
 
-FROM alpine:3.7
-RUN apk add --no-cache git zsh
-
-VOLUME ["$HOME/repos/dotfiles"]
-run git clone file://$HOME/repos/dotfiles
-
-copy . .dotfiles/
-
-WORKDIR .dotfiles
-cmd zsh --trace ./install.zsh
-entrypoint /bin/bash
-
+FROM zshusers/zsh:master
+LABEL name=dotfiles
+RUN install_packages git
+COPY . dotfiles
+WORKDIR dotfiles
+RUN git remote set-url local file://.dotfiles 
+WORKDIR /root
+# ENTRYPOINT ["git","clone","file://$HOME/dotfiles.git",".dotfiles"]
+ENTRYPOINT zsh -l 
+CMD ["/usr/bin/zsh","-l"]

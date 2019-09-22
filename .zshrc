@@ -8,6 +8,7 @@ PROFILE_STARTUP="${PROFILING:-false}"
 [[ "${PROFILE_STARTUP}" == true ]] && zmodload zsh/zprof
 
 PROFILE_STARTUP=false
+PS4=$'%D{%M%S%.} %N:%i> '
 if [[ "${PROFILE_STARTUP}" == true ]]; then
     # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
     PS4=$'%D{%M%S%.} %N:%i> '
@@ -101,6 +102,7 @@ if ! [[ "${TERM:=dumb}" == dumb ]]; then
         # zgen oh-my-zsh plugins/bower
         zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh plugins/git
+        zgen oh-my-zsh plugins/docker
         zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
         zgen oh-my-zsh plugins/osx
@@ -203,6 +205,7 @@ if ${PROFILING}; then
 fi
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
+
 # Vim mode
 bindkey -v
 
@@ -215,4 +218,4 @@ export FZF_COMPLETION_TRIGGER='~~'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
 
-
+autoload -Uz compinit && compinit -C
