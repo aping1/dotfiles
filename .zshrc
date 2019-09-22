@@ -1,18 +1,26 @@
-#!/usr/bin/env zsh
-# Author: Allison Wanmpler <allison.wampler@apt-miss.com>
+# === Profiling ===
 
-# https://unix.stackexchange.com/questions/71253/what-should-shouldnt-go-in-zshenv-zshrc-zlogin-zprofile-zlogout
-# .zshrc is for interactive shell configuration. You set options for the interactive shell there with the setopt and unsetopt commands. You can also load shell modules, set your history options, change your prompt, set up zle and completion, et cetera. You also set any variables that are only used in the interactive shell (e.g. $LS_COLORS).
-## === Profiling ===
-PROFILE_STARTUP="${PROFILING:-false}"
-[[ "${PROFILE_STARTUP}" == true ]] && zmodload zsh/zprof
 
-PROFILE_STARTUP=false
-PS4=$'%D{%M%S%.} %N:%i> '
-if [[ "${PROFILE_STARTUP}" == true ]]; then
-    # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
-    PS4=$'%D{%M%S%.} %N:%i> '
-    setopt xtrace prompt_subst
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_BEEP
+
+# Use ~~ as the trigger sequence instead of the default **
+export FZF_COMPLETION_TRIGGER='~~'
+
+# Options to fzf command
+export FZF_COMPLETION_OPTS='+c -x'
+
+#if I see that zsh takes to much time to load I profile what has been changed,
+# I want to see my shell ready in not more than 1 second
+PROFILING=${PROFILING:-false}
+if $PROFILING; then
+    zmodload zsh/zprof
 fi
 
 # === PATHS and EVNS 
@@ -30,11 +38,23 @@ path=(
 )
 
 # Brew for OSX
-if [[ "${DISTRO}" == "Darwin" ]] && command -v brew &>/dev/null; then
+if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
+    # Add to start of path
+    path=(
+        $(brew --prefix coreutils)/libexec/gnubin
+        $(brew --prefix python)/libexec/bin
+        $(brew --prefix)/bin/
+        $path
+    )
+elif [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
+    echo "Install Homebrew" >&2
+    # add to end of path
+fi
+
 path=(
-    $(brew --prefix coreutils)/libexec/gnubin:${PATH}
-    $(brew --prefix)/bin/:${PATH}
     $path
+    ${DOTFILES}/scripts
+    ${HOME}/bin
 )
 typeset -U path
 
@@ -42,9 +62,7 @@ function is_osx() {
     [[ ${OSTYPE:-"$(uname -a)"} =~ [dD]arwin ]] || return 1
 }
 
-if is_osx && ! command -v 'brew' &>/dev/null then
-    echo "Install Homebrew" >&2
-fi
+typeset -U path
 
 COMPLETION_WAITING_DOTS="true"
 
@@ -125,8 +143,10 @@ if ! [[ "${TERM:=dumb}" == dumb ]]; then
         zgen load $DOTFILES/plugins/fbtools
         # zgen load $DOTFILES/plugins/direnv
         zgen load $DOTFILES/plugins/urltools
-        zgen load $DOTFILES/plugins/tpm
-        # zgen load $DOTFILES/plugins/autocomplete-extra
+        zgen load $DOTFILES/plugins/helpers
+
+        zgen oh-my-zsh plugins/vi-mode
+        # async update vim mode
 
         # It takes control, so load last
         # zgen load $DOTFILES/plugins/tmux
@@ -190,10 +210,10 @@ setopt    incappendhistory
 # additional configuration for zsh
 # Remove the history (fc -l) command from the history list when invoked.
 # Remove superfluous blanks from each command line being added to the history list.
-#setopt histreduceblanks
+setopt histreduceblanks
 setopt histverify
 # Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
-setopt ignoreeof
+# setopt ignoreeof
 # Print the exit value of programs with non-zero exit status.
 # Do not share history
 # if profiling was on

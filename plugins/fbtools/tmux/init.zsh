@@ -73,10 +73,10 @@ function _fb_tmux_helper_new_session() {
         _NEW_SESSION="$((_COUNT++))${_SESNAME#[0-9]*}"
     done
     _group_name=${2:-${_SESNAME#[0-9]*}}
-    tmux -S "$(_fb_tmux_helper_get_socket)" \
+    echo tmux -S "$(_fb_tmux_helper_get_socket)" \
         new-session -d -s "${_NEW_SESSION}" ${_start} \
-        $([[ ${_group_name} ]] && printf '-t %s' $_group_name)
-    printf '%s' "${_NEW_SESSION}"
+        $([[ ${_group_name} ]] && printf -- '-t %s' $_group_name)
+    printf -- '%s' "${_NEW_SESSION}"
 }
 
 function _fb_tmux_helper_clone_session() {

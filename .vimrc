@@ -97,11 +97,8 @@ Plug 'mg979/vim-visual-multi'
 Plug 'SidOfc/mkdx'
 Plug 'gyim/vim-boxdraw'
 
-" Version Control
-Plug 'tpope/vim-fugitive'
-" mecurial client
-Plug 'ludovicchabant/vim-lawrencium'
-Plug 'majutsushi/tagbar'
+    Plug 'plytophogy/vim-virtualenv'
+    Plug 'lambdalisue/vim-pyenv'
 
 Plug 'w0rp/ale'
 Plug 'Shougo/echodoc.vim'
@@ -120,11 +117,9 @@ Plug 'hashivim/vim-terraform'
 " Local Shortccuts
 " Plug 'file:///home/aping1/.dotfiles/vim/colorscheme'
 
-" uses pygtk
-" A simple color picker for VIM, based on GTK color chooser dialog.
-" Plug 'vim-scripts/VIM-Color-Picker'
-" A script that lets you insert hex color codes by using OS X's color picker
-" Plug 'vim-scripts/ColorX'
+    " Change the Pmenu colors so they're more readable.
+    highlight Pmenu ctermbg=cyan ctermfg=white
+    highlight PmenuSel ctermbg=black ctermfg=white
 
 call plug#end()
 filetype plugin indent on     " required
@@ -181,8 +176,6 @@ autocmd BufNewFile,BufWinEnter *.[h|c] set iskeyword+=_
 "autocmd BufNewFile,BufWinEnter *.[h|c] set iskeyword="a-z,A-Z,48-57,_,.,-,>"
 "set iskeyword+=-
 
-" When shifting always round to the correct indentation.
-set shiftround
 
 set list
 set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
@@ -223,195 +216,3 @@ au BufNewFile COMMIT_EDITING let syntax = diff
 " Use ag for vimgrep
 set grepprg=ag\ --vimgrep\ $* 
 set grepformat=%f:%l:%c:%m
-"----------------------------------------------
-" Plugin: 'w0rp/ale'
-"----------------------------------------------
-" Gutter Error and warning signs.
-let g:ale_sign_error = '⤫'
-let g:ale_sign_warning = '⚠'
-
-let g:ale_linters_explicit = 1
-" " Fix Python files with autopep8 and yapf.
-let g:ale_python_mypy_options = '--ignore-missing-imports'
-
-let g:ale_fix_on_save=0
-let g:ale_set_loclist = 1
-let g:ale_set_quickfix = 0
-let g:ale_open_list = 1
-" Set this if you want to.
-" This can be useful if you are combining ALE with
-" some other plugin which sets quickfix errors, etc.
-let g:ale_keep_list_window_open = 1
-" Set this if you want to.
-" Enable integration with " Check Python files with flake8 and pylint.
-let b:ale_linters = { 'python': ['flake8', 'mypy' ] }
-" Fix Python files with autopep8 and yapf.
-let b:ale_fixers = { 'python' : ['black'],
-                \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
-" Disable warnings about trailing whitespace for Python files.
-let b:ale_warn_about_trailing_whitespace = 0
-
-" user environment
-let g:ale_virtualenv_dir_names = []
-let g:ale_python_auto_pipenv = 1
-
-augroup vim_blacklist_blacklist
-autocmd FileType * call s:ale_settings()
-augroup END
-
-function! s:ale_settings()
-    nmap ]a :ALENextWrap<CR>
-    nmap [a :ALEPreviousWrap<CR>
-    nmap ]A :ALELast
-    nmap [A :ALEFirst
-    nmap <F8> <Plug>(ale_fix)
-    nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-    nmap <silent> <C-j> <Plug>(ale_next_wrap)
-endfunction
-"
-"----------------------------------------------
-" Plugin 'ryanoasis/vim-devicons'
-"----------------------------------------------
-
-"----------------------------------------------
-" Plugin: 'itchyny/lightline.vim'
-"----------------------------------------------
-
-let g:lightline = {
-      \ 'active': {
-      \   'left': [ [  'mode', 'paste', 'spell' ],
-      \             [ 'pyenv', 'pyenv_active' ],
-      \             [ 'fugitive' ] ],
-      \   'right': [ ['filename', 'lineno', 'percent' ], 
-      \              [ 'filetype', 'fileformat', 'readonly' ],
-      \              [ 'linter_checking', 'linter_errors',
-      \                'linter_warnings', 'linter_ok'  ]
-      \            ]
-      \ },
-      \ 'component_expand' : {
-      \  'linter_checking': 'lightline#ale#checking',
-      \  'linter_warnings': 'lightline#ale#warnings',
-      \  'linter_errors': 'lightline#ale#errors',
-      \  'linter_ok': 'lightline#ale#ok',
-      \  'gitbranch': 'fugitive#head'
-      \ },
-      \ 'component': {
-      \   'spell': '%{&spell?&spelllang:""}',
-      \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{&filetype=="help"?"":exists("*FugitiveStatusline")?FugitiveStatusline():""}',
-      \ },
-      \ 'component_visible_condition': {
-      \   'readonly': '(&filetype!="help"&& &readonly)',
-      \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-      \   'fugitive': '(&filetype!="help"&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
-      \ },
-      \ 'component_type': {
-      \     'linter_checking': 'left',
-      \     'linter_warnings': 'warning',
-      \     'linter_errors': 'error',
-      \     'linter_ok': 'left',
-      \ },
-      \ 'component_function': {
-      \   'filetype': 'MyFiletype',
-      \   'fileformat': 'MyFileformat',
-      \   'method': 'NearestMethodOrFunction'
-      \ },
-      \ 'colorscheme' : 'solarized',
-      \   'separator': { 'left': '', 'right': '' },
-      \   'subseparator': { 'left': '', 'right': '' },
-      \ }
-
-function! NearestMethodOrFunction() abort
-  return get(b:, 'vista_nearest_method_or_function', '')
-endfunction
-
-function! MyFiletype()
-return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
-endfunction
-
-function! MyFileformat()
-return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
-endfunction
-
-" --------------------
-" Plugin 'janko/vim-test'
-" --------------------
-"
-autocmd FileType * call s:vim_test_keymap()
-
-
-function! s:vim_test_keymap()
-    nmap <silent> t<C-n> :TestNearest<CR>
-    nmap <silent> t<C-f> :TestFile<CR>
-    nmap <silent> t<C-s> :TestSuite<CR>
-    nmap <silent> t<C-l> :TestLast<CR>
-    nmap <silent> t<C-g> :TestVisit<CR>
-endfunction
-
-let g:test#runner_commands = ['buck']
-let test#python#buck#executable = 'buck test'
-let test#python#runner = 'buck'
-"----------------------------------------------
-" Plugin: christoomey/vim-tmux-navigator
-"----------------------------------------------
-" Tmux vim integration
-let g:tmux_navigator_no_mappings = 1
-if exists('$TMUX')
-    autocmd BufEnter * call system("tmux rename-window '" . expand("%:t") . "'")
-    autocmd VimLeave * call system("tmux setw automatic-rename")
-    " tmux will send xterm-style keys when its xterm-keys option is on
-    if &term =~ '^screen'
-        execute "set <xUp>=\e[1;*A"
-        execute "set <xDown>=\e[1;*B"
-        execute "set <xRight>=\e[1;*C"
-        execute "set <xLeft>=\e[1;*D"
-    endif
-
-    let g:tmux_navigator_save_on_switch = 1
-
-    " Move between splits with ctrl+h,j,k,l
-    nnoremap <silent> <leader><c-h> :TmuxNavigateLeft<cr>
-    nnoremap <silent> <leader><c-j> :TmuxNavigateDown<cr>
-    nnoremap <silent> <leader><c-k> :TmuxNavigateUp<cr>
-    nnoremap <silent> <leader><c-l> :TmuxNavigateRight<cr>
-    nnoremap <silent> <leader><c-\> :TmuxNavigatePrevious<cr>
-endif
-
-"----------------------------------------------
-" Plugin: scrooloose/nerdtree
-"----------------------------------------------
-nnoremap <leader>d :NERDTreeToggle<cr>
-nnoremap <F2> :NERDTreeToggle<cr>
-
-let NERDTreeShowBookmarks=1
-let NERDTreeChDirMode=2
-let NERDTreeQuitOnOpen=0
-
-let NERDTreeShowHidden=1
-let NERDTreeIgnore=['\.pyc','\~$','\.swo$','\.swp$','\.git','\.hg','\.svn','\.bzr']
-let NERDTreeKeepTreeInNewTab=1
-
-" Files to ignore
-let NERDTreeIgnore = [
-    \ '\~$',
-    \ '\.pyc$',
-    \ '^\.DS_Store$',
-    \ '^node_modules$',
-    \ '^.ropeproject$',
-    \ '^__pycache__$'
-\]
-
-" Close vim if NERDTree is the only opened window.
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
-
-" Show hidden files by default.
-let NERDTreeShowHidden = 1
-
-" Allow NERDTree to change session root.
-let g:NERDTreeChDirMode = 2
-
-let NERDTreeShowBookmarks=1
-let NERDTreeChDirMode=2
-let NERDTreeQuitOnOpen=0
-
-

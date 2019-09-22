@@ -1,9 +1,12 @@
-
 #!/bin/bash
 
-color=16;
+color=1
+a=1
 
-while [ $color -lt 245 ]; do
-        echo -e "$color: \\033[38;5;${color}mhello\\033[48;5;${color}mworld\\033[0m"
-            ((color++));
-        done  
+while [[ "$color" -lt 245 ]]; do
+    for i in {1..16}; do 
+        printf -- '\033[38;5;%sm%s \033[48;5;%sm%s \033[0m ' "$((color))" "bg=${color}" "$(( i ))" "fg=$(( i ))"
+    done
+    echo 
+    ((color = color + 1))
+done

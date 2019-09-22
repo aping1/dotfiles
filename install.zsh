@@ -8,7 +8,8 @@ unsetopt function_argzero
 
 # Requerys formst
 setopt PROMPT_SUBST
-export DOTFILES=${${(%):-$(realpath "${(%):-%x}")}:h}
+export DOTFILES=${(%):-"${${(%):-%x}:A}"}
+export DOTFILES=${DOTFILES:h}
 export DOTFILES_SCRIPTPATH="$(dirname "$SCRIPT")"
 
 : "${DOTFILES:="$HOME/.dotfiles"}"
@@ -150,6 +151,7 @@ function handle_pathmatches() {
     printf 'Attempt to install %s -> %s [override %s]: ' "${rel_this}" "${DEST}" "${_FORCE_DIR}" >&2
     # we are going to a dir
     if [[ ${_FORCE_DIR} == 'y' || -d "${DEST}" ]]; then
+        # if we are going to a dir
         if [[ -f "${this}" ]]; then
             ## linking a file, We'll create a softlink in that directory
             printf 'will link file "%s" into dir %s \n' "${rel_dest}" "${DEST}" >&2

@@ -1,21 +1,19 @@
 #! /usr/bin/bash
 #! /usr/local/bin/zsh || /usr/bin/zsh
 
-command -v realpath &>/dev/null || return 2
 if [[ $0 == /bin/bash ]] ; then
     _fbtools_projects_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
     exec zsh $_fbtools_projects_local_script/init.zsh
 else
-    _fbtools_projects_local_script="$( cd $(realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
+    _fbtools_projects_local_script="$( cd $(_realpath -e $(dirname "${0}")) &>/dev/null; pwd -P;)"
 fi
 if ! [[ ${_fbtools_projects_local_script} =~ fbtools ]];then
     _fbtools_projects_local_script=${HOME}/.dotfiles/plugins/fbtools/projects
 fi
-_tmux_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../tmux/scripts)"
-_tasks_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../tasks/)"
-_fbtools_scripts="$(realpath -e ${_fbtools_projects_local_script%/}/../)"
+_tmux_scripts="$(_realpath -e ${_fbtools_projects_local_script%/}/../tmux/scripts)"
+_tasks_scripts="$(_realpath -e ${_fbtools_projects_local_script%/}/../tasks/)"
+_fbtools_scripts="$(_realpath -e ${_fbtools_projects_local_script%/}/../)"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
-#
 
 source ${_fbtools_scripts}/utils.zsh || return 10
 
@@ -37,24 +35,9 @@ export PROJECT_ROOT_DIR
 
 function _fb_projects_helper_list_projects () {
     find "${PROJECT_ROOT_DIR}" -maxdepth 1 -mindepth 1 -type d \
-        -exec basename {} \; 2>/dev/null
-}
-
-function _fb_projects_helper_list_project_tasks () {
-    find "${project_from_tmux}" -maxdepth 1 -mindepth 1 -type l \
-        -exec basename {} \; 2>/dev/null 
-}
-
-function _fb_projects_helper_resolve_relative_path() {
-    # relative link between $1 and $2
-    [[ ${1} && ${2} ]] || return 1
-    # Get the real path of A
-    _PATH_ROOT="${1:A}"
-    while ! [[ -d "${2:A}" || -d "${2}" ]]; do
-        [[ "${_PATH_ROOT}" -ef "${HOME}" || "${_PATH_ROOT}" -ef '/' ]] && return 5
-        _PATH_ROOT=${_PATH_ROOT:h}
-    done
-    printf '%s\n' "${_PATH_ROOT}"
+        -exec basename {} \; 2>/dev/null | while read file; do
+            printf -- 'P+%s\n' "${file}"
+        done 2>/dev/null
 }
 
 function _fb_projects_helper_init_projects_here () {
@@ -112,28 +95,80 @@ function _fb_projects_helper_get_projects_home() {
         [[ ${_RET:=$?} == 2 ]] && return 2
         mkdir -p "${HOME}/projects/${_PROJNAME}"
     fi
-    realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
+    _realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}"
 }
 
 
 function _fb_projects_helper_project_shortname() {
-    local _PROJNAME=${1#[0-9]*}  _NEW_TASK=$2
+    local _FULL_NAME="${1}" _NEW_TASK="${2}" _PROJNAME=""
     # the case where ends with a task
-    printf '%s == %s \n' "${_PROJNAME}" "${TASK_REGEX:-"(\w)-?(\d+)$"}" >&2
-    if [[ ${_PROJNAME} =~ ${TASK_REGEX:-"(\w).?(\d+)$"} ]]; then
+    if [[ ${_FULL_NAME} =~ ^${TASK_REGEX:-"(\w)-?(\d+)$"} ]]; then
         # is this inheritance? |_//// 0^0
         _NEW_TASK="${_NEW_TASK:-"$(_fb_tasks_helper_task_shortname $*)"}"
-        _PROJNAME="${_PROJECTNAME:-$(_fb_tmux_helper_get_session)}"
-    elif ! [[ ${_PROJNAME} =~ ^${PROJECT_RX}[-]? ]] ; then
+        _PROJNAME="$(_fb_tmux_helper_get_session)"
+    fi
+    # does the input have a project prefix? does the session name?
+    if [[ ${_FULL_NAME} =~ ${PROJECT_RX}-? ]] ; then
+        _PROJNAME=${match[2]}
+    elif [[ ${_PROJNAME} && ${_PROJNAME} =~ ${PROJECT_RX}-? ]] ; then
+        _PROJNAME=${match[2]}
+    else 
         # doesnt contain a project
         return 1
     fi
-    if [[ ${_PROJNAME} =~ ^${PROJECT_RX}${TASK_REGEX:-"(\w)-?(\d+)"} ]]; then
-        _NEW_TASK="${_NEW_TASK:-"$(_fb_projects_helper_project_shortname)"}"
-        _PROJNAME=${match[2]}
+    if [[ ${_PROJNAME} && ${_NEW_TASK} =~ ${TASK_REGEX:-"(\w)(-?)(\d+)\$"} ]]; then
+        :
+    elif [[ ${_FULL_NAME} =~ ${PROJECT_RX}-${TASK_REGEX:-"(\w)(-?)(\d+)"} ]]; then
+        _NEW_TASK="${_NEW_TASK:-"${match[3]}${match[4]}${match[5]}"}"
         _SOMEID=${_SOMEID:-$match[1]}
     fi
-    printf '%s %s %s\n' "${_SOMEID:-"None"}"h "${_PROJNAME:-"None"}" "${_NEW_TASK}"
+    # clone into projects
+    eval ${TIMEOUT} ${_GIT_CLONE} \
+        "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
+}
+
+function _fb_projects_helper_clone_hg() {
+    local _PROJECT_VCS_ROOT=$1
+    local _VCS_DEST=$2 # Location to clone
+    local _HG_CLONE='hg clone'  # how to clone
+    local TIMEOUT="timeout 300" # Timeout for 5 min
+
+    if ! [[ -d ${_VCS_DEST} ]] ; then
+        if [[ -e ${_VCS_DEST}/.hg ]]; then
+            mkdir -p "${_VCS_DEST}"
+            _PROJECT_VCS_ROOT="$(_realpath -e "${_PROJECT_VCS_ROOT}")"
+            # Create a new working direcotry if it doesnt exists
+            [[ -e ${_VCS_DEST} && ! -d ${_VCS_DEST}/.hg ]] && (\
+            printf '\n### CLONING HG DIR %s -> %s ###\n' \
+                "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" >&2
+            # set eden or hg-new-workdir
+            if [[ -x /usr/local/bin/eden ]]; then
+                _HG_CLONE="/usr/local/bin/eden clone"
+            elif [[ -x /opt/facebook/hg/bin/hg-new-workdir ]]; then
+                _HG_CLONE=/opt/facebook/hg/bin/hg-new-workdir
+            fi
+            printf '[INFO] Command to run: %s\n' "${TIMEOUT} ${_HG_CLONE:-echo} ${_PROJECT_VCS_ROOT} ${_VCS_DEST}" >&2
+            if ! [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
+                # clone into projects
+                eval ${TIMEOUT} ${_HG_CLONE:-hg-new-workdir} \
+                    "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
+            fi
+        )
+        fi 
+    fi
+
+    # make it sparse
+    printf '[INFO] Found REPO %s\n' "${REPO_NAME#-}" >&2
+if [[ ${_NOT_UPDATE} && ${_HG_PROFILE} ]] && command -v arc >&2; then
+    (
+    cd "${_VCS_DEST}" &>/dev/null
+    hg sparse --enable-profile ${_HG_PROFILE:-$3}
+    if ! hg update ${_NEW_TASK} ; then
+        printf '[INFO] Updating to master at %s\n' "${_VCS_DEST}" >&2
+        hg update master && hg book ${_NEW_TASK}
+    fi
+    ) 1>/dev/null &
+fi
 }
 
 function _fb_projects_helper_clone_project_task() {
@@ -167,7 +202,7 @@ function _fb_projects_helper_clone_project_task() {
         fi
         # go to project home based on the project name
         # cd $(_fb_projects_helper_get_projects_home "P+${_PROJNAME}") &>/dev/null || exit 1
-        _TASK_ROOT_DIR=$(realpath -e "${TASK_REL%/}/${_NEW_TASK}")
+        _TASK_ROOT_DIR=$(_realpath -e "${TASK_REL%/}/${_NEW_TASK}")
         [[ ${_TASK_ROOT_DIR} ]] && \
             printf 'task.root[%s]=exists\n' "$(pwd -P)${TASK_REL%/}${_NEW_TASK}" >>"${_TASK_ROOT_DIR}/.project" \
             || mkdir -p ${_TASK_ROOT_DIR:=${TASK_REL%/}/${_NEW_TASK}}
@@ -176,50 +211,32 @@ function _fb_projects_helper_clone_project_task() {
         # create a link to the new task in the project dir
         # create a link to the task in the tasks directory
         [[ -h ${_NEW_TASK} ]] || ln -s "${TASK_REL}/${_NEW_TASK}" &>/dev/null || echo "Failed to link task" >&2
-        # Look for root working dir
-        _PROJECT_VCS=$(realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}")
+        # Look for root working dir for the project
+        _PROJECT_VCS=$(_realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}")
         # for each <project-dir>/repo-name
         # for each link that starts with $_PROJNAME
         printf ';[%s]\n' "$(date -u)" >>"${_TASK_ROOT_DIR}/.project"
         printf 'project_dir=%s\n' "$(pwd -P)" >>"${_TASK_ROOT_DIR}/.project"
-        for repo in "${_PROJECT_VCS%/}/${_PROJNAME:l}"-?*; do
-            [[ -h ${repo} ]] || continue
+        # for each bookmark or repo
+        for repo_or_link in "${_PROJECT_VCS%/}/${_PROJNAME:l}"-?*; do
+            [[ -h ${repo_or_link} ]] || continue
             ## The repo root, find it
             REPO_LINK_PATH="$(realpath -e ${repo})"
             _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
-            while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]]; do
+            while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" && ! -d "${_PROJECT_VCS_ROOT%/}/.git" ]]; do
+
                 [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' ]] && exit 5
                 _PROJECT_VCS_ROOT=${_PROJECT_VCS_ROOT:h}
             done
-            # get the name of the root repo dir
+            # get the name of the root repo dir containing .hg or .git
             REPO_NAME="${_PROJECT_VCS_ROOT:t}"
             [[ ${REPO_NAME} ]] && REPO_NAME="-${REPO_NAME}"
-
-            # Create new working dir for the repo
             _VCS_DEST="${_TASK_ROOT_DIR}/.workdir${REPO_NAME}"
-            if ! [[ -d ${_VCS_DEST} && -e ${_VCS_DEST}/.hg ]]; then
-                [[ -e ${_VCS_DEST}/.hg ]] && NOT_UPDATE=1
-                mkdir -p "${_VCS_DEST}"
-                _PROJECT_VCS_ROOT="$(realpath -e "${_PROJECT_VCS_ROOT}")"
-                # Create a new working direcotry if it doesnt exists
-                [[ -e ${_VCS_DEST} && ! -d ${_VCS_DEST}/.hg ]] && (\
-                    printf '\n### CLONING HG DIR %s -> %s ###\n' \
-                        "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" >&2
-                    # set eden or hg-new-workdir
-                    if [[ -x /usr/local/bin/eden ]]; then
-                        _HG_CLONE="/usr/local/bin/eden clone"
-                    elif [[ -x /opt/facebook/hg/bin/hg-new-workdir ]]; then
-                        _HG_CLONE=/opt/facebook/hg/bin/hg-new-workdir
-                    fi
-                    # Timeout for 5 min
-                    TIMEOUT="timeout 300"
-                    printf '[INFO] Command to run: %s\n' "${TIMEOUT} ${_HG_CLONE:-echo} ${_PROJECT_VCS_ROOT} ${_VCS_DEST}" >&2
-                    if [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
-                        eval ${TIMEOUT} ${_HG_CLONE:-hg-new-workdir} \
-                            "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}" || return 4
-                    fi
-                )
-            fi
+            [[ -d "${_PROJECT_VCS_ROOT%/}/.git" ]] && _fb_projects_helper_clone_git "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}"
+            [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]] && _fb_projects_helper_clone_hg "${_PROJECT_VCS_ROOT}" "${_VCS_DEST}"
+            #======== 
+            
+            #======== create a bookmark for that directory relativvely
             # the relitive localtion in the workin copy of the project link
             declare -a DIFF_PATH=("${(s./.)REPO_LINK_PATH##${_PROJECT_VCS_ROOT}}")
             # save some metadata for later
@@ -229,95 +246,52 @@ function _fb_projects_helper_clone_project_task() {
             [[ ${DIFF_PATH} ]] && printf 'project.import=%s\n' "${(j:.:)DIFF_PATH}" >>"${_TASK_ROOT_DIR}/.project"
             # Move to the task directory
             pushd "${TASK_ROOT_DIR}/${_NEW_TASK}" &>/dev/null
-            #####
-            # Create repo link if it doesnt exist yet
-            [[ -h ${REPO_NAME#-} ]] || ln -s .workdir${REPO_NAME} "${REPO_NAME#-}" &>/dev/null
-            # Create a link to the same rel path as the original
-            DOT_PATH=${(j:.:)DIFF_PATH#.}
-            DOT_PATH=${DOT_PATH#.}
-            if [[ ${DOT_PATH} ]]; then
-                if [[ -h ${DOT_PATH} ]] ; then
-                    printf "[WARN] diff path \"%s\" exists; deleting link\n" ${DOT_PATH} >&2
-                    rm ${DOT_PATH}
+                # Create new working dir for the repo
+                # The new working dir  will be <PROJECT>/<TASK>/.workdir-<repo>
+                [[ -h ${REPO_NAME#-} ]] || ln -s .workdir${REPO_NAME} "${REPO_NAME#-}" &>/dev/null
+                # Create a link to the same rel path as the original
+                DOT_PATH=${(j:.:)DIFF_PATH#.}
+                DOT_PATH=${DOT_PATH#.}
+                if [[ ${DOT_PATH} ]]; then
+                    if [[ -h ${DOT_PATH} ]] ; then
+                        printf "[WARN] diff path \"%s\" exists; deleting link\n" ${DOT_PATH} >&2
+                        rm ${DOT_PATH}
+                    fi
+                    if [[ -e ${DOT_PATH} ]] ; then
+                        printf "[ERROR] diff path \"%s\" exists and is not a link\n" ${DOT_PATH} >&2
+                    else
+                        # link to the same rel path as our main link
+                        [[ -h "${REPO_NAME##-}-${DOT_PATH}" ]] || ln -vs .workdir${REPO_NAME}/${(j./.)DIFF_PATH} "${REPO_NAME##-}-${DOT_PATH}" &>/dev/null
+                        # link to buck find buckconfig
+                    fi
+
                 fi
-                if [[ -e ${DOT_PATH} ]] ; then
-                    printf "[ERROR] diff path \"%s\" exists and is not a link\n" ${DOT_PATH} >&2
-                else
-                    # link to the same rel path as our main link
-                    [[ -h "${REPO_NAME##-}-${DOT_PATH}" ]] || ln -vs .workdir${REPO_NAME}/${(j./.)DIFF_PATH} "${REPO_NAME##-}-${DOT_PATH}" &>/dev/null
-                    # link to buck find buckconfig
-                    _BUCK_VCS_ROOT="$(realpath -e "${repo}")"
-                    while ! [[ -e "${_BUCK_VCS_ROOT%/}/.buckconfig" ]]; do
-                        [[ "${_BUCK_VCS_ROOT}" -ef "${HOME}" || "${_BUCK_VCS_ROOT}" -ef '/' ]] && { _NOPE=1; break; }
-                        _BUCK_VCS_ROOT=${_BUCK_VCS_ROOT:h}
+                _BUCK_VCS_ROOT="$(_realpath -e "${repo_or_link}")"
+                while ! [[ -e "${_BUCK_VCS_ROOT%/}/.buckconfig" ]]; do
+                    [[ "${_BUCK_VCS_ROOT}" -ef "${HOME}" || "${_BUCK_VCS_ROOT}" -ef '/' ]] && { _NOPE=1; break; }
+                    _BUCK_VCS_ROOT=${_BUCK_VCS_ROOT:h}
+                done
+                # ${_PROJECT_VCS_ROOT##${_BUCK_VCS_ROOT}}
+                if [[ -e ${_BUCK_VCS_ROOT}/.buckconfig ]]; then
+                    typeset -a _INT_DIFF=()
+                    _INT_PATH="${_BUCK_VCS_ROOT}"
+                    while [[ -e "${_INT_PATH%/}/.buckconfig" ]]; do
+                        [[ "${_INT_PATH}" -ef "${HOME}" || "${_INT_PATH}" -ef '/' ]] && { _NOPE=1; break; }
+                        _INT_DIFF+=("${_INT_PATH:t}")
+                        _INT_PATH="${_INT_PATH:h}"
                     done
-                    # ${_PROJECT_VCS_ROOT##${_BUCK_VCS_ROOT}}
-                    if [[ -e ${_BUCK_VCS_ROOT}/.buckconfig ]]; then
-                        typeset -a _INT_DIFF=()
-                        _INT_PATH="${_BUCK_VCS_ROOT}"
-                        while [[ -e "${_INT_PATH%/}/.buckconfig" ]]; do
-                            [[ "${_INT_PATH}" -ef "${HOME}" || "${_INT_PATH}" -ef '/' ]] && { _NOPE=1; break; }
-                            _INT_DIFF+=("${_INT_PATH:t}")
-                            _INT_PATH="${_INT_PATH:h}"
-                        done
-                        if [[ ${#_INT_DIFF} -le 1 ]]; then
-                            ln -vs .workdir${REPO_NAME}/buck-out/gen/${(j./.)DIFF_PATH[2,-1]} "buck-${DOT_PATH}" &>/dev/null
-                        else
-                            ln -vs .workdir${REPO_NAME}/${(0j:/:)_INT_DIFF[1,-2]}/buck-out/gen/${(j./.)DIFF_PATH[2,-1]} "buck-${(0j:.:)_INT_DIFF}-${DOT_PATH}" &>/dev/null
-                        fi
+                    if [[ ${#_INT_DIFF} -le 1 ]]; then
+                        ln -vs .workdir${REPO_NAME}/buck-out/gen/${(j./.)DIFF_PATH[2,-1]} "buck-${DOT_PATH}" &>/dev/null
+                    else
+                        ln -vs .workdir${REPO_NAME}/${(0j:/:)_INT_DIFF[1,-2]}/buck-out/gen/${(j./.)DIFF_PATH[2,-1]} "buck-${(0j:.:)_INT_DIFF}-${DOT_PATH}" &>/dev/null
                     fi
                 fi
-            fi
-            # make fcode sparse
-            printf '[INFO] Found REPO %s\n' "${REPO_NAME#-}" >&2
-            if [[ ${_NOT_UPDATE} && ${REPO_NAME} =~ fbsource ]] && command -v arc >&2; then
-                (
-                cd "${_VCS_DEST}" &>/dev/null
-                hg sparse --enable-profile .hgsparse-fbcode
-                if ! hg update ${_NEW_TASK} ; then
-                    printf '[INFO] Updating to master at %s\n' "${_VCS_DEST}" >&2
-                    hg update master && hg book ${_NEW_TASK}
-                fi
-                ) 1>/dev/null &
-            fi
-            ##### pop
             popd &>/dev/null
         done
         )
         return $?
     fi
     return 4
-}
-
-function _fb_projects_helper_clean_task() {
-        local _FORCE
-        [[ ${1} == '-f' ]] && _FORCE="Y" && shift
-        tasks summary $1 2>/dev/null | tr -d '\t' | read TASK user STATUS pri info
-        if [[ ${_FORCE} =~ ^[yY] ||  $STATUS == "CLOSED" ]]; then
-            read -q "REPLY?Are you sure you want to clean $1: \"${info}\"?[Y/n]"
-            if [[ ${REPLY} =~ ^[nN]$ ]]; then
-                return 0
-            fi
-            EDENPATH=${2:-"$(_fb_projects_helper_project_task_home $1)/.workdir-*"}
-            for _edenpath in ${~EDENPATH}; do
-                if [[ -d $_edenpath ]]; then
-                    read -q "REPLY?Are you sure you want to clean $_edenpath?[Y/n]"
-                    if [[ $REPLY =~ ^[Yy]$ ]]; then
-                        echo "Removing $_edenpath" >&2
-                        eden rm $_edenpath
-                    fi
-            fi
-        done
-        else
-            echo "No clean: ${1} \"${info}\" is still ${STATUS}" >&2
-        fi
-
-}
-
-function _fb_projects_helper_clean() {
-    autoload -U zargs
-    #FIXME: Hard coded path
-    zargs -n2 -- $(eden list | awk -F/ '/^'"$(project_task_home)"'T[^0]/{print $5,$0}' ) -- _fb_projects_helper_clean_task
 }
 
 function _fb_projects_helper_add_bookmarks_from_list() {
@@ -337,11 +311,11 @@ function _fb_projects_helper_add_bookmarks_from_list() {
             pushd $(_fb_projects_helper_get_projects_home "P+${_PROJNAME}") &>/dev/null || return 1
             # setopt xtrace
             # Look for root working dir
-            _PROJECT_VCS=$(realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}")
+            _PROJECT_VCS=$(_realpath -e "${PROJECT_ROOT_DIR%/}/${_PROJNAME}")
             # Fore each stdin
             printf 'Finding repo for %s' "${REPO}"
             ## The repo root, find it
-            REPO_LINK_PATH="$(realpath -e ${repo})"
+            REPO_LINK_PATH="$(_realpath -e ${repo_or_link})"
             _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
             while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" ]]; do
                 [[ "${_PROJECT_VCS_ROOT}" -ef "${HOME}" || "${_PROJECT_VCS_ROOT}" -ef '/' || -z "${_PROJECT_VCS_ROOT}" ]] && continue
@@ -372,7 +346,7 @@ function _fb_projects_helper_add_bookmarks_from_list() {
                     # link to the same rel path as our main link
                     ln -vs "./${ROOT_PATH#/}/${(j./.)DIFF_PATH}" "${_PROJNAME:l}-${REPO_NAME##-}-${DOT_PATH}"
                     # link to buck find buckconfig
-                    _BUCK_VCS_ROOT="$(realpath -e "${repo}")"
+                    _BUCK_VCS_ROOT="$(_realpath -e "${repo_or_link}")"
                     while ! [[ -e "${_BUCK_VCS_ROOT%/}/.buckconfig" ]]; do
                         [[ "${_BUCK_VCS_ROOT}" -ef "${HOME}" || "${_BUCK_VCS_ROOT}" -ef '/' ]] && { _NOPE=1; break; }
                         _BUCK_VCS_ROOT=${_BUCK_VCS_ROOT:h}
@@ -396,7 +370,6 @@ function _fb_projects_helper_verify_project() {
         cd $(_fb_projects_helper_get_projects_home P+${_PROJNAME}) 1>/dev/null
         while read line; do
             _PARAM="" _VAL=""
-            # Must match A[bcd]=soemthing
             if [[ line =~ ^([A-Za-z_][A-Za-z0-9]*)=(.*)#?$ ]]; then
                 _VAL=match[2]
                 case ${_PARAM:=match[1]} in
@@ -465,7 +438,7 @@ function project_from_tmux() {
 function prune_tasks () {
     cd $(_fb_projects_helper_get_projects_home) || return 1
     do_something=${1:-":"}
-    for i in $(_fb_projects_helper_list_project_tasks); do
+    for i in T*[^0](@); do
         tasks details $i | awk -F':' '/State :/{print $2}' | read STATE;
         if [[ $STATE == 'CLOSED' ]]; then
             echo "callikng ${do_something} on ${i}"
@@ -480,8 +453,8 @@ alias get_projects_home='_fb_projects_helper_get_projects_home'
 alias session_task_override='_fb_projects_helper_session_task'
 alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
 alias cdp='cd_to_project_task_home'
-alias cd_to_task_home='cd $(realpath -e $(_fb_projects_helper_project_task_home))'
-alias cdt='cd_to_task_home'
+alias cd_to_task_home='cd $(_realpath -e $(_fb_projects_helper_project_task_home))'
+alias cd_to_project_home='cd $(_realpath -e $(_fb_projects_helper_get_projects_home))'
 alias project_task_home='_fb_projects_helper_project_task_home'
 alias new_project='_fb_projects_helper_get_projects_home'
 alias summary='tasks summary $(task_from_tmux)'
