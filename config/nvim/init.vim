@@ -191,7 +191,7 @@ let g:nvimgdb_config_override = {
   \ }
 
 "----------------------------------------------
-" Plug 'vimwiki/vimwiki'
+" Plugin: 'vimwiki/vimwiki'
 "----------------------------------------------
 let g:vimwiki_list = [{'path': '~/wiki/',
                      \ 'syntax': 'markdown', 'ext': '.md'}]
@@ -424,11 +424,12 @@ let g:lightline = {
       \ 'active': {
       \   'left': [ [  'mode', 'paste', 'spell' ],
       \             [ 'pyenv', 'pyenv_active' ],
-      \             ['gitbranch', 'fugitive' ] ],
-      \   'right': [ ['filename', 'lineno', 'percent' ], 
-      \              [ 'filetype', 'fileformat', 'readonly' ],
+      \             ['fugitive' ] ],
+      \   'right': [ 
       \              [ 'linter_checking', 'linter_errors',
-      \                'linter_warnings', 'linter_ok'  ]
+      \                'linter_warnings', 'linter_ok'  ],
+      \              ['filename', 'lineno', 'percent' ], 
+      \              [ 'filetype', 'fileformat', 'readonly' ]
       \            ]
       \ },
       \ 'component_expand' : {
@@ -581,11 +582,12 @@ let NERDTreeQuitOnOpen=0
 " Colorscheme 
 " --------------------------------------------
 colorscheme one
+let g:one_allow_italics = 1 " I love italic for comments
 
 set background=dark " for the light version
 
 map <F3> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
-let g:one_allow_italics = 1 " I love italic for comments
+
 
 " Set max line length.
 let linelen = 120 

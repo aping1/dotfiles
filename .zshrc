@@ -32,7 +32,7 @@ DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 # Standard path includes
 path=(
     /usr/local/{bin,sbin}
-    $DOTFILES/scripts
+    ${DOTFILES}/scripts
     ${HOME}/bin
     $path
 )
@@ -137,19 +137,20 @@ if ! [[ "${TERM:=dumb}" == dumb ]]; then
         zgen load zsh-users/zsh-autosuggestions
 
         # my own plugins each of these folders use init.zsh entry point
-        zgen load $DOTFILES/plugins/aliases
-        zgen load $DOTFILES/plugins/dotfiles
-        zgen load $DOTFILES/plugins/pyenv
-        zgen load $DOTFILES/plugins/fbtools
-        # zgen load $DOTFILES/plugins/direnv
-        zgen load $DOTFILES/plugins/urltools
-        zgen load $DOTFILES/plugins/helpers
+        zgen load ${DOTFILES}/plugins/aliases
+        zgen load ${DOTFILES}/plugins/dotfiles
+        zgen load ${DOTFILES}/plugins/pyenv
+        zgen load ${DOTFILES}/plugins/fbtools
+        # zgen load ${DOTFILES}/plugins/direnv
+        zgen load ${DOTFILES}/plugins/urltools
+        zgen load ${DOTFILES}/plugins/helpers
+        zgen load ${DOTFILES}/plugins/autocomplete-extra
 
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
 
         # It takes control, so load last
-        # zgen load $DOTFILES/plugins/tmux
+        # zgen load ${DOTFILES}/plugins/tmux
 
         zgen save
     fi
@@ -237,5 +238,6 @@ export FZF_COMPLETION_TRIGGER='~~'
 
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
+
 
 autoload -Uz compinit && compinit -C

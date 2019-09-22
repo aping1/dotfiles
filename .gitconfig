@@ -9,6 +9,8 @@
 [mergetool]
 	prompt = true
     conflictstyle = diff3
+[mergetool "fugitive"]
+    cmd = vim -f -c "Gdiff" "$MERGED"
 [mergetool "vimdiff"]
 	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [diff]
