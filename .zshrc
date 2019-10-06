@@ -1,15 +1,5 @@
 # === Profiling ===
 
-
-setopt EXTENDED_HISTORY
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_FIND_NO_DUPS
-setopt HIST_SAVE_NO_DUPS
-setopt HIST_BEEP
-
 # Use ~~ as the trigger sequence instead of the default **
 export FZF_COMPLETION_TRIGGER='~~'
 
@@ -27,6 +17,7 @@ fi
 # Location of my dotfiles
 DOTFILES=$HOME/.dotfiles
 DOTFILESDEPS=${DOTFILES:-$HOME}/deps
+export GOPATH=$HOME/go
 
 ## Setup PATH
 # Standard path includes
@@ -66,13 +57,6 @@ typeset -U path
 
 COMPLETION_WAITING_DOTS="true"
 
-# change the size of history files
-export HISTSIZE=32768;
-export HISTFILESIZE=$HISTSIZE;
-
-
-export HIST_IGNORE_ALL_DUPeS
-export HIST_EXPIRE_DUPS_FIRST
 
 # -- Shell --------------
 
@@ -170,9 +154,11 @@ fi
 ## Auto complete from anywhere in word
 setopt COMPLETE_IN_WORD
 
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
+# ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Red
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
+export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 
 ## keep background processes at full speed
 #setopt NOBGNICE
@@ -180,13 +166,25 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
 #setopt HUP
 
 # -- History --------------
+# change the size of history files
 
-MAX_INT="$((X=(2**63)-1))"
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+# setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_BEEP
+
+
+export MAX_INT="$((X=(2**63)-1))"
 if [[ "$((X=(2**32)-1))" -gt 0 && "$((X=2**64))" -lt 0 ]]; then
  MAX_INT="$((X=(2**32)-1))"
 fi
 
-HISTSIZE="${MAX_INT}"
+export HISTSIZE="${MAX_INT}"
+export HISTFILESIZE=$HISTSIZE;
 # Where to save history to disk
 HISTFILE=~/.zsh_history
 # Erase duplicates in the history file
@@ -218,14 +216,13 @@ setopt histverify
 # Print the exit value of programs with non-zero exit status.
 # Do not share history
 # if profiling was on
-export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 
 if ${PROFILING}; then
     zmodload zsh/zprof 
     zprof
 fi
-[[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
+[[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
 # Vim mode
 bindkey -v
@@ -239,5 +236,7 @@ export FZF_COMPLETION_TRIGGER='~~'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
 
+autoload -Uz zsh/pcre
 
 autoload -Uz compinit && compinit -C
+

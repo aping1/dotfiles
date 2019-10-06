@@ -130,6 +130,7 @@ Plug 'bfredl/nvim-ipy'
 Plug 'janko/vim-test'
 
 Plug 'mtikekar/nvim-send-to-term'
+Plug 'aping1/deoplete-zsh', { 'branch': 'fix_completion' }
 
 Plug 'tmhedberg/SimpylFold'
 " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
@@ -146,8 +147,6 @@ Plug 'mhinz/vim-signify'
 " Highlight colors
 Plug 'ap/vim-css-color'
 Plug 'ekalinin/Dockerfile.vim'
-
-
 
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'roxma/vim-tmux-clipboard'
