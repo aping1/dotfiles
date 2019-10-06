@@ -144,9 +144,11 @@ function task_from_tmux() {
 alias task_list='_fb_tasks_helper_list_tasks'
 alias cur_task='_fb_tasks_helper_get_current_task'
 alias task_home='printf "%s\n" "${TASK_ROOT_DIR:="${HOME}/tasks"}/$(task_from_tmux)"'
+alias cd_task_home='cd "${TASK_ROOT_DIR:="${HOME}/tasks"}/$(task_from_tmux)"'
+alias cdtask='cd_task_home'
+
 alias set_task_from_session='_fb_tasks_helper_set_task_from_session_name'
 alias goto_task_session='_fb_tasks_helper_change_session_to_cur_task'
-alias cd_to_task_home='cd $(cd $(task_home) && pwd -P)'
 
 function _fb_tasks_local_kube () {
     if [[ -d "${TASK_ROOT_DIR:-"${HOME}/tasks"}/$(task_from_tmux)/" ]]; then
@@ -154,7 +156,7 @@ function _fb_tasks_local_kube () {
     fi
 }
 
-if [[ ${TMUX} && precmd_functions[(r)_fb_tasks_local_kube == _fb_tasks_local_kube ]]; then
-    precmd_functions[(r)_fb_tasks_local_kube]+=(_fb_tasks_local_kube)
-fi
+# if [[ ${TMUX} && precmd_functions[(r)_fb_tasks_local_kube == _fb_tasks_local_kube ]]; then
+#     precmd_functions[(r)_fb_tasks_local_kube]+=(_fb_tasks_local_kube)
+# fi
 

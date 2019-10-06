@@ -1,9 +1,5 @@
-#!/usr/bin/env zsh
-# some sanity check
-# setopt xtrace
-# install .z
-# TOOD: Run vim +BundleInstall +Qall
-
+#!/bin/zsh
+[[ "${_REALPWD="$(realpath ${PWD})"}" == "$(realpath ${HOME})" ]] || printf 'ERROR: pwd should be \${HOME} not \"%s\"' "${_REALPWD}"
 unsetopt function_argzero
 
 # Requerys formst
@@ -21,7 +17,8 @@ mkdir -p $HOME/.config/
 
 # Absolute path this script is in, thus /home/user/bin
 # link new dot files
-pushd "${DOTFILES}"
+#
+pushd ${DOTFILES}
 git submodule init && submodule update
 popd
 pushd ${HOME}
@@ -113,7 +110,10 @@ function rel_path () {
 function handle_pathmatches() {
     # the dotfile we are referencing
     local this="${1}"
+    # the dotfiles 
     [[ -n "${this}" ]] || return 2
+    # The full path of of arg 1 != dotfiles or home
+    # and it has to exists
     if [[ "${this:A}" -ef "${DOTFILES:A}" && "${this:A}" -ef "${HOME}" ]]; then
         return 2
     elif [[ ! -e "${this:A}" ]]; then
@@ -127,41 +127,41 @@ function handle_pathmatches() {
     # Dest is the home given DEST or $2 or $HOME/$(basename $1)
     local DEST=""
     local _FORCE_DIR=n
-    DEST="$(rel_path "${2:-"${DOTFILES}/${rel_this:t}"}"  "${DOTFILES}")"
+    # Destination will be the relative path of .dotfiles/<relative_dir> 
+    DEST="$(rel_path "${2:-"${DOTFILES}/${rel_this:t}"}" "${DOTFILES}")"
+    [[ ${DEST} ]] && printf 'Starting install %s -> %s \n' "${rel_this}" "${DEST}" >&2
+    # if trailing slash then the dest it's a dir
     if [[ "${DEST}" != "${DEST%/}" ]]; then
-        if [[ ! -e "${HOME}/${DEST}" ]]; then
-            # rel path to this from .dotfiles
-            # if we ask for a dir and it doesnt exist Will create it
-            DEST="${HOME}/${DEST}"
-            printf -- 'Will Create dest "%s" by request \n' "${DEST}" >&2
-            printf -- '[[ -e "%s" ]] && echo "Not creating dir %s" || mkdir -p %s\n' "${DEST}" "${DEST}" "${DEST}"
-            _FORCE_DIR=y
-        elif [[ ! -d "${DEST%/}" ]]; then
-            echo "[No-op] ${DEST} not a dir">&2
-            return 2
-        fi
+        _FORCE_DIR=y
     elif [[ "${DEST}" =~ ^\.\./ ]]; then 
-        # source is not a subset of DOTFILES
+        # Relative path starts backwards  sois not a subset of DOTFILES
         return 5
     elif [[ "${DEST:A}" -ef "${HOME}" ]]; then 
         return 6
+    elif [[ "${DEST:A}" -ef "${DOTFILES}" ]]; then 
+        return 7
     fi
+    # If directory not explicity asked for
     [[ ${_FORCE_DIR} != 'y' ]] && DEST="${HOME}/${DEST}"
-
+    # exists but not a dir
+    printf -- 'if [[ -e "%s" && ! -d "%s" ]]; then echo "[No-op] %s exists but is not a dir' "${DEST%/}" "${DEST}"
+    # doesnt exists 
+    printf -- 'elif [[ ! -e "%s" ]]; then mkdir -p %s; fi\n' "${DEST%/}" "${DEST}"
+    #make it
+    printf -- 'else; mkdir -p %s; fi\n' "${DEST}"
     printf 'Attempt to install %s -> %s [override %s]: ' "${rel_this}" "${DEST}" "${_FORCE_DIR}" >&2
-    # we are going to a dir
     if [[ ${_FORCE_DIR} == 'y' || -d "${DEST}" ]]; then
         # if we are going to a dir
         if [[ -f "${this}" ]]; then
-            ## linking a file, We'll create a softlink in that directory
+            ## linking from a file, We'll create a softlink in DEST directory
             printf 'will link file "%s" into dir %s \n' "${rel_dest}" "${DEST}" >&2
-            if [[ ${_FORCE_DIR} != 'y' || -d ${DEST:h} ]] && [[ ! "${DEST:h}" -ef "${HOME}" ]]; then
-                printf -- '[[ -e "%s" ]] && echo "Could not create base dir %s" || mkdir -p %s\n' "${DEST:h}" "${DEST:h}" "${DEST:h}"
+            if  [[ ! "${DEST:A}" -ef "${HOME}" ]]; then
+                printf -- '[[ -e "%s" ]] && echo "Could not create base dir %s" || mkdir -p %s\n' "${DEST:A:h}" "${DEST:h}" "${DEST:h}"
             fi
-        elif [[ -h "${this}" && ! "${DEST}" -ef "${this}" ]] ; then
-            # we are trying to link to a dir to a dir
-            echo "[No-op] ${rel_dest:A  } ${DEST} "  >&2
-        elif [[ ${_FORCE_DIR} != y ]]; then
+        elif [[ -h "${this}" || "${DEST}" -ef "${this}" ]] ; then
+            # we are trying to link to a link 
+            echo "[No-op] ${rel_dest:A } ${DEST} "  >&2
+        elif [[ -d ${DEST} && ${_FORCE_DIR} != y ]]; then
             printf 'will Remove "%s"  \n' "${DEST}" >&2
             printf -- 'rmdir "%s" || echo "noop";\n' "${DEST}"
         else
@@ -206,6 +206,7 @@ function handle_pathmatches() {
 
 # for eacch line <src:glob> <dest> <COMMAND>
 sed -e 's/#.*$//' -e '/^$/d' "${DOTFILES%/}/.dotfiles" | while read GLOB DEST OTHER; do
+    [[ ${_DEBUG} ]] && printf 'DOTFILES: %s GLOB: %s DEST: %s\n' "${DOTFILES%/}"  "${GLOB}"  "${DEST}"  >&2
     ## Check if the glob is a dir
     local GLOB_PATH=""
     _SRC=( ${~${GLOB_PATH:="${DOTFILES}/${GLOB%/}"}} )

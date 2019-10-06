@@ -1,6 +1,21 @@
 [user]
     name = Allison Wampler
     email = aping1@apt-miss.com
+[filter "lfs"]
+        clean = git-lfs clean -- %f
+        smudge = git-lfs smudge -- %f
+        process = git-lfs filter-process
+        required = true
+[difftool "vimrdiff"]
+    cmd = vimr --wait --nvim -d -o $LOCAL $REMOTE
+[diff]
+    tool = vimrdiff
+[mergetool "vimrdiff"]
+  cmd = vimr --nvim --wait -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[merge]
+    tool = vimrdiff
+    conflictstyle = diff3
+[core]
 	excludesfile = ~/.gitignore_global
 	editor = nvim
 	page = nvim -R

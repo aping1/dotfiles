@@ -2,6 +2,8 @@
 "
 " ~/.vimrc (local shell)
 "
+
+set nocompatible              " be iMproved, required
 filetype off                  " required
 filetype plugin indent on     " required
 
@@ -77,8 +79,11 @@ set ai
 set expandtab
 set hlsearch
 
-" set the runtime path to include Vundle and initialize
-" set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 
 if isdirectory("~/.config/nvim/plugged") 
     call plug#begin("~/.config/nvim/plugged")
@@ -92,92 +97,55 @@ else
         endif
     endif 
     call plug#begin('~/.vim/plugged')
-endif 
 
-" --- Colorscheme(s) ---
-Plug 'flazz/vim-colorschemes'
-Plug 'itchyny/lightline.vim'
-Plug 'ryanoasis/vim-devicons'
-" Git 
-Plug 'tpope/vim-fugitive'
-Plug 'ludovicchabant/vim-lawrencium'
-Plug 'airblade/vim-gitgutter'
-
-"Plug 'scrooloose/syntastic'
-"Plug 'Valloric/YouCompleteMe'
-"
-Plug 'tpope/vim-scriptease'
-Plug 'majutsushi/tagbar'
-Plug 'tmhedberg/SimpylFold'
-Plug 'lifepillar/vim-solarized8'
-
-" Vim exploration Modifications
-Plug 'Shougo/unite.vim'
-Plug 'Shougo/unite-outline'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-
-Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
+    Plug 'jez/vim-superman'
+    " --- Colorscheme ---
+    Plug 'jacoborus/tender.vim'
 
 Plug 'vim-scripts/ag.vim'
 
-" Navigation
-Plug 'scrooloose/nerdtree'
-Plug 'scrooloose/nerdcommenter'
-Plug 'mg979/vim-visual-multi'
+    Plug 'scrooloose/nerdtree'
 
-" Writing
-Plug 'SidOfc/mkdx'
-Plug 'gyim/vim-boxdraw'
+    Plug 'tpope/vim-fugitive'
+    Plug 'ludovicchabant/vim-lawrencium'
 
-" Version Control
-Plug 'tpope/vim-fugitive'
-" mecurial client
-Plug 'ludovicchabant/vim-lawrencium'
-Plug 'majutsushi/tagbar'
+    Plug 'plytophogy/vim-virtualenv'
+    Plug 'lambdalisue/vim-pyenv'
 
-Plug 'w0rp/ale'
-Plug 'Shougo/echodoc.vim'
+    Plug 'tmhedberg/SimpylFold'
+    Plug 'itchyny/lightline.vim'
+    Plug 'ryanoasis/vim-devicons'
 
 Plug 'tmhedberg/SimpylFold'
 Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
 
-Plug 'jez/vim-superman'
+    Plug 'tmux-plugins/vim-tmux-focus-events'
+    Plug 'roxma/vim-tmux-clipboard'
 
 " --- languages
 Plug 'saltstack/salt-vim'
 Plug 'vim-scripts/applescript.vim'
 Plug 'hashivim/vim-terraform'
 
-" Local Shortccuts
-" Plug 'file:///home/aping1/.dotfiles/vim/colorscheme'
+    colorscheme tender
 
-" uses pygtk
-" A simple color picker for VIM, based on GTK color chooser dialog.
-" Plug 'vim-scripts/VIM-Color-Picker'
-" A script that lets you insert hex color codes by using OS X's color picker
-" Plug 'vim-scripts/ColorX'
+    " Change the Pmenu colors so they're more readable.
+    highlight Pmenu ctermbg=cyan ctermfg=white
+    highlight PmenuSel ctermbg=black ctermfg=white
 
-call plug#end()
+    let linelen=80
+    highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+    execute "match OverLength /\%".linelen."v.\+/"
 
-" These lines setup the environment to show graphics and colors correctly.
-set nocompatible
+    " set highlight cursor
+    "augroup CursorLine
+    "  au!
+    "  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    "  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
+    "  au WinLeave * setlocal nocursorline
+    "augroup END
 
-" Quickly close in gui mode
-if ! has('gui_running')
-   set ttimeoutlen=10
-   augroup FastEscape
-      autocmd!
-      au InsertEnter * set timeoutlen=0
-      au InsertLeave * set timeoutlen=1000
-   augroup END
-endif
-
-" memory leak problem
-if version >= 702
-    autocmd BufWinLeave * call clearmatches()
 endif
 
 "let c_space_errors = 0
@@ -212,10 +180,6 @@ let g:easytags_dynamic_files = 1
 " Make underscores part of words for c files
 autocmd BufNewFile,BufWinEnter *.[h|c] set iskeyword+=_
 "autocmd BufNewFile,BufWinEnter *.[h|c] set iskeyword="a-z,A-Z,48-57,_,.,-,>"
-"set iskeyword+=-
-
-" When shifting always round to the correct indentation.
-set shiftround
 
 
 " ------------------------------------------------
@@ -261,9 +225,7 @@ endif
 set background=dark
 colorscheme solarized8_flat
 
-
 map <F4> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
-
 
 set guifont=Hack\ Nerd\ Font:h12
 
@@ -280,9 +242,6 @@ if &term =~ '256color'
     set t_ut=
 endif
 
-" Pythong Template =s
-"
-" au BufNewFile *.py 0r ~/.vim/python.skel | let IndentStyle = "python"
 " ------------------------------------------------
 "  diff mode for commits
 " ------------------------------------------------

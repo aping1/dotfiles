@@ -121,6 +121,19 @@ function _fb_projects_helper_project_shortname() {
     elif [[ ${_FULL_NAME} =~ ${PROJECT_RX}-${TASK_REGEX:-"(\w)(-?)(\d+)"} ]]; then
         _NEW_TASK="${_NEW_TASK:-"${match[3]}${match[4]}${match[5]}"}"
         _SOMEID=${_SOMEID:-$match[1]}
+    else
+        return 1
+    fi
+    printf -- '%s %s %s\n' "${_SOMEID:-"None"}" "${_PROJNAME:-"None"}" "${_NEW_TASK}"
+}
+function _fb_projects_helper_clone_git() {
+    local _PROJECT_VCS_ROOT=$1
+    local _VCS_DEST=$2 # Location to clone
+    local _GIT_CLONE='cp -rp '  # how to clone
+    TIMEOUT="timeout 300"
+    printf '[INFO] Command to run: %s\n' "${TIMEOUT} ${_HG_CLONE:-echo} ${_PROJECT_VCS_ROOT} ${_VCS_DEST}" >&2
+    if [[ ${DRY_RUN} =~ ^[Yy](es$|$) ]]; then
+        TIMEOUT=': '
     fi
     # clone into projects
     eval ${TIMEOUT} ${_GIT_CLONE} \
@@ -221,7 +234,8 @@ function _fb_projects_helper_clone_project_task() {
         for repo_or_link in "${_PROJECT_VCS%/}/${_PROJNAME:l}"-?*; do
             [[ -h ${repo_or_link} ]] || continue
             ## The repo root, find it
-            REPO_LINK_PATH="$(realpath -e ${repo})"
+            #======== repo root path
+            REPO_LINK_PATH="$(_realpath -e ${repo_or_link})"
             _PROJECT_VCS_ROOT="${REPO_LINK_PATH}"
             while ! [[ -d "${_PROJECT_VCS_ROOT%/}/.hg" && ! -d "${_PROJECT_VCS_ROOT%/}/.git" ]]; do
 
@@ -456,6 +470,11 @@ alias cdp='cd_to_project_task_home'
 alias cd_to_task_home='cd $(_realpath -e $(_fb_projects_helper_project_task_home))'
 alias cd_to_project_home='cd $(_realpath -e $(_fb_projects_helper_get_projects_home))'
 alias project_task_home='_fb_projects_helper_project_task_home'
+alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
+alias cdp='cd $(_fb_projects_helper_project_task_home)'
+alias cd_project_home='cd $(_realpath -e $(_fb_projects_helper_get_projects_home))'
+
 alias new_project='_fb_projects_helper_get_projects_home'
+
 alias summary='tasks summary $(task_from_tmux)'
 alias all_tasks_summary='ls -d $(get_projects_home)/T[^0]*/ | while read task; do tasks summary ${task%/}; done'

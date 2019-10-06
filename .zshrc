@@ -1,5 +1,15 @@
 # === Profiling ===
 
+
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_BEEP
+
 # Use ~~ as the trigger sequence instead of the default **
 export FZF_COMPLETION_TRIGGER='~~'
 
@@ -17,17 +27,13 @@ fi
 # Location of my dotfiles
 DOTFILES=$HOME/.dotfiles
 DOTFILESDEPS=${DOTFILES:-$HOME}/deps
-export GOPATH=$HOME/go
 
 ## Setup PATH
 # Standard path includes
 path=(
-    /usr/local/{bin,sbin}
-    ${DOTFILES}/scripts
-    ${HOME}/bin
+    /usr/local/{bin,sbin,opt}
     $path
 )
-
 # Brew for OSX
 if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
     # Add to start of path
@@ -47,40 +53,67 @@ path=(
     ${DOTFILES}/scripts
     ${HOME}/bin
 )
-typeset -U path
-
-function is_osx() {
-    [[ ${OSTYPE:-"$(uname -a)"} =~ [dD]arwin ]] || return 1
-}
 
 typeset -U path
 
 COMPLETION_WAITING_DOTS="true"
 
+# change the size of history files
+export HISTSIZE=32768;
+export HISTFILESIZE=$HISTSIZE;
 
-# -- Shell --------------
-
+# Shell
 export CLICOLOR=1
-
-# set editor to the best vim we can find
-if command -v 'nvim' &>/dev/null; then
-    export EDITOR='nvim'
-    export VISUAL='nvim'
-elif command -v 'vim' &>/dev/null; then
-    export EDITOR='vim'
-    export VISUAL='vim'
-elif command -v 'vi' &>/dev/null; then
-    export EDITOR='vim'
-    export VISUAL='vi'
-fi
+export EDITOR='nvim'
+export VISUAL='nvim'
 export PAGER='less'
 
+export TERM="xterm-256color"
+export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
+
 # Homebrew
+# This is one of examples why I want to keep my dotfiles private
+#export HOMEBREW_GITHUB_API_TOKEN=MY_GITHUB_TOKEN
+#export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
 # Autoenv https://github.com/Tarrasch/zsh-autoenv
+# Great plugin to automatically modify path when it sees .env file
+# I use it for example to automatically setup docker/rbenv/pyenv environments
+#AUTOENV_FILE_ENTER=.env
+#AUTOENV_HANDLE_LEAVE=1 # Turn on/off handling leaving an env
+#AUTOENV_FILE_LEAVE=.envl
+
+# tmux plugin settings
+# this always starts tmux
+ZSH_TMUX_AUTOSTART=true
+ZSH_TMUX_AUTOSTART_ONCE=true
+ZSH_TMUX_FIXTERM=true
+ZSH_TMUX_AUTOQUIT=false
+
+# Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
+export DEFAULT_USER=awampler
+P9K_CONTEXT_TEMPLATE="%n@$(hostname -s)"
+P9K_PROMPT_ON_NEWLINE=true
+export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+P9K_LEFT_PROMPT_ELEMENTS=(host ssh user dir dir_writable vcs newline vi_mode pyenv )
+P9K_RPROMPT_ON_NEWLINE=true
+P9K_RIGHT_PROMPT_ELEMENTS=(status history time)
+P9K_DIR_SHORTEN_LENGTH=35
+P9K_DIR_BACKGROUND='238'
+P9K_DIR_FOREGROUND='252'
+P9K_STATUS_BACKGROUND='238'
+P9K_STATUS_FOREGROUND='252'
+P9K_CONTEXT_BACKGROUND='240'
+P9K_CONTEXT_FOREGROUND='252'
+P9K_TIME_BACKGROUND='238'
+P9K_TIME_FOREGROUND='252'
+P9K_HISTORY_BACKGROUND='240'
+P9K_HISTORY_FOREGROUND='252'
+#P9K_VI_MODE_INSERT_FOREGROUND='teal'
+
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
-export TERM
-if ! [[ "${TERM:=dumb}" == dumb ]]; then
+if [ ! $TERM = dumb ]; then
     ZGEN_AUTOLOAD_COMPINIT=true
 
     # If user is root it can have some issues with access to competition files
@@ -88,40 +121,46 @@ if ! [[ "${TERM:=dumb}" == dumb ]]; then
         ZGEN_AUTOLOAD_COMPINIT=false
     fi
 
-
-
     # load zgen
-    [[ -x "${DOTFILESDEPS:-"${HOME}"}/zgen/zgen.zsh" ]] && \
-        source ${DOTFILESDEPS:-"${HOME}"}/zgen/zgen.zsh
+    source $HOME/.zgen/zgen.zsh
+    if [[ ${ZGENRESET:-N} =~ ^[Yy]$ ]]; then
+        zgen reset
+    fi
 
-ZGEN_RESET_ON_CHANGE=(${HOME}/.zshrc ${HOME}/.zshrc.local)
-# configure zgen
-if ! zgen saved; then
+    ZGEN_RESET_ON_CHANGE=(${HOME}/.zshrc ${HOME}/.zshrc.local)
+    # configure zgen
+    if ! zgen saved; then
 
-        # https://github.com/denysdovhan/spaceship-prompt
-        # https://github.com/denysdovhan/spaceship-prompt/tree/master/docs
         zgen load denysdovhan/spaceship-prompt spaceship
-
-        # zgen will load oh-my-zsh and download it if required
+        # list of plugins from zsh I use
+        # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
         zgen oh-my-zsh
         # zgen oh-my-zsh plugins/bower
-        zgen oh-my-zsh plugins/brew
+        # zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh plugins/git
         zgen oh-my-zsh plugins/docker
         zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
+        zgen oh-my-zsh plugins/git-completion
         zgen oh-my-zsh plugins/osx
         zgen oh-my-zsh plugins/pip
         zgen oh-my-zsh plugins/python
         zgen oh-my-zsh plugins/sudo
-        #zgen oh-my-zsh plugins/git-escape-magic
+        zgen oh-my-zsh plugins/tmuxinator
+        zgen oh-my-zsh plugins/urltools
+        zgen oh-my-zsh plugins/vault
+        zgen oh-my-zsh plugins/web-search
+        zgen oh-my-zsh plugins/fzf
+        zgen oh-my-zsh plugins/kubectl
+        zgen oh-my-zsh plugins/openssl
+
+
 
         zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
-        zgen load Tarrasch/zsh-autoenv
+        #zgen load Tarrasch/zsh-autoenv
         # https://github.com/zsh-users/zsh-completions
         zgen load zsh-users/zsh-completions src
-        zgen load zsh-users/zsh-autosuggestions
 
         # my own plugins each of these folders use init.zsh entry point
         zgen load ${DOTFILES}/plugins/aliases
@@ -138,7 +177,7 @@ if ! zgen saved; then
         # async update vim mode
 
         # It takes control, so load last
-        # zgen load ${DOTFILES}/plugins/tmux
+        zgen load $DOTFILES/plugins/my-tmux
 
         zgen save
     fi
@@ -169,40 +208,15 @@ export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 ## restart running processes on exit
 #setopt HUP
 
-# -- History --------------
-# change the size of history files
-
-setopt EXTENDED_HISTORY
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-# setopt HIST_IGNORE_SPACE
+## history
+setopt APPEND_HISTORY
+## for sharing history between zsh processes
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
 setopt HIST_FIND_NO_DUPS
-setopt HIST_SAVE_NO_DUPS
-setopt HIST_BEEP
 
-
-export MAX_INT="$((X=(2**63)-1))"
-if [[ "$((X=(2**32)-1))" -gt 0 && "$((X=2**64))" -lt 0 ]]; then
- MAX_INT="$((X=(2**32)-1))"
-fi
-
-export HISTSIZE="${MAX_INT}"
-export HISTFILESIZE=$HISTSIZE;
-# Where to save history to disk
-HISTFILE=~/.zsh_history
-# Erase duplicates in the history file
-# HISTDUP=erase
-# Append history to the history file (no overwriting)
-setopt    appendhistory
-# Share history across terminals
-setopt    sharehistory
-#Immediately append to the history file, not just when a term is killed
-setopt    incappendhistory 
-# setopt histignorespace
-# setopt histnostore
 ## never ever beep ever
-# setopt NO_BEEP
+#setopt NO_BEEP
 
 ## automatically decide when to page a list of completions
 #LISTMAX=0
@@ -212,6 +226,7 @@ setopt    incappendhistory
 
 # additional configuration for zsh
 # Remove the history (fc -l) command from the history list when invoked.
+# setopt histnostore
 # Remove superfluous blanks from each command line being added to the history list.
 setopt histreduceblanks
 setopt histverify
@@ -240,7 +255,55 @@ export FZF_COMPLETION_TRIGGER='~~'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
 
-autoload -Uz zsh/pcre
+# Lines configured by zsh-newuser-install
+setopt extendedglob nomatch
+# End of lines configured by zsh-newuser-install
+#
+#export PYENV_ROOT="~/projects/virtualenvs"
+
+
+if which setupsolarized &>/dev/null; then
+setupsolarized dircolors.256dark
+fi
 
 autoload -Uz compinit && compinit -C
 
+#export FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
+
+export ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
+
+SPACESHIP_PROMPT_ORDER=(
+  # time        # Time stamps section (Disabled)
+  user          # Username section
+  dir           # Current directory section
+  host          # Hostname section
+  git           # Git section (git_branch + git_status)
+  hg            # Mercurial section (hg_branch  + hg_status)
+  # package     # Package version (Disabled)
+  node          # Node.js section
+  ruby          # Ruby section
+  # elixir        # Elixir section
+  # xcode       # Xcode section (Disabled)
+  # swift         # Swift section
+  golang        # Go section
+  # php           # PHP section
+  # rust          # Rust section
+  # haskell       # Haskell Stack section
+  # julia       # Julia section (Disabled)
+  # docker      # Docker section (Disabled)
+  # aws           # Amazon Web Services section
+  venv          # virtualenv section
+  # conda         # conda virtualenv section
+  pyenv         # Pyenv section
+  # dotnet        # .NET section
+  # ember       # Ember.js section (Disabled)
+  # kubecontext   # Kubectl context section
+  terraform     # Terraform workspace section
+  exec_time     # Execution time
+  line_sep      # Line break
+  battery       # Battery level and status
+  # vi_mode     # Vi-mode indicator (Disabled)
+  jobs          # Background jobs indicator
+  exit_code     # Exit code section
+  char          # Prompt character
+  )
