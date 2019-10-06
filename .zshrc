@@ -88,12 +88,15 @@ if ! [[ "${TERM:=dumb}" == dumb ]]; then
         ZGEN_AUTOLOAD_COMPINIT=false
     fi
 
+
+
     # load zgen
     [[ -x "${DOTFILESDEPS:-"${HOME}"}/zgen/zgen.zsh" ]] && \
         source ${DOTFILESDEPS:-"${HOME}"}/zgen/zgen.zsh
 
-    # configure zgen
-    if ! zgen saved; then
+ZGEN_RESET_ON_CHANGE=(${HOME}/.zshrc ${HOME}/.zshrc.local)
+# configure zgen
+if ! zgen saved; then
 
         # https://github.com/denysdovhan/spaceship-prompt
         # https://github.com/denysdovhan/spaceship-prompt/tree/master/docs
@@ -129,6 +132,7 @@ if ! [[ "${TERM:=dumb}" == dumb ]]; then
         zgen load ${DOTFILES}/plugins/urltools
         zgen load ${DOTFILES}/plugins/helpers
         zgen load ${DOTFILES}/plugins/autocomplete-extra
+        # zgen load whiteinge/dotfiles /bin/diffconflicts master
 
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
