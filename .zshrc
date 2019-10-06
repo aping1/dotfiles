@@ -170,6 +170,11 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/urltools
         zgen oh-my-zsh plugins/vault
         zgen oh-my-zsh plugins/web-search
+        zgen oh-my-zsh plugins/fzf
+        zgen oh-my-zsh plugins/kubectl
+        zgen oh-my-zsh plugins/openssl
+
+
 
         zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
@@ -216,6 +221,7 @@ setopt APPEND_HISTORY
 ## for sharing history between zsh processes
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
+setopt HIST_FIND_NO_DUPS
 
 ## never ever beep ever
 #setopt NO_BEEP
@@ -296,3 +302,39 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 #export FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
 
 export ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
+
+SPACESHIP_PROMPT_ORDER=(
+  # time        # Time stamps section (Disabled)
+  user          # Username section
+  dir           # Current directory section
+  host          # Hostname section
+  git           # Git section (git_branch + git_status)
+  hg            # Mercurial section (hg_branch  + hg_status)
+  # package     # Package version (Disabled)
+  node          # Node.js section
+  ruby          # Ruby section
+  # elixir        # Elixir section
+  # xcode       # Xcode section (Disabled)
+  # swift         # Swift section
+  golang        # Go section
+  # php           # PHP section
+  # rust          # Rust section
+  # haskell       # Haskell Stack section
+  # julia       # Julia section (Disabled)
+  # docker      # Docker section (Disabled)
+  # aws           # Amazon Web Services section
+  venv          # virtualenv section
+  # conda         # conda virtualenv section
+  pyenv         # Pyenv section
+  # dotnet        # .NET section
+  # ember       # Ember.js section (Disabled)
+  # kubecontext   # Kubectl context section
+  terraform     # Terraform workspace section
+  exec_time     # Execution time
+  line_sep      # Line break
+  battery       # Battery level and status
+  # vi_mode     # Vi-mode indicator (Disabled)
+  jobs          # Background jobs indicator
+  exit_code     # Exit code section
+  char          # Prompt character
+  )

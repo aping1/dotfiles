@@ -463,13 +463,15 @@ function prune_tasks () {
 }
 
 alias create_project_task='_fb_projects_helper_clone_project_task'
-alias get_projects_home='_fb_projects_helper_get_projects_home'
 alias session_task_override='_fb_projects_helper_session_task'
-alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
-alias cdp='cd_to_project_task_home'
-alias cd_to_task_home='cd $(_realpath -e $(_fb_projects_helper_project_task_home))'
-alias cd_to_project_home='cd $(_realpath -e $(_fb_projects_helper_get_projects_home))'
+
+alias project_home='_fb_projects_helper_get_projects_home'
 alias project_task_home='_fb_projects_helper_project_task_home'
+alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
+alias cdp='cd $(_fb_projects_helper_project_task_home)'
+alias cd_project_home='cd $(_realpath -e $(_fb_projects_helper_get_projects_home))'
+
 alias new_project='_fb_projects_helper_get_projects_home'
+
 alias summary='tasks summary $(task_from_tmux)'
 alias all_tasks_summary='ls -d $(get_projects_home)/T[^0]*/ | while read task; do tasks summary ${task%/}; done'

@@ -113,13 +113,15 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 
 Plug 'scrooloose/nerdcommenter'
 
-
+" markdown
 Plug 'SidOfc/mkdx'
 Plug 'vimwiki/vimwiki'
+Plug 'tpope/vim-markdown'
 Plug 'itspriddle/vim-marked'
-Plug 'tpope/vim-fugitive'
+
 " mecurial client
 Plug 'ludovicchabant/vim-lawrencium'
+Plug 'tpope/vim-fugitive'
 
 Plug 'plytophogy/vim-virtualenv'
 Plug 'lambdalisue/vim-pyenv'
@@ -227,7 +229,16 @@ command! -bang -nargs=? -complete=dir Files
 " Plugin: vimwiki/vimwiki
 "----------------------------------------------
 let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
-                      \ 'syntax': 'markdown', 'ext': '.md'}]
+                    \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_ext2syntax = {'.md': 'markdown',
+                  \ '.mkd': 'markdown',
+                  \ '.wiki': 'media'}
+
+
+"----------------------------------------------
+" Plugin'tpope/vim-markdown'
+"----------------------------------------------
+let g:markdown_fenced_languages = ['html', 'css', 'scss', 'sql', 'javascript', 'go', 'python', 'bash=sh', 'c', 'ruby', 'zsh', 'yaml', 'json' ]
 "----------------------------------------------
 " Plugin: 'SidOfc/mkdx'
 "----------------------------------------------
@@ -268,7 +279,7 @@ endfun
 " finally, map it -- in this case, I mapped it to overwrite the default action for toggling quickfix (<PREFIX>I)
 nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
 
-let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
+let g:mkdx#settings = { 'highlight' : { 'enables' : 0 }, 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 
 " newomake automagic check
 
@@ -439,7 +450,10 @@ let g:ale_fixers = { 'python' : ['black' ],
             \        'terraform' : ['terraform'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
-let g:ale_fix_on_save = 1
+let g:ale_python_flake8_args = '--max-line-length=120'
+let g:ale_python_flake8_options = '--max-line-length=120'
+
+let g:ale_fix_on_save = 0
 let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
@@ -656,6 +670,23 @@ let g:NERDTreeIndicatorMapCustom = {
     \ 'Ignored'   : '☒',
     \ "Unknown"   : "?"
     \ }
+
+function! NERDTreeYankCurrentNode()
+    let n = g:NERDTreeFileNode.GetSelected()
+    if n != {}
+        call setreg('=', n.path.str())
+        call setreg('+', n.path.str())
+    endif
+endfunction
+
+if exists('NERDTreeAddKeyMap')
+call NERDTreeAddKeyMap({
+        \ 'key': 'yy',
+        \ 'callback': 'NERDTreeYankCurrentNode',
+        \ 'quickhelpText': 'put full path of current node into the default register' })
+endif
+
+
 " --------------------------------------------
 " Colorscheme 
 " --------------------------------------------
@@ -779,3 +810,4 @@ endfunction
 :command! RemoveQFItem :call RemoveQFItem()
 " Use map <buffer> to only map dd in the quickfix window. Requires +localmap
 autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
+
