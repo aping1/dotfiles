@@ -223,7 +223,6 @@ else
 endif
 
 set background=dark
-colorscheme solarized8_flat
 
 map <F4> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 
