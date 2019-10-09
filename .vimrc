@@ -278,7 +278,7 @@ let g:ale_keep_list_window_open = 1
 let b:ale_linters = { 'python': ['flake8', 'mypy' ] }
 " Fix Python files with autopep8 and yapf.
 let b:ale_fixers = { 'python' : ['black'],
-            \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
+                \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
 
