@@ -116,6 +116,7 @@ Plug 'vim-scripts/ag.vim'
     Plug 'itchyny/lightline.vim'
     Plug 'ryanoasis/vim-devicons'
 
+    Plug 'altercation/vim-colors-solarized'
 Plug 'tmhedberg/SimpylFold'
 Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'

@@ -242,6 +242,7 @@ ln -s .dotfiles/.zshrc
 ln -s .dotfiles/.vimrc
 ln -s .dotfiles/config .config
 
+ln -s .dotfiles/.zprofile
 ln -s .dotfiles/deps/zgen .zgen
 ln -s .dotfiles/.gitconfig .gitconfig
 
