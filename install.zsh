@@ -204,35 +204,44 @@ function handle_pathmatches() {
     fi
 }
 
-# for eacch line <src:glob> <dest> <COMMAND>
-sed -e 's/#.*$//' -e '/^$/d' "${DOTFILES%/}/.dotfiles" | while read GLOB DEST OTHER; do
-    [[ ${_DEBUG} ]] && printf 'DOTFILES: %s GLOB: %s DEST: %s\n' "${DOTFILES%/}"  "${GLOB}"  "${DEST}"  >&2
-    ## Check if the glob is a dir
-    local GLOB_PATH=""
-    _SRC=( ${~${GLOB_PATH:="${DOTFILES}/${GLOB%/}"}} )
-    if [[ ${#_SRC} -gt 1 ]]; then
-        # TODO: COMMAND: '{"do": "PWD={dotfiles} /bin/touch ${this} ${dest}"}'
-        # var $1 := file in (.dotfiles)
-        # var $2 := path to create a link at (not in .dotfiles)
-        # $1:<FILE> ; create link to this file in $HOME as basename
-        # $1:<DIR> dest:<DEST_PATH> <COMMAND> ; create link to dir in dest_path
-        # $1:<FILE> dest:<DEST_PATH> <COMMAND> ; create a link in dest_path
-        # [[ -h dest_path ]] pass; [[ -d [DESTPATH] ]] :
-        # $1:<FILE> dest:<DEST_PATH>/ <COMMAND> ; create a link in dest_path
-        # for each in glob, run the things against the dest folder
-        autoload -U zargs
-        zargs -r -i{} ${_SRC[*]} -- handle_pathmatches {} "${DEST%/}/"
-    else
-        handle_pathmatches "${_SRC}" "${DEST:a}"
-    fi
-done  >> "${_TMPR}"
+# # for eacch line <src:glob> <dest> <COMMAND>
+# sed -e 's/#.*$//' -e '/^$/d' "${DOTFILES%/}/.dotfiles" | while read GLOB DEST OTHER; do
+#     [[ ${_DEBUG} ]] && printf 'DOTFILES: %s GLOB: %s DEST: %s\n' "${DOTFILES%/}"  "${GLOB}"  "${DEST}"  >&2
+#     ## Check if the glob is a dir
+#     local GLOB_PATH=""
+#     _SRC=( ${~${GLOB_PATH:="${DOTFILES}/${GLOB%/}"}} )
+#     if [[ ${#_SRC} -gt 1 ]]; then
+#         # TODO: COMMAND: '{"do": "PWD={dotfiles} /bin/touch ${this} ${dest}"}'
+#         # var $1 := file in (.dotfiles)
+#         # var $2 := path to create a link at (not in .dotfiles)
+#         # $1:<FILE> ; create link to this file in $HOME as basename
+#         # $1:<DIR> dest:<DEST_PATH> <COMMAND> ; create link to dir in dest_path
+#         # $1:<FILE> dest:<DEST_PATH> <COMMAND> ; create a link in dest_path
+#         # [[ -h dest_path ]] pass; [[ -d [DESTPATH] ]] :
+#         # $1:<FILE> dest:<DEST_PATH>/ <COMMAND> ; create a link in dest_path
+#         # for each in glob, run the things against the dest folder
+#         autoload -U zargs
+#         zargs -r -i{} ${_SRC[*]} -- handle_pathmatches {} "${DEST%/}/"
+#     else
+#         handle_pathmatches "${_SRC}" "${DEST:a}"
+#     fi
+# done  >> "${_TMPR}"
+# 
+# 
+# if ls ${_TMP_DIFF}*; then
+#     echo "${_TMPR:A}"
+#     cat ${_TMPR}
+#     read 'cont?Exec[y/N] ##############'
+#     if [[ $cont =~ ^[Yy]?$ ]]; then
+#         exec bash -x "${_TMPR}" || echo "$?"
+#     fi
+# fi
+( cd 
 
+ln -s .dotfiles/.zshrc
+ln -s .dotfiles/.vimrc
+ln -s .dotfiles/config .config
 
-if ls ${_TMP_DIFF}*; then
-    echo "${_TMPR:A}"
-    cat ${_TMPR}
-    read 'cont?Exec[y/N] ##############'
-    if [[ $cont =~ ^[Yy]?$ ]]; then
-        exec bash -x "${_TMPR}" || echo "$?"
-    fi
-fi
+ln -s .dotfiles/deps/zgen .zgen
+
+)
