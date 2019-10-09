@@ -9,12 +9,12 @@ filetype plugin indent on     " required
 
 " Quickly close in gui mode
 if ! has('gui_running')
-   set ttimeoutlen=10
-   augroup FastEscape
-      autocmd!
-      au InsertEnter * set timeoutlen=0
-      au InsertLeave * set timeoutlen=1000
-   augroup END
+    set ttimeoutlen=10
+    augroup FastEscape
+        autocmd!
+        au InsertEnter * set timeoutlen=0
+        au InsertLeave * set timeoutlen=1000
+    augroup END
 endif
 
 " memory leak problem
@@ -80,9 +80,9 @@ set expandtab
 set hlsearch
 
 if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+                \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 if isdirectory("~/.config/nvim/plugged") 
@@ -91,9 +91,9 @@ if isdirectory("~/.config/nvim/plugged")
 else
     if empty(glob('~/.vim/autoload/plug.vim'))
         if empty(glob('~/.vim/plugged/plug.vim'))
-        silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-            \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-        autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+            silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+                        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+            autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
         endif
     endif 
     call plug#begin('~/.vim/plugged')
@@ -102,7 +102,7 @@ else
     " --- Colorscheme ---
     Plug 'jacoborus/tender.vim'
 
-Plug 'vim-scripts/ag.vim'
+    Plug 'vim-scripts/ag.vim'
 
     Plug 'scrooloose/nerdtree'
 
@@ -110,26 +110,28 @@ Plug 'vim-scripts/ag.vim'
     Plug 'ludovicchabant/vim-lawrencium'
 
     Plug 'plytophogy/vim-virtualenv'
-    Plug 'lambdalisue/vim-pyenv'
 
     Plug 'tmhedberg/SimpylFold'
     Plug 'itchyny/lightline.vim'
     Plug 'ryanoasis/vim-devicons'
 
-Plug 'tmhedberg/SimpylFold'
-Plug 'itchyny/lightline.vim'
-Plug 'maximbaz/lightline-ale'
+    Plug 'altercation/vim-colors-solarized'
+    Plug 'tmhedberg/SimpylFold'
+    Plug 'itchyny/lightline.vim'
+    Plug 'maximbaz/lightline-ale'
 
     Plug 'tmux-plugins/vim-tmux-focus-events'
     Plug 'roxma/vim-tmux-clipboard'
 
-" --- languages
-Plug 'saltstack/salt-vim'
-Plug 'vim-scripts/applescript.vim'
-Plug 'hashivim/vim-terraform'
-call plug#end()
+    " --- languages
+    Plug 'saltstack/salt-vim'
+    Plug 'vim-scripts/applescript.vim'
+    Plug 'hashivim/vim-terraform'
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
-    colorscheme tender
+    call plug#end()
+
+
 
     " Change the Pmenu colors so they're more readable.
     highlight Pmenu ctermbg=cyan ctermfg=white
@@ -219,8 +221,11 @@ imap OD <ESC>hi
 "(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
 if (has("termguicolors"))
     set termguicolors
+    colorscheme tender
 else
     set t_Co=256
+    colorscheme solarized
+    let g:solarized_termcolors=256
 endif
 
 set background=dark
@@ -273,7 +278,7 @@ let g:ale_keep_list_window_open = 1
 let b:ale_linters = { 'python': ['flake8', 'mypy' ] }
 " Fix Python files with autopep8 and yapf.
 let b:ale_fixers = { 'python' : ['black'],
-                \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
+            \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
 
@@ -282,7 +287,7 @@ let g:ale_virtualenv_dir_names = []
 let g:ale_python_auto_pipenv = 1
 
 augroup vim_blacklist_blacklist
-autocmd FileType * call s:ale_settings()
+    autocmd FileType * call s:ale_settings()
 augroup END
 
 function! s:ale_settings()
@@ -304,59 +309,59 @@ endfunction
 "----------------------------------------------
 
 let g:lightline = {
-      \ 'active': {
-      \   'left': [ [  'mode', 'paste', 'spell' ],
-      \             [ 'pyenv', 'pyenv_active' ],
-      \             [ 'fugitive' ] ],
-      \   'right': [ ['filename', 'lineno', 'percent' ], 
-      \              [ 'filetype', 'fileformat', 'readonly' ],
-      \              [ 'linter_checking', 'linter_errors',
-      \                'linter_warnings', 'linter_ok'  ]
-      \            ]
-      \ },
-      \ 'component_expand' : {
-      \  'linter_checking': 'lightline#ale#checking',
-      \  'linter_warnings': 'lightline#ale#warnings',
-      \  'linter_errors': 'lightline#ale#errors',
-      \  'linter_ok': 'lightline#ale#ok',
-      \  'gitbranch': 'fugitive#head'
-      \ },
-      \ 'component': {
-      \   'spell': '%{&spell?&spelllang:""}',
-      \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{&filetype=="help"?"":exists("*FugitiveStatusline")?FugitiveStatusline():""}',
-      \ },
-      \ 'component_visible_condition': {
-      \   'readonly': '(&filetype!="help"&& &readonly)',
-      \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-      \   'fugitive': '(&filetype!="help"&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
-      \ },
-      \ 'component_type': {
-      \     'linter_checking': 'left',
-      \     'linter_warnings': 'warning',
-      \     'linter_errors': 'error',
-      \     'linter_ok': 'left',
-      \ },
-      \ 'component_function': {
-      \   'filetype': 'MyFiletype',
-      \   'fileformat': 'MyFileformat',
-      \   'method': 'NearestMethodOrFunction'
-      \ },
-      \ 'colorscheme' : 'solarized',
-      \   'separator': { 'left': ' ', 'right': '' },
-      \   'subseparator': { 'left': '', 'right': '' },
-      \ }
+            \ 'active': {
+            \   'left': [ [  'mode', 'paste', 'spell' ],
+            \             [ 'pyenv', 'pyenv_active' ],
+            \             [ 'fugitive' ] ],
+            \   'right': [ ['filename', 'lineno', 'percent' ], 
+            \              [ 'filetype', 'fileformat', 'readonly' ],
+            \              [ 'linter_checking', 'linter_errors',
+            \                'linter_warnings', 'linter_ok'  ]
+            \            ]
+            \ },
+            \ 'component_expand' : {
+            \  'linter_checking': 'lightline#ale#checking',
+            \  'linter_warnings': 'lightline#ale#warnings',
+            \  'linter_errors': 'lightline#ale#errors',
+            \  'linter_ok': 'lightline#ale#ok',
+            \  'gitbranch': 'fugitive#head'
+            \ },
+            \ 'component': {
+            \   'spell': '%{&spell?&spelllang:""}',
+            \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
+            \   'fugitive': '%{&filetype=="help"?"":exists("*FugitiveStatusline")?FugitiveStatusline():""}',
+            \ },
+            \ 'component_visible_condition': {
+            \   'readonly': '(&filetype!="help"&& &readonly)',
+            \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
+            \   'fugitive': '(&filetype!="help"&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
+            \ },
+            \ 'component_type': {
+            \     'linter_checking': 'left',
+            \     'linter_warnings': 'warning',
+            \     'linter_errors': 'error',
+            \     'linter_ok': 'left',
+            \ },
+            \ 'component_function': {
+            \   'filetype': 'MyFiletype',
+            \   'fileformat': 'MyFileformat',
+            \   'method': 'NearestMethodOrFunction'
+            \ },
+            \ 'colorscheme' : 'tender',
+            \   'separator': { 'left': ' ', 'right': '' },
+            \   'subseparator': { 'left': '', 'right': '' },
+            \ }
 
 function! NearestMethodOrFunction() abort
-  return get(b:, 'vista_nearest_method_or_function', '')
+    return get(b:, 'vista_nearest_method_or_function', '')
 endfunction
 
 function! MyFiletype()
-return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
 endfunction
 
 function! MyFileformat()
-return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
+    return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
 endfunction
 " ----- colorscheme helpers
 fun! s:setLightlineColorscheme(name)
@@ -443,13 +448,13 @@ let NERDTreeKeepTreeInNewTab=1
 
 " Files to ignore
 let NERDTreeIgnore = [
-    \ '\~$',
-    \ '\.pyc$',
-    \ '^\.DS_Store$',
-    \ '^node_modules$',
-    \ '^.ropeproject$',
-    \ '^__pycache__$'
-\]
+            \ '\~$',
+            \ '\.pyc$',
+            \ '^\.DS_Store$',
+            \ '^node_modules$',
+            \ '^.ropeproject$',
+            \ '^__pycache__$'
+            \]
 
 " Close vim if NERDTree is the only opened window.
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif

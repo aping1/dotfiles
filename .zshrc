@@ -148,6 +148,7 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/python
         zgen oh-my-zsh plugins/sudo
         zgen oh-my-zsh plugins/tmuxinator
+        zgen oh-my-zsh plugins/terraform
         zgen oh-my-zsh plugins/urltools
         zgen oh-my-zsh plugins/vault
         zgen oh-my-zsh plugins/web-search
@@ -291,7 +292,7 @@ SPACESHIP_PROMPT_ORDER=(
   # rust          # Rust section
   # haskell       # Haskell Stack section
   # julia       # Julia section (Disabled)
-  # docker      # Docker section (Disabled)
+  docker      # Docker section (Disabled)
   # aws           # Amazon Web Services section
   venv          # virtualenv section
   # conda         # conda virtualenv section
