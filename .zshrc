@@ -69,6 +69,7 @@ export VISUAL='nvim'
 export PAGER='less'
 
 export TERM="xterm-256color"
+export LANG=en_US.UTF-8
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 
 # Homebrew

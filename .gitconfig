@@ -6,19 +6,20 @@
         smudge = git-lfs smudge -- %f
         process = git-lfs filter-process
         required = true
-[difftool "vimrdiff"]
-    cmd = vimr --wait --nvim -d -o $LOCAL $REMOTE
 [diff]
-    tool = vimrdiff
-[mergetool "vimrdiff"]
-  cmd = vimr --nvim --wait -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+    tool = vimdiff
+    conflictstyle = diff3
+[mergetool "vimdiff"]
+  cmd = vim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "vimdiff"]
+  cmd = vim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [merge]
-    tool = vimrdiff
+    tool = vimdiff
     conflictstyle = diff3
 [core]
 	excludesfile = ~/.gitignore_global
-	editor = nvim
-	page = nvim -R
+	editor = vim
+	page = vim -R
 [merge]
 	tool = vimdiff
 [mergetool]
@@ -28,7 +29,7 @@
 [mergetool "fugitive"]
     cmd = vim -f -c "Gdiff" "$MERGED"
 [mergetool "vimdiff"]
-	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+	cmd = vim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [diff]
 	tool = vimdiff
 [difftool]
@@ -39,7 +40,7 @@
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
 [difftool "vimdiff"]
-	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+	cmd = vim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool "sourcetree"]
 	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true

@@ -127,6 +127,7 @@ Plug 'maximbaz/lightline-ale'
 Plug 'saltstack/salt-vim'
 Plug 'vim-scripts/applescript.vim'
 Plug 'hashivim/vim-terraform'
+call plug#end()
 
     colorscheme tender
 
