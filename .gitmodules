@@ -10,3 +10,6 @@
 [submodule "plugins/autocomplete-extra/auto-fuinit.zsh"]
 	path = plugins/autocomplete-extra/auto-fu.zsh/
 	url = https://github.com/hchbaw/auto-fu.zsh.git
+[submodule "vim-plug"]
+	path = vim-plug
+	url = https://github.com/junegunn/vim-plug.git
