@@ -221,7 +221,11 @@ imap OD <ESC>hi
 "(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
 if (has("termguicolors"))
     set termguicolors
-    colorscheme tender
+    if exists('*plug#begin')
+        colorscheme tender
+    else
+        colorscheme solarized
+    endif 
 else
     set t_Co=256
     colorscheme solarized
