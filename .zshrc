@@ -156,8 +156,6 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/kubectl
         zgen oh-my-zsh plugins/openssl
 
-
-
         zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
         #zgen load Tarrasch/zsh-autoenv
@@ -303,9 +301,18 @@ SPACESHIP_PROMPT_ORDER=(
   terraform     # Terraform workspace section
   exec_time     # Execution time
   line_sep      # Line break
-  battery       # Battery level and status
-  # vi_mode     # Vi-mode indicator (Disabled)
+  # battery       # Battery level and status
+  vi_mode     # Vi-mode indicator (Disabled)
   jobs          # Background jobs indicator
   exit_code     # Exit code section
   char          # Prompt character
   )
+
+# Man page colors
+export LESS_TERMCAP_mb=$'\e[1;32m'
+export LESS_TERMCAP_md=$'\e[1;32m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[01;33m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[1;4;31m'
