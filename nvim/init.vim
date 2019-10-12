@@ -695,7 +695,7 @@ colorscheme one
 set background=dark " for the light version
 
 map <F3> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
-let g:one_allow_italics = 1 " I love italic for comments
+let g:one_allow_italics = 0 " I love italic for comments
 colorscheme one
 
 augroup IndentGuests
