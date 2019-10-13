@@ -93,8 +93,8 @@ ZSH_TMUX_FIXTERM=true
 ZSH_TMUX_AUTOQUIT=false
 
 #P9K_VI_MODE_INSERT_FOREGROUND='teal'
-if [[ -f ~/.zplug/init.zsh ]]; then
-    source ~/.zplug/init.zsh
+if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
+    source "${ZPLUG_HOME}/init.zsh"
 
     zplug "denysdovhan/spaceship-prompt" as:theme
     zplug "plugins/git",   from:oh-my-zsh
