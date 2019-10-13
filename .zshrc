@@ -178,7 +178,7 @@ setopt HIST_SAVE_NO_DUPS
 setopt HIST_BEEP
 setopt APPEND_HISTORY
 ## for sharing history between zsh processes
-Setopt INC_APPEND_HISTORY
+setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 setopt HIST_FIND_NO_DUPS
 
