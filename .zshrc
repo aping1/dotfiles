@@ -128,12 +128,20 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
         as:command, \
         rename-to:fzf, \
         use:"*darwin*amd64*"
+    # Person Plugings
+    #
+    zplug "${DOTFILES}/plugins/fbtools", from:local,  use:"bin/{histuniq,color}"
+    zplug "${DOTFILES}/plugins/helpers", from:local 
+
+    # Install plugins if there are plugins that have not been installed
+    if ! zplug check --verbose; then
+        printf "Install New Plugins? [y/N]: "
+        if read -q; then
+            echo; zplug install
+        fi
+    fi
     # Then, source plugins and add commands to $PATH
     zplug load --verbose
-
-    # Person Plugings
-    zplug "${DOTFILES}/plugins/fbtools", from:local 
-    zplug "${DOTFILES}/plugins/helpers", from:local 
 
 fi
 
