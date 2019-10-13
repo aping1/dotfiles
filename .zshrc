@@ -98,7 +98,6 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
 
     zplug "denysdovhan/spaceship-prompt", from:github, as:theme
 
-    
     zplug "plugins/git",            from:oh-my-zsh
     zplug "plugins/docker",         from:oh-my-zsh
     zplug "plugins/git-extras",     from:oh-my-zsh
