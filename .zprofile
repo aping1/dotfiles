@@ -6,3 +6,5 @@
 export LC_ALL="C.UTF-8"
 export LC_CTYPE="C.UTF-8"
 export TERM=xterm
+
+export  PLUG_HOME=$HOME/.dotfiles/deps/zplug
