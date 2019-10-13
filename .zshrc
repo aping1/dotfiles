@@ -195,18 +195,15 @@ setopt HIST_FIND_NO_DUPS
     # Remove the history (fc -l) command from the history list when invoked.
     # setopt histnostore
     # Remove superfluous blanks from each command line being added to the history list.
-    setopt histreduceblanks
     setopt histverify
     # Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
     # setopt ignoreeof
     # Print the exit value of programs with non-zero exit status.
-    # Do not share history
     # if profiling was on
-
-        if ${PROFILING}; then
-            zmodload zsh/zprof 
-            zprof
-        fi
+    if ${PROFILING}; then
+        zmodload zsh/zprof 
+        zprof
+    fi
 
 
 # Vim mode
