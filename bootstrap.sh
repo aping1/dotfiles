@@ -11,8 +11,23 @@ _trapped() {
 trap '_trapped $?' EXIT 
 
 git clone --recursive $HOME/dotfiles.git .dotfiles
-cd $HOME/dotfiles.git && git remote -v | grep local && git remote add local file://$HOME/dotfiles.git || echo
 
-export ZPLUG_HOME=${HOME}/.zplug
-git clone https://github.com/zplug/zplug "${ZPLUG_HOME}"
+export ZPLUG_HOME=${DOTFILES:="~/.dotfiles/"}/.zplug
+
+cd
+
+ln -sf ${DOTFILES}/.zprofile
+ln -sf ${DOTFILES}/.zshrc
+ln -sf ${DOTFILES}/.zsh_aliases 
+mkdir -p .config/nvim
+ln -sf ${DOTFILES}/.config/nvim/init.vim .config/nvim/
+ln -sf ${DOTFILES}/.config/nvim/iron.plugin.lua .config/nvim/
+ln -sf ${DOTFILES}/.gitconfig 
+ln -sf ${DOTFILES}/ipython .config/
+mkdir .config/nvim/autoload
+ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .config/nvim/autoload
+mkdir -p .vim/autoload 
+ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .vim/autoload
+
+exec zsh
 

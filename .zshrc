@@ -96,10 +96,21 @@ ZSH_TMUX_AUTOQUIT=false
 if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     source "${ZPLUG_HOME}/init.zsh"
 
-    zplug "denysdovhan/spaceship-prompt", from:github, as:theme
+    declare -a DOTFILES_SOURCE=( "${DOTFILES%/}/"{/,*/,**/}dotfiles )
 
+    awk '/^brew\b/{print $2}' ${DOTFILES_SOURCE[*]}
+    if ! brew bundle check --verbose --file= then
+        _log_info "Install missing brew formulas? [y/N]: " # Prompt about installing plugins
+        if read -q; then
+            echo; brew bundle install --file=${DOTFILES}/Brewfile
+        fi
+    fi
+
+    zplug "denysdovhan/spaceship-prompt", from:github, as:theme
     zplug "plugins/git",            from:oh-my-zsh
     zplug "plugins/docker",         from:oh-my-zsh
+    zplug "plugins/docker", from:oh-my-zsh, if:'[[ $commands[docker] ]]'
+    zplug "plugins/docker-compose", from:oh-my-zsh, if:'[[ $commands[docker-compose] ]]'
     zplug "plugins/git-extras",     from:oh-my-zsh
     zplug "plugins/gitignore",      from:oh-my-zsh
     zplug "plugins/git-completion", from:oh-my-zsh
