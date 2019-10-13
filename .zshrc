@@ -96,32 +96,33 @@ ZSH_TMUX_AUTOQUIT=false
 if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     source "${ZPLUG_HOME}/init.zsh"
 
-    zplug "denysdovhan/spaceship-prompt" as:theme
-    zplug "plugins/git",   from:oh-my-zsh
-    zplug "plugins/docker",   from:oh-my-zsh
-    zplug "plugins/git-extras",   from:oh-my-zsh
-    zplug "plugins/gitignore",   from:oh-my-zsh
-    zplug "plugins/git-completion",   from:oh-my-zsh
-    zplug "plugins/osx",   from:oh-my-zsh
-    zplug "plugins/pip",   from:oh-my-zsh
-    zplug "plugins/python",   from:oh-my-zsh
-    zplug "plugins/sudo",   from:oh-my-zsh
-    zplug "plugins/tmuxinator",   from:oh-my-zsh
-    zplug "plugins/terraform",   from:oh-my-zsh
-    zplug "plugins/urltools",   from:oh-my-zsh
-    zplug "plugins/vault",   from:oh-my-zsh
-    zplug "plugins/web-search",   from:oh-my-zsh
-    zplug "plugins/fzf",   from:oh-my-zsh
-    zplug "plugins/kubectl",   from:oh-my-zsh
-    zplug "plugins/openssl",   from:oh-my-zsh
-    zplug "plugins/vi-mode",   from:oh-my-zsh, defer:1
+    zplug "denysdovhan/spaceship-prompt", from:github, as:theme
 
+    
+    zplug "plugins/git",            from:oh-my-zsh
+    zplug "plugins/docker",         from:oh-my-zsh
+    zplug "plugins/git-extras",     from:oh-my-zsh
+    zplug "plugins/gitignore",      from:oh-my-zsh
+    zplug "plugins/git-completion", from:oh-my-zsh
+    zplug "plugins/osx",            from:oh-my-zsh
+    zplug "plugins/pip",            from:oh-my-zsh
+    zplug "plugins/python",         from:oh-my-zsh
+    zplug "plugins/sudo",           from:oh-my-zsh
+    zplug "plugins/tmuxinator",     from:oh-my-zsh
+    zplug "plugins/terraform",      from:oh-my-zsh
+    zplug "plugins/urltools",       from:oh-my-zsh
+    zplug "plugins/vault",          from:oh-my-zsh
+    zplug "plugins/web-search",     from:oh-my-zsh
+    zplug "plugins/fzf",            from:oh-my-zsh
+    zplug "plugins/kubectl",        from:oh-my-zsh
+    zplug "plugins/openssl",        from:oh-my-zsh
+    zplug "plugins/vi-mode",        from:oh-my-zsh, defer:1
 
-    zplug "zsh-users/zsh-syntax-highlighting", defer:2
+    zplug "zsh-users/zsh-syntax-highlighting", from:github,     defer:2
     # https://github.com/Tarrasch/zsh-autoenv
     #zgen load Tarrasch/zsh-autoenv
     # https://github.com/zsh-users/zsh-completions
-    zplug "zsh-users/zsh-completions"
+    zplug "zsh-users/zsh-completions",  from:github,             defer:2
 
     zplug "junegunn/fzf-bin", \
         from:gh-r, \
@@ -130,8 +131,9 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
         use:"*darwin*amd64*"
     # Person Plugings
     #
-    zplug "${DOTFILES}/plugins/fbtools", from:local,  use:"bin/{histuniq,color}"
-    zplug "${DOTFILES}/plugins/helpers", from:local 
+    zplug "${DOTFILES}/plugins/fbtools", from:local,  use:"
+    {tasks,projects,tmux}/*", as:command
+    zplug "${DOTFILES}/plugins/helpers", from:local, as:command, use:"helpers.d/*.zsh"
 
     # Install plugins if there are plugins that have not been installed
     if ! zplug check --verbose; then
