@@ -25,8 +25,8 @@ RUN apt-get update \
 		patch \
 		sudo \
 		uuid-runtime \
+        curl \
 	&& rm -rf /var/lib/apt/lists/*
-RUN apt-get update && apt-get install -y curl zsh
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
     && useradd -m user\
 	&& echo 'user ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
