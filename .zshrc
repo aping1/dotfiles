@@ -1,16 +1,6 @@
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 # === Profiling ===
 
-
-setopt EXTENDED_HISTORY
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_FIND_NO_DUPS
-setopt HIST_SAVE_NO_DUPS
-setopt HIST_BEEP
-
 # Use ~~ as the trigger sequence instead of the default **
 export FZF_COMPLETION_TRIGGER='~~'
 
@@ -18,11 +8,11 @@ export FZF_COMPLETION_TRIGGER='~~'
 export FZF_COMPLETION_OPTS='+c -x'
 
 #if I see that zsh takes to much time to load I profile what has been changed,
-# I want to see my shell ready in not more than 1 second
-PROFILING=${PROFILING:-false}
-if $PROFILING; then
-    zmodload zsh/zprof
-fi
+    # I want to see my shell ready in not more than 1 second
+    PROFILING=${PROFILING:-false}
+    if $PROFILING; then
+        zmodload zsh/zprof
+    fi
 
 # === PATHS and EVNS 
 # Location of my dotfiles
@@ -32,32 +22,32 @@ DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 ## Setup PATH
 # Standard path includes
 path=(
-    /usr/local/{bin,sbin,opt}
-    $path
+/usr/local/{bin,sbin,opt}
+$path
 )
 # Brew for OSX
-if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
-    # Add to start of path
-    path=(
+    if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
+        # Add to start of path
+        path=(
         $(brew --prefix coreutils)/libexec/gnubin
         $(brew --prefix python)/libexec/bin
         $(brew --prefix)/bin/
         $path
-    )
-elif [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
-    echo "Install Homebrew" >&2
-    # add to end of path
-fi
+        )
+    elif [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
+        echo "Install Homebrew" >&2
+        # add to end of path
+    fi
 
-path=(
+    path=(
     $path
     ${DOTFILES}/scripts
     ${HOME}/bin
-)
+    )
 
-typeset -U path
+    typeset -U path
 
-COMPLETION_WAITING_DOTS="true"
+    COMPLETION_WAITING_DOTS="true"
 
 # change the size of history files
 export HISTSIZE=32768;
@@ -81,9 +71,9 @@ export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 # Autoenv https://github.com/Tarrasch/zsh-autoenv
 # Great plugin to automatically modify path when it sees .env file
 # I use it for example to automatically setup docker/rbenv/pyenv environments
-#AUTOENV_FILE_ENTER=.env
-#AUTOENV_HANDLE_LEAVE=1 # Turn on/off handling leaving an env
-#AUTOENV_FILE_LEAVE=.envl
+    #AUTOENV_FILE_ENTER=.env
+    #AUTOENV_HANDLE_LEAVE=1 # Turn on/off handling leaving an env
+    #AUTOENV_FILE_LEAVE=.envl
 
 # tmux plugin settings
 # this always starts tmux
@@ -98,10 +88,10 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
 
     declare -a DOTFILES_SOURCE=( "${DOTFILES%/}/"{/,*/,**/}dotfiles )
 
-    awk '/^brew\b/{print $2}' ${DOTFILES_SOURCE[*]}
-    if ! brew bundle check --verbose --file= then
-        _log_info "Install missing brew formulas? [y/N]: " # Prompt about installing plugins
-        if read -q; then
+    if ! brew bundle check --verbose --file=<( awk '/^brew\b/{print $2}' ${DOTFILES_SOURCE[*]} | tee "${DOTFILES}/Brewfile"  ); then
+
+        QUESTION="Install missing brew formulas? [y/N]: " # Prompt about installing plugins
+        if read '?'"$QUESTION" -q; then
             echo; brew bundle install --file=${DOTFILES}/Brewfile
         fi
     fi
@@ -128,34 +118,33 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     zplug "plugins/openssl",        from:oh-my-zsh
     zplug "plugins/vi-mode",        from:oh-my-zsh, defer:1
 
-    zplug "zsh-users/zsh-syntax-highlighting", from:github,     defer:2
-    # https://github.com/Tarrasch/zsh-autoenv
-    #zgen load Tarrasch/zsh-autoenv
-    # https://github.com/zsh-users/zsh-completions
-    zplug "zsh-users/zsh-completions",  from:github,             defer:2
+        zplug "zsh-users/zsh-syntax-highlighting", from:github,     defer:2
+        # https://github.com/Tarrasch/zsh-autoenv
+        #zgen load Tarrasch/zsh-autoenv
+        # https://github.com/zsh-users/zsh-completions
+        zplug "zsh-users/zsh-completions",  from:github,             defer:2
 
-    zplug "junegunn/fzf-bin", \
-        from:gh-r, \
-        as:command, \
-        rename-to:fzf, \
-        use:"*darwin*amd64*"
-    # Person Plugings
-    #
-    zplug "${DOTFILES}/plugins/fbtools", from:local,  use:"
-    {tasks,projects,tmux}/*", as:command
-    zplug "${DOTFILES}/plugins/helpers", from:local, as:command, use:"helpers.d/*.zsh"
-
+        zplug "junegunn/fzf-bin", \
+            from:gh-r, \
+            as:command, \
+            rename-to:fzf, \
+            use:"*darwin*amd64*"
+                        # Person Plugings
+                        #
+        zplug "${DOTFILES}/plugins/fbtools", from:local,  use:"
+        {tasks,projects,tmux}/*", as:command
+        zplug "${DOTFILES}/plugins/helpers", from:local, as:command, use:"helpers.d/*.zsh"
     # Install plugins if there are plugins that have not been installed
-    if ! zplug check --verbose; then
-        printf "Install New Plugins? [y/N]: "
-        if read -q; then
-            echo; zplug install
+        if ! zplug check --verbose; then
+            printf "Install New Plugins? [y/N]: "
+            if read -q; then
+                echo; zplug install
+            fi
         fi
-    fi
-    # Then, source plugins and add commands to $PATH
-    zplug load --verbose
+        # Then, source plugins and add commands to $PATH
+        zplug load --verbose
 
-fi
+    fi
 
 # Bindkey ... autosuggest-*
 # autosuggest-accept: Accepts the current suggestion.
@@ -182,9 +171,17 @@ export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 #setopt HUP
 
 ## history
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_BEEP
 setopt APPEND_HISTORY
 ## for sharing history between zsh processes
-setopt INC_APPEND_HISTORY
+Setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 setopt HIST_FIND_NO_DUPS
 
@@ -198,21 +195,21 @@ setopt HIST_FIND_NO_DUPS
 # MAILCHECK=0
 
 # additional configuration for zsh
-# Remove the history (fc -l) command from the history list when invoked.
-# setopt histnostore
-# Remove superfluous blanks from each command line being added to the history list.
-setopt histreduceblanks
-setopt histverify
-# Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
-# setopt ignoreeof
-# Print the exit value of programs with non-zero exit status.
-# Do not share history
-# if profiling was on
+    # Remove the history (fc -l) command from the history list when invoked.
+    # setopt histnostore
+    # Remove superfluous blanks from each command line being added to the history list.
+    setopt histreduceblanks
+    setopt histverify
+    # Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
+    # setopt ignoreeof
+    # Print the exit value of programs with non-zero exit status.
+    # Do not share history
+    # if profiling was on
 
-if ${PROFILING}; then
-    zmodload zsh/zprof 
-    zprof
-fi
+        if ${PROFILING}; then
+            zmodload zsh/zprof 
+            zprof
+        fi
 
 
 # Vim mode
@@ -235,7 +232,7 @@ setopt extendedglob nomatch
 
 
 if which setupsolarized &>/dev/null; then
-setupsolarized dircolors.256dark
+    setupsolarized dircolors.256dark
 fi
 
 autoload -Uz compinit && compinit -C
@@ -245,40 +242,40 @@ autoload -Uz compinit && compinit -C
 export ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
 
 SPACESHIP_PROMPT_ORDER=(
-  # time        # Time stamps section (Disabled)
-  user          # Username section
-  dir           # Current directory section
-  host          # Hostname section
-  git           # Git section (git_branch + git_status)
-  hg            # Mercurial section (hg_branch  + hg_status)
-  # package     # Package version (Disabled)
-  node          # Node.js section
-  ruby          # Ruby section
-  # elixir        # Elixir section
-  # xcode       # Xcode section (Disabled)
-  # swift         # Swift section
-  golang        # Go section
-  # php           # PHP section
-  # rust          # Rust section
-  # haskell       # Haskell Stack section
-  # julia       # Julia section (Disabled)
-  docker      # Docker section (Disabled)
-  # aws           # Amazon Web Services section
-  venv          # virtualenv section
-  # conda         # conda virtualenv section
-  pyenv         # Pyenv section
-  # dotnet        # .NET section
-  # ember       # Ember.js section (Disabled)
-  # kubecontext   # Kubectl context section
-  terraform     # Terraform workspace section
-  exec_time     # Execution time
-  line_sep      # Line break
-  # battery       # Battery level and status
-  vi_mode     # Vi-mode indicator (Disabled)
-  jobs          # Background jobs indicator
-  exit_code     # Exit code section
-  char          # Prompt character
-  )
+# time        # Time stamps section (Disabled)
+user          # Username section
+dir           # Current directory section
+host          # Hostname section
+git           # Git section (git_branch + git_status)
+hg            # Mercurial section (hg_branch  + hg_status)
+# package     # Package version (Disabled)
+node          # Node.js section
+ruby          # Ruby section
+# elixir        # Elixir section
+# xcode       # Xcode section (Disabled)
+# swift         # Swift section
+golang        # Go section
+# php           # PHP section
+# rust          # Rust section
+# haskell       # Haskell Stack section
+# julia       # Julia section (Disabled)
+docker      # Docker section (Disabled)
+# aws           # Amazon Web Services section
+venv          # virtualenv section
+# conda         # conda virtualenv section
+pyenv         # Pyenv section
+# dotnet        # .NET section
+# ember       # Ember.js section (Disabled)
+# kubecontext   # Kubectl context section
+terraform     # Terraform workspace section
+exec_time     # Execution time
+line_sep      # Line break
+# battery       # Battery level and status
+vi_mode     # Vi-mode indicator (Disabled)
+jobs          # Background jobs indicator
+exit_code     # Exit code section
+char          # Prompt character
+)
 
 # Man page colors
 export LESS_TERMCAP_mb=$'\e[1;32m'

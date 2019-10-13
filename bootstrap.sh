@@ -10,11 +10,11 @@ _trapped() {
 }
 trap '_trapped $?' EXIT 
 
-export ZPLUG_HOME=${DOTFILES:="${HOME}/.dotfiles"}/deps/.zplug
+export ZPLUG_HOME=${DOTFILES:="${HOME}/.dotfiles"}/deps/zplug
 
 export DOTFILES
 [[ ${DOTFILES:="~/.dotfiles"} ]] || exit 2
-[[ -d "${DOTFILES}" ]] || git clone --recursive $HOME/dotfiles.git "${DOTFILES}"
+[[ -d "${DOTFILES}" ]] || git clone --recursive --branch feature/boostrap $HOME/dotfiles.git "${DOTFILES}"
 
 cd
 
