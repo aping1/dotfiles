@@ -89,8 +89,7 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     declare -a DOTFILES_SOURCE=( "${DOTFILES%/}/"{,*/,**/}dotfiles(.) )
     
 
-    if [[ ${#DOTFILES_SOURCE} -ge 1 ]] && brew bundle check --verbose --file= =( awk '/^brew|^
-        cask|^tap/{print $1,$2}' ${DOTFILES_SOURCE[*](.)} | tee "${DOTFILES}/Brewfile"  ); then
+    if [[ ${#DOTFILES_SOURCE[*]} -ge 1 ]] && brew bundle check --verbose --file= =( awk '/^brew|^cask|^tap/{print $1,$2}' ${DOTFILES_SOURCE[*](.)} | tee "${DOTFILES}/Brewfile"  ); then
         printf "Install missing brew formulas? [y/N]: " # Prompt about installing plugins
         if read -q ; then
             echo; brew bundle install --file="${DOTFILES}/Brewfile"
