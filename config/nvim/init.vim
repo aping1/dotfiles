@@ -62,6 +62,19 @@ set shiftround
 "Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
 "If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
 "(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
+if exists('$TMUX')
+    autocmd BufEnter * call system("tmux rename-window '" . expand("%:t") . "'")
+    autocmd VimLeave * call system("tmux setw automatic-rename")
+endif
+if (empty($TMUX))
+  if (has("nvim"))
+  "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+endif
 if (has("termguicolors"))
     set termguicolors
 endif
@@ -80,7 +93,14 @@ endif
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'kevinhui/vim-docker-tools'
-" --- Colorscheme(s) ---
+Plug 'gyim/vim-boxdraw'
+Plug 'mg979/vim-visual-multi'
+Plug 'hashivim/vim-terraform'
+Plug 'towolf/vim-helm'
+
+
+Plug 'jez/vim-superman'
+" --- Colorscheme ---
 Plug 'flazz/vim-colorschemes'
 Plug 'iCyMind/NeoSolarized'
 Plug 'jacoborus/tender.vim'
@@ -96,11 +116,15 @@ Plug 'numkil/ag.nvim'
 
 " Navigation
 Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+
 Plug 'scrooloose/nerdcommenter'
 Plug 'mg979/vim-visual-multi'
 
 " Writing
 Plug 'SidOfc/mkdx'
+Plug 'vimwiki/vimwiki'
+Plug 'tpope/vim-markdown'
 Plug 'itspriddle/vim-marked'
 Plug 'gyim/vim-boxdraw'
 
@@ -116,6 +140,11 @@ Plug 'Shougo/echodoc.vim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'zchee/deoplete-jedi'
 Plug 'davidhalter/jedi-vim'
+Plug 'zchee/deoplete-jedi'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'aping1/deoplete-zsh', { 'branch': 'develop' }
+Plug 'juliosueiras/vim-terraform-completion'
+Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 
 " Linting, syntax, autocomplete, semantic highlighting Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 
@@ -128,6 +157,10 @@ Plug 'plytophogy/vim-virtualenv'
 Plug 'lambdalisue/vim-pyenv'
 Plug 'bfredl/nvim-ipy'
 Plug 'janko/vim-test'
+Plug 'majutsushi/tagbar'
+
+Plug 'Shougo/denite.nvim', { 'branch': 'master' }
+Plug 'dunstontc/denite-mapping'
 
 Plug 'mtikekar/nvim-send-to-term'
 Plug 'aping1/deoplete-zsh', { 'branch': 'fix_completion' }
@@ -188,12 +221,30 @@ let g:nvimgdb_config_override = {
   \ 'key_breakpoint': 'b',
   \ 'set_tkeymaps': "NvimGdbNoTKeymaps",
   \ }
+"----------------------------------------------
+" Plugin: 'fzf.vim'
+"----------------------------------------------
 
+" Syntax highlight preview
+let g:fzf_preview_highlighter = "highlight -O xterm256 --line-number --style rdark --force"
+
+" Files with bat previewer
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'bat -p --color always {}']}, <bang>0)
 "----------------------------------------------
 " Plugin: 'vimwiki/vimwiki'
 "----------------------------------------------
-let g:vimwiki_list = [{'path': '~/wiki/',
-                     \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
+                    \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_ext2syntax = {'.md': 'markdown',
+                  \ '.mkd': 'markdown',
+                  \ '.wiki': 'media'}
+
+
+"----------------------------------------------
+" Plugin'tpope/vim-markdown'
+"----------------------------------------------
+let g:markdown_fenced_languages = ['html', 'css', 'scss', 'sql', 'javascript', 'go', 'python', 'bash=sh', 'c', 'ruby', 'zsh', 'yaml', 'json' ]
 "----------------------------------------------
 " Plugin: 'SidOfc/mkdx'
 "----------------------------------------------
@@ -234,7 +285,7 @@ endfun
 " finally, map it -- in this case, I mapped it to overwrite the default action for toggling quickfix (<PREFIX>I)
 nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
 
-let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
+let g:mkdx#settings = { 'highlight' : { 'enables' : 0 }, 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 
 "----------------------------------------------
 " colorscheme
@@ -340,7 +391,7 @@ let g:deoplete#auto_complete_delay = 10
 " let g:deoplete#enable_at_startup = 1
 
 let g:deoplete#enable_at_startup = 1
-
+let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 " use tab
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
@@ -348,6 +399,15 @@ let g:jedi#show_call_signatures = "1"
 
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'virtual'
+
+"----------------------------------------------
+" Plug 'juliosueiras/vim-terraform-completion'
+"----------------------------------------------
+
+let g:deoplete#omni_patterns = {}
+let g:deoplete#omni_patterns.terraform = '[^ *\t"{=$]\w*'
+
+call deoplete#initialize()
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
@@ -356,10 +416,19 @@ let g:ale_sign_error = '⤫'
 let g:ale_sign_warning = '⚠'
 
 let g:ale_linters_explicit = 1
+let g:ale_linters = { 'python' : ['flake8', 'pyre'], 
+            \       'sh' : ['shellcheck'],
+            \       'terraform' : ['tflint'] }
 " " Fix Python files with autopep8 and yapf.
+let g:ale_fixers = { 'python' : ['black' ],
+            \       'lua' : ['trimwhitespace', 'remove_trailing_lines'], 
+            \        'terraform' : ['terraform'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
-let g:ale_fix_on_save=0
+let g:ale_python_flake8_args = "--max-line-length=".linelen
+let g:ale_python_flake8_options "--max-line-length=".linelen
+
+let g:ale_fix_on_save = 0
 let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
@@ -369,10 +438,6 @@ let g:ale_open_list = 1
 let g:ale_keep_list_window_open = 1
 " Set this if you want to.
 " Enable integration with " Check Python files with flake8 and pylint.
-let b:ale_linters = { 'python': ['flake8', 'mypy' ] }
-" Fix Python files with autopep8 and yapf.
-let b:ale_fixers = { 'python' : ['black'],
-                \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
 
@@ -423,8 +488,9 @@ let g:lightline = {
       \ 'active': {
       \   'left': [ [  'mode', 'paste', 'spell' ],
       \             [ 'pyenv', 'pyenv_active' ],
-      \             ['fugitive' ] ],
-      \   'right': [ 
+      \             [ 'fugitive', 'tagbar' ] ],
+      \   'right': [ ['filename', 'lineno', 'percent' ], 
+      \              [ 'filetype', 'fileformat', 'readonly' ],
       \              [ 'linter_checking', 'linter_errors',
       \                'linter_warnings', 'linter_ok'  ],
       \              ['filename', 'lineno', 'percent' ], 
@@ -440,16 +506,18 @@ let g:lightline = {
       \  'gitbranch': 'fugitive#head'
       \ },
       \ 'component': {
+      \   'tagbar': '%{tagbar#currenttag("[%s]", "")}',
       \   'spell': '%{&spell?&spelllang:""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{&filetype=="help"?"":exists("*FugitiveStatusline")?FugitiveStatusline():""}',
-      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?"\uf00c":""}'
+      \   'fugitive': '%{&filetype=="help"?"":exists("*LightlineFugitive")?LightlineFugitive():""}',
+      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?"\uf00c":""}',
       \ },
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
       \   'fugitive': '(&filetype!="help"&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
-      \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())'
+      \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
+      \   'tagbar': '(exists("tagbar#currenttag"))',
       \ },
       \ 'component_type': {
       \     'linter_checking': 'left',
@@ -464,9 +532,18 @@ let g:lightline = {
       \   'method': 'NearestMethodOrFunction'
       \ },
       \ 'colorscheme' : 'one',
-      \   'separator': { 'left': ' ', 'right': '' },
-      \   'subseparator': { 'left': '', 'right': '' },
       \ }
+
+function! LightlineFugitive()
+  if &ft !~? 'vimfiler' && exists('*fugitive#head')
+    let branch = fugitive#head()
+    if len(branch) < 25
+      return branch
+    endif
+    return branch[:15] . ' .. ' . branch[(len(branch)-15):]
+  endif
+  return ''
+endfunction
 
 function! NearestMethodOrFunction() abort
   return get(b:, 'vista_nearest_method_or_function', '')
@@ -565,6 +642,33 @@ let NERDTreeIgnore = [
 
 " Close vim if NERDTree is the only opened window.
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+
+function! NERDTreeYankCurrentNode()
+    let n = g:NERDTreeFileNode.GetSelected()
+    if n != {}
+        call setreg('=', n.path.str())
+        call setreg('+', n.path.str())
+    endif
+endfunction
+
+if exists('NERDTreeAddKeyMap')
+call NERDTreeAddKeyMap({
+        \ 'key': 'yy',
+        \ 'callback': 'NERDTreeYankCurrentNode',
+        \ 'quickhelpText': 'put full path of current node into the default register' })
+endif
 
 " Show hidden files by default.
 let NERDTreeShowHidden = 1
@@ -586,6 +690,8 @@ let g:one_allow_italics = 1 " I love italic for comments
 set background=dark " for the light version
 
 map <F3> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
+let g:one_allow_italics = 0 " I love italic for comments
+colorscheme one
 
 
 " Set max line length.
@@ -595,17 +701,15 @@ highlight OverLength ctermbg=red ctermfg=white guibg=#e88388
 execute "match OverLength /\%".linelen."v.\+/"
 
 " base 00
-autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=0 guibg=#353a44
-autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=7 guibg=#abb2bf
+autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=8 guibg=#002b36
+" base 01
+"autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=8 guibg=#586e75
+" base 02
+autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=0 guibg=#073642 
 
 " Change the Pmenu colors so they're more readable.
 highlight Pmenu ctermbg=cyan ctermfg=white
 highlight PmenuSel ctermbg=black ctermfg=white
-
-" Set max line length.
-" let linelen = 120 
-" execute "set colorcolumn=".linelen
-" execute "match OverLength /\%".linelen."v.\+/"
 
 " set highlight cursor
 "augroup CursorLine
@@ -657,19 +761,73 @@ autocmd FileType python call SemhiOneHighlights()
 " endif
 " 
 " --------------------
+" Plug 'bfredl/nvim-ipy'
+" --------------------
+let g:ipy_perform_mappings=1
+
+" --------------------
 " Plugin 'janko/vim-test'
 " --------------------
-"
-autocmd FileType * call s:vim_test_keymap()
+nmap <silent> t<C-n> :TestNearest<CR>
+nmap <silent> t<C-f> :TestFile<CR>
+nmap <silent> t<C-s> :TestSuite<CR>
+nmap <silent> t<C-l> :TestLast<CR>
+nmap <silent> t<C-g> :TestVisit<CR>
+let g:test#runner_commands = ['buck']
+let test#python#buck#executable = 'buck test'
+let test#python#runner = 'buck'
 
 
-function! s:vim_test_keymap()
-    nmap <silent> t<C-n> :TestNearest<CR>
-    nmap <silent> t<C-f> :TestFile<CR>
-    nmap <silent> t<C-s> :TestSuite<CR>
-    nmap <silent> t<C-l> :TestLast<CR>
-    nmap <silent> t<C-g> :TestVisit<CR>
+function! TabMessage(cmd)
+  redir => message
+  silent execute a:cmd
+  redir END
+  if empty(message)
+    echoerr 'no output'
+  else
+    " use "new" instead of "tabnew" below if you prefer split windows instead of tabs
+    tabnew
+    setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nomodified
+    silent put=message
+
+  endif
 endfunction
+command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+" When using `dd` in the quickfix list, remove the item from the quickfix list.
+function! RemoveQFItem()
+  let curqfidx = line('.') - 1
+  let qfall = getqflist()
+  call remove(qfall, curqfidx)
+  call setqflist(qfall, 'r')
+  execute curqfidx + 1 . 'cfirst'
+  :copen
+endfunction
+command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+" When using `dd` in the quickfix list, remove the item from the quickfix list.
+function! RemoveQFItem()
+  let curqfidx = line('.') - 1
+  let qfall = getqflist()
+  call remove(qfall, curqfidx)
+  call setqflist(qfall, 'r')
+  execute curqfidx + 1 . 'cfirst'
+  :copen
+endfunction
+command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+" When using `dd` in the quickfix list, remove the item from the quickfix list.
+function! RemoveQFItem()
+  let curqfidx = line('.') - 1
+  let qfall = getqflist()
+  call remove(qfall, curqfidx)
+  call setqflist(qfall, 'r')
+  execute curqfidx + 1 . 'cfirst'
+  :copen
+endfunction
+:command! RemoveQFItem :call RemoveQFItem()
+" Use map <buffer> to only map dd in the quickfix window. Requires +localmap
+autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
 
 let g:test#runner_commands = ['buck']
 let test#python#buck#executable = 'buck test'

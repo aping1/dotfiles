@@ -6,32 +6,26 @@
         smudge = git-lfs smudge -- %f
         process = git-lfs filter-process
         required = true
+[difftool "vimrdiff"]
+    cmd = vimr --wait --nvim -d -o $LOCAL $REMOTE
 [diff]
     tool = vimdiff
     conflictstyle = diff3
-[mergetool "vimdiff"]
-  cmd = vim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[mergetool "vimrdiff"]
+  cmd = vimr -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool "vimdiff"]
   cmd = vim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [merge]
-    tool = vimdiff
+    tool = vimrdiff
     conflictstyle = diff3
 [core]
 	excludesfile = ~/.gitignore_global
-	editor = vim
-	page = vim -R
-[merge]
-	tool = vimdiff
+	editor = nvim
+	page = nvim -R
 [mergetool]
 	prompt = true
-    conflictstyle = diff3
-	keepBackup = false
-[mergetool "fugitive"]
-    cmd = vim -f -c "Gdiff" "$MERGED"
 [mergetool "vimdiff"]
-	cmd = vim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
-[diff]
-	tool = vimdiff
+	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool]
     prompt = false
     conflictstyle = diff3
@@ -39,13 +33,15 @@
 [difftool "opendiff"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
+[difftool "vimrdiff"]
+	cmd = vim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool "vimdiff"]
 	cmd = vim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool "sourcetree"]
 	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
 [color]
-	pager = yes
+	pager = no
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -60,6 +56,3 @@
 [alias]
 	sl = !git smartlog
 	smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)%an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
-[mergetool "diffconflicts"]
-	cmd = diffconflicts vim $BASE $LOCAL $REMOTE $MERGED
-	trustExitCode = true
