@@ -86,13 +86,14 @@ ZSH_TMUX_AUTOQUIT=false
 if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     source "${ZPLUG_HOME}/init.zsh"
 
-    declare -a DOTFILES_SOURCE=( "${DOTFILES%/}/"{/,*/,**/}dotfiles )
+    declare -a DOTFILES_SOURCE=( "${DOTFILES%/}/"{,*/,**/}dotfiles(.) )
+    
 
-    if ! brew bundle check --verbose --file=<( awk '/^brew|^
+    if [[ ${#DOTFILES_SOURCE} -ge 1 ]] && ! brew bundle check --verbose --file= =( awk '/^brew|^
     cask|^tap/{print $1,$2}' ${DOTFILES_SOURCE[*]} | tee "${DOTFILES}/Brewfile"  ); then
         QUESTION="Install missing brew formulas? [y/N]: " # Prompt about installing plugins
         if read '?'"$QUESTION" -q; then
-            echo; brew bundle install --file=${DOTFILES}/Brewfile
+            echo; brew bundle install --file="${DOTFILES}/Brewfile"
         fi
     fi
 
@@ -131,8 +132,7 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
         use:"*darwin*amd64*"
                     # Person Plugings
                     #
-    zplug "${DOTFILES}/plugins/fbtools", from:local,  use:"
-    {tasks,projects,tmux}/*", as:command
+    zplug "${DOTFILES}/plugins/fbtools", from:local,  use:"{tasks,projects,tmux}/*", as:command
     zplug "${DOTFILES}/plugins/helpers", from:local, as:command, use:"helpers.d/*.zsh"
 # Install plugins if there are plugins that have not been installed
     if ! zplug check --verbose; then
