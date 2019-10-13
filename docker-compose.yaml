@@ -4,7 +4,7 @@ services:
     dotfiles:
         volumes:
             - "/Users/aping1/repos/dotfiles.git:/home/user/dotfiles.git"
-            - "./bootstrap.sh:/home/user/bootstrap.sh"
+            - "/Users/aping1/code/dotfiles/bootstrap.sh:/home/user/bootstrap.sh"
         build:
             shm_size: '2gb'
             context: .
