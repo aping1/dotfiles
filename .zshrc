@@ -1,3 +1,4 @@
+[[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 # === Profiling ===
 
 
@@ -91,96 +92,48 @@ ZSH_TMUX_AUTOSTART_ONCE=true
 ZSH_TMUX_FIXTERM=true
 ZSH_TMUX_AUTOQUIT=false
 
-# Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
-export DEFAULT_USER=awampler
-P9K_CONTEXT_TEMPLATE="%n@$(hostname -s)"
-P9K_PROMPT_ON_NEWLINE=true
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-P9K_LEFT_PROMPT_ELEMENTS=(host ssh user dir dir_writable vcs newline vi_mode pyenv )
-P9K_RPROMPT_ON_NEWLINE=true
-P9K_RIGHT_PROMPT_ELEMENTS=(status history time)
-P9K_DIR_SHORTEN_LENGTH=35
-P9K_DIR_BACKGROUND='238'
-P9K_DIR_FOREGROUND='252'
-P9K_STATUS_BACKGROUND='238'
-P9K_STATUS_FOREGROUND='252'
-P9K_CONTEXT_BACKGROUND='240'
-P9K_CONTEXT_FOREGROUND='252'
-P9K_TIME_BACKGROUND='238'
-P9K_TIME_FOREGROUND='252'
-P9K_HISTORY_BACKGROUND='240'
-P9K_HISTORY_FOREGROUND='252'
 #P9K_VI_MODE_INSERT_FOREGROUND='teal'
+if [[ -f ~/.zplug/init.zsh ]]; then
+    source ~/.zplug/init.zsh
+
+    zplug "denysdovhan/spaceship-prompt" as:theme
+    zplug "plugins/git",   from:oh-my-zsh
+    zplug "plugins/docker",   from:oh-my-zsh
+    zplug "plugins/git-extras",   from:oh-my-zsh
+    zplug "plugins/gitignore",   from:oh-my-zsh
+    zplug "plugins/git-completion",   from:oh-my-zsh
+    zplug "plugins/osx",   from:oh-my-zsh
+    zplug "plugins/pip",   from:oh-my-zsh
+    zplug "plugins/python",   from:oh-my-zsh
+    zplug "plugins/sudo",   from:oh-my-zsh
+    zplug "plugins/tmuxinator",   from:oh-my-zsh
+    zplug "plugins/terraform",   from:oh-my-zsh
+    zplug "plugins/urltools",   from:oh-my-zsh
+    zplug "plugins/vault",   from:oh-my-zsh
+    zplug "plugins/web-search",   from:oh-my-zsh
+    zplug "plugins/fzf",   from:oh-my-zsh
+    zplug "plugins/kubectl",   from:oh-my-zsh
+    zplug "plugins/openssl",   from:oh-my-zsh
+    zplug "plugins/vi-mode",   from:oh-my-zsh, defer:1
 
 
-# dumb terminal can be a vim dump terminal in that case don't try to load plugins
-if [ ! $TERM = dumb ]; then
-    ZGEN_AUTOLOAD_COMPINIT=true
+    zplug "zsh-users/zsh-syntax-highlighting", defer:2
+    # https://github.com/Tarrasch/zsh-autoenv
+    #zgen load Tarrasch/zsh-autoenv
+    # https://github.com/zsh-users/zsh-completions
+    zplug "zsh-users/zsh-completions"
 
-    # If user is root it can have some issues with access to competition files
-    if [[ "${USER}" == "root" ]]; then
-        ZGEN_AUTOLOAD_COMPINIT=false
-    fi
+    zplug "junegunn/fzf-bin", \
+        from:gh-r, \
+        as:command, \
+        rename-to:fzf, \
+        use:"*darwin*amd64*"
+    # Then, source plugins and add commands to $PATH
+    zplug load --verbose
 
-    # load zgen
-    source $HOME/.zgen/zgen.zsh
-    if [[ ${ZGENRESET:-N} =~ ^[Yy]$ ]]; then
-        zgen reset
-    fi
-
-    ZGEN_RESET_ON_CHANGE=(${HOME}/.zshrc ${HOME}/.zshrc.local)
-    # configure zgen
-    if ! zgen saved; then
-
-        zgen load denysdovhan/spaceship-prompt spaceship
-        # list of plugins from zsh I use
-        # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
-        zgen oh-my-zsh
-        # zgen oh-my-zsh plugins/bower
-        # zgen oh-my-zsh plugins/brew
-        zgen oh-my-zsh plugins/git
-        zgen oh-my-zsh plugins/docker
-        zgen oh-my-zsh plugins/git-extras
-        zgen oh-my-zsh plugins/gitignore
-        zgen oh-my-zsh plugins/git-completion
-        zgen oh-my-zsh plugins/osx
-        zgen oh-my-zsh plugins/pip
-        zgen oh-my-zsh plugins/python
-        zgen oh-my-zsh plugins/sudo
-        zgen oh-my-zsh plugins/tmuxinator
-        zgen oh-my-zsh plugins/terraform
-        zgen oh-my-zsh plugins/urltools
-        zgen oh-my-zsh plugins/vault
-        zgen oh-my-zsh plugins/web-search
-        zgen oh-my-zsh plugins/fzf
-        zgen oh-my-zsh plugins/kubectl
-        zgen oh-my-zsh plugins/openssl
-
-        zgen load zsh-users/zsh-syntax-highlighting
-        # https://github.com/Tarrasch/zsh-autoenv
-        #zgen load Tarrasch/zsh-autoenv
-        # https://github.com/zsh-users/zsh-completions
-        zgen load zsh-users/zsh-completions src
-
-        # my own plugins each of these folders use init.zsh entry point
-        zgen load ${DOTFILES}/plugins/aliases
-        zgen load ${DOTFILES}/plugins/dotfiles
-        zgen load ${DOTFILES}/plugins/pyenv
-        zgen load ${DOTFILES}/plugins/fbtools
-        # zgen load ${DOTFILES}/plugins/direnv
-        zgen load ${DOTFILES}/plugins/urltools
-        zgen load ${DOTFILES}/plugins/helpers
-        zgen load ${DOTFILES}/plugins/autocomplete-extra
-        # zgen load whiteinge/dotfiles /bin/diffconflicts master
-
-        zgen oh-my-zsh plugins/vi-mode
-        # async update vim mode
-
-        # It takes control, so load last
-        zgen load $DOTFILES/plugins/my-tmux
-
-        zgen save
-    fi
+    # Person Plugings
+    zplug "${DOTFILES}/plugins/fbtools", from:local 
+    zplug "${DOTFILES}/plugins/helpers", from:local 
 
 fi
 
@@ -241,7 +194,6 @@ if ${PROFILING}; then
     zprof
 fi
 
-[[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
 # Vim mode
 bindkey -v
