@@ -88,8 +88,8 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
 
     declare -a DOTFILES_SOURCE=( "${DOTFILES%/}/"{/,*/,**/}dotfiles )
 
-    if ! brew bundle check --verbose --file=<( awk '/^brew\b/{print $2}' ${DOTFILES_SOURCE[*]} | tee "${DOTFILES}/Brewfile"  ); then
-
+    if ! brew bundle check --verbose --file=<( awk '/^brew|^
+    cask|^tap/{print $1,$2}' ${DOTFILES_SOURCE[*]} | tee "${DOTFILES}/Brewfile"  ); then
         QUESTION="Install missing brew formulas? [y/N]: " # Prompt about installing plugins
         if read '?'"$QUESTION" -q; then
             echo; brew bundle install --file=${DOTFILES}/Brewfile
@@ -118,33 +118,32 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     zplug "plugins/openssl",        from:oh-my-zsh
     zplug "plugins/vi-mode",        from:oh-my-zsh, defer:1
 
-        zplug "zsh-users/zsh-syntax-highlighting", from:github,     defer:2
-        # https://github.com/Tarrasch/zsh-autoenv
-        #zgen load Tarrasch/zsh-autoenv
-        # https://github.com/zsh-users/zsh-completions
-        zplug "zsh-users/zsh-completions",  from:github,             defer:2
+    zplug "zsh-users/zsh-syntax-highlighting", from:github,     defer:2
+    # https://github.com/Tarrasch/zsh-autoenv
+    #zgen load Tarrasch/zsh-autoenv
+    # https://github.com/zsh-users/zsh-completions
+    zplug "zsh-users/zsh-completions",  from:github,             defer:2
 
-        zplug "junegunn/fzf-bin", \
-            from:gh-r, \
-            as:command, \
-            rename-to:fzf, \
-            use:"*darwin*amd64*"
-                        # Person Plugings
-                        #
-        zplug "${DOTFILES}/plugins/fbtools", from:local,  use:"
-        {tasks,projects,tmux}/*", as:command
-        zplug "${DOTFILES}/plugins/helpers", from:local, as:command, use:"helpers.d/*.zsh"
-    # Install plugins if there are plugins that have not been installed
-        if ! zplug check --verbose; then
-            printf "Install New Plugins? [y/N]: "
-            if read -q; then
-                echo; zplug install
-            fi
+    zplug "junegunn/fzf-bin", \
+        from:gh-r, \
+        as:command, \
+        rename-to:fzf, \
+        use:"*darwin*amd64*"
+                    # Person Plugings
+                    #
+    zplug "${DOTFILES}/plugins/fbtools", from:local,  use:"
+    {tasks,projects,tmux}/*", as:command
+    zplug "${DOTFILES}/plugins/helpers", from:local, as:command, use:"helpers.d/*.zsh"
+# Install plugins if there are plugins that have not been installed
+    if ! zplug check --verbose; then
+        printf "Install New Plugins? [y/N]: "
+        if read -q; then
+            echo; zplug install
         fi
-        # Then, source plugins and add commands to $PATH
-        zplug load --verbose
-
     fi
+    # Then, source plugins and add commands to $PATH
+    zplug load --verbose
+fi
 
 # Bindkey ... autosuggest-*
 # autosuggest-accept: Accepts the current suggestion.
