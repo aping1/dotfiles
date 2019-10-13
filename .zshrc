@@ -71,9 +71,9 @@ export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 # Autoenv https://github.com/Tarrasch/zsh-autoenv
 # Great plugin to automatically modify path when it sees .env file
 # I use it for example to automatically setup docker/rbenv/pyenv environments
-    #AUTOENV_FILE_ENTER=.env
-    #AUTOENV_HANDLE_LEAVE=1 # Turn on/off handling leaving an env
-    #AUTOENV_FILE_LEAVE=.envl
+# AUTOENV_FILE_ENTER=.env
+# AUTOENV_HANDLE_LEAVE=1 # Turn on/off handling leaving an env
+# AUTOENV_FILE_LEAVE=.envl
 
 # tmux plugin settings
 # this always starts tmux
@@ -192,18 +192,18 @@ setopt HIST_FIND_NO_DUPS
 # MAILCHECK=0
 
 # additional configuration for zsh
-    # Remove the history (fc -l) command from the history list when invoked.
-    # setopt histnostore
-    # Remove superfluous blanks from each command line being added to the history list.
-    setopt histverify
-    # Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
-    # setopt ignoreeof
-    # Print the exit value of programs with non-zero exit status.
-    # if profiling was on
-    if ${PROFILING}; then
-        zmodload zsh/zprof 
-        zprof
-    fi
+# Remove the history (fc -l) command from the history list when invoked.
+# setopt histnostore
+# Remove superfluous blanks from each command line being added to the history list.
+setopt histverify
+# Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
+# setopt ignoreeof
+# Print the exit value of programs with non-zero exit status.
+# if profiling was on
+if ${PROFILING}; then
+    zmodload zsh/zprof 
+    zprof
+fi
 
 
 # Vim mode
