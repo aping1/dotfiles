@@ -25,8 +25,8 @@ ln -sf ${DOTFILES}/.zprofile
 ln -sf ${DOTFILES}/.zshrc
 ln -sf ${DOTFILES}/.zsh_aliases 
 mkdir -p .config/nvim
-ln -sf ${DOTFILES}/.config/nvim/init.vim .config/nvim/
-ln -sf ${DOTFILES}/.config/nvim/iron.plugin.lua .config/nvim/
+ln -sf ${DOTFILES}/config/nvim/init.vim .config/nvim/
+ln -sf ${DOTFILES}/config/nvim/iron.plugin.lua .config/nvim/
 ln -sf ${DOTFILES}/.gitconfig 
 ln -sf ${DOTFILES}/ipython .config/
 mkdir .config/nvim/autoload
