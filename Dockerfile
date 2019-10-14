@@ -1,7 +1,4 @@
 FROM linuxbrew/brew as brew
-# Install portable-ruby and tap homebrew/core.
-#
-#
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends software-properties-common \
 	&& add-apt-repository -y ppa:git-core/ppa \
