@@ -2,6 +2,7 @@
 _trapped() {
     if [ $1 -gt 0 ]; then
        command -v zsh && exec zsh -l
+       command -v bash && exec bash
        exec sh
     elif command -v zsh; then
         exec zsh -l
