@@ -4,6 +4,7 @@ FROM linuxbrew/brew as brew
 COPY --from=zsh /usr/share/zsh /usr/share/
 COPY --from=zsh /usr/lib/zsh /usr/lib/
 COPY --from=zsh /usr/lib/zsh/ /usr/lib/zsh/
+COPY --from=zsh /usr/bin/zsh /usr/bin
 # Install portable-ruby and tap homebrew/core.
 #
 #
