@@ -25,7 +25,6 @@ RUN apt-get update \
 		patch \
 		sudo \
 		uuid-runtime \
-		curl \
 	&& rm -rf /var/lib/apt/lists/*
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
 	&& useradd -m user\
@@ -35,7 +34,7 @@ WORKDIR /home/user
 ENV PATH="/home/user/linuxbrew/Homebrew/Library/bin/:$PATH"
 RUN sudo chown -R "$(whoami)" "$(brew --prefix)"
 RUN echo "eval $($(brew --prefix)/bin/brew shellenv)" >>~/.profile
-RUN brew install git python@2.7 python@3.7
+RUN brew install git python@2 python@3
 ENV USER=us
 ENV SHELL=/usr/bin/sh
 LABEL name=dotfiles
