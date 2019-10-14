@@ -143,7 +143,7 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
 # Install plugins if there are plugins that have not been installed
     if ! zplug check --verbose; then
         printf "Install New Plugins? [y/N]: "
-        if read ; then
+        if read -q; then
             echo; zplug install
         fi
     fi

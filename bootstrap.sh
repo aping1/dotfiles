@@ -29,10 +29,13 @@ ln -sf ${DOTFILES}/config/nvim/init.vim .config/nvim/
 ln -sf ${DOTFILES}/config/nvim/iron.plugin.lua .config/nvim/
 ln -sf ${DOTFILES}/.gitconfig 
 ln -sf ${DOTFILES}/ipython .config/
+ln -s ${DOTFILES}/.zshenv 
 mkdir .config/nvim/autoload
 ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .config/nvim/autoload
 mkdir -p .vim/autoload 
 ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .vim/autoload
+ln -sf ${DOTFILES}/.gitignore_global .gitignore
+
 
 exec zsh
 
