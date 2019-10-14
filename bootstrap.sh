@@ -36,6 +36,5 @@ mkdir -p .vim/autoload
 ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .vim/autoload
 ln -sf ${DOTFILES}/.gitignore_global .gitignore
 
-
 exec zsh
 
