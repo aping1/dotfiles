@@ -23,7 +23,9 @@ export DOTFILES
 DOTFILES_SOURCE=( $( find "${DOTFILES%/}" -iname dotfiles -type f) )
     cat ${DOTFILES_SOURCE[*]}   | sed  -n 's/\#.*$//g; /\(^brew\|^cask\|^tap\)/p;' | tr '"' \' > "${DOTFILES}/Brewfile" 
     if [[ ${#DOTFILES_SOURCE[*]} -ge 1 && -s "${DOTFILES}/Brewfile" ]] && brew bundle check --verbose --file "${DOTFILES}/Brewfile"; then
-        echo; brew bundle install --file="${DOTFILES}/Brewfile"
+        brew bundle install --file "${DOTFILES}/Brewfile"
+    else
+        exit 2
     fi
 
 cd
