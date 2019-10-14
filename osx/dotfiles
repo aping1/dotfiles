@@ -6,7 +6,7 @@ tap "koekeishiya/formulae"
 brew "koekeishiya/formulae/yabai" #GUI 
 brew "koekeishiya/formulae/skhd" #GUI
 brew "docker", link: false #docker
-brew "dockercompose"
+brew "docker-compose"
 brew "docker-completion" #docker
 brew "zsh" #Shells 
 brew "cmake" #Dev #C
