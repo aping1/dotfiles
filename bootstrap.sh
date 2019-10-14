@@ -12,6 +12,8 @@ _trapped() {
     exit $1
 }
 
+trap '_trapped $?' EXIT 
+
 export ZPLUG_HOME=${DOTFILES:="${HOME}/.dotfiles"}/deps/zplug
 
 export DOTFILES
