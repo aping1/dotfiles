@@ -1,11 +1,12 @@
+[[ -f ~/.zprofile ]] && source ~/.zprofile
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
+
 # === Profiling ===
+if ${PROFILING}; then
+    zmodload zsh/zprof 
+    zprof
+fi
 
-# Use ~~ as the trigger sequence instead of the default **
-export FZF_COMPLETION_TRIGGER='~~'
-
-# Options to fzf command
-export FZF_COMPLETION_OPTS='+c -x'
 
 #if I see that zsh takes to much time to load I profile what has been changed,
     # I want to see my shell ready in not more than 1 second
@@ -61,7 +62,6 @@ export PAGER='less'
 
 export TERM="xterm-256color"
 export LANG=en_US.UTF-8
-export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 
 # Homebrew
 # This is one of examples why I want to keep my dotfiles private
@@ -96,6 +96,18 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     fi
 
     zplug "denysdovhan/spaceship-prompt", from:github, as:theme
+
+    export FZF_COMPLETION_TRIGGER='~~'
+
+    # Options to fzf command
+    export FZF_COMPLETION_OPTS='+c -x'
+    zplug "junegunn/fzf-bin", \
+    from:gh-r, \
+    as:command, \
+    rename-to:fzf, \
+    use:"*darwin*amd64*"
+
+    # oh-my-zsh
     zplug "plugins/git",            from:oh-my-zsh
     zplug "plugins/docker",         from:oh-my-zsh
     zplug "plugins/docker", from:oh-my-zsh, if:'[[ $commands[docker] ]]'
@@ -123,15 +135,11 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     # https://github.com/zsh-users/zsh-completions
     zplug "zsh-users/zsh-completions",  from:github,             defer:2
 
-    zplug "junegunn/fzf-bin", \
-        from:gh-r, \
-        as:command, \
-        rename-to:fzf, \
-        use:"*darwin*amd64*"
                     # Person Plugings
                     #
     zplug "${DOTFILES}/plugins/fbtools", from:local,  use:"{tasks,projects,tmux}/*", as:command
     zplug "${DOTFILES}/plugins/helpers", from:local, as:command, use:"helpers.d/*.zsh"
+# Use ~~ as the trigger sequence instead of the default **
 # Install plugins if there are plugins that have not been installed
     if ! zplug check --verbose; then
         printf "Install New Plugins? [y/N]: "
@@ -143,6 +151,7 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     zplug load --verbose
 fi
 
+# === Completion ===
 # Bindkey ... autosuggest-*
 # autosuggest-accept: Accepts the current suggestion.
 # autosuggest-execute: Accepts and executes the current suggestion.
@@ -156,58 +165,45 @@ fi
 ## Auto complete from anywhere in word
 setopt COMPLETE_IN_WORD
 
+## automatically decide when to page a list of completions
+#LISTMAX=0
+
+export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 # ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Red
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
 export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 
+#
+# === custumization ===
+#
+setopt extendedglob nomatch
 ## keep background processes at full speed
 #setopt NOBGNICE
-## restart running processes on exit
 #setopt HUP
+## never ever beep ever
+#setopt NO_BEEP
+## disable mail checking
+# MAILCHECK=0
+# Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
+# setopt ignoreeof
 
-## history
+# === history ===
 setopt EXTENDED_HISTORY
 setopt HIST_EXPIRE_DUPS_FIRST
 setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_FIND_NO_DUPS
-setopt HIST_SAVE_NO_DUPS
 setopt HIST_BEEP
 setopt APPEND_HISTORY
 ## for sharing history between zsh processes
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
-setopt HIST_FIND_NO_DUPS
-
-## never ever beep ever
-#setopt NO_BEEP
-
-## automatically decide when to page a list of completions
-#LISTMAX=0
-
-## disable mail checking
-# MAILCHECK=0
-
-# additional configuration for zsh
 # Remove the history (fc -l) command from the history list when invoked.
-# setopt histnostore
-# Remove superfluous blanks from each command line being added to the history list.
 setopt histverify
-# Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
-# setopt ignoreeof
 # Print the exit value of programs with non-zero exit status.
-# if profiling was on
-if ${PROFILING}; then
-    zmodload zsh/zprof 
-    zprof
-fi
-
-
-# Vim mode
-bindkey -v
 
 # Fuzzy Finder fzf with Ctrl-R
 [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
@@ -218,8 +214,9 @@ export FZF_COMPLETION_TRIGGER='~~'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
 
-# Lines configured by zsh-newuser-install
-setopt extendedglob nomatch
+# Vim mode
+bindkey -v
+
 # End of lines configured by zsh-newuser-install
 #
 #export PYENV_ROOT="~/projects/virtualenvs"
@@ -232,7 +229,6 @@ fi
 autoload -Uz compinit && compinit -C
 
 #export FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
-
 export ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
 
 SPACESHIP_PROMPT_ORDER=(
