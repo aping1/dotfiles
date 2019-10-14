@@ -4,9 +4,3 @@
 
 alias tmux-pane='tmux display-message -p "#{pane_index}"'
 
-# tmux plugin settings
-# this always starts tmux
-ZSH_TMUX_AUTOSTART_ONCE=true
-ZSH_TMUX_FIXTERM=true
-ZSH_TMUX_AUTOQUIT=false
-
