@@ -27,8 +27,11 @@ WORKDIR /home/user
 ENV PATH="/home/user/linuxbrew/Homebrew/Library/bin/:$PATH"
 RUN sudo chown -R "$(whoami)" "$(brew --prefix)"
 RUN echo "eval $($(brew --prefix)/bin/brew shellenv)" >>~/.profile
+RUN git --bare clone https://www.github.com/aping1/dotfiles.git dotfiles.git 
 RUN brew install git python@2 python@3
-ENV USER=us
-ENV SHELL=/usr/bin/sh
+RUN bash -x .dotfiles/boostrap.sh
+RUN brew bundle install --file=".dotfiles/Brewfile"
+ENV USER=user
+ENV SHELL=/usr/bin/bash
 LABEL name=dotfiles
 

@@ -11,13 +11,18 @@ _trapped() {
     fi
     exit $1
 }
-trap '_trapped $?' EXIT 
 
 export ZPLUG_HOME=${DOTFILES:="${HOME}/.dotfiles"}/deps/zplug
 
 export DOTFILES
 [[ ${DOTFILES:="~/.dotfiles"} ]] || exit 2
 [[ -d "${DOTFILES}" ]] || git clone --recursive --branch feature/boostrap $HOME/dotfiles.git "${DOTFILES}"
+
+DOTFILES_SOURCE=( $( find "${DOTFILES%/}" -iname dotfiles -type f) )
+    cat ${DOTFILES_SOURCE[*]}   | sed  -n 's/\#.*$//g; /\(^brew\|^cask\|^tap\)/p;' | tr '"' \' > "${DOTFILES}/Brewfile" 
+    if [[ ${#DOTFILES_SOURCE[*]} -ge 1 && -s "${DOTFILES}/Brewfile" ]] && brew bundle check --verbose --file "${DOTFILES}/Brewfile"; then
+        echo; brew bundle install --file="${DOTFILES}/Brewfile"
+    fi
 
 cd
 
@@ -39,6 +44,3 @@ ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .config/nvim/autoload
 mkdir -p .vim/autoload 
 ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .vim/autoload
 ln -sf ${DOTFILES}/.gitignore_global .gitignore
-
-exec zsh
-

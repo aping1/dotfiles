@@ -86,15 +86,6 @@ ZSH_TMUX_AUTOQUIT=false
 if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     source "${ZPLUG_HOME}/init.zsh"
 
-    declare -a DOTFILES_SOURCE=( "${DOTFILES%/}/"{,**/}dotfiles(.) )
-    cat ${DOTFILES_SOURCE[*]}   | sed  -n 's/\#.*$//g; /\(^brew\|^cask\|^tap\)/p;' | tr '"' \' > "${DOTFILES}/Brewfile" 
-    if [[ ${#DOTFILES_SOURCE[*]} -ge 1 && -s "${DOTFILES}/Brewfile" ]] && brew bundle check --verbose --file "${DOTFILES}/Brewfile"; then
-        printf "Install missing brew formulas? [y/N]: " # Prompt about installing plugins
-        if read -q ; then
-            echo; brew bundle install --file="${DOTFILES}/Brewfile"
-        fi
-    fi
-
     zplug "denysdovhan/spaceship-prompt", from:github, as:theme
 
     export FZF_COMPLETION_TRIGGER='~~'
