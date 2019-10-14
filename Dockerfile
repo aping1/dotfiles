@@ -25,19 +25,17 @@ RUN apt-get update \
 		patch \
 		sudo \
 		uuid-runtime \
-        curl \
+		curl \
 	&& rm -rf /var/lib/apt/lists/*
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
-    && useradd -m user\
+	&& useradd -m user\
 	&& echo 'user ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
 USER user
 WORKDIR /home/user
-RUN sudo apt update
+ENV PATH="/home/user/linuxbrew/Homebrew/Library/bin/:$PATH"
 RUN sudo chown -R "$(whoami)" "$(brew --prefix)"
 RUN echo "eval $($(brew --prefix)/bin/brew shellenv)" >>~/.profile
-ENV PATH="/home/user/linuxbrew/Homebrew/Library/bin/:$PATH"
-RUN brew install git
-
+RUN brew install git python@2.7 python@3.7
 ENV USER=us
 ENV SHELL=/usr/bin/sh
 LABEL name=dotfiles

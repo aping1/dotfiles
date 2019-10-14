@@ -15,8 +15,9 @@ services:
                 - zshusers/zsh-docker
         environment:
             - BREW_UID=${CURRENT_UID}
+            - DOTFILES=~/.dotfiles
         command:
-            - sh 
+            - bash 
             - -xe 
             - /home/user/bootstrap.sh
         environment:
