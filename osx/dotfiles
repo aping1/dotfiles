@@ -15,6 +15,7 @@ brew "fzf" #Tools
 brew "gnu-sed" #Tools
 brew "macvim" #Tools #GUI
 brew "minicom" #Tools
+brew "mercurial" #Tools
 brew "jq" #Tools
 brew "neovim" #Tools #neovim
 brew "exa" #Tools
@@ -57,13 +58,12 @@ brew "sdl2" #Graphic
 brew "sdl2_image" #Graphic
 brew "sdl2_ttf" #Graphic #Libs
 brew "openal-soft" #Graphic
+brew "ssh-copy-id" #Networks
 brew "wireshark"  #Networks
 brew "nmap" #Network
 brew "mosh" #Network
 tap "mistertea/et" #Network
 brew "mistertea/et/et" #Network
-cask "openra" #Games
 dotfile .yabairc
-dotfile "${HOME}/Library/Application Scripts/com.omnigroup.OmniFocus2.MacAppStore" .local/omnifocus-scripts
+Link "${HOME}/Library/Application Scripts/com.omnigroup.OmniFocus2.MacAppStore" .local/omnifocus-scripts
 
-source ../dotfiles
