@@ -1,52 +1,69 @@
-tap 'homebrew/bundle' 
-tap 'homebrew/cask'
-tap 'homebrew/core'
-tap 'homebrew/services'
-tap 'koekeishiya/formulae'
-brew 'koekeishiya/formulae/yabai'
-brew 'koekeishiya/formulae/skhd'
-brew 'docker'
-brew 'docker-compose'
-brew 'docker-completion'
-brew 'zsh' 
-brew 'cmake'
-brew 'coreutils'
-brew 'fzf'
-brew 'gnu-sed'
-brew 'macvim'
-brew 'minicom'
-brew 'jq'
-brew 'neovim'
-brew 'exa'
-brew 'lsd'
-brew 'bat'
-brew 'tig'
-brew 'tmux'
-brew 'the_silver_searcher'
-brew 'ctags'
-brew 'gdb'
-cask 'corelocationcli'
- Make w/ dag
-brew 'tup'
- config editing with api
-brew 'augeas'
-brew 'flake8'
-brew 'swig'
-cask 'mono-mdk'
-brew 'node'
-brew 'python'
-brew 'black'
-brew 'pyenv'
-brew 'pyenv-virtualenv'
-brew 'go'
-brew 'lua'
-brew 'luarocks'
-brew 'boost'
-brew 'readline'
-cask 'osxfuse'
-brew 'libvorbis'
-brew 'xz'
-brew 'zlib'
-tap 'homebrew/cask-fonts'
-cask 'font-hack-nerd-font'
-cask 'font-hasklig-nerd-font'
+tap "homebrew/bundle" 
+tap "homebrew/cask"
+tap "homebrew/core"
+tap "homebrew/services"
+tap "koekeishiya/formulae"
+brew "koekeishiya/formulae/yabai" #GUI 
+brew "koekeishiya/formulae/skhd" #GUI
+brew "docker", link: false #docker
+brew "dockercompose"
+brew "docker-completion" #docker
+brew "zsh" #Shells 
+brew "cmake" #Dev #C
+brew "coreutils" #Dev
+brew "fzf" #Tools
+brew "gnu-sed" #Tools
+brew "macvim" #Tools #GUI
+brew "minicom" #Tools
+brew "jq" #Tools
+brew "neovim" #Tools #neovim
+brew "exa" #Tools
+brew "lsd" #Tools
+brew "bat" #Tools
+brew "tig" #Tools
+brew "tmux" #Tools #tmux
+brew "the_silver_searcher" #Tools
+brew "ctags" #Tools
+brew "gdb" #Tools #Debugging
+cask "corelocationcli" #Tool
+# Make w/ dag
+brew "tup" #Tools #Build
+# config editing with api
+brew "augeas" #Tools
+brew "flake8" #Language #Python
+brew "swig" #Language #Toolchain
+cask "mono-mdk" #Language
+brew "node" #Language
+brew "python" #Language #Python
+brew "black" #Language #Python
+brew "pyenv" #Tools #Python
+brew "pyenv-virtualenv" #Tools #Python
+brew "go" #Language #go
+brew "lua" #Language #lua
+brew "luarocks" #Language #lua
+brew "boost" #Libs
+brew "readline" #Libs
+cask "osxfuse" #Libs
+brew "libvorbis" #Libs
+brew "xz" #Libs
+brew "zlib" #Libs
+tap "homebrew/cask-fonts" #Font
+cask "font-hack-nerd-font" #Font
+cask "font-hasklig-nerd-font" #Font
+brew "glew" #Graphic
+cask "phoenix" #Graphic
+cask "godot" #Graphic
+brew "sdl2" #Graphic
+brew "sdl2_image" #Graphic
+brew "sdl2_ttf" #Graphic #Libs
+brew "openal-soft" #Graphic
+brew "wireshark"  #Networks
+brew "nmap" #Network
+brew "mosh" #Network
+tap "mistertea/et" #Network
+brew "mistertea/et/et" #Network
+cask "openra" #Games
+dotfile .yabairc
+dotfile "${HOME}/Library/Application Scripts/com.omnigroup.OmniFocus2.MacAppStore" .local/omnifocus-scripts
+
+source ../dotfiles
