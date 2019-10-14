@@ -24,8 +24,8 @@ cd
 ln -sf ${DOTFILES}/.zprofile
 ln -sf ${DOTFILES}/.zshrc
 ln -sf ${DOTFILES}/.zsh_aliases 
-mkdir -p ${DOTFILES}/deps/vim-plug/plug.vim .vim/autoload
-ln -s .vim/autoload
+mkdir -p .vim/autoload
+ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .vim/autoload
 
 mkdir -p .config/nvim/autoload
 ln -sf ${DOTFILES}/config/nvim/init.vim .config/nvim/
