@@ -120,12 +120,12 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     zplug "plugins/python",         from:oh-my-zsh
     zplug "plugins/sudo",           from:oh-my-zsh
     zplug "plugins/tmuxinator",     from:oh-my-zsh
-    zplug "plugins/terraform",      from:oh-my-zsh
+    zplug "plugins/terraform",      from:oh-my-zsh, if:'[[ $commands[terraform] ]]'
     zplug "plugins/urltools",       from:oh-my-zsh
-    zplug "plugins/vault",          from:oh-my-zsh
+    zplug "plugins/vault",          from:oh-my-zsh,  if:'[[ $commands[vault] ]]'
     zplug "plugins/web-search",     from:oh-my-zsh
-    zplug "plugins/fzf",            from:oh-my-zsh
-    zplug "plugins/kubectl",        from:oh-my-zsh
+    zplug "plugins/fzf",            from:oh-my-zsh,  if:'[[ $commands[fzf] ]]'
+    zplug "plugins/kubectl",        from:oh-my-zsh,  if:'[[ $commands[kubectl] ]]'
     zplug "plugins/openssl",        from:oh-my-zsh
     zplug "plugins/vi-mode",        from:oh-my-zsh, defer:1
 
