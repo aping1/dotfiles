@@ -14,6 +14,6 @@ if [[ $TERM =~ ^xterm ]]; then
     if command -v lsd &>/dev/null; then
         alias ls=lsd
     elif command -v ls &>/dev/null; then
-        alias ls='ls --colors=always'
+        alias ls='ls --color=always'
     fi
 fi
