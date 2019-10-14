@@ -1,10 +1,4 @@
-FROM zshusers/zsh as zsh
 FROM linuxbrew/brew as brew
-
-COPY --from=zsh /usr/share/zsh /usr/share/
-COPY --from=zsh /usr/lib/zsh /usr/lib/
-COPY --from=zsh /usr/lib/zsh/ /usr/lib/zsh/
-COPY --from=zsh /usr/bin/zsh /usr/bin
 # Install portable-ruby and tap homebrew/core.
 #
 #
@@ -26,6 +20,7 @@ RUN apt-get update \
 		patch \
 		sudo \
 		uuid-runtime \
+        zsh \
 	&& rm -rf /var/lib/apt/lists/*
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
 	&& useradd -m user\

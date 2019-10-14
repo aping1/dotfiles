@@ -6,6 +6,8 @@ _trapped() {
        exec sh
     elif command -v zsh; then
         exec zsh -l
+    elif command -v bash; then
+        exec bash
     fi
     exit $1
 }
