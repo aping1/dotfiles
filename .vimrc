@@ -87,7 +87,6 @@ endif
 
 if isdirectory("~/.config/nvim/plugged") 
     call plug#begin("~/.config/nvim/plugged")
-
 else
     if empty(glob('~/.vim/autoload/plug.vim'))
         if empty(glob('~/.vim/plugged/plug.vim'))
@@ -115,8 +114,10 @@ else
     Plug 'itchyny/lightline.vim'
     Plug 'ryanoasis/vim-devicons'
 
-    Plug 'altercation/vim-colors-solarized'
-    Plug 'tmhedberg/SimpylFold'
+    " Indent lines
+    Plug 'nathanaelkane/vim-indent-guides'
+    " Git gutter
+    Plug 'mhinz/vim-signify'
     Plug 'itchyny/lightline.vim'
     Plug 'maximbaz/lightline-ale'
 
