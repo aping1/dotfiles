@@ -1,6 +1,6 @@
 [user]
-	name = Allison Wampler
-	email = awampler@paloaltonetworks.com
+    name = Allison Wampler
+    email = aping1@apt-miss.com
 [filter "lfs"]
         clean = git-lfs clean -- %f
         smudge = git-lfs smudge -- %f
@@ -9,9 +9,12 @@
 [difftool "vimrdiff"]
     cmd = vimr --wait --nvim -d -o $LOCAL $REMOTE
 [diff]
-    tool = vimrdiff
+    tool = vimdiff
+    conflictstyle = diff3
 [mergetool "vimrdiff"]
-  cmd = vimr --nvim --wait -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+  cmd = vimr -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "vimdiff"]
+  cmd = vim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [merge]
     tool = vimrdiff
     conflictstyle = diff3
@@ -24,7 +27,19 @@
 [mergetool "vimdiff"]
 	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool]
-	prompt = true
+    prompt = false
+    conflictstyle = diff3
+    tool = vimdiff
+[difftool "opendiff"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[difftool "vimrdiff"]
+	cmd = vim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "vimdiff"]
+	cmd = vim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
 [color]
 	pager = no
 [filter "lfs"]
@@ -38,5 +53,6 @@
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
-[commit]
-	verbose = true
+[alias]
+	sl = !git smartlog
+	smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)%an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'

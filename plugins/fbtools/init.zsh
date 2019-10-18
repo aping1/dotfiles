@@ -7,8 +7,9 @@ else
 fi
 #
 #
-if [[ -d /opt/facebook/hg/share/zsh/site-functions ]]; then
-    fpath+="/opt/facebook/hg/share/zsh/site-functions"
+_fbtools_local_script="$( cd $(dirname "${0:A}") &>/dev/null; pwd -P;)"
+if [[ $0 == /bin/bash || ! ${_fbtools_local_script} =~ fbtools ]] ; then
+    _fbtools_local_script=""
 fi
 
 function dev_server () {
@@ -40,6 +41,6 @@ function update_iterm_title () {
 FB_TOOLS_MAIN=$(cd $(dirname $0) &>/dev/null; pwd -P;)
 for module in ${FB_TOOLS_MAIN}/*/init.zsh; do
  MODULE_NAME="${${module%.zsh}:h:t:u}"
-printf -- 'export FB_TOOLS_%s="%s"\n' "${MODULE_NAME}" "${module:h}"
-    source "${module}"
+ # printf -- 'export FB_TOOLS_%s="%s"\n' "${MODULE_NAME}" "${module:h}"
+ source "${module}"
 done

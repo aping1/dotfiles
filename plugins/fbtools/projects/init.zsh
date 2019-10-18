@@ -463,9 +463,12 @@ function prune_tasks () {
 }
 
 alias create_project_task='_fb_projects_helper_clone_project_task'
+alias get_projects_home='_fb_projects_helper_get_projects_home'
 alias session_task_override='_fb_projects_helper_session_task'
-
-alias project_home='_fb_projects_helper_get_projects_home'
+alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
+alias cdp='cd_to_project_task_home'
+alias cd_to_task_home='cd $(_realpath -e $(_fb_projects_helper_project_task_home))'
+alias cd_to_project_home='cd $(_realpath -e $(_fb_projects_helper_get_projects_home))'
 alias project_task_home='_fb_projects_helper_project_task_home'
 alias cd_to_project_task_home='cd $(_fb_projects_helper_project_task_home)'
 alias cdp='cd $(_fb_projects_helper_project_task_home)'

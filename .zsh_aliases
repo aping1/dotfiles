@@ -3,3 +3,17 @@
 #    alias clusterssh-remote='clusterssh-dev -i ${HOME}/.dotfiles/remote/.bash_aliases -i ${HOME}/.dotfiles/remote/.bash_profile -i ${HOME}/.dotfiles/remote/.tmux.conf -i ${HOME}/.dotfiles/remote/bin -i ${HOME}/.dotfiles/remote/.bash_plugins -i ${HOME}/.dotfiles/remote/.gdbinit'
 #fi
 
+if command -v nvim &>/dev/null; then
+    alias vim=nvim
+    alias vi=nvim
+elif command -v vim &>/dev/null ; then
+    alias vi=vim
+fi
+
+if [[ $TERM =~ ^xterm ]]; then
+    if command -v lsd &>/dev/null; then
+        alias ls=lsd
+    elif command -v ls &>/dev/null; then
+        alias ls='ls --color=always'
+    fi
+fi

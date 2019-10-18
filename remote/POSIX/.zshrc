@@ -130,7 +130,6 @@ if [ ! $TERM = dumb ]; then
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
-        zgen oh-my-zsh plugins/bower
         zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh plugins/git
         zgen oh-my-zsh plugins/git-extras
@@ -142,9 +141,13 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/tmuxinator
         zgen oh-my-zsh plugins/urltools
         zgen oh-my-zsh plugins/vundle
+        zgen oh-my-zsh plugins/vi-mode
         zgen oh-my-zsh plugins/web-search
         zgen oh-my-zsh plugins/z
-
+        zgen load unixorn/tumult.plugin.zsh
+        zgen load zsh-users/zsh-history-substring-search
+        zgen load zsh-users/zsh-syntax-highlighting
+        zgen load zsh-users/zsh-autosuggestions
         # https://github.com/Tarrasch/zsh-autoenv
         zgen load Tarrasch/zsh-autoenv
         # https://github.com/zsh-users/zsh-completions
@@ -237,18 +240,3 @@ bindkey -v
 #source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
 #source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
 #
-# Fix 
-#TRAPWINCH() {
-#    zle && zle .reset-prompt && zle -R
-#}
-bindkey -v
-export FBANDROID_DIR=/Users/aping1/fbsource/fbandroid
-alias quicklog_update=/Users/aping1/fbsource/fbandroid/scripts/quicklog/quicklog_update.sh
-alias qlu=quicklog_update
-
-# added by setup_fb4a.sh
-export ANDROID_SDK=/opt/android_sdk
-export ANDROID_NDK_REPOSITORY=/opt/android_ndk
-export ANDROID_HOME=${ANDROID_SDK}
-export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
-

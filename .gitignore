@@ -42,8 +42,8 @@ vim/bundle/**
 tmux/resurrect/tmux_resurrect_*
 tmux/plugins/*
 
-nvim/.netrwhist
-nvim/plugged/
+config/nvim/.netrwhist
+config/nvim/plugged/**
 .config/nvim/
 
 .mypy_cache
