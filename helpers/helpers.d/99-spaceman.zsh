@@ -1,37 +1,45 @@
-
-# ORDER
-SPACESHIP_PROMPT_ORDER=(
-  vi_mode  # these sections will be
-  user     # before prompt char
-  host     #
-  kubecontext   # Kubectl context section
-  char
-  dir
-  wip
-  git
-  hg
-  package
-  git_last_commit
-  ruby
-  xcode
-  swift
-  golang
-  docker
-  venv
-  pyenv
-  terraform     # Terraform workspace section
-  exec_time     # Execution time
-  jobs          # Background jobs indicator
-  exit_code     # Exit code section
-  time
+export SPACESHIP_PROMPT_ORDER=(
+time        # Time stamps section (Disabled)
+vi_mode       # Vi-mode indicator 
+user          # Username section
+dir           # Current directory section
+host          # Hostname section
+wip
+git           # Git section (git_branch + git_status)
+hg            # Mercurial section (hg_branch  + hg_status)
+package     # Package version (Disabled)
+# node          # Node.js section
+git_last_commit # Last commit on branche
+ruby          # Ruby section
+# elixir        # Elixir section
+xcode       # Xcode section (Disabled)
+# swift         # Swift section
+golang        # Go section
+# php           # PHP section
+# rust          # Rust section
+# haskell       # Haskell Stack section
+# julia       # Julia section (Disabled)
+docker      # Docker section (Disabled)
+# aws           # Amazon Web Services section
+venv          # virtualenv section
+# conda         # conda virtualenv section
+pyenv         # Pyenv section
+# dotnet        # .NET section
+# ember       # Ember.js section (Disabled)
+# kubecontext   # Kubectl context section
+terraform     # Terraform workspace section
+exec_time     # Execution time
+# battery       # Battery level and status
+jobs          # Background jobs indicator
+char          # Prompt character
 )
 
 SPACESHIP_TIME_SHOW=true
 SPACESHIP_TIME_PREFIX="${SPACESHIP_TIME_PREFIX:-"at "}\uf017 "
 SPACESHIP_GIT_LAST_COMMIT_SHOW=true
 SPACESHIP_VI_MODE_NORMAL="-"
-SPACESHIP_VI_MODE_INSERT=INS
-SPACESHIP_VI_MODE_COLOR=white
+SPACESHIP_VI_MODE_INSERT=INSERT
+SPACESHIP_VI_MODE_COLOR=green
 
 SPACESHIP_EXIT_CODE_SHOW=true
 
