@@ -47,8 +47,8 @@ function bundle_install_dotfiles()
 
 bundle_install_dotfiles
 
+(
 cd
-
 ln -sf ${DOTFILES}/.zprofile
 ln -sf ${DOTFILES}/.zshrc
 ln -sf ${DOTFILES}/.zsh_aliases 
@@ -69,3 +69,5 @@ ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .config/nvim/autoload
 # ipython
 ln -sf ${DOTFILES}/ipython .config/
 ln -s ${DOTFILES}/.zshenv 
+
+) || echo "Failed to link"
