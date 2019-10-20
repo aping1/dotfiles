@@ -19,7 +19,6 @@ services:
             - BREW_UID=${CURRENT_UID}
             - DOTFILES=~/.dotfiles
         command:
-            - exec 
             - zsh 
             - -l
         environment:
