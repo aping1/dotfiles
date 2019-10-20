@@ -1,3 +1,10 @@
+
+# === Shell ===
+export CLICOLOR=1
+export EDITOR='vim'
+export VISUAL='vim'
+export PAGER='less'
+
 # === Profiling ===
 if [[ ${+PROFILING} -eq 1 ]]; then
     zmodload zsh/zprof 
@@ -17,7 +24,6 @@ fi
 DOTFILES=$HOME/.dotfiles
 DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 
-## Setup PATH
 # Standard path includes
 path=(
     /usr/local/{bin,sbin,opt}
@@ -63,20 +69,13 @@ export HISTFILESIZE=$HISTSIZE;
 [[ -f ~/.zprofile ]] && source ~/.zprofile
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
-# === Profiling ===
-if ${PROFILING}; then
-    zmodload zsh/zprof 
-    zprof
-fi
-
-## Setup PATH
 # Standard path includes
 path=(
     /usr/local/{bin,sbin,opt}
     $path
 )
 # Brew for OSX
-if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
+if command -v brew &>/dev/null; then
     # Add to start of path
     path=(
         $(brew --prefix coreutils)/libexec/gnubin
@@ -84,7 +83,7 @@ if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
         $(brew --prefix)/bin/
         $path
     )
-elif [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
+elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
     echo "Install Homebrew" >&2
     # add to end of path
 fi
@@ -104,16 +103,7 @@ COMPLETION_WAITING_DOTS="true"
 export HISTSIZE=32768;
 export HISTFILESIZE=$HISTSIZE;
 
-# Shell
-export CLICOLOR=1
-export EDITOR='nvim'
-export VISUAL='nvim'
-export PAGER='less'
-
-export TERM="xterm-256color"
-export LANG=en_US.UTF-8
-
-
+export ZPLUG_LOG_LOAD_FAILURE=1
 if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     source "${ZPLUG_HOME}/init.zsh"
 
@@ -125,28 +115,37 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
         rename-to:fzf, \
         use:"*darwin*amd64*"
 
+    zplug 'zplug/zplug', hook-build:'zplug --self-manage' 
     # oh-my-zsh
-    zplug "plugins/git",            from:oh-my-zsh
-    zplug "plugins/docker",         from:oh-my-zsh
+    zplug "plugins/git",            as:plugin, from:oh-my-zsh
+    zplug "plugins/docker",         as:plugin, from:oh-my-zsh
     zplug "plugins/docker", from:oh-my-zsh, if:'[[ $commands[docker] ]]'
-    zplug "plugins/docker-compose", from:oh-my-zsh, if:'[[ $commands[docker-compose] ]]'
-    zplug "plugins/git-extras",     from:oh-my-zsh
-    zplug "plugins/gitignore",      from:oh-my-zsh
-    zplug "plugins/git-completion", from:oh-my-zsh
-    zplug "plugins/osx",            from:oh-my-zsh
-    zplug "plugins/pip",            from:oh-my-zsh
-    zplug "plugins/python",         from:oh-my-zsh
-    zplug "plugins/sudo",           from:oh-my-zsh
-    zplug "plugins/tmuxinator",     from:oh-my-zsh
-    zplug "plugins/terraform",      from:oh-my-zsh, if:'[[ $commands[terraform] ]]'
-    zplug "plugins/urltools",       from:oh-my-zsh
-    zplug "plugins/vault",          from:oh-my-zsh,  if:'[[ $commands[vault] ]]'
-    zplug "plugins/web-search",     from:oh-my-zsh
-    zplug "plugins/fzf",            from:oh-my-zsh,  if:'[[ $commands[fzf] ]]'
-    zplug "plugins/kubectl",        from:oh-my-zsh,  if:'[[ $commands[kubectl] ]]'
-    zplug "plugins/openssl",        from:oh-my-zsh
-    zplug "plugins/vi-mode",        from:oh-my-zsh, defer:1
+    zplug "plugins/docker-compose", as:plugin, from:oh-my-zsh, if:'[[ $commands[docker-compose] ]]'
+    zplug "plugins/git-extras",     as:plugin, from:oh-my-zsh
+    zplug "plugins/gitignore",      as:plugin, from:oh-my-zsh
+    zplug "plugins/git-completion", as:plugin, from:oh-my-zsh
+    zplug "plugins/osx",            as:plugin, from:oh-my-zsh
+    zplug "plugins/pip",            as:plugin, from:oh-my-zsh
+    zplug "plugins/python",         as:plugin, rom:oh-my-zsh
+    zplug "plugins/sudo",           as:plugin, rom:oh-my-zsh
+    zplug "plugins/tmuxinator",     as:plugin, rom:oh-my-zsh
+    zplug "plugins/terraform",      as:plugin, rom:oh-my-zsh, if:'[[ $commands[terraform] ]]'
+    zplug "plugins/urltools",       as:plugin, from:oh-my-zsh
+    zplug "plugins/vault",          as:plugin, from:oh-my-zsh,  if:'[[ $commands[vault] ]]'
+    zplug "plugins/web-search",     as:plugin, from:oh-my-zsh
+    zplug "plugins/fzf",            as:plugin, from:oh-my-zsh,  if:'[[ $commands[fzf] ]]'
+    zplug "plugins/kubectl",        as:plugin, from:oh-my-zsh,  if:'[[ $commands[kubectl] ]]'
+    zplug "plugins/openssl",        as:plugin, from:oh-my-zsh
+    zplug "plugins/vi-mode",        as:plugin, from:oh-my-zsh, defer:1
 
+    zplug "paulmelnikow/zsh-startup-timer"
+    zplug "tysonwolker/iterm-tab-colors"
+    zplug "desyncr/auto-ls"
+    zplug "momo-lab/zsh-abbrev-alias"
+    zplug "rawkode/zsh-docker-run"
+    zplug "arzzen/calc.plugin.zsh"
+    zplug "peterhurford/up.zsh"
+    zplug "jimeh/zsh-peco-history"
     zplug "zsh-users/zsh-syntax-highlighting", from:github,     defer:2
     # https://github.com/Tarrasch/zsh-autoenv
     #zgen load Tarrasch/zsh-autoenv
@@ -166,7 +165,7 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
         fi
     fi
     # Then, source plugins and add commands to $PATH
-    zplug load --verbose
+    zplug load
 fi
 
 # === Fzf ===

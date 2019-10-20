@@ -5,17 +5,12 @@
 #
 export ZPROFILE_LOADED
 
-# Shell
-export CLICOLOR=1
-export EDITOR='vim'
-export VISUAL='vim'
-export PAGER='less'
 
 export TERM="xterm-256color"
-export LANG=en_US.UTF-8
+export TERM="${TERM:-xterm}"
+export LANG="en_US.UTF-8"
 export LC_ALL="C.UTF-8"
 export LC_CTYPE="C.UTF-8"
-export TERM=xterm
 
 export DOTFILES="$HOME/.dotfiles"
 export PLUG_HOME="$HOME/.dotfiles/deps/zplug"
@@ -39,4 +34,3 @@ case $(uname) in
     export DISTRO=posix
   ;;
 esac
-
