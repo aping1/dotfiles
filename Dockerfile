@@ -24,12 +24,13 @@ RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
 	&& echo 'user ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
 USER user
 ARG dotfiles_git_rev=$DOTFILES_GIT_REV
+ARG git_branch=$DOTFILES_GIT_BRANCH
 WORKDIR /home/user
 ENV PATH="/home/user/linuxbrew/Homebrew/Library/bin/:$PATH"
 RUN sudo chown -R "$(whoami)" "$(brew --prefix)"
 COPY dotfiles.git.tar.gz .
 RUN tar xvzf dotfiles.git.tar.gz
-RUN git clone file://${HOME}/dotfiles.git .dotfiles
+RUN git clone --recursive --branch ${git_branch} file://${HOME}/dotfiles.git .dotfiles
 RUN ls -a .dotfiles
 WORKDIR /home/user/.dotfiles
 RUN git reset --hard ${dotfiles_git_rev} 
