@@ -14,7 +14,6 @@ export LC_CTYPE="C.UTF-8"
 
 export DOTFILES="$HOME/.dotfiles"
 export ZPLUG_HOME="$HOME/.dotfiles/deps/zplug"
-export ZPLUG_LOADFILE="$HOME"
 
 case $(uname) in
   Darwin)
