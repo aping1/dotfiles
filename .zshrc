@@ -8,6 +8,7 @@ export PAGER='less'
 # === Profiling ===
 if [[ ${+PROFILING} -eq 1 ]]; then
     zmodload zsh/zprof 
+    PS4=$'%D{%M%S%.} %N:%i> '
     zprof
 fi
 
@@ -104,7 +105,9 @@ export HISTSIZE=32768;
 export HISTFILESIZE=$HISTSIZE;
 
 export ZPLUG_LOG_LOAD_FAILURE=1
-if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
+if ! [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
+    echo "Not a dir ${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" 
+else
     source "${ZPLUG_HOME}/init.zsh"
 
     zplug "denysdovhan/spaceship-prompt", from:github, as:theme
@@ -128,10 +131,10 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     zplug "plugins/git-completion", as:plugin, from:oh-my-zsh
     zplug "plugins/osx",            as:plugin, from:oh-my-zsh
     zplug "plugins/pip",            as:plugin, from:oh-my-zsh
-    zplug "plugins/python",         as:plugin, from:oh-my-zsh
-    zplug "plugins/sudo",           as:plugin, from:oh-my-zsh
-    zplug "plugins/tmuxinator",     as:plugin, from:oh-my-zsh
-    zplug "plugins/terraform",      as:plugin, from:oh-my-zsh, if:'[[ $commands[terraform] ]]'
+    zplug "plugins/python",         as:plugin, rom:oh-my-zsh
+    zplug "plugins/sudo",           as:plugin, rom:oh-my-zsh
+    zplug "plugins/tmuxinator",     as:plugin, rom:oh-my-zsh
+    zplug "plugins/terraform",      as:plugin, rom:oh-my-zsh, if:'[[ $commands[terraform] ]]'
     zplug "plugins/urltools",       as:plugin, from:oh-my-zsh
     zplug "plugins/vault",          as:plugin, from:oh-my-zsh,  if:'[[ $commands[vault] ]]'
     zplug "plugins/web-search",     as:plugin, from:oh-my-zsh
@@ -191,7 +194,7 @@ export FZF_COMPLETION_OPTS='+c -x'
 #   autosuggest-toggle: Toggles between enabled/disabled suggestions.
 
 # Auto complete from anywhere in word
-setopt COMPLETE_IN_WORD
+setopt COMPLETE_IN_WORD BRACE_CCL AUTO_PARAM_SLASH
 # automatically decide when to page a list of completions
 # LISTMAX=0
 

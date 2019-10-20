@@ -20,8 +20,9 @@ export DOTFILES
 [[ ${DOTFILES:="~/.dotfiles"} ]] || exit 2
 [[ -d "${DOTFILES}" ]] || git clone --recursive --branch master-pan file://$HOME/dotfiles.git "${DOTFILES}"
 
+[[ -s ${ZPLUG_HOME}/init.zsh ]] || \
+    ( cd ${DOTFILES} && git submodule init && git submodule update; ) &>/dev/null
 [[ ${DOTFILES:="~/.dotfiles"} ]] || exit 2
-
 export DOTFILES_SOURCE=( $( find "${DOTFILES%/}" -iname dotfiles -type f) )
 function brew_from_dotfiles () 
 {
