@@ -23,6 +23,8 @@ export DOTFILES
 [[ -s ${ZPLUG_HOME}/init.zsh ]] || \
     ( cd ${DOTFILES} && git submodule init && git submodule update; ) &>/dev/null
 [[ ${DOTFILES:="~/.dotfiles"} ]] || exit 2
+[[ ${DOTFILES_GIT_REV} ]] || ( cd "${DOTFILES}" &>/dev/null && git check-ref-format "${DOTFILES_GIT_REV}" && git reset --head "${DOTFILES_GIT_REV}"; )
+
 export DOTFILES_SOURCE=( $( find "${DOTFILES%/}" -iname dotfiles -type f) )
 function brew_from_dotfiles () 
 {
