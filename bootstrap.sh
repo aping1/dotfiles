@@ -35,9 +35,10 @@ function brew_from_dotfiles ()
 function bundle_install_dotfiles() 
 {
     brew_from_dotfiles | tee  "${DOTFILES}/Brewfile"   || return 2
-    [[ ${DEBUG:-} =~ ^[Yy][e][s]  && -s "${DOTFILES}/Brewfile" ]] \
-        && cat "${DOTFILES}/Brewfile" \
+    if [[ ${DEBUG:-} =~ ^[Yy][e][s] ]]; then
+        [[ -s "${DOTFILES}/Brewfile" ]] && cat "${DOTFILES}/Brewfile" \
         || return 2
+    fi
     if [[ ${#DOTFILES_SOURCE[*]} -ge 1 && -s "${DOTFILES}/Brewfile" ]]; then
         brew bundle install --file=<(brew_from_dotfiles)
     else
