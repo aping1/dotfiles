@@ -18,7 +18,7 @@ export ZPLUG_HOME=${DOTFILES:="${HOME}/.dotfiles"}/deps/zplug
 
 export DOTFILES
 [[ ${DOTFILES:="~/.dotfiles"} ]] || exit 2
-[[ -d "${DOTFILES}" ]] || git clone --recursive --branch master-pan $HOME/dotfiles.git "${DOTFILES}"
+[[ -d "${DOTFILES}" ]] || git clone --recursive --branch master-pan file://$HOME/dotfiles.git "${DOTFILES}"
 
 [[ ${DOTFILES:="~/.dotfiles"} ]] || exit 2
 

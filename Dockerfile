@@ -23,7 +23,7 @@ RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
 	&& useradd -m user\
 	&& echo 'user ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
 USER user
-ARG dotfiles_git_rev=${DOTFILES_GIT_REV}
+ARG dotfiles_git_rev=$DOTFILES_GIT_REV
 WORKDIR /home/user
 ENV PATH="/home/user/linuxbrew/Homebrew/Library/bin/:$PATH"
 RUN sudo chown -R "$(whoami)" "$(brew --prefix)"

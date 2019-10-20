@@ -17,6 +17,7 @@ brew "macvim" #Tools #GUI
 brew "minicom" #Tools
 brew "jq" #Tools
 brew "neovim" #Tools #neovim
+brew "vim" #Tools #neovim
 brew "exa" #Tools
 brew "lsd" #Tools
 brew "bat" #Tools

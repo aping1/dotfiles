@@ -128,10 +128,10 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
     zplug "plugins/git-completion", as:plugin, from:oh-my-zsh
     zplug "plugins/osx",            as:plugin, from:oh-my-zsh
     zplug "plugins/pip",            as:plugin, from:oh-my-zsh
-    zplug "plugins/python",         as:plugin, rom:oh-my-zsh
-    zplug "plugins/sudo",           as:plugin, rom:oh-my-zsh
-    zplug "plugins/tmuxinator",     as:plugin, rom:oh-my-zsh
-    zplug "plugins/terraform",      as:plugin, rom:oh-my-zsh, if:'[[ $commands[terraform] ]]'
+    zplug "plugins/python",         as:plugin, from:oh-my-zsh
+    zplug "plugins/sudo",           as:plugin, from:oh-my-zsh
+    zplug "plugins/tmuxinator",     as:plugin, from:oh-my-zsh
+    zplug "plugins/terraform",      as:plugin, from:oh-my-zsh, if:'[[ $commands[terraform] ]]'
     zplug "plugins/urltools",       as:plugin, from:oh-my-zsh
     zplug "plugins/vault",          as:plugin, from:oh-my-zsh,  if:'[[ $commands[vault] ]]'
     zplug "plugins/web-search",     as:plugin, from:oh-my-zsh
