@@ -13,7 +13,7 @@ export LC_ALL="C.UTF-8"
 export LC_CTYPE="C.UTF-8"
 
 export DOTFILES="$HOME/.dotfiles"
-export PLUG_HOME="$HOME/.dotfiles/deps/zplug"
+export ZPLUG_HOME="$HOME/.dotfiles/deps/zplug"
 export ZPLUG_LOADFILE="$HOME"
 
 case $(uname) in
