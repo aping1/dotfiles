@@ -23,14 +23,20 @@ RUN localedef -i en_US -f UTF-8 en_US.UTF-8 \
 	&& useradd -m user\
 	&& echo 'user ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
 USER user
+ARG dotfiles_git_rev=${DOTFILES_GIT_REV}
 WORKDIR /home/user
 ENV PATH="/home/user/linuxbrew/Homebrew/Library/bin/:$PATH"
 RUN sudo chown -R "$(whoami)" "$(brew --prefix)"
+COPY dotfiles.git.tar.gz .
+RUN tar xvzf dotfiles.git.tar.gz
+RUN git clone file://${HOME}/dotfiles.git .dotfiles
+RUN ls -a .dotfiles
+WORKDIR /home/user/.dotfiles
+RUN git reset --hard ${dotfiles_git_rev} 
+WORKDIR /home/user/
+RUN bash -x .dotfiles/bootstrap.sh
 RUN echo "eval $($(brew --prefix)/bin/brew shellenv)" >>~/.profile
-RUN git --bare clone https://www.github.com/aping1/dotfiles.git dotfiles.git 
 RUN brew install git python@2 python@3
-RUN bash -x .dotfiles/boostrap.sh
-RUN brew bundle install --file=".dotfiles/Brewfile"
 ENV USER=user
 ENV SHELL=/usr/bin/bash
 LABEL name=dotfiles

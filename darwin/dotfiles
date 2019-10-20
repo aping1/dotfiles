@@ -3,11 +3,11 @@ tap "homebrew/cask"
 tap "homebrew/core"
 tap "homebrew/services"
 tap "koekeishiya/formulae"
-brew "koekeishiya/formulae/yabai" #GUI 
-brew "koekeishiya/formulae/skhd" #GUI
-brew "docker", link: false #docker
-brew "docker-compose"
-brew "docker-completion" #docker
+# brew "koekeishiya/formulae/yabai" #GUI 
+# brew "koekeishiya/formulae/skhd" #GUI
+# brew "docker", link: false #docker
+# brew "docker-compose"
+# brew "docker-completion" #docker
 brew "zsh" #Shells 
 brew "cmake" #Dev #C
 brew "coreutils" #Dev
@@ -48,14 +48,14 @@ brew "libvorbis" #Libs
 brew "xz" #Libs
 brew "zlib" #Libs
 tap "homebrew/cask-fonts" #Font
-cask "font-hack-nerd-font" #Font
-cask "font-hasklig-nerd-font" #Font
+# cask "font-hack-nerd-font" #Font
+# cask "font-hasklig-nerd-font" #Font
 # brew "glew" #Graphic
 # cask "phoenix" #Graphic
 # cask "godot" #Graphic
-brew "sdl2" #Graphic
-brew "sdl2_image" #Graphic
-brew "sdl2_ttf" #Graphic #Libs
+# brew "sdl2" #Graphic
+# brew "sdl2_image" #Graphic
+# brew "sdl2_ttf" #Graphic #Libs
 # brew "openal-soft" #Graphic
 brew "wireshark"  #Networks
 brew "nmap" #Network

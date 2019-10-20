@@ -10,16 +10,18 @@ services:
             context: .
             args:
                 - FORCE_REBUILD=1
+                - dotfiles_git_rev=${DOTFILES_GIT_REV}
             cache_from:
+                - brew
                 - homebrew/brew
                 - zshusers/zsh-docker
         environment:
             - BREW_UID=${CURRENT_UID}
             - DOTFILES=~/.dotfiles
         command:
-            - bash 
-            - -xe 
-            - /home/user/bootstrap.sh
+            - exec 
+            - zsh 
+            - -l
         environment:
             - BUILDREF
 

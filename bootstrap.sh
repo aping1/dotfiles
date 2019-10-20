@@ -32,7 +32,7 @@ function brew_from_dotfiles ()
 function bundle_install_dotfiles() 
 {
     brew_from_dotfiles | tee  "${DOTFILES}/Brewfile"   || return 2
-    [[ -s "${DOTFILES}/Brewfile" ]] \
+    [[ ${DEBUG:-} =~ ^[Yy][e][s]  && -s "${DOTFILES}/Brewfile" ]] \
         && cat "${DOTFILES}/Brewfile" \
         || return 2
     if [[ ${#DOTFILES_SOURCE[*]} -ge 1 && -s "${DOTFILES}/Brewfile" ]]; then
