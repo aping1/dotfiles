@@ -116,6 +116,8 @@ if [[ -f "${ZPLUG_HOME:-"${HOME}/.zplug"}/init.zsh" ]]; then
         use:"*darwin*amd64*"
 
     zplug 'zplug/zplug', hook-build:'zplug --self-manage' 
+
+    zplug "dominictarr/JSON.sh", as:command, if:"(( ! $+commands[jq] ))", rename-to:jq
     # oh-my-zsh
     zplug "plugins/git",            as:plugin, from:oh-my-zsh
     zplug "plugins/docker",         as:plugin, from:oh-my-zsh
