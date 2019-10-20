@@ -468,6 +468,17 @@ let g:lightline = {
       \   'subseparator': { 'left': '', 'right': '' },
       \ }
 
+function! LightlineFugitive()
+  if &ft !~? 'vimfiler' && exists('*fugitive#head')
+    let branch = fugitive#head()
+    if len(branch) < 25
+      return branch
+    endif
+    return branch[:15] . ' .. ' . branch[(len(branch)-15):]
+  endif
+  return ''
+endfunction
+
 function! NearestMethodOrFunction() abort
   return get(b:, 'vista_nearest_method_or_function', '')
 endfunction
@@ -508,6 +519,14 @@ let g:go_addtags_transform = "snakecase"
 "----------------------------------------------
 " Plugin: christoomey/vim-tmux-navigator
 "----------------------------------------------
+" tmux will send xterm-style keys when its xterm-keys option is on
+if &term =~ '^screen'
+    execute "set <xUp>=\e[1;*A"
+    execute "set <xDown>=\e[1;*B"
+    execute "set <xRight>=\e[1;*C"
+    execute "set <xLeft>=\e[1;*D"
+endif
+
 " Tmux vim integration
 let g:tmux_navigator_no_mappings = 1
 if exists('$TMUX')
@@ -566,8 +585,34 @@ let NERDTreeIgnore = [
 " Close vim if NERDTree is the only opened window.
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
-" Show hidden files by default.
-let NERDTreeShowHidden = 1
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+
+function! NERDTreeYankCurrentNode()
+    let n = g:NERDTreeFileNode.GetSelected()
+    if n != {}
+        call setreg('=', n.path.str())
+        call setreg('+', n.path.str())
+    endif
+endfunction
+
+if exists('NERDTreeAddKeyMap')
+call NERDTreeAddKeyMap({
+        \ 'key': 'yy',
+        \ 'callback': 'NERDTreeYankCurrentNode',
+        \ 'quickhelpText': 'put full path of current node into the default register' })
+endif
+
 
 " Allow NERDTree to change session root.
 let g:NERDTreeChDirMode = 2
@@ -586,7 +631,8 @@ let g:one_allow_italics = 1 " I love italic for comments
 set background=dark " for the light version
 
 map <F3> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
-
+let g:one_allow_italics = 0 " I love italic for comments
+colorscheme one
 
 " Set max line length.
 let linelen = 120 
@@ -594,6 +640,7 @@ execute "set colorcolumn=".linelen
 highlight OverLength ctermbg=red ctermfg=white guibg=#e88388
 execute "match OverLength /\%".linelen."v.\+/"
 
+augroup IndentGuests
 " base 00
 autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=0 guibg=#353a44
 autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=7 guibg=#abb2bf
@@ -657,19 +704,51 @@ autocmd FileType python call SemhiOneHighlights()
 " endif
 " 
 " --------------------
+" Plug 'bfredl/nvim-ipy'
+" --------------------
+let g:ipy_perform_mappings=1
+
+" --------------------
 " Plugin 'janko/vim-test'
 " --------------------
-"
-autocmd FileType * call s:vim_test_keymap()
+nmap <silent> t<C-n> :TestNearest<CR>
+nmap <silent> t<C-f> :TestFile<CR>
+nmap <silent> t<C-s> :TestSuite<CR>
+nmap <silent> t<C-l> :TestLast<CR>
+nmap <silent> t<C-g> :TestVisit<CR>
+let g:test#runner_commands = ['buck']
+let test#python#buck#executable = 'buck test'
+let test#python#runner = 'buck'
 
 
-function! s:vim_test_keymap()
-    nmap <silent> t<C-n> :TestNearest<CR>
-    nmap <silent> t<C-f> :TestFile<CR>
-    nmap <silent> t<C-s> :TestSuite<CR>
-    nmap <silent> t<C-l> :TestLast<CR>
-    nmap <silent> t<C-g> :TestVisit<CR>
+function! TabMessage(cmd)
+  redir => message
+  silent execute a:cmd
+  redir END
+  if empty(message)
+    echoerr 'no output'
+  else
+    " use "new" instead of "tabnew" below if you prefer split windows instead of tabs
+    tabnew
+    setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nomodified
+    silent put=message
+
+  endif
 endfunction
+command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+" When using `dd` in the quickfix list, remove the item from the quickfix list.
+function! RemoveQFItem()
+  let curqfidx = line('.') - 1
+  let qfall = getqflist()
+  call remove(qfall, curqfidx)
+  call setqflist(qfall, 'r')
+  execute curqfidx + 1 . 'cfirst'
+  :copen
+endfunction
+:command! RemoveQFItem :call RemoveQFItem()
+" Use map <buffer> to only map dd in the quickfix window. Requires +localmap
+autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
 
 let g:test#runner_commands = ['buck']
 let test#python#buck#executable = 'buck test'
