@@ -22,5 +22,6 @@ services:
             - zsh 
             - -l
         environment:
+            - DOTFILES_GIT_REV=${DOTFILES_GIT_REV}
             - BUILDREF
 
