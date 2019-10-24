@@ -121,20 +121,6 @@ if [ ! $TERM = dumb ]; then
         # zgen will load oh-my-zsh and download it if required
         zgen oh-my-zsh
 
-        # zgen prezto
-        # zgen prezto editor key-bindings 'vi'
-        # zgen prezto '*:*' color 'yes'
-        # zgen prezto tmux:auto-start local 'yes'
-        # zgen prezto '*:*' case-sensitive 'yes'
-        # zgen prezto prompt theme 'off'
-        # zgen prezto git
-        # zgen prezto editor key-bindings 'vi'
-        # zgen prezto command-not-found
-        # zgen prezto tmux
-        # zgen prezto fasd
-        # zgen prezto history-substring-search
-        # zgen prezto syntax-highlighting
-
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
         # zgen oh-my-zsh plugins/bower
@@ -151,7 +137,7 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/urltools
         zgen oh-my-zsh plugins/vundle
         zgen oh-my-zsh plugins/web-search
-        zgen load joel-porquet/zsh-dircolors-solarized
+        zen load joel-porquet/zsh-dircolors-solarized
         zgen oh-my-zsh plugins/z
 
         # https://github.com/Tarrasch/zsh-autoenv
@@ -160,18 +146,11 @@ if [ ! $TERM = dumb ]; then
         zgen load zsh-users/zsh-completions src
 
         # my own plugins each of these folders use init.zsh entry point
-        zgen load $DOTFILES/plugins/aliases
-        zgen load $DOTFILES/plugins/bootstrap
-        zgen load $DOTFILES/plugins/dotfiles
-        # zgen load $DOTFILES/plugins/zpython
         # zgen load $DOTFILES/plugins/fbtools
-        # zgen load $DOTFILES/plugins/direnv
-        zgen load $DOTFILES/plugins/urltools
-        zgen load $DOTFILES/plugins/tpm
 
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
         # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        zgen load bhilburn/powerlevel9k powerlevel9k.zsh-theme
+        zplug romkatv/powerlevel10k, as:theme, depth:1
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
         # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
