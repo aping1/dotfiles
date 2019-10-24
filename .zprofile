@@ -7,9 +7,6 @@ export ZPROFILE_LOADED
 
 export TERM="xterm-256color"
 export TERM="${TERM:-xterm}"
-export LANG="en_US.UTF-8"
-export LC_ALL="C.UTF-8"
-export LC_CTYPE="C.UTF-8"
 
 export DOTFILES="$HOME/.dotfiles"
 
@@ -29,22 +26,8 @@ case $(uname) in
   *)
     # commands for Linux go here
     export DISTRO=posix
+export LANG="en_US.UTF-8"
+export LC_ALL="C.UTF-8"
+export LC_CTYPE="C.UTF-8"
   ;;
 esac
-
-declare -A ZPLGM
-ZPLGM[HOME_DIR]=${XDG_DATA_HOME:-$HOME/.local/share}/zplugin
-ZPLGM[BIN_DIR]=${ZPLGM[HOME_DIR]}/bin
-ZPLGM[PLUGINS_DIR]=${ZPLGM[HOME_DIR]}/plugins
-ZPLGM[COMPLETIONS_DIR]=${ZPLGM[HOME_DIR]}/completions
-ZPLGM[SNIPPETS_DIR]=${ZPLGM[HOME_DIR]}/snippets
-ZPLGM[SERVICES_DIR]=${ZPLGM[HOME_DIR]}/services
-
-if [ ! -d ${ZPLGM[HOME_DIR]} ]; then
-  mkdir -p ${ZPLGM[HOME_DIR]}
-  git clone https://github.com/zdharma/zplugin ${ZPLGM[BIN_DIR]}
-  source ${ZPLGM[HOME_DIR]}/bin/zplugin.zsh
-  zplugin self-update
-else
-  source ${ZPLGM[HOME_DIR]}/bin/zplugin.zsh
-fi

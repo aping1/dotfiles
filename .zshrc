@@ -80,24 +80,6 @@ ZSH_TMUX_AUTOQUIT=false
 
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
 export DEFAULT_USER=awampler
-P9K_CONTEXT_TEMPLATE="%n@$(hostname -s)"
-P9K_PROMPT_ON_NEWLINE=true
-export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-P9K_LEFT_PROMPT_ELEMENTS=(host ssh user dir dir_writable pyenv docker )
-P9K_RPROMPT_ON_NEWLINE=true
-P9K_RIGHT_PROMPT_ELEMENTS=(vi_mode status time history )
-P9K_DIR_SHORTEN_LENGTH=35
-P9K_DIR_BACKGROUND='238'
-P9K_DIR_FOREGROUND='252'
-P9K_STATUS_BACKGROUND='238'
-P9K_STATUS_FOREGROUND='252'
-P9K_CONTEXT_BACKGROUND='240'
-P9K_CONTEXT_FOREGROUND='252'
-P9K_TIME_BACKGROUND='238'
-P9K_TIME_FOREGROUND='252'
-P9K_HISTORY_BACKGROUND='240'
-P9K_HISTORY_FOREGROUND='252'
-#P9K_VI_MODE_INSERT_FOREGROUND='teal'
 
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
@@ -194,27 +176,20 @@ elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
     # add to end of path
 fi
 
-[[ ${DOTFILES} ]] && \
+if [[ ${DOTFILES} ]]; then 
     path=(
         $path
         ${DOTFILES}/scripts
         ${HOME}/bin
     )
-
-typeset -U path
+	typeset -U path
+fi
 
 COMPLETION_WAITING_DOTS="true"
 
 # change the size of history files
 export HISTSIZE=32768;
 export HISTFILESIZE=$HISTSIZE;
-
-declare -A ZPLGM 
-ZPLGM[HOME_DIR]="${HOME}/.zplugin"
-ZPLGM[BIN_DIR]="${HOME}/.zplugin"
-
-[[ -d "$ZPLGM[HOME_DIR]" ]] || \
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zplugin/master/doc/install.sh)"
 
 # === Fzf ===
 # End of lines configured by zsh-newuser-install
