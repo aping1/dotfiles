@@ -1,0 +1,19 @@
+tap "koekeishiya/formulae"
+brew "koekeishiya/formulae/yabai" #GUI 
+brew "koekeishiya/formulae/skhd" #GUI
+tap "homebrew/cask-fonts" #Font
+cask "font-hack-nerd-font" #Font
+cask "font-hasklig-nerd-font" #Font
+# brew "glew" #Graphic
+# cask "phoenix" #Graphic
+# cask "godot" #Graphic
+brew "sdl2" #Graphic
+brew "sdl2_image" #Graphic
+brew "sdl2_ttf" #Graphic #Libs
+# brew "openal-soft" #Graphic
+# cask "openra" #Games
+cask "mono-mdk" #Language
+dotfile .yabairc
+dotfile "${HOME}/Library/Application Scripts/com.omnigroup.OmniFocus2.MacAppStore" .local/omnifocus-scripts
+brew "macvim" #Tools #GUI
+cask install vimr

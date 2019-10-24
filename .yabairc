@@ -39,8 +39,20 @@ yabai -m config left_padding                 20
 yabai -m config right_padding                20
 yabai -m config window_gap                   10
 
+
+
+yabai -m rule --add title='tmux Dashboard' manage=off
+yabai -m rule --add title='Karabiner Elements Preferences' manage=off
+yabai -m rule --add title='System Preferences' manage=off
+yabai -m rule --add title='iStat Menus' manage=off
+yabai -m rule --add title='Alfred Preferences' manage=off
+
 echo "yabai configuration loaded.."
 
 
-yabai -m rule --add app="^Dash$" manage=off
+yabai -m rule --add label="dash_floats" app="^Dash$" manage=off 
+yabai -m rule --add label="dash_floats" title="Dash" grid=4:4:1:1:2:2 manage=off
+yabai -m rule --add label="sys_prefs_float" title="[pP]reference[s]?$" manage=off
+yabai -m rule --add label="vmware_settings_float" title="[Ss]etting[s]?$" manage=off
+yabai -m rule --add label="vmware_Lib_float" title="Virtual Machine Library"
 

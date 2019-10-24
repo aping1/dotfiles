@@ -1,22 +1,28 @@
 [user]
-	name = Allison Wampler
-	email = allisonmarw@gmail.com
+    name = Allison Wampler
+    email = aping1@apt-miss.com
 [core]
 	excludesfile = ~/.gitignore_global
-	editor = nvim
-	page = nvim -R
+	editor = vim
+	page = vim -R
 [merge]
 	tool = vimdiff
 [mergetool]
 	prompt = true
+    conflictstyle = diff3
+	keepBackup = false
+[mergetool "fugitive"]
+    cmd = vim -f -c "Gdiff" "$MERGED"
 [mergetool "vimdiff"]
-	cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+	cmd = vim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool]
 	prompt = true
 [diff]
 	tool = vimdiff
-[commit]
-	template = /Users/awampler/.stCommitMsg
+[difftool]
+    prompt = false
+    conflictstyle = diff3
+    tool = vimdiff
 [color]
 	pager = no
 [filter "lfs"]

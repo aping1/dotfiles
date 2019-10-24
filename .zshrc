@@ -1,45 +1,50 @@
+#!/usr/bin/env zsh
+# === Shell ===
+export CLICOLOR=1
+export EDITOR='vim'
+export VISUAL='vim'
+export PAGER='less'
+export MYPROMPT="${MYPROMPT:-spaceship-async}"
+
 # === Profiling ===
-#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-#if I see that zsh takes to much time to load I profile what has been changed,
-# I want to see my shell ready in not more than 1 second
-PROFILING=${PROFILING:-false}
-if $PROFILING; then
-    zmodload zsh/zprof
+if [[ ${+PROFILING} -eq 1 ]]; then
+    zmodload zsh/zprof 
+    PS4=$'%D{%M%S%.} %N:%i> '
+    zprof
 fi
+
+
+# === zprofile if not autoloaded ===
+[[ ${+ZPROFILE_LOADED} -eq 1 ]] \
+    || source "${HOME}/.zprofile"
+
+[[ ${+ZSH_ALIASES_LOADED} -eq 1 ]] \
+    || source "${HOME}/.zsh_aliases"
 
 # === PATHS and EVNS 
 # Location of my dotfiles
 DOTFILES=$HOME/.dotfiles
 DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 
-## Setup PATH
 # Standard path includes
-
-# # PYTHON INCLUDE
-# if which python3.5 &>/dev/null; then
-#     export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.5/site-packages"
-# elif which python3.6 &>/dev/null; then
-#     export PYTHONPATH="$PYTHONPATH:$HOME/.local/lib/python3.6/site-packages"
-# fi
-
 path=(
     /usr/local/{bin,sbin,opt}
-    /var/lib/snapd/snap/bin
     $path
 )
-# Brew for OSX
-if [[ "${DISTRO:="Darwin"}" == "Darwin" ]] && command -v brew &>/dev/null; then
+if command -v brew &>/dev/null; then
     # Add to start of path
     path=(
         $(brew --prefix coreutils)/libexec/gnubin
+        $(brew --prefix python)/libexec/bin
         $(brew --prefix)/bin/
         $path
     )
-elif [[ "${DISTRO:="Darwin"}" == "Darwin" ]]; then
-    echo "Install Homebrew" >&2
-    # add to end of path
+elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
+    # Auto install brew
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 
+# Add dotfiles to end of path
 path=(
     $path
     ${DOTFILES}/scripts
@@ -53,15 +58,6 @@ COMPLETION_WAITING_DOTS="true"
 # change the size of history files
 export HISTSIZE=32768;
 export HISTFILESIZE=$HISTSIZE;
-
-# Shell
-export CLICOLOR=1
-export EDITOR='nvim'
-export VISUAL='nvim'
-export PAGER='less'
-
-export TERM="xterm-256color"
-export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 
 # Homebrew
 # This is one of examples why I want to keep my dotfiles private
@@ -89,7 +85,7 @@ P9K_PROMPT_ON_NEWLINE=true
 export PYENV_VIRTUALENV_DISABLE_PROMPT=1
 P9K_LEFT_PROMPT_ELEMENTS=(host ssh user dir dir_writable pyenv docker )
 P9K_RPROMPT_ON_NEWLINE=true
-P9K_RIGHT_PROMPT_ELEMENTS=(vi_mode status history time)
+P9K_RIGHT_PROMPT_ELEMENTS=(vi_mode status time history )
 P9K_DIR_SHORTEN_LENGTH=35
 P9K_DIR_BACKGROUND='238'
 P9K_DIR_FOREGROUND='252'
@@ -197,93 +193,91 @@ if [ -f ~/.machinerc ]; then
     source ~/.machinerc
 fi
 
-## zsh Option
-
-## Auto complete from anywhere in word
-setopt COMPLETE_IN_WORD
-
-## keep background processes at full speed
-#setopt NOBGNICE
-## restart running processes on exit
-#setopt HUP
-
-## history
-setopt APPEND_HISTORY
-## for sharing history between zsh processes
-setopt INC_APPEND_HISTORY
-setopt SHARE_HISTORY
-
-## never ever beep ever
-#setopt NO_BEEP
-
-## automatically decide when to page a list of completions
-#LISTMAX=0
-
-## disable mail checking
-#MAILCHECK=0
-# if you want red dots to be displayed while waiting for completion
-
-# additional configuration for zsh
-# Remove the history (fc -l) command from the history list when invoked.
-# setopt histnostore
-# Remove superfluous blanks from each command line being added to the history list.
-setopt histreduceblanks
-setopt histverify
-# Do not exit on end-of-file (Ctrl-d). Require the use of exit or logout instead.
-# setopt ignoreeof
-# Print the exit value of programs with non-zero exit status.
-# setopt printexitvalue
-# Do not share history
-# setopt no_share_history
+[[ -f ~/.zprofile ]] && source ~/.zprofile
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 
-# Vim mode
-bindkey -v
-# set -o vi
-[[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which dircolors &> /dev/null && eval $(dircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
-[[ -f ${DOTFILES:-"~/.dotfiles"}/dircolors ]] && which gdircolors &> /dev/null && eval $(gdircolors "${DOTFILES:-"~/.dotfiles"}/dircolors")
+# Standard path includes
+path=(
+    /usr/local/{bin,sbin,opt}
+    $path
+)
+# Brew for OSX
+if command -v brew &>/dev/null; then
+    # Add to start of path
+    path=(
+        $(brew --prefix coreutils)/libexec/gnubin
+        $(brew --prefix python)/libexec/bin
+        $(brew --prefix)/bin/
+        $path
+    )
+elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
+    echo "Install Homebrew" >&2
+    # add to end of path
+fi
 
-# TMUXINATOR='/Library/Ruby/Gems/2.0.0/gems/tmuxinator-0.8.1/completion/tmuxinator.zsh'
-# [[ -f $TMUXINATOR ]] && source ${TMUXINATOR} || echo "Warning: Could not instatiate tmuxinator"
+[[ ${DOTFILES} ]] && \
+    path=(
+        $path
+        ${DOTFILES}/scripts
+        ${HOME}/bin
+    )
 
+typeset -U path
 
-#export LC_CTYPE=en_US.UTF-8
-#export LC_ALL=en_US.UTF-8
+COMPLETION_WAITING_DOTS="true"
 
-# Powerline
-#source /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
-#source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
-#source /opt/homebrew/lib/python3.5/site-packages/powerline/bindings/zsh/powerline.zsh
-#
-# Fix 
-#TRAPWINCH() {
-#    zle && zle .reset-prompt && zle -R
-#}
-bindkey -v
-export FBANDROID_DIR=/Users/aping1/fbsource/fbandroid
-alias quicklog_update=/Users/aping1/fbsource/fbandroid/scripts/quicklog/quicklog_update.sh
-alias qlu=quicklog_update
+# change the size of history files
+export HISTSIZE=32768;
+export HISTFILESIZE=$HISTSIZE;
 
-# added by setup_fb4a.sh
-export ANDROID_SDK=/opt/android_sdk
-export ANDROID_NDK_REPOSITORY=/opt/android_ndk
-export ANDROID_HOME=${ANDROID_SDK}
-export PATH=${PATH}:${ANDROID_SDK}/tools:${ANDROID_SDK}/platform-tools
+declare -A ZPLGM 
+ZPLGM[HOME_DIR]="${HOME}/.zplugin"
+ZPLGM[BIN_DIR]="${HOME}/.zplugin"
 
-# Lines configured by zsh-newuser-install
-setopt extendedglob nomatch
+[[ -d "$ZPLGM[HOME_DIR]" ]] || \
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zplugin/master/doc/install.sh)"
+
+# === Fzf ===
 # End of lines configured by zsh-newuser-install
-#
-#export PYENV_ROOT="~/projects/virtualenvs"
-
-[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
-
-# Use ~~ as the trigger sequence instead of the default **
+# export FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
 export FZF_COMPLETION_TRIGGER='~~'
 
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
 
-if which setupsolarized &>/dev/null; then
-setupsolarized dircolors.256dark
-fi
+[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+
+# === Completion ===
+# Bindkey ... autosuggest-*
+#   autosuggest-accept: Accepts the current suggestion.
+#   autosuggest-execute: Accepts and executes the current suggestion.
+#   autosuggest-clear: Clears the current suggestion.
+#   autosuggest-fetch: Fetches a suggestion (works even when suggestions are disabled).
+#   autosuggest-disable: Disables suggestions.
+#   autosuggest-enable: Re-enables suggestions.
+#   autosuggest-toggle: Toggles between enabled/disabled suggestions.
+
+# Auto complete from anywhere in word
+setopt COMPLETE_IN_WORD BRACE_CCL AUTO_PARAM_SLASH
+# automatically decide when to page a list of completions
+# LISTMAX=0
+
+export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
+export ZSH_AUTOSUGGEST_STRATEGY=( match_prev_cmd completion )
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline" # Red
+export ZSH_AUTOSUGGEST_USE_ASYNC="y"
+[[ ${+ZSH_HIGHLIGHT_STYLES} == 1 ]] && \
+export ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
+
+# === Customization ===
+setopt extendedglob nomatch
+
+# keep background processes at full speed
+# setopt NOBGNICE
+# setopt HUP
+
+# Options to fzf command
+export FZF_COMPLETION_OPTS='+c -x'
+
+# Vim mode
+bindkey -v

@@ -1,0 +1,123 @@
+# .dotfiles config
+# create a list of all files that should be managed by this, one glob per line, 
+# Profile
+
+# $PWD ./.dotfiles <- Create ˜/.dotfiles || ln -s ${PWD} ˜/.dotfiles
+
+link remote/* .remote
+
+link dircolors
+
+
+link .zprofile
+link .zsh_aliasses
+link .zpreztorc
+link .zshrc
+link deps/zgen .zgen
+
+link deps/tpm .tmux/plugins/tpm
+
+# tmux 
+link .tmux.conf
+
+# vim/colors/*
+# env_template.sh
+
+# Vim
+link .vimrc
+link deps/Vundle.vim .vim/Vundle.vim
+link vim-solarized8 .vim/colors/vim-solarized8
+
+# Git
+
+# Globals/Ignore
+link .gitconfig
+link .global_gitignore
+link .gitignore
+
+link .zsh_aliases
+
+# zpython.zsh
+link .gdbinit
+
+link .khdrc
+link .yabairc
+
+# tmux/zoom
+# tmux/helpers/powerline-helper.zsh
+
+# tools/*
+
+# ./install.zsh
+
+# powerline ˜/.config/powerline_config
+link powerline_config ~/.config/powerline_config
+link nvim ~/.config/nvim
+
+# Scripts
+#vsheild-disable
+
+# Docs
+# STEPS
+# readme.md
+
+# Ipython (vim enabled)
+# ipython/profile_default/ipython_config.py
+# ipython/profile_default/startup/README
+# ipython/profile_default/db/dhist
+
+link .config/nvim/plugged/vim-superman/bin/vman .local/bin/
+
+tap "homebrew/bundle" 
+tap "homebrew/cask"
+tap "homebrew/core"
+tap "homebrew/services"
+brew "docker", link: false #docker
+brew "docker-compose"
+brew "docker-completion" #docker
+brew "zsh" #Shells 
+brew "cmake" #Dev #C
+brew "coreutils" #Dev
+brew "fzf" #Tools
+brew "gnu-sed" #Tools
+brew "minicom" #Tools
+brew "jq" #Tools
+brew "neovim" #Tools #neovim
+brew "vim" #Tools #neovim
+brew "exa" #Tools
+brew "lsd" #Tools
+brew "bat" #Tools
+brew "tig" #Tools
+brew "tmux" #Tools #tmux
+brew "the_silver_searcher" #Tools
+brew "ctags" #Tools
+brew "gdb" #Tools #Debugging
+cask "corelocationcli" #Tool
+# Make w/ dag
+brew "tup" #Tools #Build
+# config editing with api
+brew "augeas" #Tools
+brew "flake8" #Language #Python
+jrew "swig" #Language #Toolchain
+brew "node" #Language
+brew "python" #Language #Python
+brew "black" #Language #Python
+brew "pyenv" #Tools #Python
+brew "pyenv-virtualenv" #Tools #Python
+brew "go" #Language #go
+brew "lua" #Language #lua
+brew "luarocks" #Language #lua
+brew "boost" #Libs
+brew "readline" #Libs
+cask "osxfuse" #Libs
+brew "libvorbis" #Libs
+brew "xz" #Libs
+brew "zlib" #Libs
+tap "mistertea/et" #Network
+brew "mistertea/et/et" #Network
+brew "wireshark"  #Networks
+brew "nmap" #Network
+brew "mosh" #Network
+
+pip pynvim
+pip psutil

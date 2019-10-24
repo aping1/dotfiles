@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+    dotfiles:
+        volumes:
+            - "/Users/aping1/repos/dotfiles.git:/home/user/dotfiles.git"
+            - "/Users/aping1/code/dotfiles/bootstrap.sh:/home/user/bootstrap.sh"
+        build:
+            shm_size: '2gb'
+            context: .
+            args:
+                - FORCE_REBUILD=1
+                - dotfiles_git_rev=${DOTFILES_GIT_REV}
+                - git_branch=${DOTFILES_GIT_BRANCH}
+            cache_from:
+                - brew
+                - homebrew/brew
+                - zshusers/zsh-docker
+        environment:
+            - BREW_UID=${CURRENT_UID}
+            - DOTFILES=~/.dotfiles
+        command:
+            - zsh 
+            - -l
+        environment:
+            - DOTFILES_GIT_REV=${DOTFILES_GIT_REV}
+            - DOTFILES_GIT_BRANCH=${DOTFILES_GIT_BRANCH}
+            - BUILDREF
+

@@ -1,10 +1,10 @@
 #!/bin/bash
 function sshagent_findsockets {
-    find /tmp -uid $(id -u) -type s -name agent.\* 2>/dev/null
+    find /tmp -uid "$(id -u)" -type s -name agent.\* 2>/dev/null
 }
 
 function sshagent_testsocket {
-    if [ ! -x "$(which ssh-add)" ] ; then
+    if [ ! -x "$(command -v ssh-add)" ] ; then
         echo "ssh-add is not available; agent testing aborted"
         return 1
     fi
@@ -17,14 +17,14 @@ function sshagent_testsocket {
         return 2
     fi
 
-    if [ -S $SSH_AUTH_SOCK ] ; then
+    if [ -S "${SSH_AUTH_SOCK}" ] ; then
         ssh-add -l > /dev/null
         if [ $? = 2 ] ; then
-            echo "Socket $SSH_AUTH_SOCK is dead!  Deleting!"
-            rm -f $SSH_AUTH_SOCK
+            echo "Socket ${SSH_AUTH_SOCK} is dead!  Deleting!"
+            rm -f "${SSH_AUTH_SOCK}"
             return 4
         else
-            echo "Found ssh-agent $SSH_AUTH_SOCK"
+            echo "Found ssh-agent ${SSH_AUTH_SOCK}"
             return 0
         fi
     else
@@ -48,14 +48,14 @@ function sshagent_init {
     if [ $AGENTFOUND = 0 ] ; then
         for agentsocket in $(sshagent_findsockets) ; do
             if [ $AGENTFOUND != 0 ] ; then break ; fi
-            if sshagent_testsocket $agentsocket ; then AGENTFOUND=1 ; fi
+            if sshagent_testsocket "${agentsocket}" ; then AGENTFOUND=1 ; fi
         done
     fi
 
     # If at this point we still haven't located an agent, it's time to
     # start a new one
     if [ $AGENTFOUND = 0 ] ; then
-        eval `ssh-agent`
+        eval "$(ssh-agent)"
     fi
 
     # Clean up
