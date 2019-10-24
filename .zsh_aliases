@@ -12,10 +12,10 @@ elif command -v vim &>/dev/null ; then
     alias vi=vim
 fi
 
-if ! command -v vimr &>/dev/null; then
+if !  command -v vimr &>/dev/null; then
     echo 'vimr not installed' >&2
     return 1
-else 
+elif [[ ${DISTRO} == "darwin" ]];
     alias vimr='vimr --cur-env --nvim'
     alias vim='vimr'
 fi
