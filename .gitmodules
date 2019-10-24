@@ -1,3 +1,6 @@
+[submodule "zgen"]
+	path = deps/zgen
+	url = https://github.com/tarjoilija/zgen.git
 [submodule "tpm"]
 	path = deps/tpm
 	url = https://github.com/tmux-plugins/tpm.git
