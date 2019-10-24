@@ -383,6 +383,7 @@ endfun
 
 com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
             \ call s:setLightlineColorscheme(<q-args>)
+LightlineColorscheme tender
 
 
 " --------------------
