@@ -129,8 +129,8 @@ if [ ! $TERM = dumb ]; then
         # my own plugins each of these folders use init.zsh entry point
         # zgen load $DOTFILES/plugins/fbtools
 
-        zgen load romkatv/powerlevel10k powerlevel10kn manager
-        zgen load $DOTFILES/themes/pl10k
+        zgen load romkatv/powerlevel10k powerlevel10k
+        zgen load $DOTFILES/themes/p10k
 
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
