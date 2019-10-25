@@ -25,7 +25,7 @@ endif
 autocmd! bufwritepost vimrc source ~/.vimrc
 
 set mouse+=a
-if &term =~ '^screen' || &term =~ '^xterm'
+if has('ttymouse') && ( &term =~ '^screen' || &term =~ '^xterm' )
     " tmux knows the extended mouse mode
     set ttymouse=xterm2
 endif
@@ -72,33 +72,34 @@ set foldmethod=indent   " fold based on indent level
 set laststatus=2
 set number
 
-set ts=4
+set tabstop=4
 set sw=4
 set ai
 set expandtab
 set hlsearch
 
-set rtp+='~/.vim/autoload'
-
-if ! empty(glob('~/.vim/autoload/plug.vim'))
-    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC | close
+" === Auto install plug.vim ===
+let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
+let runtimepath=&runtimepath . ',' . substitute(expand("%:p"), autoload_plug_path, '', 'g')
+if empty(glob(autoload_plug_path))
+  silent ! exec '!curl -fLo ' . autoload_plug_path . 
+                \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+else"
+exec "set rtp=" . autoload_plug_path . "," . &rtp 
 endif
 
-if isdirectory("~/.config/nvim/plugged") 
+unlet autoload_plug_path
+
+if isdirectory("~/.config/nvim/plugged")
     call plug#begin("~/.config/nvim/plugged")
 else
-    if empty(glob('~/.vim/autoload/plug.vim'))
-        if empty(glob('~/.vim/plugged/plug.vim'))
-            silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-                        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-            autocmd VimEnter * PlugInstall --sync | source $MYVIMRC | close
-        endif
-    endif 
     call plug#begin('~/.vim/plugged')
 
     Plug 'jez/vim-superman'
     " --- Colorscheme ---
     Plug 'jacoborus/tender.vim'
+    Plug 'rakr/vim-one'
 
     Plug 'vim-scripts/ag.vim'
 
@@ -148,12 +149,6 @@ else
     "augroup END
 
 endif
-
-"let c_space_errors = 0
-let python_space_errors = 1
-"blet ruby_space_errors = 1
-"let java_space_errors = 1
-
 
 " Reload .vimrc immediately when edited
 autocmd! bufwritepost vimrc source ~/.vimrc
@@ -217,11 +212,10 @@ imap OD <ESC>hi
 "(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
 if (has("termguicolors"))
     set termguicolors
-    silent! colorscheme solarized
     silent! colorscheme tender
 else
     set t_Co=256
-    colorscheme solarized
+    silent! colorscheme solarized
     let g:solarized_termcolors=256
 endif
 
@@ -349,41 +343,43 @@ let g:lightline = {
             \   'subseparator': { 'left': '◤', 'right': '◢' },
             \ }
 
-function! NearestMethodOrFunction() abort
-    return get(b:, 'vista_nearest_method_or_function', '')
-endfunction
+if exists("*lightline#init") 
+    function! NearestMethodOrFunction() abort
+        return get(b:, 'vista_nearest_method_or_function', '')
+    endfunction
 
-function! MyFiletype()
-    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
-endfunction
+    function! MyFiletype()
+        return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+    endfunction
 
-function! MyFileformat()
-    return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
-endfunction
-" ----- colorscheme helpers
-fun! s:setLightlineColorscheme(name)
-    let g:lightline.colorscheme = a:name
-    call lightline#init()
-    call lightline#colorscheme()
-    call lightline#update()
-    let s:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
-    " inject center bar blank into pallete (an interesting hack)
-    let s:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
-    "let s:palette.inactive.middle = s:palette.normal.middle
-    let s:palette.tabline.middle = s:palette.normal.middle
-endfun
+    function! MyFileformat()
+        return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
+    endfunction
+    " ----- colorscheme helpers
+    fun! s:setLightlineColorscheme(name)
+        let g:lightline.colorscheme = a:name
+        call lightline#init()
+        call lightline#colorscheme()
+        call lightline#update()
+        let s:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
+        " inject center bar blank into pallete (an interesting hack)
+        let s:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
+        "let s:palette.inactive.middle = s:palette.normal.middle
+        let s:palette.tabline.middle = s:palette.normal.middle
+    endfun
 
-fun! s:lightlineColorschemes(...)
-    return join(map(
-                \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
-                \ "fnamemodify(v:val,':t:r')"),
-                \ "\n")
-endfun
+    fun! s:lightlineColorschemes(...)
+        return join(map(
+                    \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
+                    \ "fnamemodify(v:val,':t:r')"),
+                    \ "\n")
+    endfun
 
 
-com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
-            \ call s:setLightlineColorscheme(<q-args>)
-LightlineColorscheme tender
+    com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
+                \ call s:setLightlineColorscheme(<q-args>)
+    LightlineColorscheme tender
+endif
 
 
 " --------------------

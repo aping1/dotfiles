@@ -7,3 +7,6 @@
 [submodule "vim-plug"]
 	path = deps/vim-plug
 	url = https://github.com/junegunn/vim-plug.git
+[submodule "deps/vim-plug"]
+	path = deps/vim-plug
+	url = https://github.com/junegunn/vim-plug.git

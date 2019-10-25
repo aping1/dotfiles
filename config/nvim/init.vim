@@ -62,10 +62,6 @@ set shiftround
 "Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
 "If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
 "(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
-if exists('$TMUX')
-    autocmd BufEnter * call system("tmux rename-window '" . expand("%:t") . "'")
-    autocmd VimLeave * call system("tmux setw automatic-rename")
-endif
 if (empty($TMUX))
   if (has("nvim"))
   "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
@@ -89,6 +85,18 @@ else
     let g:python3_host_prog=g:python_host_prog
 endif
 
+
+let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
+let runtimepath=&runtimepath . ',' . substitute(expand("%:p"), autoload_plug_path, '', 'g')
+if empty(glob(autoload_plug_path))
+  silent ! exec '!curl -fLo ' . autoload_plug_path . 
+                \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+else"
+exec "set rtp=" . autoload_plug_path . "," . &rtp 
+endif
+
+unlet autoload_plug_path
 
 call plug#begin('~/.config/nvim/plugged')
 
@@ -187,6 +195,7 @@ Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'roxma/vim-tmux-clipboard'
 
 call plug#end()
+
 filetype plugin indent on     " required
 
 let s:blacklist = ['nofile', 'help']
@@ -349,8 +358,8 @@ au BufNewFile COMMIT_EDITING let syntax = diff
 set grepprg=ag\ --vimgrep\ $* 
 set grepformat=%f:%l:%c:%m
 
-if glob('$HOME/.config/nvim/iron.plugin.lua')
-luafile $HOME/.config/nvim/iron.plugin.lua
+if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
+    silent! luafile $HOME/.config/nvim/iron.plugin.lua
 endif
 
 set foldenable          " enable folding
@@ -445,8 +454,14 @@ let g:ale_fixers = { 'python' : ['black' ],
             \        'terraform' : ['terraform'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
-let g:ale_python_flake8_args = "--max-line-length=".linelen
-let g:ale_python_flake8_options "--max-line-length=".linelen
+" Set max line length.
+let linelen = 120 
+execute "set colorcolumn=".linelen
+highlight OverLength ctermbg=red ctermfg=white guibg=#e88388
+execute "match OverLength /\%".linelen."v.\+/"
+
+let g:ale_python_flake8_args = "--max-line-length=" . linelen
+let g:ale_python_flake8_options = "--max-line-length=" . linelen
 
 let g:ale_fix_on_save = 0
 let g:ale_set_loclist = 1
@@ -741,12 +756,6 @@ set background=dark " for the light version
 map <F3> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 let g:one_allow_italics = 0 " I love italic for comments
 silent! colorscheme one
-
-" Set max line length.
-let linelen = 120 
-execute "set colorcolumn=".linelen
-highlight OverLength ctermbg=red ctermfg=white guibg=#e88388
-execute "match OverLength /\%".linelen."v.\+/"
 
 augroup IndentGuests
 " base 00
