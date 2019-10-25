@@ -81,7 +81,6 @@ ZSH_TMUX_AUTOQUIT=false
 # Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
 export DEFAULT_USER=awampler
 
-
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
 if [ ! $TERM = dumb ]; then
     ZGEN_AUTOLOAD_COMPINIT=true
@@ -119,28 +118,22 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/urltools
         zgen oh-my-zsh plugins/vundle
         zgen oh-my-zsh plugins/web-search
-        zen load joel-porquet/zsh-dircolors-solarized
         zgen oh-my-zsh plugins/z
 
         # https://github.com/Tarrasch/zsh-autoenv
         #zgen load Tarrasch/zsh-autoenv
         # https://github.com/zsh-users/zsh-completions
+        zen load joel-porquet/zsh-dircolors-solarized
         zgen load zsh-users/zsh-completions src
 
         # my own plugins each of these folders use init.zsh entry point
         # zgen load $DOTFILES/plugins/fbtools
 
-        # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        # load https://github.com/bhilburn/powerlevel9k theme for zsh
-        zplug romkatv/powerlevel10k, as:theme, depth:1
+        zgen load romkatv/powerlevel10k powerlevel10kn manager
+
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
         # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
-
-        # zgen load christian-schulze/powerlevel9k powerlevel9k.zsh-theme
-
-        # It takes control, so load last
-        zgen load $DOTFILES/plugins/my-tmux
 
         zgen save
     fi
@@ -176,7 +169,7 @@ elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
     # add to end of path
 fi
 
-if [[ ${DOTFILES} ]]; then 
+if [[ -n "${DOTFILES}" ]]; then 
     path=(
         $path
         ${DOTFILES}/scripts
@@ -217,7 +210,7 @@ setopt COMPLETE_IN_WORD BRACE_CCL AUTO_PARAM_SLASH
 # LISTMAX=0
 
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
-export ZSH_AUTOSUGGEST_STRATEGY=( match_prev_cmd completion )
+#export ZSH_AUTOSUGGEST_STRATEGY=("match_prev_cmd" "completion")
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline" # Red
 export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 [[ ${+ZSH_HIGHLIGHT_STYLES} == 1 ]] && \

@@ -18,6 +18,9 @@ case $(uname) in
   Linux)
     # commands for Linux go here
     export DISTRO=linux
+    export LANG="en_US.UTF-8"
+    export LC_ALL="C.UTF-8"
+    export LC_CTYPE="C.UTF-8"
   ;;
   FreeBSD)
     # commands for FreeBSD go here
@@ -26,8 +29,9 @@ case $(uname) in
   *)
     # commands for Linux go here
     export DISTRO=posix
-export LANG="en_US.UTF-8"
-export LC_ALL="C.UTF-8"
-export LC_CTYPE="C.UTF-8"
+    command -v locale
+    locale -a | grep utf8 | grep en | grep US | read LC_ALL || \
+    locale -a | grep utf8 | read LC_ALL
+    export LC_ALL
   ;;
 esac
