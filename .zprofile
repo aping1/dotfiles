@@ -31,7 +31,7 @@ case $(uname) in
     export DISTRO=posix
     command -v locale
     locale -a | grep utf8 | grep en | grep US | read LC_ALL || \
-    locale -a | grep utf8 | read LC_ALL
+    [[ ${LC_ALL} ]] || locale -a | grep utf8 | read LC_ALL
     export LC_ALL
   ;;
 esac
