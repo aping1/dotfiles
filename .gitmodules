@@ -4,9 +4,6 @@
 [submodule "tpm"]
 	path = deps/tpm
 	url = https://github.com/tmux-plugins/tpm.git
-[submodule "plug.vim"]
-    path = deps/plug.vim
-	url = https://github.com/junegunn/vim-plug.git
 [submodule "vim-plug"]
 	path = deps/vim-plug
 	url = https://github.com/junegunn/vim-plug.git

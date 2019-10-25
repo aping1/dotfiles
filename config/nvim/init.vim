@@ -62,8 +62,17 @@ set shiftround
 "Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
 "If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
 "(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
-if (has("termguicolors"))
-    set termguicolors
+if (empty($TMUX))
+  if (has('nvim'))
+  "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+endif
+if (has('termguicolors'))
+set termguicolors
 endif
 
 set clipboard=unnamedplus
@@ -77,10 +86,26 @@ else
 endif
 
 
+let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
+let runtimepath=&runtimepath . ',' . substitute(expand("%:p"), autoload_plug_path, '', 'g')
+if empty(glob(autoload_plug_path))
+  silent ! exec '!curl -fLo ' . autoload_plug_path . 
+                \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+else"
+exec "set rtp=" . autoload_plug_path . "," . &rtp 
+endif
+
+unlet autoload_plug_path
+
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'kevinhui/vim-docker-tools'
-" --- Colorscheme(s) ---
+Plug 'gyim/vim-boxdraw'
+Plug 'mg979/vim-visual-multi'
+Plug 'hashivim/vim-terraform'
+Plug 'towolf/vim-helm'
+
 Plug 'flazz/vim-colorschemes'
 Plug 'iCyMind/NeoSolarized'
 Plug 'jacoborus/tender.vim'
@@ -93,14 +118,34 @@ Plug 'dunstontc/denite-mapping'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'numkil/ag.nvim'
+Plug 'Chiel92/vim-autoformat'
+Plug 'leshill/vim-json'
+
+" Projects
+Plug 'amiorin/vim-project'
+Plug 'tpope/vim-projectionist'
+
+" Auto color hex
+Plug 'lilydjwg/Colorizer'
+" Hide sum and such as unicode 
+Plug 'ehamberg/vim-cute-python'
+Plug 'merlinrebrovic/focus.vim'
 
 " Navigation
 Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+
 Plug 'scrooloose/nerdcommenter'
 Plug 'mg979/vim-visual-multi'
+Plug 'scrooloose/nerdcommenter'
 
 " Writing
+" fuzzy find 
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+
 Plug 'SidOfc/mkdx'
+Plug 'vimwiki/vimwiki'
+Plug 'tpope/vim-markdown'
 Plug 'itspriddle/vim-marked'
 Plug 'gyim/vim-boxdraw'
 
@@ -116,6 +161,11 @@ Plug 'Shougo/echodoc.vim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'zchee/deoplete-jedi'
 Plug 'davidhalter/jedi-vim'
+Plug 'zchee/deoplete-jedi'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'aping1/deoplete-zsh', { 'branch': 'develop' }
+Plug 'juliosueiras/vim-terraform-completion'
+Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 
 " Linting, syntax, autocomplete, semantic highlighting Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 
@@ -128,11 +178,24 @@ Plug 'plytophogy/vim-virtualenv'
 Plug 'lambdalisue/vim-pyenv'
 Plug 'bfredl/nvim-ipy'
 Plug 'janko/vim-test'
+Plug 'Shougo/neoinclude.vim'
+Plug 'Shougo/context_filetype.vim'
 
 Plug 'mtikekar/nvim-send-to-term'
 Plug 'aping1/deoplete-zsh', { 'branch': 'fix_completion' }
 
 Plug 'tmhedberg/SimpylFold'
+if has('nvim')
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+    Plug 'Shougo/deoplete.nvim'
+    Plug 'roxma/nvim-yarp'
+    Plug 'roxma/vim-hug-neovim-rpc'
+endif
+
+Plug 'davidhalter/jedi-vim', { 'branch': 'master' }
+Plug 'janko/vim-test'
+ 
 " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
@@ -192,8 +255,16 @@ let g:nvimgdb_config_override = {
 "----------------------------------------------
 " Plugin: 'vimwiki/vimwiki'
 "----------------------------------------------
-let g:vimwiki_list = [{'path': '~/wiki/',
-                     \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
+                    \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_ext2syntax = {'.md': 'markdown',
+                  \ '.mkd': 'markdown',
+                  \ '.wiki': 'media'}
+
+"----------------------------------------------
+" Plugin'tpope/vim-markdown'
+"----------------------------------------------
+let g:markdown_fenced_languages = ['html', 'css', 'scss', 'sql', 'javascript', 'go', 'python', 'bash=sh', 'c', 'ruby', 'zsh', 'yaml', 'json' ]
 "----------------------------------------------
 " Plugin: 'SidOfc/mkdx'
 "----------------------------------------------
@@ -257,6 +328,14 @@ highlight PmenuSel ctermbg=black ctermfg=white
 " Reload .vimrc immediately when edited
 autocmd! bufwritepost ~/.config/nvim/init.vim source ~/.config/nvim/init.vim
 
+" Change the Pmenu colors so they're more readable.
+highlight Pmenu ctermbg=cyan ctermfg=white
+highlight PmenuSel ctermbg=black ctermfg=white
+
+" Reload .vimrc immediately when edited
+set autoread
+autocmd! bufwritepost ~/.config/nvim/init.vim source ~/.config/nvim/init.vim
+
 " Tell VIM which tags file to use.
 set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
 
@@ -268,6 +347,8 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 "au FileType json exe ":silent 1, $!jq . - 2> /dev/null"
 
 set mouse+=a
+" Reload .vimrc immediately when edited
+set autoread
 
 imap OA <ESC>ki
 imap OB <ESC>ji
@@ -282,7 +363,9 @@ au BufNewFile COMMIT_EDITING let syntax = diff
 set grepprg=ag\ --vimgrep\ $* 
 set grepformat=%f:%l:%c:%m
 
-luafile $HOME/.config/nvim/iron.plugin.lua
+if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
+    silent! luafile $HOME/.config/nvim/iron.plugin.lua
+endif
 
 set foldenable          " enable folding
 set foldlevelstart=10   " open most folds by default
@@ -314,7 +397,7 @@ let g:jedi#use_splits_not_buffers = "right"
 
 " let g:deoplete#sources#jedi#extra_path = ['/dev/shm/fbcode-vimcache']
 
-if jedi#init_python()
+if has('python3') && has('*jed*') && exists('*jedi#init_python') && jedi#init_python()
   function! s:jedi_auto_force_py_version() abort
     let g:jedi#force_py_version = pyenv#python#get_internal_major_version()
     if exists("$VIRTUAL_ENV")
@@ -340,11 +423,51 @@ let g:deoplete#auto_complete_delay = 10
 " let g:deoplete#enable_at_startup = 1
 
 let g:deoplete#enable_at_startup = 1
+let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
+" use tab
+function! s:check_back_space() abort "{{{
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction"}}}
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ deoplete#manual_complete()
+
 
 " use tab
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
 let g:jedi#show_call_signatures = "1"
+augroup deopleteExtre
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+augroup  END
+
+"----------------------------------------------
+" Plugin Shougo/denite.nvim'
+"----------------------------------------------
+
+augroup DeniteAction
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
+  nnoremap <silent><buffer><expr> <CR>
+  \ denite#do_map('do_action')
+  nnoremap <silent><buffer><expr> d
+  \ denite#do_map('do_action', 'delete')
+  nnoremap <silent><buffer><expr> p
+  \ denite#do_map('do_action', 'preview')
+  nnoremap <silent><buffer><expr> q
+  \ denite#do_map('quit')
+  nnoremap <silent><buffer><expr> i
+  \ denite#do_map('open_filter_buffer')
+  nnoremap <silent><buffer><expr> <Space>
+  \ denite#do_map('toggle_select').'j'
+endfunction
+augroup END
+
 
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'virtual'
@@ -373,6 +496,16 @@ let b:ale_linters = { 'python': ['flake8', 'mypy' ] }
 " Fix Python files with autopep8 and yapf.
 let b:ale_fixers = { 'python' : ['black'],
                 \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
+let g:ale_linters = { 
+            \'python': ['flake8', 'mypy' ],
+            \'vim' : ['vint'] 
+            \}
+
+" Fix Python files with autopep8 and yapf.
+let g:ale_fixers = { 
+            \'python' : ['black'], 
+            \'lua' : ['trimwhitespace', 'remove_trailing_lines']
+            \}
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
 
@@ -423,8 +556,9 @@ let g:lightline = {
       \ 'active': {
       \   'left': [ [  'mode', 'paste', 'spell' ],
       \             [ 'pyenv', 'pyenv_active' ],
-      \             ['fugitive' ] ],
-      \   'right': [ 
+      \             [ 'fugitive', 'tagbar' ] ],
+      \   'right': [ ['filename', 'lineno', 'percent' ], 
+      \              [ 'filetype', 'fileformat', 'readonly' ],
       \              [ 'linter_checking', 'linter_errors',
       \                'linter_warnings', 'linter_ok'  ],
       \              ['filename', 'lineno', 'percent' ], 
@@ -440,16 +574,18 @@ let g:lightline = {
       \  'gitbranch': 'fugitive#head'
       \ },
       \ 'component': {
+      \   'tagbar': '%{tagbar#currenttag("[%s]", "")}',
       \   'spell': '%{&spell?&spelllang:""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{&filetype=="help"?"":exists("*FugitiveStatusline")?FugitiveStatusline():""}',
-      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?"\uf00c":""}'
+      \   'fugitive': '%{&filetype=="help"?"":exists("*LightlineFugitive")?LightlineFugitive():""}',
+      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?"\uf00c":""}',
       \ },
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
       \   'fugitive': '(&filetype!="help"&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
-      \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())'
+      \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
+      \   'tagbar': '(exists("tagbar#currenttag"))',
       \ },
       \ 'component_type': {
       \     'linter_checking': 'left',
@@ -541,6 +677,9 @@ if exists('$TMUX')
     endif
 
     let g:tmux_navigator_save_on_switch = 1
+let g:tmux_navigator_save_on_switch = 1
+
+    let g:tmux_navigator_save_on_switch = 1
 
     " Move between splits with ctrl+h,j,k,l
     nnoremap <silent> <leader><c-h> :TmuxNavigateLeft<cr>
@@ -585,6 +724,21 @@ let NERDTreeIgnore = [
 " Close vim if NERDTree is the only opened window.
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
+function! NERDTreeYankCurrentNode()
+    let n = g:NERDTreeFileNode.GetSelected()
+    if n != {}
+        call setreg('=', n.path.str())
+        call setreg('+', n.path.str())
+    endif
+endfunction
+
+if exists('NERDTreeAddKeyMap')
+call NERDTreeAddKeyMap({
+        \ 'key': 'yy',
+        \ 'callback': 'NERDTreeYankCurrentNode',
+        \ 'quickhelpText': 'put full path of current node into the default register' })
+endif
+
 let g:NERDTreeIndicatorMapCustom = {
     \ "Modified"  : "✹",
     \ "Staged"    : "✚",
@@ -612,6 +766,7 @@ call NERDTreeAddKeyMap({
         \ 'callback': 'NERDTreeYankCurrentNode',
         \ 'quickhelpText': 'put full path of current node into the default register' })
 endif
+augroup END
 
 
 " Allow NERDTree to change session root.
@@ -626,19 +781,17 @@ let NERDTreeQuitOnOpen=0
 " Colorscheme 
 " --------------------------------------------
 colorscheme one
-let g:one_allow_italics = 1 " I love italic for comments
 
 set background=dark " for the light version
 
 map <F3> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 let g:one_allow_italics = 0 " I love italic for comments
-colorscheme one
-
 " Set max line length.
 let linelen = 120 
 execute "set colorcolumn=".linelen
 highlight OverLength ctermbg=red ctermfg=white guibg=#e88388
 execute "match OverLength /\%".linelen."v.\+/"
+let g:one_allow_italics = 1 " I love italic for comments
 
 augroup IndentGuests
 " base 00
@@ -648,11 +801,6 @@ autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=7 guibg=#abb2bf
 " Change the Pmenu colors so they're more readable.
 highlight Pmenu ctermbg=cyan ctermfg=white
 highlight PmenuSel ctermbg=black ctermfg=white
-
-" Set max line length.
-" let linelen = 120 
-" execute "set colorcolumn=".linelen
-" execute "match OverLength /\%".linelen."v.\+/"
 
 " set highlight cursor
 "augroup CursorLine
@@ -734,6 +882,28 @@ function! TabMessage(cmd)
     silent put=message
 
   endif
+endfunction
+command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+" When using `dd` in the quickfix list, remove the item from the quickfix list.
+function! RemoveQFItem()
+  let curqfidx = line('.') - 1
+  let qfall = getqflist()
+  call remove(qfall, curqfidx)
+  call setqflist(qfall, 'r')
+  execute curqfidx + 1 . 'cfirst'
+  :copen
+endfunction
+command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+" When using `dd` in the quickfix list, remove the item from the quickfix list.
+function! RemoveQFItem()
+  let curqfidx = line('.') - 1
+  let qfall = getqflist()
+  call remove(qfall, curqfidx)
+  call setqflist(qfall, 'r')
+  execute curqfidx + 1 . 'cfirst'
+  :copen
 endfunction
 command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
 

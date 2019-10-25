@@ -1,5 +1,29 @@
 
-#if which clusterssh-dev; then
-#    alias clusterssh-remote='clusterssh-dev -i ${HOME}/.dotfiles/remote/.bash_aliases -i ${HOME}/.dotfiles/remote/.bash_profile -i ${HOME}/.dotfiles/remote/.tmux.conf -i ${HOME}/.dotfiles/remote/bin -i ${HOME}/.dotfiles/remote/.bash_plugins -i ${HOME}/.dotfiles/remote/.gdbinit'
+export ZSH_ALIASES_LOADED
+
+#if command -v bat &>/dev/null; then
+#    alias cat=bat
 #fi
 
+if command -v nvim &>/dev/null; then
+    alias vim=nvim
+    alias vi=nvim
+elif command -v vim &>/dev/null ; then
+    alias vi=vim
+fi
+
+if !  command -v vimr &>/dev/null; then
+    echo 'vimr not installed' >&2
+    return 1
+elif [[ ${DISTRO} == "darwin" ]]; then
+    alias vimr='vimr --cur-env --nvim'
+    alias vim='vimr'
+fi
+
+if [[ $TERM =~ ^xterm ]]; then
+    if command -v lsd &>/dev/null; then
+        alias ls=lsd
+    elif command -v ls &>/dev/null; then
+        alias ls='ls --color=always'
+    fi
+fi

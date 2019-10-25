@@ -1,23 +1,11 @@
 [user]
     name = Allison Wampler
     email = aping1@apt-miss.com
-[filter "lfs"]
-        clean = git-lfs clean -- %f
-        smudge = git-lfs smudge -- %f
-        process = git-lfs filter-process
-        required = true
-[difftool "vimrdiff"]
-    cmd = vimr --wait --nvim -d -o $LOCAL $REMOTE
 [diff]
     tool = vimdiff
-    conflictstyle = diff3
-[mergetool "vimdiff"]
-  cmd = vim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
-[difftool "vimdiff"]
-  cmd = vim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [merge]
     tool = vimdiff
-    conflictstyle = diff3
+    guitool = vimrdiff
 [core]
 	excludesfile = ~/.gitignore_global
 	editor = vim
@@ -27,38 +15,29 @@
     conflictstyle = diff3
 	keepBackup = false
 [mergetool "fugitive"]
-    cmd = vim -f -c "Gdiff" "$MERGED"
+    cmd = vim -f -c "Gdiff" "$LOCAL" -c "Gdiffsplit $REMOTE" -c 'wincmd w' -c 'wincmd L' 
 [mergetool "vimdiff"]
-	cmd = vim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+	cmd = vim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
+[mergetool "vimrdiff"]
+    cmd = vimr --wait $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[mergetool "diffconflicts"]
+	cmd = diffconflicts vim $BASE $LOCAL $REMOTE $MERGED
 [diff]
 	tool = vimdiff
+    guitool = vimrdiff
 [difftool]
     prompt = false
     conflictstyle = diff3
-    tool = vimdiff
-[difftool "opendiff"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
 [difftool "vimdiff"]
-	cmd = vim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
-[difftool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
+	cmd = vim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "vimrdiff"]
+    cmd = vimr --wait $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "diffconflicts"]
+	cmd = diffconflicts vim $BASE $LOCAL $REMOTE $MERGED
 [color]
-	pager = no
+	pager = yes
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[mergetool "sourcetree"]
-	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
-[mergetool "diffconflicts"]
-	cmd = diffconflicts vim $BASE $LOCAL $REMOTE $MERGED
-	trustExitCode = true
-[alias]
-	sl = !git smartlog
-	smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)%an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
-[commit]
-	verbose = true

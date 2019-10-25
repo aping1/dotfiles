@@ -1,5 +1,4 @@
 "
-"
 " ~/.vimrc (local shell)
 "
 
@@ -33,6 +32,7 @@ endif
 
 " Tell VIM which tags file to use.
 set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
+||||||| merged common ancestors
 
 set ruler
 
@@ -73,7 +73,7 @@ set foldmethod=indent   " fold based on indent level
 set laststatus=2
 set number
 
-set ts=4
+set tabstop=4
 set sw=4
 set ai
 set expandtab
@@ -84,9 +84,60 @@ if empty(glob('~/.vim/autoload/plug.vim'))
                 \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+||||||| merged common ancestors
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+" set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+
+call vundle#begin()
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'flazz/vim-colorschemes'
+"Plugin 'severin-lemaignan/vim-minimap'
+Plugin 'tpope/vim-scriptease'
+"Plugin 'applescript.vim'
+Plugin 'Tagbar'
+Plugin 'vim-flake8'
+Plugin 'SimpylFold'
+" other packages, run ' vim +PluginInstall +qall ' to up date them
+Plugin 'lifepillar/vim-solarized8'
+Plugin 'tpope/vim-fugitive'
+Plugin 'airblade/vim-gitgutter'
+"Plugin 'saltstack/salt-vim'
+"Plugin 'scrooloose/syntastic'
+"Plugin 'Valloric/YouCompleteMe'
+Plugin 'scrooloose/nerdtree'
+Plugin 'vim-scripts/ag.vim'
+Plugin 'rizzatti/dash.vim'
+
+
+Plugin 'godlygeek/tabular'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'tpope/vim-obsession'
+Plugin 'vim-scripts/vim-misc'
+Plugin 'vim-scripts/gitdiff.vim'
+Plugin 'vim-scripts/pdbvim'
+"Plugin 'solarnz/thrift.vim'
+
+
+Plugin 'bling/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+" Local Shortccuts
+Plugin 'file:///home/aping1/.dotfiles/vim/colorscheme'
+
+" uses pygtk
+" A simple color picker for VIM, based on GTK color chooser dialog.
+" Plugin 'vim-scripts/VIM-Color-Picker'
+" A script that lets you insert hex color codes by using OS X's color picker
+" Plugin 'vim-scripts/ColorX'
+
+call vundle#end()
+filetype plugin indent on     " required
 
 if isdirectory("~/.config/nvim/plugged") 
     call plug#begin("~/.config/nvim/plugged")
+||||||| merged common ancestors
+" These lines setup the environment to show graphics and colors correctly.
+set nocompatible
 
 else
     if empty(glob('~/.vim/autoload/plug.vim'))
@@ -97,10 +148,25 @@ else
         endif
     endif 
     call plug#begin('~/.vim/plugged')
+||||||| merged common ancestors
+" Quickly close in gui mode
+if ! has('gui_running')
+   set ttimeoutlen=10
+   augroup FastEscape
+      autocmd!
+      au InsertEnter * set timeoutlen=0
+      au InsertLeave * set timeoutlen=1000
+   augroup END
+endif
 
     Plug 'jez/vim-superman'
     " --- Colorscheme ---
     Plug 'jacoborus/tender.vim'
+||||||| merged common ancestors
+"let c_space_errors = 0
+let python_space_errors = 1
+"blet ruby_space_errors = 1
+"let java_space_errors = 1
 
     Plug 'vim-scripts/ag.vim'
 
@@ -119,27 +185,53 @@ else
     Plug 'tmhedberg/SimpylFold'
     Plug 'itchyny/lightline.vim'
     Plug 'maximbaz/lightline-ale'
+||||||| merged common ancestors
+let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
+"
+" pymode options
+"
 
     Plug 'tmux-plugins/vim-tmux-focus-events'
     Plug 'roxma/vim-tmux-clipboard'
+||||||| merged common ancestors
+" OPTION: g:pymode_folding -- bool. Disable python-mode folding for pyfiles.
+"call pymode#Default("g:pymode_folding", 0)
 
     " --- languages
     Plug 'saltstack/salt-vim'
     Plug 'vim-scripts/applescript.vim'
     Plug 'hashivim/vim-terraform'
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+||||||| merged common ancestors
+" OPTION: g:pymode_syntax -- bool. Enable python-mode syntax for pyfiles.
+"call pymode#Default("g:pymode_syntax", 1)
 
     call plug#end()
+||||||| merged common ancestors
+" OPTION: g:pymode_indent -- bool. Enable/Disable pymode PEP8 indentation
+"call pymode#Default("g:pymode_indent", 1)
 
+||||||| merged common ancestors
+" OPTION: g:pymode_utils_whitespaces -- bool. Remove unused whitespaces on save
+"call pymode#Default("g:pymode_utils_whitespaces", 1)
 
+||||||| merged common ancestors
+" OPTION: g:pymode_options -- bool. To set some python options.
+"call pymode#Default("g:pymode_options", 1)
 
     " Change the Pmenu colors so they're more readable.
     highlight Pmenu ctermbg=cyan ctermfg=white
     highlight PmenuSel ctermbg=black ctermfg=white
+||||||| merged common ancestors
+" OPTION: g:pymode_updatetime -- int. Set updatetime for async pymode's operation
+"call pymode#Default("g:pymode_updatetime", 1000)
 
     let linelen=80
     highlight OverLength ctermbg=red ctermfg=white guibg=#592929
     execute "match OverLength /\%".linelen."v.\+/"
+||||||| merged common ancestors
+" OPTION: g:pymode_lint_ignore -- string. Skip errors and warnings (e.g.  E4,W)
+"call pymode#Default("g:pymode_lint_ignore", "E501")
 
     " set highlight cursor
     "augroup CursorLine
@@ -164,6 +256,16 @@ autocmd! bufwritepost vimrc source ~/.vimrc
 " Change the Pmenu colors so they're more readable.
 highlight Pmenu ctermbg=cyan ctermfg=white
 highlight PmenuSel ctermbg=black ctermfg=white
+||||||| merged common ancestors
+" Reload .vimrc immediately when edited
+autocmd! bufwritepost vimrc source ~/.vimrc
+
+" Set max line length.
+let linelen = 80
+execute "set colorcolumn=".linelen
+highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+execute "match OverLength /\%".linelen."v.\+/"
+
 " set highlight cursor
 "augroup CursorLine
 "  au!
@@ -239,6 +341,8 @@ map <F4> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 set guifont=Hack\ Nerd\ Font:h12
 
 set clipboard=unnamed
+||||||| merged common ancestors
+:map <F2> :colorscheme solarized8_high
 
 " Pythong Template =s
 "
@@ -473,3 +577,4 @@ let NERDTreeShowBookmarks=1
 let NERDTreeChDirMode=2
 let NERDTreeQuitOnOpen=0
 
+||||||| merged common ancestors

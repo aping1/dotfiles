@@ -51,3 +51,7 @@ config/nvim/plugged/**
 .tmux
 .vim
 .zgen
+
+.tup/**
+.python_version
+
