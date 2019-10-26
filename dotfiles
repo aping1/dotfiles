@@ -67,8 +67,6 @@ link nvim ~/.config/nvim
 # ipython/profile_default/db/dhist
 
 link .config/nvim/plugged/vim-superman/bin/vman .local/bin/
-# latest diffconflicts script 
-github https://raw.githubusercontent.com/whiteinge/dotfiles/master/bin/diffconflicts
 
 tap "homebrew/bundle" 
 tap "homebrew/cask"
