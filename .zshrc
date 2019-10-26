@@ -91,12 +91,11 @@ if [ ! $TERM = dumb ]; then
     fi
 
     # load zgen
-    source $HOME/.zgen/zgen.zsh
+    source $DOTFILESDEPS/zgen/zgen.zsh
     if [[ ${ZGENRESET:-N} =~ ^[Yy]$ ]]; then
         zgen reset
     fi
 
-    ZGEN_RESET_ON_CHANGE=(${HOME}/.zshrc ${HOME}/.zshrc.local)
     # configure zgen
     if ! zgen saved; then
 
@@ -105,7 +104,6 @@ if [ ! $TERM = dumb ]; then
 
         # list of plugins from zsh I use
         # see https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
-        zgen oh-my-zsh
         # zgen oh-my-zsh plugins/bower
         # zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh plugins/git

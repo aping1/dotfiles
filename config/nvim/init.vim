@@ -319,14 +319,6 @@ let python_space_errors = 1
 "blet ruby_space_errors = 1
 "let java_space_errors = 1
 
-:au BufNewFile,BufRead *.jinja set filetype=jinja
-
-" Change the Pmenu colors so they're more readable.
-highlight Pmenu ctermbg=cyan ctermfg=white
-highlight PmenuSel ctermbg=black ctermfg=white
-
-" Reload .vimrc immediately when edited
-autocmd! bufwritepost ~/.config/nvim/init.vim source ~/.config/nvim/init.vim
 
 " Change the Pmenu colors so they're more readable.
 highlight Pmenu ctermbg=cyan ctermfg=white
@@ -425,17 +417,6 @@ let g:deoplete#auto_complete_delay = 10
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 " use tab
-function! s:check_back_space() abort "{{{
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction"}}}
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ deoplete#manual_complete()
-
-
-" use tab
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
@@ -479,10 +460,26 @@ let g:ale_sign_error = '⤫'
 let g:ale_sign_warning = '⚠'
 
 let g:ale_linters_explicit = 1
+let g:ale_linters = { 'python' : ['flake8', 'pyre'], 
+            \'vim' : ['vint'] 
+            \       'sh' : ['shellcheck'],
+            \       'terraform' : ['tflint'] }
 " " Fix Python files with autopep8 and yapf.
+let g:ale_fixers = { 'python' : ['black' ],
+            \       'lua' : ['trimwhitespace', 'remove_trailing_lines'], 
+            \        'terraform' : ['terraform'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
-let g:ale_fix_on_save=0
+" Set max line length.
+let linelen = 120 
+execute "set colorcolumn=".linelen
+highlight OverLength ctermbg=red ctermfg=white guibg=#e88388
+execute "match OverLength /\%".linelen."v.\+/"
+
+let g:ale_python_flake8_args = "--max-line-length=" . linelen
+let g:ale_python_flake8_options = "--max-line-length=" . linelen
+
+let g:ale_fix_on_save = 0
 let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
@@ -490,22 +487,6 @@ let g:ale_open_list = 1
 " This can be useful if you are combining ALE with
 " some other plugin which sets quickfix errors, etc.
 let g:ale_keep_list_window_open = 1
-" Set this if you want to.
-" Enable integration with " Check Python files with flake8 and pylint.
-let b:ale_linters = { 'python': ['flake8', 'mypy' ] }
-" Fix Python files with autopep8 and yapf.
-let b:ale_fixers = { 'python' : ['black'],
-                \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
-let g:ale_linters = { 
-            \'python': ['flake8', 'mypy' ],
-            \'vim' : ['vint'] 
-            \}
-
-" Fix Python files with autopep8 and yapf.
-let g:ale_fixers = { 
-            \'python' : ['black'], 
-            \'lua' : ['trimwhitespace', 'remove_trailing_lines']
-            \}
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
 
@@ -786,6 +767,8 @@ set background=dark " for the light version
 
 map <F3> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 let g:one_allow_italics = 0 " I love italic for comments
+silent! colorscheme one
+
 " Set max line length.
 let linelen = 120 
 execute "set colorcolumn=".linelen
