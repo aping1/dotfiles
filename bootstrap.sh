@@ -71,6 +71,8 @@ ln -sf ${DOTFILES}/.gitignore_global .gitignore
 mkdir -p .vim/autoload
 ln -sf ${DOTFILES}/.vimrc
 ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .vim/autoload
+ln -sf ${DOTFILES}/.gitignore_global .gitignore
+
 
 # NVIM
 mkdir -p .config/nvim/autoload
