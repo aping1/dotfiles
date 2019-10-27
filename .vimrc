@@ -130,7 +130,6 @@ else
     Plug 'saltstack/salt-vim'
     Plug 'vim-scripts/applescript.vim'
     Plug 'hashivim/vim-terraform'
-    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
     call plug#end()
 

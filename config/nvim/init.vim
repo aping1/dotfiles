@@ -8,16 +8,16 @@ set smartcase
 
 set shell=/bin/bash
 set encoding=utf8
+" required for iterm 
 set ambiwidth=double
-set ffs=unix,dos,mac
+set fileformats=unix,dos,mac
 set nobackup
 set noswapfile
 set incsearch
 set title
 set showmode
 set wildmenu
-" 2^31-1=2147483648
-set history=9999
+set history=10000
 
 try
     set undodir=~/.vim_runtime/undodir
@@ -40,20 +40,20 @@ set foldcolumn=2
 set laststatus=2
 set number
 
-set ts=4
-set sw=4
-set ai
+set tabstop=4
+set shiftwidth=4
+set ambiwidth
 set hlsearch
 set shiftround
 
-:set number relativenumber
+set number relativenumber
 
-:augroup numbertoggle
-:  autocmd!
-:  autocmd TabEnter,BufEnter,FocusGained,InsertLeave * set relativenumber
-:  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-:  autocmd BufReadPost * set norelativenumber
-:augroup END
+augroup numbertoggle
+autocmd!
+autocmd TabEnter,BufEnter,FocusGained,InsertLeave * set relativenumber
+autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+autocmd BufReadPost * set norelativenumber
+augroup END
 
 " -----
 " 24-bit colors
@@ -71,46 +71,53 @@ if (empty($TMUX))
   "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
   " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
 endif
-if (has('termguicolors'))
-set termguicolors
-endif
 
 set clipboard=unnamedplus
 
-if exists("$VIRTUAL_ENV")
-    let g:python_host_prog=substitute(system("which -a python3 | head -n2 | tail -n1"), '\n', '', 'g')
+if exists('$VIRTUAL_ENV')
+    let g:python_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
     let g:python3_host_prog=g:python_host_prog
 else
-    let g:python_host_prog=substitute(system("command -v python3 || command -v python"), '\n', '', 'g')
+    let g:python_host_prog=substitute(system('command -v python3 || command -v python'), '\n', '', 'g')
     let g:python3_host_prog=g:python_host_prog
 endif
 
 
 let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
-let runtimepath=&runtimepath . ',' . substitute(expand("%:p"), autoload_plug_path, '', 'g')
+let runtimepath=&runtimepath . ',' . substitute(expand('%:p'), autoload_plug_path, '', 'g')
 if empty(glob(autoload_plug_path))
   silent ! exec '!curl -fLo ' . autoload_plug_path . 
                 \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  augroup plug_auto_update
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-else"
-exec "set rtp=" . autoload_plug_path . "," . &rtp 
+    augroup END
+else
+exec 'set runtimepath=' . autoload_plug_path . ',' . &runtimepath
 endif
 
 unlet autoload_plug_path
 
 call plug#begin('~/.config/nvim/plugged')
 
-Plug 'kevinhui/vim-docker-tools'
-Plug 'gyim/vim-boxdraw'
-Plug 'mg979/vim-visual-multi'
-Plug 'hashivim/vim-terraform'
-Plug 'towolf/vim-helm'
-
+" Colorscheme -------
 Plug 'flazz/vim-colorschemes'
 Plug 'iCyMind/NeoSolarized'
 Plug 'jacoborus/tender.vim'
 Plug 'rakr/vim-one'
-Plug 'vimwiki/vimwiki'
+
+" Indent lines ------
+Plug 'nathanaelkane/vim-indent-guides'
+" Git gutter
+Plug 'mhinz/vim-signify'
+" Highlight colors
+Plug 'ap/vim-css-color'
+" Auto color hex
+Plug 'lilydjwg/Colorizer'
+
+" Hide sum and such as unicode 
+Plug 'ehamberg/vim-cute-python'
+Plug 'mhinz/vim-startify'
+Plug 'merlinrebrovic/focus.vim'
 
 " Vim exploration Modifications
 Plug 'Shougo/denite.nvim'
@@ -125,23 +132,12 @@ Plug 'leshill/vim-json'
 Plug 'amiorin/vim-project'
 Plug 'tpope/vim-projectionist'
 
-" Auto color hex
-Plug 'lilydjwg/Colorizer'
-" Hide sum and such as unicode 
-Plug 'ehamberg/vim-cute-python'
-Plug 'merlinrebrovic/focus.vim'
-
 " Navigation
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 
 Plug 'scrooloose/nerdcommenter'
 Plug 'mg979/vim-visual-multi'
-Plug 'scrooloose/nerdcommenter'
-
-" Writing
-" fuzzy find 
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
 Plug 'SidOfc/mkdx'
 Plug 'vimwiki/vimwiki'
@@ -180,22 +176,15 @@ Plug 'bfredl/nvim-ipy'
 Plug 'janko/vim-test'
 Plug 'Shougo/neoinclude.vim'
 Plug 'Shougo/context_filetype.vim'
+Plug 'janko/vim-test'
 
+" ZSH Autocomplete
 Plug 'mtikekar/nvim-send-to-term'
 Plug 'aping1/deoplete-zsh', { 'branch': 'fix_completion' }
 
+" Simply Fold 
 Plug 'tmhedberg/SimpylFold'
-if has('nvim')
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-    Plug 'Shougo/deoplete.nvim'
-    Plug 'roxma/nvim-yarp'
-    Plug 'roxma/vim-hug-neovim-rpc'
-endif
 
-Plug 'davidhalter/jedi-vim', { 'branch': 'master' }
-Plug 'janko/vim-test'
- 
 " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
@@ -203,13 +192,10 @@ Plug 'ryanoasis/vim-devicons'
 
 Plug 'jez/vim-superman'
 
-" Indent lines
-Plug 'nathanaelkane/vim-indent-guides'
-" Git gutter
-Plug 'mhinz/vim-signify'
-" Highlight colors
-Plug 'ap/vim-css-color'
 Plug 'ekalinin/Dockerfile.vim'
+Plug 'kevinhui/vim-docker-tools'
+Plug 'hashivim/vim-terraform'
+Plug 'towolf/vim-helm'
 
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'roxma/vim-tmux-clipboard'
@@ -217,8 +203,95 @@ Plug 'roxma/vim-tmux-clipboard'
 call plug#end()
 filetype plugin indent on     " required
 
-let s:blacklist = ['nofile', 'help']
+" --------------------------------------------
+" Colorscheme 
+" --------------------------------------------
+    hi semshiLocal           guifg=#e88388
+    hi semshiGlobal          guifg=#56b6c2
+    hi semshiImported        ctermfg=214 guifg=#56b6c2 cterm=bold gui=bold
+    hi semshiParameter       ctermfg=75  guifg=#61AFEF
+    hi semshiParameterUnused ctermfg=117 guifg=#61AFEF cterm=underline gui=underline
+    hi semshiFree            ctermfg=218 guifg=#ffafd7
+    hi semshiBuiltin         ctermfg=207 guifg=#c678dd
+    hi semshiAttribute       ctermfg=49  guifg=#a7cc8c
+    hi semshiSelf            ctermfg=249 guifg=#abb2bf
+    hi semshiUnresolved      ctermfg=226 guifg=#e5c07b cterm=underline gui=underline
+    hi semshiSelected        ctermfg=231 guifg=#ffffff ctermbg=161 guibg=#
 
+    hi semshiErrorSign       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
+    hi semshiErrorChar       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
+
+ if has('nvim')
+    " One Colorscheme
+    "
+ 	hi one_terminal_color_fg0 guifg=#353a44
+ 	hi one_terminal_color_fg1 ctermfg=209 guifg=#e88388
+ 	hi one_terminal_color_fg2 ctermfg=49 guifg=#a7cc8c 
+ 	hi one_terminal_color_fg3 ctermfg=226 guifg=#ebca8d
+ 	hi one_terminal_color_fg4 ctermfg=117 guifg=#72bef2
+ 	hi one_terminal_color_fg5 ctermfg=207 guifg=#d291e4
+ 	hi one_terminal_color_fg6 ctermfg=214 guifg=#65c2cd
+ 	hi one_terminal_color_fg7 ctermfg=231 guifg=#e3e5e9
+ 	hi one_terminal_color_fg8 ctermfg=231 guifg=#353a44
+    hi one_terminal_color_fg9 ctermfg=249 guifg=#abb2bf
+
+ 	hi one_terminal_color_bg9 ctermfg=209 guibg=#e88388
+ 	hi one_terminal_color_bg10 guibg=#a7cc8c
+ 	hi one_terminal_color_bg11 ctermfg=226 guibg=#ebca8d
+ 	hi one_terminal_color_bg12 ctermfg=117 guibg=#72bef2
+ 	hi one_terminal_color_bg13 ctermfg=207 guibg=#d291e4
+ 	hi one_terminal_color_bg14 ctermbg=214 guibg=#65c2cd
+ 	hi one_terminal_color_bg15 guibg=#e3e5e9
+ endif
+
+if (has('termguicolors'))
+    set termguicolors
+    let g:one_allow_italics = 0 " I love italic for comments
+    silent! colorscheme one
+else
+    colorscheme default
+    set t_Co=16
+endif
+
+set background=dark
+
+function! s:normalToggleColor()
+    :let &background = ( &background == "dark"? "light" : "dark" ) 
+endfunction
+
+com! -nargs=0 ToggleColor
+    \ call s:normalToggleColor()
+
+map <F3> :ToggleColor<CR>
+
+
+" Set max line length.
+let linelen = 120
+execute "set colorcolumn=".linelen
+highlight OverLength ctermbg=red ctermfg=white ctermfg=231 guifg=#e88388
+execute 'match OverLength /\%'.linelen.'v.\+/'
+
+" Change the Pmenu colors so they're more readable.
+highlight Pmenu ctermbg=cyan ctermfg=white
+highlight PmenuSel ctermbg=black ctermfg=white
+
+augroup IndentGuide
+" base 00
+autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=6 guibg=#65c2cd
+autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
+
+augroup END
+
+" set highlight cursor
+"augroup CursorLine
+"  au!
+"  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+"  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
+"  au WinLeave * setlocal nocursorline
+"augroup END
+"
+
+let s:blacklist = ['nofile', 'help']
 
 "----------------------------------------------
 " Plugin: 'nathanaelkane/vim-indent-guides'
@@ -228,8 +301,10 @@ let g:indent_guides_guide_size = 1
 let g:indent_guides_start_level = 1
 
 if exists('$TMUX')
+    augroup TMUX_RENAME
     autocmd BufEnter * call system("tmux rename-window '" . expand("%:t") . "'")
     autocmd VimLeave * call system("tmux setw automatic-rename")
+    augroup END
 endif
 "----------------------------------------------
 " Plugin: 'tpope/vim-obsession'
@@ -249,17 +324,36 @@ let g:nvimgdb_config_override = {
   \ 'key_continue': 'c',
   \ 'key_until': 'u',
   \ 'key_breakpoint': 'b',
-  \ 'set_tkeymaps': "NvimGdbNoTKeymaps",
+  \ 'set_tkeymaps': 'NvimGdbNoTKeymaps',
   \ }
+"----------------------------------------------
+" Plugin: 'fzf.vim'
+"----------------------------------------------
 
+" Syntax highlight preview
+let g:fzf_preview_highlighter = 'highlight -O xterm256 --line-number --style rdark --force'
+
+" Files with bat previewer
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'bat -p --color always {}']}, <bang>0)
+"----------------------------------------------
+" Plugin: vimwiki/vimwiki
+"----------------------------------------------
+let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
+                      \ 'syntax': 'markdown', 'ext': '.md'}]
 "----------------------------------------------
 " Plugin: 'vimwiki/vimwiki'
 "----------------------------------------------
-let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
-                    \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_list = [{'path': '~/wiki/',
+                     \ 'syntax': 'markdown', 'ext': '.md'}]
 let g:vimwiki_ext2syntax = {'.md': 'markdown',
                   \ '.mkd': 'markdown',
                   \ '.wiki': 'media'}
+
+"----------------------------------------------
+" Plugin'tpope/vim-markdown'
+"----------------------------------------------
+let g:markdown_fenced_languages = ['html', 'css', 'scss', 'sql', 'javascript', 'go', 'python', 'bash=sh', 'c', 'ruby', 'zsh', 'yaml', 'json' ]
 
 "----------------------------------------------
 " Plugin'tpope/vim-markdown'
@@ -307,26 +401,32 @@ nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
 
 let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 
-"----------------------------------------------
-" colorscheme
-"----------------------------------------------
+" --------------------------------------------
+" Plugin: 'numirias/semshi'
+" --------------------------------------------
+function! SemhiOneHighlights()
+    hi semshiLocal           ctermfg=209 guifg=#e88388
+    hi semshiGlobal          ctermfg=214 guifg=#56b6c2
+    hi semshiImported        ctermfg=214 guifg=#56b6c2 cterm=bold gui=bold
+    hi semshiParameter       ctermfg=75  guifg=#61AFEF
+    hi semshiParameterUnused ctermfg=117 guifg=#61AFEF cterm=underline gui=underline
+    hi semshiFree            ctermfg=218 guifg=#ffafd7
+    hi semshiBuiltin         ctermfg=207 guifg=#c678dd
+    hi semshiAttribute       ctermfg=49  guifg=#a7cc8c
+    hi semshiSelf            ctermfg=249 guifg=#abb2bf
+    hi semshiUnresolved      ctermfg=226 guifg=#e5c07b cterm=underline gui=underline
+    hi semshiSelected        ctermfg=231 guifg=#ffffff ctermbg=161 guibg=#
 
-" These lines setup the environment to show graphics and colors correctly.
-set nocompatible
+    hi semshiErrorSign       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
+    hi semshiErrorChar       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
+endfunction
 
-"let c_space_errors = 0
-let python_space_errors = 1
-"blet ruby_space_errors = 1
-"let java_space_errors = 1
-
+autocmd FileType python call SemhiOneHighlights()
+" 
 
 " Change the Pmenu colors so they're more readable.
 highlight Pmenu ctermbg=cyan ctermfg=white
 highlight PmenuSel ctermbg=black ctermfg=white
-
-" Reload .vimrc immediately when edited
-set autoread
-autocmd! bufwritepost ~/.config/nvim/init.vim source ~/.config/nvim/init.vim
 
 " Tell VIM which tags file to use.
 set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
@@ -334,21 +434,22 @@ set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
 set list
 set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 
-" Run lint on these file types.
-"au FileType xml exe ":silent 1, $!xmllint --format --recover - 2> /dev/null"
-"au FileType json exe ":silent 1, $!jq . - 2> /dev/null"
-
-set mouse+=a
-" Reload .vimrc immediately when edited
-set autoread
-
+" Make Arrow Keys work
 imap OA <ESC>ki
 imap OB <ESC>ji
 imap OC <ESC>li
 imap OD <ESC>hi
 
-" au BufNewFile *.py 0r ~/.vim/python.skel | let IndentStyle = "python"
-"
+set mouse+=a
+
+if has("autoread")
+    " Reload .vimrc immediately when edited
+    set autoread
+else
+    " Reload .vimrc immediately when edited
+    autocmd! bufwritepost ~/.config/nvim/init.vim source ~/.config/nvim/init.vim
+endif
+
 au BufNewFile COMMIT_EDITING let syntax = diff
 
 " Use ag for vimgrep
@@ -383,7 +484,7 @@ luafile $HOME/.config/nvim/iron.plugin.lua
 let g:jedi#completions_enabled = 0
 
 " open the go-to function in split, not another buffer
-let g:jedi#use_splits_not_buffers = "right"
+let g:jedi#use_splits_not_buffers = 'right'
 " <leader>n: show the usage of a name in current file
 " <leader>r: rename a name
 
@@ -393,12 +494,12 @@ if has('python3') && has('*jed*') && exists('*jedi#init_python') && jedi#init_py
   function! s:jedi_auto_force_py_version() abort
     let g:jedi#force_py_version = pyenv#python#get_internal_major_version()
     if exists("$VIRTUAL_ENV")
-        let g:python_host_prog=substitute(system("which -a python | head -n1 | tail -n1"), '\n', '', 'g')
-        let g:python3_host_prog=substitute(system("which -a python3 | head -n1 | tail -n1"), '\n', '', 'g')
+        let g:python_host_prog=substitute(system('which -a python | head -n1 | tail -n1'), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system('which -a python3 | head -n1 | tail -n1'), '\n', '', 'g')
         let g:jedi#force_py_version='3'
     else
         let g:python_host_prog=substitute(system("which python"), '\n', '', 'g')
-        let g:python3_host_prog=substitute(system("which python3"), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system('which python3'), '\n', '', 'g')
     endif
   endfunction
   augroup vim-pyenv-custom-augroup
@@ -409,8 +510,8 @@ if has('python3') && has('*jed*') && exists('*jedi#init_python') && jedi#init_py
 endif
 
 nmap <silent> <leader>m :Denite mapping<CR>
-nmap <silent> <F4> :Denite outline<CR>
-nmap <silent> <F3> :Semshi toggle<CR>
+nmap <silent> <F5> :Denite outline<CR>
+nmap <silent> <F4> :Semshi toggle<CR>
 let g:deoplete#auto_complete_delay = 10
 " let g:deoplete#enable_at_startup = 1
 
@@ -418,6 +519,18 @@ let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 " use tab
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
+function! s:check_back_space() abort "{{{
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction"}}}
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ deoplete#manual_complete()
+
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+
 
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
@@ -450,8 +563,7 @@ endfunction
 augroup END
 
 
-let g:echodoc#enable_at_startup = 1
-let g:echodoc#type = 'virtual'
+call deoplete#initialize()
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
@@ -461,27 +573,23 @@ let g:ale_sign_warning = '⚠'
 
 let g:ale_linters_explicit = 1
 let g:ale_linters = { 'python' : ['flake8', 'pyre'], 
-            \'vim' : ['vint'] 
-            \       'sh' : ['shellcheck'],
-            \       'terraform' : ['tflint'] }
+                    \ 'vim' : ['vint'],
+                    \ 'sh' : ['shellcheck'],
+                    \ 'terraform' : ['tflint'],
+                    \ }
 " " Fix Python files with autopep8 and yapf.
 let g:ale_fixers = { 'python' : ['black' ],
-            \       'lua' : ['trimwhitespace', 'remove_trailing_lines'], 
+            \       'lua' : ['trimwhitespace', 'remove_trailing_lines'],
             \        'terraform' : ['terraform'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
-
-" Set max line length.
-let linelen = 120 
-execute "set colorcolumn=".linelen
-highlight OverLength ctermbg=red ctermfg=white guibg=#e88388
-execute "match OverLength /\%".linelen."v.\+/"
 
 let g:ale_python_flake8_args = "--max-line-length=" . linelen
 let g:ale_python_flake8_options = "--max-line-length=" . linelen
 
 let g:ale_fix_on_save = 0
-let g:ale_set_loclist = 1
-let g:ale_set_quickfix = 0
+let g:ale_set_loclist = 0
+" Us quickfix with 'qq' delete
+let g:ale_set_quickfix = 1
 let g:ale_open_list = 1
 " Set this if you want to.
 " This can be useful if you are combining ALE with
@@ -521,7 +629,7 @@ function! s:denite_my_settings() abort
     nnoremap <silent><buffer><expr> d
             \ denite#do_map('do_action', 'delete')
     nnoremap <silent><buffer><expr> p
-            denite#do_map('do_action', 'preview')
+            \ denite#do_map('do_action', 'preview')
     nnoremap <silent><buffer><expr> q
             \ denite#do_map('quit')
     nnoremap <silent><buffer><expr> i
@@ -530,20 +638,47 @@ function! s:denite_my_settings() abort
 \ denite#do_map('toggle_select').'j'
 endfunction
 
+" Run lint on these file types.
+au FileType xml exe ":silent 1, $!xmllint --format --recover - 2> /dev/null"
+au FileType json exe ":silent 1, $!jq . - 2> /dev/null"
+
 "----------------------------------------------
 " Plugin: 'itchyny/lightline.vim'
 "----------------------------------------------
+
+if has('macunix')
+    let g:os=''
+elseif has('win32unix')
+    let g:os=''
+elseif has('win32')
+    let g:os=''
+elseif has('unix')
+    if $DISTRO == 'Redhat'
+        let g:os=''
+    elseif $DISTRO == 'Ubuntu'
+        let g:os=''
+    elseif $DISTRO == 'Debian'
+        let g:os=''
+    else
+        let g:os=''
+    endif
+else
+    let g:os=''
+endif
+
+let g:os_spec_string='' . g:os . (has("gui_running")?'':'').('')
+
 let g:lightline = {
       \ 'active': {
-      \   'left': [ [  'mode', 'paste', 'spell' ],
-      \             [ 'pyenv', 'pyenv_active' ],
-      \             [ 'fugitive', 'tagbar' ] ],
-      \   'right': [ ['filename', 'lineno', 'percent' ], 
-      \              [ 'filetype', 'fileformat', 'readonly' ],
-      \              [ 'linter_checking', 'linter_errors',
-      \                'linter_warnings', 'linter_ok'  ],
-      \              ['filename', 'lineno', 'percent' ], 
-      \              [ 'filetype', 'fileformat', 'readonly' ]
+      \   'left': [ [  'mode', 'paste', 'spell',
+      \                'pyenv', 'pyenv_active', ],
+      \             [ 'fugitive', 'filename', 'tagbar', ],
+      \           ],
+      \   'right': [ 
+      \             [ 'readonly', 'lineno', 'percent' ], 
+      \             [ 'filetype', 'fileformat', 'readonly' ],
+      \             [ 'linter_checking', 'linter_errors',
+      \                'linter_warnings', 'linter_ok' ],
       \            ]
       \ },
       \ 'component_expand' : {
@@ -552,10 +687,11 @@ let g:lightline = {
       \  'linter_errors': 'lightline#ale#errors',
       \  'linter_ok': 'lightline#ale#ok',
       \  'pyenv': 'pyenv#pyenv#get_activated_env',
-      \  'gitbranch': 'fugitive#head'
+      \  'gitbranch': 'fugitive#head',
       \ },
       \ 'component': {
-      \   'tagbar': '%{tagbar#currenttag("[%s]", "")}',
+      \   'close': '%9999X%{g:os_spec_string}', 
+      \   'tagbar': '%{tagbar#currenttag("%s", "")}',
       \   'spell': '%{&spell?&spelllang:""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
       \   'fugitive': '%{&filetype=="help"?"":exists("*LightlineFugitive")?LightlineFugitive():""}',
@@ -564,7 +700,7 @@ let g:lightline = {
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-      \   'fugitive': '(&filetype!="help"&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
+      \   'fugitive': '(&filetype!="help"&&(winwidth(0) <80)&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
       \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
       \   'tagbar': '(exists("tagbar#currenttag"))',
       \ },
@@ -573,17 +709,62 @@ let g:lightline = {
       \     'linter_warnings': 'warning',
       \     'linter_errors': 'error',
       \     'linter_ok': 'left',
-      \     'pyenv_active': 'ok'
+      \     'pyenv_active': 'ok',
+      \     'banner': 'tabsel',
       \ },
       \ 'component_function': {
       \   'filetype': 'MyFiletype',
       \   'fileformat': 'MyFileformat',
       \   'method': 'NearestMethodOrFunction'
       \ },
+      \ 'tabline' : {
+      \   'separator': { 'left': '┋', },
+      \   'active': [ 
+      \       'tabnum', 'filename', 'modified', 'readonly',
+      \   ],
+      \ },
+      \ 'tab_component_function': {
+      \ 'filename': 'LightlineTabname',
+      \ 'modified': 'LightlineTabmodified',
+      \ 'readonly': 'LightlineTabReadonly',
+      \ 'tabnum': 'LightlineTabNumber',
+      \ 'banner': 'LightlineBanner',
+      \ },
       \ 'colorscheme' : 'one',
-      \   'separator': { 'left': ' ', 'right': '' },
-      \   'subseparator': { 'left': '', 'right': '' },
+      \   'separator': { 'left': '', 'right':'' },
+      \   'subseparator': { 'left': '∶', 'right': '∷'},
       \ }
+
+      "   'separator': { 'left': '', 'right':'' },
+function! LightlineTabmodified(n) abort
+    let winnr = tabpagewinnr(a:n)
+    let buflist = tabpagebuflist(a:n)
+    let fname = expand('#'.buflist[winnr - 1].':t')
+    let buf_modified = gettabwinvar(a:n, winnr, '&modified') ? '﯂' : ''
+    return ( '' != fname ? buf_modified : '')
+endfunction
+
+function! LightlineTabReadonly (n) abort
+    let winnr = tabpagewinnr(a:n)
+      return gettabwinvar(a:n, winnr, '&readonly') ? '' : gettabwinvar(a:n, winnr, '&modifiable') ? '' : ''
+endfunction
+
+function! LightlineTabNumber(n) abort
+    let buflist = tabpagebuflist(a:n)
+    let winnr = tabpagewinnr(a:n)
+    let fname = expand('#'.buflist[winnr - 1].':t')
+    " [ buf# ] [icon|]
+    return string(tabpagebuflist(a:n)[tabpagewinnr(a:n) - 1]) . ( fname ? WebDevIconsGetFileTypeSymbol(expand('#'.buflist[winnr - 1].':t'))  : '' )
+endfunction
+" https://github.com/inkarkat/vim-StatusLineHighlight/blob/master/plugin/StatusLineHighlight.vim
+function! LightlineTabname(n) abort
+  let buflist = tabpagebuflist(a:n)
+  let winnr = tabpagewinnr(a:n)
+  let fname = expand('#'.buflist[winnr - 1].':t')
+  return fname =~ '__Tagbar__' ? 'Tagbar' :
+        \ fname =~ 'NERD_tree' ? 'NERDTree' : 
+        \ ('' != fname ? fname : '﬒')
+endfunction
 
 function! LightlineFugitive()
   if &ft !~? 'vimfiler' && exists('*fugitive#head')
@@ -595,23 +776,65 @@ function! LightlineFugitive()
   endif
   return ''
 endfunction
+"  
+fun! s:setLightlineColorscheme(name)
+    let g:lightline.colorscheme = a:name
+    call lightline#init()
+    call lightline#colorscheme()
+    call lightline#update()
+    let s:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
+    " inject center bar blank into pallete (an interesting hack)
+    let s:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
+    "let s:palette.inactive.middle = s:palette.normal.middle
+    let s:palette.tabline.middle = s:palette.normal.middle
+endfun
+
+fun! s:lightlineColorschemes(...)
+    return join(map(
+                \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
+                \ "fnamemodify(v:val,':t:r')"),
+                \ "\n")
+endfun
+
+com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
+            \ call s:setLightlineColorscheme(<q-args>)
+
+LightlineColorscheme one
+
+function! s:LightLineUpdateColor()
+    :let &background = ( &background == "dark"? "light" : "dark" ) 
+    call lightline#init()
+    call lightline#colorscheme()
+    call lightline#update()
+    let s:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
+    " inject center bar blank into pallete (an interesting hack)
+    let s:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
+    "let s:palette.inactive.middle = s:palette.normal.middle
+    let s:palette.tabline.middle = s:palette.normal.middle
+endfunction
+
+com! -nargs=0 ToggleColor
+    \ call s:LightLineUpdateColor()
 
 function! NearestMethodOrFunction() abort
   return get(b:, 'vista_nearest_method_or_function', '')
 endfunction
 
 function! MyFiletype()
-return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+    let symbol=WebDevIconsGetFileTypeSymbol() 
+    let new_ft=(strlen(&filetype) ? symbol . ' ' . &filetype  : '')
+    return winwidth(0) > 120 ? (symbol . format): symbol
 endfunction
 
 function! MyFileformat()
-return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
+    let format=(winwidth(0) > 80 ? ' ' . &fileformat : '') 
+    return (winwidth(0) > 120 ? (WebDevIconsGetFileFormatSymbol() . format) : WebDevIconsGetFileFormatSymbol())
 endfunction
 
-let g:lightline#ale#indicator_checking = "\uf110 "
-let g:lightline#ale#indicator_warnings = "\uf071 "
-let g:lightline#ale#indicator_errors = "\uf05e "
-let g:lightline#ale#indicator_ok = "\uf00c "
+let g:lightline#ale#iiinidicator_checking = ''
+let g:lightline#ale#indicator_warnings = ''
+let g:lightline#ale#indicator_errors = ''
+let g:lightline#ale#indicator_ok = ''
 
 "----------------------------------------------
 " Plugin: bling/vim-go
@@ -636,16 +859,9 @@ let g:go_addtags_transform = "snakecase"
 "----------------------------------------------
 " Plugin: christoomey/vim-tmux-navigator
 "----------------------------------------------
-" tmux will send xterm-style keys when its xterm-keys option is on
-if &term =~ '^screen'
-    execute "set <xUp>=\e[1;*A"
-    execute "set <xDown>=\e[1;*B"
-    execute "set <xRight>=\e[1;*C"
-    execute "set <xLeft>=\e[1;*D"
-endif
-
 " Tmux vim integration
 let g:tmux_navigator_no_mappings = 1
+let g:tmux_navigator_save_on_switch = 1
 if exists('$TMUX')
     autocmd BufEnter * call system("tmux rename-window '" . expand("%:t") . "'")
     autocmd VimLeave * call system("tmux setw automatic-rename")
@@ -656,9 +872,6 @@ if exists('$TMUX')
         execute "set <xRight>=\e[1;*C"
         execute "set <xLeft>=\e[1;*D"
     endif
-
-    let g:tmux_navigator_save_on_switch = 1
-let g:tmux_navigator_save_on_switch = 1
 
     let g:tmux_navigator_save_on_switch = 1
 
@@ -685,9 +898,11 @@ nnoremap <leader>d :NERDTreeToggle<cr>
 nnoremap <F2> :NERDTreeToggle<cr>
 
 let NERDTreeShowBookmarks=1
+" Allow NERDTree to change session root.
 let NERDTreeChDirMode=2
 let NERDTreeQuitOnOpen=0
 
+" Show hidden files by default.
 let NERDTreeShowHidden=1
 let NERDTreeIgnore=['\.pyc','\~$','\.swo$','\.swp$','\.git','\.hg','\.svn','\.bzr']
 let NERDTreeKeepTreeInNewTab=1
@@ -721,16 +936,16 @@ call NERDTreeAddKeyMap({
 endif
 
 let g:NERDTreeIndicatorMapCustom = {
-    \ "Modified"  : "✹",
-    \ "Staged"    : "✚",
-    \ "Untracked" : "✭",
-    \ "Renamed"   : "➜",
-    \ "Unmerged"  : "═",
-    \ "Deleted"   : "✖",
-    \ "Dirty"     : "✗",
-    \ "Clean"     : "✔︎",
+    \ 'Modified'  : '✹',
+    \ 'Staged'    : '✚',
+    \ 'Untracked' : '✭',
+    \ 'Renamed'   : '➜',
+    \ 'Unmerged'  : '═',
+    \ 'Deleted'   : '✖',
+    \ 'Dirty'     : '✗',
+    \ 'Clean'     : '✔︎',
     \ 'Ignored'   : '☒',
-    \ "Unknown"   : "?"
+    \ 'Unknown'   : '?'
     \ }
 
 function! NERDTreeYankCurrentNode()
@@ -757,83 +972,8 @@ let NERDTreeShowBookmarks=1
 let NERDTreeChDirMode=2
 let NERDTreeQuitOnOpen=0
 
-
-" --------------------------------------------
-" Colorscheme 
-" --------------------------------------------
-colorscheme one
-
-set background=dark " for the light version
-
-map <F3> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
-let g:one_allow_italics = 0 " I love italic for comments
-silent! colorscheme one
-
-" Set max line length.
-let linelen = 120 
-execute "set colorcolumn=".linelen
-highlight OverLength ctermbg=red ctermfg=white guibg=#e88388
-execute "match OverLength /\%".linelen."v.\+/"
-let g:one_allow_italics = 1 " I love italic for comments
-
-augroup IndentGuests
-" base 00
-autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=0 guibg=#353a44
-autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=7 guibg=#abb2bf
-
-" Change the Pmenu colors so they're more readable.
-highlight Pmenu ctermbg=cyan ctermfg=white
-highlight PmenuSel ctermbg=black ctermfg=white
-
-" set highlight cursor
-"augroup CursorLine
-"  au!
-"  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
-"  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
-"  au WinLeave * setlocal nocursorline
-"augroup END
-"
-" --------------------------------------------
-" Plugin: 'numirias/semshi'
-" --------------------------------------------
-function! SemhiOneHighlights()
-hi semshiLocal           ctermfg=209 guifg=#e88388
-hi semshiGlobal          ctermfg=214 guifg=#56b6c2
-hi semshiImported        ctermfg=214 guifg=#56b6c2 cterm=bold gui=bold
-hi semshiParameter       ctermfg=75  guifg=#61AFEF
-hi semshiParameterUnused ctermfg=117 guifg=#61AFEF cterm=underline gui=underline
-hi semshiFree            ctermfg=218 guifg=#ffafd7
-hi semshiBuiltin         ctermfg=207 guifg=#c678dd
-hi semshiAttribute       ctermfg=49  guifg=#a7cc8c
-hi semshiSelf            ctermfg=249 guifg=#abb2bf
-hi semshiUnresolved      ctermfg=226 guifg=#e5c07b cterm=underline gui=underline
-hi semshiSelected        ctermfg=231 guifg=#ffffff ctermbg=161 guibg=#
-
-hi semshiErrorSign       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
-hi semshiErrorChar       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
-endfunction
-
-autocmd FileType python call SemhiOneHighlights()
-" 
-" if has('nvim')
-" 	hi g:terminal_color_0 guifg=#353a44 guibg=#353a44
-" 	hi g:terminal_color_8 guifg=#353a44 guibg=#353a44
-" 	hi g:terminal_color_1 guifg=#e88388 guibg=#e88388
-" 	hi g:terminal_color_9 guifg=#e88388 guibg=#e88388
-" 	hi g:terminal_color_2 guifg=#a7cc8c guibg=#a7cc8c
-" 	hi g:terminal_color_10 guifg=#a7cc8c guibg=#a7cc8c
-" 	hi g:terminal_color_3 guifg=#ebca8d guibg=#ebca8d
-" 	hi g:terminal_color_11 guifg=#ebca8d guibg=#ebca8d
-" 	hi g:terminal_color_4 guifg=#72bef2 guibg=#72bef2
-" 	hi g:terminal_color_12 guifg=#72bef2 guibg=#72bef2
-" 	hi g:terminal_color_5 guifg=#d291e4 guibg=#d291e4
-" 	hi g:terminal_color_13 guifg=#d291e4 guibg=#d291e4
-" 	hi g:terminal_color_6 guifg=#65c2cd guibg=#65c2cd
-" 	hi g:terminal_color_14 guifg=#65c2cd guibg=#65c2cd
-" 	hi g:terminal_color_7 guifg=#e3e5e9 guibg=#e3e5e9
-" 	hi g:terminal_color_15 guifg=#e3e5e9 guibg=#e3e5e9
-" endif
-" 
+let g:webdevicons_enable_nerdtree = 1
+let g:webdevicons_conceal_nerdtree_brackets = 1
 " --------------------
 " Plug 'bfredl/nvim-ipy'
 " --------------------
@@ -842,15 +982,16 @@ let g:ipy_perform_mappings=1
 " --------------------
 " Plugin 'janko/vim-test'
 " --------------------
-nmap <silent> t<C-n> :TestNearest<CR>
-nmap <silent> t<C-f> :TestFile<CR>
-nmap <silent> t<C-s> :TestSuite<CR>
-nmap <silent> t<C-l> :TestLast<CR>
-nmap <silent> t<C-g> :TestVisit<CR>
-let g:test#runner_commands = ['buck']
-let test#python#buck#executable = 'buck test'
-let test#python#runner = 'buck'
+autocmd FileType * call s:vim_test_keymap()
 
+
+function! s:vim_test_keymap()
+    nmap <silent> t<C-n> :TestNearest<CR>
+    nmap <silent> t<C-f> :TestFile<CR>
+    nmap <silent> t<C-s> :TestSuite<CR>
+    nmap <silent> t<C-l> :TestLast<CR>
+    nmap <silent> t<C-g> :TestVisit<CR>
+endfunction
 
 function! TabMessage(cmd)
   redir => message
@@ -879,30 +1020,4 @@ function! RemoveQFItem()
 endfunction
 command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
 
-" When using `dd` in the quickfix list, remove the item from the quickfix list.
-function! RemoveQFItem()
-  let curqfidx = line('.') - 1
-  let qfall = getqflist()
-  call remove(qfall, curqfidx)
-  call setqflist(qfall, 'r')
-  execute curqfidx + 1 . 'cfirst'
-  :copen
-endfunction
-command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
-
-" When using `dd` in the quickfix list, remove the item from the quickfix list.
-function! RemoveQFItem()
-  let curqfidx = line('.') - 1
-  let qfall = getqflist()
-  call remove(qfall, curqfidx)
-  call setqflist(qfall, 'r')
-  execute curqfidx + 1 . 'cfirst'
-  :copen
-endfunction
-:command! RemoveQFItem :call RemoveQFItem()
-" Use map <buffer> to only map dd in the quickfix window. Requires +localmap
-autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
-
-let g:test#runner_commands = ['buck']
-let test#python#buck#executable = 'buck test'
-let test#python#runner = 'buck'
+" { :set sw=2 ts=2 et }
