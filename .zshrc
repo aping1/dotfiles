@@ -25,10 +25,13 @@ fi
 # Location of my dotfiles
 DOTFILES=$HOME/.dotfiles
 DOTFILESDEPS=${DOTFILES:-$HOME}/deps
+export GOPATH=$HOME/go
 
 # Standard path includes
 path=(
-    /usr/local/{bin,sbin,opt}
+    /usr/local/{bin,sbin}
+    ${DOTFILES}/scripts
+    ${HOME}/bin
     $path
 )
 if command -v brew &>/dev/null; then
@@ -63,23 +66,52 @@ export HISTFILESIZE=$HISTSIZE;
 # This is one of examples why I want to keep my dotfiles private
 #export HOMEBREW_GITHUB_API_TOKEN=MY_GITHUB_TOKEN
 #export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+#
+# === PYENV === 
+if [[ ${+PYENV_ROOT} -eq 1  ]]; then
+    command -v pyenv &> /dev/null && eval "$(pyenv init -)"
+    command -v pyenv-virtualenv-init &> /dev/null && eval "$(pyenv virtualenv-init -)"
+fi
 
+[[ -f ~/.zprofile ]] && source ~/.zprofile
+[[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
+
+# Standard path includes
+path=(
+    /usr/local/{bin,sbin,opt}
+    $path
+)
+# Brew for OSX
+if command -v brew &>/dev/null; then
+    # Add to start of path
+    path=(
+        $(brew --prefix coreutils)/libexec/gnubin
+        $(brew --prefix python)/libexec/bin
+        $(brew --prefix)/bin/
+        $path
+    )
+elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
+    echo "Install Homebrew" >&2
+    # add to end of path
+fi
+
+[[ ${DOTFILES} ]] && \
+    path=(
+        $path
+        ${DOTFILES}/scripts
+        ${HOME}/bin
+    )
+
+typeset -U path
+
+COMPLETION_WAITING_DOTS="true"
+
+# change the size of history files
+export HISTSIZE=32768;
+export HISTFILESIZE=$HISTSIZE;
+
+# Homebrew
 # Autoenv https://github.com/Tarrasch/zsh-autoenv
-# Great plugin to automatically modify path when it sees .env file
-# I use it for example to automatically setup docker/rbenv/pyenv environments
-#AUTOENV_FILE_ENTER=.env
-#AUTOENV_HANDLE_LEAVE=1 # Turn on/off handling leaving an env
-#AUTOENV_FILE_LEAVE=.envl
-
-# tmux plugin settings
-# this always starts tmux
-ZSH_TMUX_AUTOSTART=true
-ZSH_TMUX_AUTOSTART_ONCE=true
-ZSH_TMUX_FIXTERM=true
-ZSH_TMUX_AUTOQUIT=false
-
-# Powerlevel9k is the best theme for prompt, I like to keep it in dark gray colors
-export DEFAULT_USER=awampler
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
 if [ ! $TERM = dumb ]; then
@@ -130,12 +162,13 @@ if [ ! $TERM = dumb ]; then
         # https://github.com/zsh-users/zsh-completions
         zgen load joel-porquet/zsh-dircolors-solarized
         zgen load zsh-users/zsh-completions src
+        zgen load zsh-users/zsh-autosuggestions
 
         # my own plugins each of these folders use init.zsh entry point
-        # zgen load $DOTFILES/plugins/fbtools
-
-        zgen load romkatv/powerlevel10k powerlevel10k
-        zgen load $DOTFILES/themes/p10k
+        zgen load ${DOTFILES}/plugins/fbtools
+        zgen load ${DOTFILES}/plugins/helpers
+        zgen load ${DOTFILES}/plugins/autocomplete-extra
+        # zgen load whiteinge/dotfiles /bin/diffconflicts master
 
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
@@ -144,10 +177,36 @@ if [ ! $TERM = dumb ]; then
         zgen save
     fi
 
+    # Install plugins if there are plugins that have not been installed
+        if ! zplug check --verbose; then
+            printf "Install New Plugins? [y/N]: "
+            if read -q; then
+                echo; zplug install
+            fi
+        fi
+    fi
+    # Then, source plugins and add commands to $PATH
+    zplug load
 fi
 
-[[ -f ~/.zprofile ]] && source ~/.zprofile
-[[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
+# Bindkey ... autosuggest-*
+# autosuggest-accept: Accepts the current suggestion.
+# autosuggest-execute: Accepts and executes the current suggestion.
+# autosuggest-clear: Clears the current suggestion.
+# autosuggest-fetch: Fetches a suggestion (works even when suggestions are disabled).
+# autosuggest-disable: Disables suggestions.
+# autosuggest-enable: Re-enables suggestions.
+# autosuggest-toggle: Toggles between enabled/disabled suggestions.
+
+# -- Completion --------------
+## Auto complete from anywhere in word
+setopt COMPLETE_IN_WORD
+
+ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
+# ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+# Red
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
+export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 
 # Standard path includes
 path=(
@@ -177,7 +236,12 @@ if [[ -n "${DOTFILES}" ]]; then
 	typeset -U path
 fi
 
-COMPLETION_WAITING_DOTS="true"
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+# setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_BEEP
 
 # change the size of history files
 export HISTSIZE=32768;
