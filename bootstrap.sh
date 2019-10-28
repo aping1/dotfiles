@@ -77,10 +77,12 @@ ln -sf ${DOTFILES}/.gitignore_global .gitignore
 # NVIM
 mkdir -p .config/nvim/autoload
 ln -sf ${DOTFILES}/config/nvim/init.vim .config/nvim/
+ln -sf ${DOTFILES}/config/nvim/iron.plugin.lua .config/nvim/
 ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .config/nvim/autoload
 
 # ipython
 ln -sf ${DOTFILES}/ipython .config/
 ln -s ${DOTFILES}/.zshenv 
-)
+) || echo "Failed to link"
 exec zsh -lx "${HOME}/.dotfiles/install.zsh"
+

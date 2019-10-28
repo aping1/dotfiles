@@ -73,14 +73,6 @@ if [[ ${+PYENV_ROOT} -eq 1  ]]; then
     command -v pyenv-virtualenv-init &> /dev/null && eval "$(pyenv virtualenv-init -)"
 fi
 
-[[ -f ~/.zprofile ]] && source ~/.zprofile
-[[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
-
-# Standard path includes
-path=(
-    /usr/local/{bin,sbin,opt}
-    $path
-)
 # Brew for OSX
 if command -v brew &>/dev/null; then
     # Add to start of path
@@ -208,11 +200,6 @@ ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
 export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 
-# Standard path includes
-path=(
-    /usr/local/{bin,sbin,opt}
-    $path
-)
 # Brew for OSX
 if command -v brew &>/dev/null; then
     # Add to start of path

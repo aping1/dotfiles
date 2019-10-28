@@ -15,7 +15,7 @@ fi
 if !  command -v vimr &>/dev/null; then
     echo 'vimr not installed' >&2
     return 1
-elif [[ ${DISTRO} == "darwin" ]]; then
+elif [[ ${DISTRO} == "Darwin" ]]; then
     alias vimr='vimr --cur-env --nvim'
     alias vim='vimr'
 fi

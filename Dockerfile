@@ -13,6 +13,7 @@ RUN apt-get update \
 		git \
 		locales \
 		make \
+		openssh-client \
 		patch \
 		sudo \
 		uuid-runtime \
@@ -35,7 +36,6 @@ RUN git status
 RUN git check-ref-format ${dotfiles_git_rev} && git reset --hard ${dotfiles_git_rev} || echo
 WORKDIR /home/user/
 RUN bash -x .dotfiles/bootstrap.sh
-RUN zsh -i -c -- '-zplg-scheduler burst || echo -n'
 RUN brew install git python@2 python@3
 run command -v nvim && nvim +'silent! PlugInstall --sync' +qall || vim +'silent! PlugInstall --sync'
 ENV USER=user

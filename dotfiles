@@ -49,6 +49,50 @@ link .yabairc
 # tools/*
 
 # ./install.zsh
+# Helpers
+#
+# helpers/of-helpers.plugins.zsh
+# helpers/inventory.helper.zsh
+# helpers/zpyton.plugin.zsh
+# helpers/emerge-helpers.plugin.zsh
+# helpers/pip-helpers.zsh
+# helpers/ssh-agent.helper.sh
+# helpers/vmware-fushion.helper.zsh
+
+# Plugins
+# plugins/my-tmux/*
+# plugins/bootstrap/*
+# plugins/direnv/*
+# plugins/tpm/*
+# plugins/urltools/*
+# plugins/aliases/*
+# plugins/softlinks/*
+# plugins/pyenv/*
+# plugins/fbtools/tmux/*
+# plugins/fbtools/**
+# plugins/dotfiles/**/*.zsh
+# plugins/queues/**/*.zsh
+
+# Remote
+# remote/.zshrc
+# remote/.bash_profile
+# remote/.tmux.conf
+# remote/.bash_aliases
+# remote/man.conf
+# remote/.gdbinit
+# remote/.bash_plugins/aliases/init.sh
+# remote/redhat/bash_profile
+# remote/redhat/bash_aliases
+# remote/redhat/.bash_profile
+# remote/redhat/.bash_aliases
+# remote/bootstrap.sh
+# remote/.vimrc
+
+# Dumb scripts
+# scripts/clusterssh-dev
+# scripts/[OF]\ SendOutlookToOmniFocus2\cO.scptd
+# scripts/Hazel/
+# scripts/padd_ag.vim
 
 # powerline ˜/.config/powerline_config
 link powerline_config ~/.config/powerline_config
@@ -121,3 +165,4 @@ brew "mosh" #Network
 
 pip pynvim
 pip psutil
+link "${HOME}/Library/Application Scripts/com.omnigroup.OmniFocus2.MacAppStore" .local/omnifocus-scripts

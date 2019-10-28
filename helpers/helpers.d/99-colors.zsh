@@ -34,6 +34,7 @@ function print_ansi_colors()
 
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
+export ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
 
 # Man page colors
 export LESS_TERMCAP_mb=$'\e[1;32m'

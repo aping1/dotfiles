@@ -177,6 +177,7 @@ Plug 'janko/vim-test'
 Plug 'Shougo/neoinclude.vim'
 Plug 'Shougo/context_filetype.vim'
 Plug 'janko/vim-test'
+Plug 'majutsushi/tagbar'
 
 " ZSH Autocomplete
 Plug 'mtikekar/nvim-send-to-term'
