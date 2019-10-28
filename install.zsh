@@ -135,6 +135,85 @@ function pip_install_dotfiles()
         return 3
     fi
 }
+# === dotfiles install ===
+function brew_from_dotfiles () 
+{
+    [[ -d ${DOTFILES} ]] || return 1
+    cat ${DOTFILES_SOURCE[*]} | awk '/^brew|^cask|^tap/{ gsub(/\#.*$/, "",$0); print; }' |  tr '"' "'" 
+}
+
+function pip_from_dotfiles () 
+{
+    [[ -d ${DOTFILES} ]] || return 1
+    [[ ${DOTFILES_SOURCE} ]] || export DOTFILES_SOURCE=( ${DOTFILES}/dotfiles ${DOTFILES}/${DISTRO:-posix}/dotfiles )
+    cat ${DOTFILES_SOURCE[*]} | awk '/^pip/{ gsub(/\#.*$/, "",$0); $1=""; print; }' |  tr '"' "'" 
+}
+
+function pip_install_dotfiles() 
+{
+    if [[ ${DEBUG:-} =~ ^[Yy][e][s] ]]; then
+        pip_from_dotfiles "${DOTFILES}/requirements.txt"
+        [[ -s "${DOTFILES}/requirments.txt" ]] && cat "${DOTFILES}/requirements.txt" \
+            || return 2
+    fi
+    # Dont warn if your DISTRO doesnt exist
+    setopt nullglob 
+    [[ ${DOTFILES_SOURCE} ]] || export DOTFILES_SOURCE=( ${DOTFILES}/dotfiles ${DOTFILES}/${DISTRO:-posix}/dotfiles )
+    # If there are dotfiles
+    if [[ ${#DOTFILES_SOURCE[@]} -ge 1 ]] ; then
+        # Get the pyenv version
+        _PYTHON_PYENV_VERSIONS=( $( pyenv whence python) )
+        _PYTHONS=( $( which -a python{,3} | grep -v 'alias\|'"${PYENV_ROOT}" ) )
+        for _PYENV_VERSION in ${_PYTHON_PYENV_VERSIONS[@]}; do
+            _PY_VERSION=${PYENV_ROOT}/versions/${_PYENV_VERSION}/bin/python
+            # Ensure pip 
+            if [[ -x "${_PY_VERSION}" ]]; then 
+                    _PYTHONS+=( ${_PY_VERSION} )
+            fi
+        done
+        # 
+        _PIPS=( $( which -a pip | grep -v "${PYENV_ROOT}" ) )
+        for _PYTHON in ${_PYTHONS[@]}; do
+            if [[ -x ${_PYTHON} ]]; then 
+                version=$( ${_PYTHON} -c "import platform as p;print(p.python_version())" )
+                sites=$( ${_PYTHON} -c "import site,json; print(' '.join(site.getsitepackages()))" )
+                $([[ ${sites} && -w ${sites} ]] && printf -- sudo) \
+                    ${_PYTHON} -m 'ensurepip'
+                if [[ ${version} =~ ^3 ]]; then 
+                    $([[ -w ${sites} ]] && echo -n sudo) \
+                    ${_PYTHON} -m pip install -r <(pip_from_dotfiles) && continue
+                elif [[ -x ${_PYTHON:h}/pip ]] ; then
+                    _PIPS+=( ${_PYTHON:h}/pip )
+                fi
+            fi
+            echo "could not ensure pip for ${_PYTHON}"
+        done
+        for _PY_VERSION in ${_PIPS[@]}; do
+            $([[ -w ${sites} ]] && echo -n sudo) \
+            ${_PY_VERSION} install -r <(pip_from_dotfiles) && continue
+ 
+        done
+    else
+        return 3
+    fi
+}
+
+# Install the pip
+pip_install_dotfiles
+
+# === vim setup ===
+# Init vim and nvim even if aliased
+if command -v vim &>/dev/null ; then
+    NEXT_VIM=$(type -a vim | head -n2 | grep -A2 'alias' | tail -n1 | awk '{print $NF}')
+    while !  [[ -x ${NEXT_VIM} ]] && ${NEXT_VIM} +'silent! PlugInstall --sync' +qall
+fi
+command -v nvim && nvim +'silent! PlugInstall --sync' +qall && \
+    ln -sf ${DOTFILES}/config/nvim/iron.plugin.lua .config/nvim/
+
+[[ ${PYENV_HOME} ]] && command -v brew \
+    && cd ${PYENV_HOME} \
+    && ln -s $(brew --cellar python)/* "${PYENV_HOME}/versions/"
+
 
 # Install the pip
 pip_install_dotfiles
