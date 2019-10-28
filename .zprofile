@@ -5,22 +5,18 @@
 #
 export ZPROFILE_LOADED
 
-export TERM="xterm-256color"
-export TERM="${TERM:-xterm}"
-
 export DOTFILES="$HOME/.dotfiles"
-export ZPLUG_HOME="$HOME/.dotfiles/deps/zplug"
 
 export TERM="xterm-256color"
 export TERM="${TERM:-xterm}"
-export LANG="en_US.UTF-8"
-export LC_ALL="C.UTF-8"
-export LC_CTYPE="C.UTF-8"
 
 case $(uname) in
   Darwin)
     # commands for OS X go here
     export DISTRO=darwin
+    export LANG="en_US.UTF-8"
+    export LC_ALL="en_US.UTF-8"
+    export LC_CTYPE="en_US.UTF-8"
   ;;
   Linux)
     # commands for Linux go here
@@ -33,5 +29,8 @@ case $(uname) in
   *)
     # commands for Linux go here
     export DISTRO=posix
+    export LANG="C.UTF-8"
+    export LC_ALL="C.UTF-8"
+    export LC_CTYPE="C.UTF-8"
   ;;
 esac
