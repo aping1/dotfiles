@@ -171,16 +171,6 @@ if [ ! $TERM = dumb ]; then
         zgen save
     fi
 
-    # Install plugins if there are plugins that have not been installed
-        if ! zplug check --verbose; then
-            printf "Install New Plugins? [y/N]: "
-            if read -q; then
-                echo; zplug install
-            fi
-        fi
-    fi
-    # Then, source plugins and add commands to $PATH
-    zplug load
 fi
 
 # Bindkey ... autosuggest-*
