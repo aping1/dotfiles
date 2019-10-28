@@ -122,8 +122,9 @@ if [ ! $TERM = dumb ]; then
         zgen reset
     fi
 
-    # configure zgen
     if ! zgen saved; then
+        # https://github.com/denysdovhan/spaceship-prompt
+        # https://github.com/denysdovhan/spaceship-prompt/tree/master/docs
 
         # zgen will load oh-my-zsh and download it if required
         zgen oh-my-zsh

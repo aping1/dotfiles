@@ -125,7 +125,6 @@ if exists('*plug#end')
     Plug 'plytophogy/vim-virtualenv'
 
     Plug 'tmhedberg/SimpylFold'
-    Plug 'itchyny/lightline.vim'
     Plug 'ryanoasis/vim-devicons'
 
     " Indent lines
@@ -360,12 +359,16 @@ if exists("*lightline#init")
     endfunction
 
     function! MyFiletype()
-        return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
+        let symbol=WebDevIconsGetFileTypeSymbol() 
+        let new_ft=(strlen(&filetype) ? symbol . ' ' . &filetype  : '')
+        return winwidth(0) > 120 ?  new_ft : symbol
     endfunction
 
     function! MyFileformat()
-        return winwidth(0) > 70 ? (&fileformat . ' ' . WebDevIconsGetFileFormatSymbol()) : ''
+        let symbol=WebDevIconsGetFileFormatSymbol()
+        return ((winwidth(0) > 80) ? symbol . ' ' . &fileformat : symbol )
     endfunction
+
     " ----- colorscheme helpers
     fun! s:setLightlineColorscheme(name)
         let g:lightline.colorscheme = a:name

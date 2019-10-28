@@ -824,15 +824,15 @@ endfunction
 function! MyFiletype()
     let symbol=WebDevIconsGetFileTypeSymbol() 
     let new_ft=(strlen(&filetype) ? symbol . ' ' . &filetype  : '')
-    return winwidth(0) > 120 ? (symbol . format): symbol
+    return winwidth(0) > 120 ?  new_ft : symbol
 endfunction
 
 function! MyFileformat()
-    let format=(winwidth(0) > 80 ? ' ' . &fileformat : '') 
-    return (winwidth(0) > 120 ? (WebDevIconsGetFileFormatSymbol() . format) : WebDevIconsGetFileFormatSymbol())
+    let symbol=WebDevIconsGetFileFormatSymbol()
+    return ((winwidth(0) > 80) ? symbol . ' ' . &fileformat : symbol )
 endfunction
 
-let g:lightline#ale#iiinidicator_checking = ''
+let g:lightline#ale#indicator_checking = ''
 let g:lightline#ale#indicator_warnings = ''
 let g:lightline#ale#indicator_errors = ''
 let g:lightline#ale#indicator_ok = ''
