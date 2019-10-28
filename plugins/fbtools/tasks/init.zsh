@@ -85,16 +85,6 @@ fi
 
 alias set_task='_fb_tasks_helper_set_task'
 
-if [[ -h ${TASK_LINK} ]] ; then
-   _CURRENT_TASK_LINK="$(basename ${TASK_LINK:A})"
-elif [[ -e ${TASK_LINK} ]] ; then
-    printf 'ERROR: current is not link\n' >&2
-    return 1
-else
-    #TODO: Choose task
-    printf 'INFO: no current task set\n' >&2
-fi
-
 function _fb_tasks_helper_change_session_to_cur_task () {
     local _SOMEID _PROJNAME _NEW_TASK=${1}
     _fb_projects_helper_project_shortname ${1:-$(_fb_tmux_helper_get_session)} \
