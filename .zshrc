@@ -27,6 +27,7 @@ DOTFILES=$HOME/.dotfiles
 DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 export GOPATH=$HOME/go
 
+## Setup PATH
 # Standard path includes
 path=(
     /usr/local/{bin,sbin}
@@ -34,7 +35,8 @@ path=(
     ${HOME}/bin
     $path
 )
-if command -v brew &>/dev/null; then
+# Brew for OSX
+if [[ "${DISTRO}" == "darwin" ]] && command -v brew &>/dev/null; then
     # Add to start of path
     path=(
         $(brew --prefix coreutils)/libexec/gnubin

@@ -14,6 +14,7 @@ if ! has('gui_running')
         au InsertEnter * set timeoutlen=0
         au InsertLeave * set timeoutlen=1000
     augroup END
+    set guifont=Hack\ Nerd\ Font:h12
 endif
 
 " memory leak problem
@@ -79,24 +80,30 @@ set expandtab
 set hlsearch
 
 " === Auto install plug.vim ===
-let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
+if exists('*stdpath')
+    let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
+else
+    let autoload_plug_path = '~/.vim/autoload/plug.vim'
+endif
 if empty(glob(autoload_plug_path))
   silent ! exec '!curl -fLo ' . autoload_plug_path . 
                 \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    source &autoload_plug_path
+ 
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-else"
-exec "set rtp=" . autoload_plug_path . "," . &rtp 
 endif
 
-if isdirectory("~/.config/nvim/plugged") 
-    call plug#begin("~/.config/nvim/plugged")
-" These lines setup the environment to show graphics and colors correctly.
-set nocompatible
+if ! empty(glob(autoload_plug_path))
+    exec "set rtp=" . autoload_plug_path . "," . &rtp 
+endif
 
 if isdirectory("~/.config/nvim/plugged")
     call plug#begin("~/.config/nvim/plugged")
 else
     call plug#begin('~/.vim/plugged')
+endif
+
+if exists('*plug#end')
 
     Plug 'jez/vim-superman'
     " --- Colorscheme ---
@@ -149,7 +156,6 @@ else
     "  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
     "  au WinLeave * setlocal nocursorline
     "augroup END
-
 endif
 
 " Reload .vimrc immediately when edited
@@ -225,10 +231,7 @@ set background=dark
 
 map <F4> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 
-set guifont=Hack\ Nerd\ Font:h12
-
 set clipboard=unnamed
-:map <F2> :colorscheme solarized8_high
 
 " Pythong Template =s
 "
@@ -445,13 +448,13 @@ let NERDTreeKeepTreeInNewTab=1
 
 " Files to ignore
 let NERDTreeIgnore = [
-            \ '\~$',
-            \ '\.pyc$',
-            \ '^\.DS_Store$',
-            \ '^node_modules$',
-            \ '^.ropeproject$',
-            \ '^__pycache__$'
-            \]
+    \ '\~$',
+    \ '\.pyc$',
+    \ '^\.DS_Store$',
+    \ '^node_modules$',
+    \ '^.ropeproject$',
+    \ '^__pycache__$'
+\]
 
 " Close vim if NERDTree is the only opened window.
 

@@ -31,7 +31,7 @@
 [difftool "vimdiff"]
 	cmd = vim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool "vimrdiff"]
-    cmd = vimr --wait $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+    cmd = vimr --wait --neovim -f -d $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool "diffconflicts"]
 	cmd = diffconflicts vim $BASE $LOCAL $REMOTE $MERGED
 [color]
