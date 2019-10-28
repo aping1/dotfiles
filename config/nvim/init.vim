@@ -278,8 +278,8 @@ highlight PmenuSel ctermbg=black ctermfg=white
 
 augroup IndentGuide
 " base 00
-autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=6 guibg=#65c2cd
-autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
+" autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=6 guibg=#65c2cd
+" autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
 
 augroup END
 
@@ -755,7 +755,8 @@ function! LightlineTabNumber(n) abort
     let winnr = tabpagewinnr(a:n)
     let fname = expand('#'.buflist[winnr - 1].':t')
     " [ buf# ] [icon|]
-    return string(tabpagebuflist(a:n)[tabpagewinnr(a:n) - 1]) . ( fname ? WebDevIconsGetFileTypeSymbol(expand('#'.buflist[winnr - 1].':t'))  : '' )
+    " expand('%:t:r')
+    return ( WebDevIconsGetFileTypeSymbol(fname, isdirectory(fname)) . string(a:n) )
 endfunction
 " https://github.com/inkarkat/vim-StatusLineHighlight/blob/master/plugin/StatusLineHighlight.vim
 function! LightlineTabname(n) abort
