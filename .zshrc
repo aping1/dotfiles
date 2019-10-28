@@ -99,6 +99,8 @@ if [ ! $TERM = dumb ]; then
     if ! zgen saved; then
         # https://github.com/denysdovhan/spaceship-prompt
         # https://github.com/denysdovhan/spaceship-prompt/tree/master/docs
+        zgen load denysdovhan/spaceship-prompt spaceship
+        zgen load ${DOTFILES}/themes/spaceship
 
         # zgen will load oh-my-zsh and download it if required
         zgen oh-my-zsh
