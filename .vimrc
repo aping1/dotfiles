@@ -85,6 +85,10 @@ if exists('*stdpath')
 else
     let autoload_plug_path = '~/.vim/autoload/plug.vim'
 endif
+
+if ! empty(glob(autoload_plug_path))
+    exec "set rtp=" . autoload_plug_path . "," . &rtp 
+endif
 if empty(glob(autoload_plug_path))
   silent ! exec '!curl -fLo ' . autoload_plug_path . 
                 \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
@@ -92,6 +96,7 @@ if empty(glob(autoload_plug_path))
  
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+
 
 if ! empty(glob(autoload_plug_path))
     exec "set rtp=" . autoload_plug_path . "," . &rtp 
