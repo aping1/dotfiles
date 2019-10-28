@@ -48,6 +48,8 @@ if [ ! $TERM = dumb ]; then
         zgen load denysdovhan/spaceship-prompt spaceship
         zgen load ${DOTFILES}/themes/spaceship
 
+-        zgen load romkatv/powerlevel10k powerlevel10k
+-        zgen load $DOTFILES/themes/p10k
         # zgen will load oh-my-zsh and download it if required
         zgen oh-my-zsh
 
