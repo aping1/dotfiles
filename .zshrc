@@ -6,20 +6,18 @@ export VISUAL='vim'
 export PAGER='less'
 export MYPROMPT="${MYPROMPT:-spaceship-async}"
 
-# === Profiling ===
-if [[ ${+PROFILING} -eq 1 ]]; then
-    zmodload zsh/zprof 
-    PS4=$'%D{%M%S%.} %N:%i> '
-    zprof
-fi
-
-
 # === zprofile if not autoloaded ===
 [[ ${+ZPROFILE_LOADED} -eq 1 ]] \
     || source "${HOME}/.zprofile"
 
 [[ ${+ZSH_ALIASES_LOADED} -eq 1 ]] \
     || source "${HOME}/.zsh_aliases"
+
+# === Profiling ===
+if [[ ${+PROFILING} -eq 1 ]]; then
+    zmodload zsh/zprof 
+    PS4=$'%D{%M%S%.} %N:%i> '
+fi
 
 # === PATHS and EVNS 
 # Location of my dotfiles
@@ -279,3 +277,7 @@ export FZF_COMPLETION_OPTS='+c -x'
 
 # Vim mode
 bindkey -v
+
+if [[ ${+PROFILING} -eq 1 ]]; then
+    zprof
+fi
