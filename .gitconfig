@@ -8,8 +8,6 @@
     guitool = vimrdiff
 [core]
 	excludesfile = ~/.gitignore_global
-	editor = vim
-	page = vim -R
 [mergetool]
 	prompt = true
     conflictstyle = diff3
