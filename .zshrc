@@ -8,15 +8,15 @@ export MYPROMPT="${MYPROMPT:-spaceship-async}"
 
 # === zprofile if not autoloaded ===
 [[ ${+ZPROFILE_LOADED} -eq 1 ]] \
-    && printf -- 'Skipping: %s' -- "${HOME}/.zprofiles" \
+    && printf -- 'Skipping: %s' "${HOME}/.zprofiles" \
     || source "${HOME}/.zprofile"
 
 [[ ${+ZSH_ALIASES_LOADED} -eq 1 ]] \
-    && printf -- 'Skipping: %s' -- "${HOME}/.zsh_aliases" \
+    && printf -- 'Skipping: %s' "${HOME}/.zsh_aliases" \
     || source "${HOME}/.zsh_aliases"
 
 [[ ${+MACHINE_RC_LOADED} -eq 1 ]] \
-    && printf -- 'Skipping: %s' -- "${HOME}/.machinerc" \
+    && printf -- 'Skipping: %s' "${HOME}/.machinerc" \
     || source "${HOME}/.machinerc"
 
 # === Profiling ===
@@ -82,14 +82,15 @@ fi
 # Brew for OSX
 if command -v brew &>/dev/null; then
     # Add to start of path
+    brew_prefix=$(brew --prefix)
     path=(
         $(brew --prefix coreutils)/libexec/gnubin
         $(brew --prefix python)/libexec/bin
-        $(brew --prefix)/bin/
+        ${brew_prefix}/bin/
         $path
     )
     manpath=(
-        $(brew --prefix)/share/man/man*
+        ${brew_prefix}/share/man/man*
         $manpath
     )
 elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
@@ -228,7 +229,6 @@ setopt EXTENDED_HISTORY
 setopt HIST_EXPIRE_DUPS_FIRST
 # setopt HIST_IGNORE_SPACE
 setopt HIST_FIND_NO_DUPS
-setopt HIST_SAVE_NO_DUPS
 setopt HIST_BEEP
 
 # change the size of history files
@@ -260,7 +260,7 @@ setopt COMPLETE_IN_WORD BRACE_CCL AUTO_PARAM_SLASH
 # LISTMAX=0
 
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
-#export ZSH_AUTOSUGGEST_STRATEGY=("match_prev_cmd" "completion")
+export ZSH_AUTOSUGGEST_STRATEGY=("match_prev_cmd" "completion")
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline" # Red
 export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 [[ ${+ZSH_HIGHLIGHT_STYLES} == 1 ]] && \
