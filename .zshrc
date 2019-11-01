@@ -142,7 +142,6 @@ if [ ! $TERM = dumb ]; then
         # zgen oh-my-zsh plugins/bower
         # zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh plugins/git
-        zgen oh-my-zsh plugins/kubectl
         zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
         zgen oh-my-zsh plugins/git-completion
@@ -240,7 +239,6 @@ export HISTFILESIZE=$HISTSIZE;
 # End of lines configured by zsh-newuser-install
 # export FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
 export FZF_COMPLETION_TRIGGER='~~'
-
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
 
