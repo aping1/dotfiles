@@ -82,6 +82,10 @@ if command -v brew &>/dev/null; then
         $(brew --prefix)/bin/
         $path
     )
+    manpath=(
+        $(brew --prefix)/share/man/man*
+        $manpath
+    )
 elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
     echo "Install Homebrew" >&2
     # add to end of path
