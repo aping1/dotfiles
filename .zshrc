@@ -8,10 +8,16 @@ export MYPROMPT="${MYPROMPT:-spaceship-async}"
 
 # === zprofile if not autoloaded ===
 [[ ${+ZPROFILE_LOADED} -eq 1 ]] \
+    && printf -- 'Skipping: %s' -- "${HOME}/.zprofiles" \
     || source "${HOME}/.zprofile"
 
 [[ ${+ZSH_ALIASES_LOADED} -eq 1 ]] \
+    && printf -- 'Skipping: %s' -- "${HOME}/.zsh_aliases" \
     || source "${HOME}/.zsh_aliases"
+
+[[ ${+MACHINE_RC_LOADED} -eq 1 ]] \
+    && printf -- 'Skipping: %s' -- "${HOME}/.machinerc" \
+    || source "${HOME}/.machinerc"
 
 # === Profiling ===
 if [[ ${+PROFILING} -eq 1 ]]; then
@@ -150,20 +156,21 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/vault
         zgen oh-my-zsh plugins/web-search
         zgen oh-my-zsh plugins/fzf
-        zgen oh-my-zsh plugins/kubectl
         zgen oh-my-zsh plugins/openssl
 
         zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
         #zgen load Tarrasch/zsh-autoenv
         # https://github.com/zsh-users/zsh-completions
-        zgen load joel-porquet/zsh-dircolors-solarized
+        # zgen load joel-porquet/zsh-dircolors-solarized
         zgen load zsh-users/zsh-completions src
         zgen load zsh-users/zsh-autosuggestions
+        zgen load qoomon/zsh-lazyload
 
         # my own plugins each of these folders use init.zsh entry point
         zgen load ${DOTFILES}/plugins/fbtools
         zgen load ${DOTFILES}/plugins/helpers
+        zgen load ${DOTFILES}/plugins/navigation
         zgen load ${DOTFILES}/plugins/autocomplete-extra
         # zgen load whiteinge/dotfiles /bin/diffconflicts master
 
