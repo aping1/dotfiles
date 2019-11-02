@@ -298,15 +298,8 @@ let s:blacklist = ['nofile', 'help']
 " Plugin: 'nathanaelkane/vim-indent-guides'
 "----------------------------------------------
 let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_guide_size = 1
-let g:indent_guides_start_level = 1
-
-if exists('$TMUX')
-    augroup TMUX_RENAME
-    autocmd BufEnter * call system("tmux rename-window '" . expand("%:t") . "'")
-    autocmd VimLeave * call system("tmux setw automatic-rename")
-    augroup END
-endif
+let g:indent_guides_guide_size = 4
+let g:indent_guides_start_level = 2
 "----------------------------------------------
 " Plugin: 'tpope/vim-obsession'
 "----------------------------------------------
@@ -891,6 +884,11 @@ if (empty($TMUX))
   let $NVIM_TUI_ENABLE_TRUE_COLOR=1
   endif
   "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+else
+    augroup TMUX_RENAME
+        autocmd BufEnter * call system("tmux rename-window '" . tabpagenr() . ' ' . LightlineTabname(tabpagenr()) . ' ' . LightlineTabmodified(tabpagenr()) . "'")
+        autocmd VimLeave * call system("tmux setw automatic-rename")
+    augroup END
 endif
 
 "----------------------------------------------
