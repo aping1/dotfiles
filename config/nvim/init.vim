@@ -245,7 +245,9 @@ filetype plugin indent on     " required
  	hi one_terminal_color_bg15 guibg=#e3e5e9
  endif
 
-if (has('termguicolors'))
+if (has('gui_running'))
+    silent! colorscheme one
+elseif (has('termguicolors'))
     set termguicolors
     let g:one_allow_italics = 0 " I love italic for comments
     silent! colorscheme one
@@ -257,7 +259,7 @@ endif
 set background=dark
 
 function! s:normalToggleColor()
-    :let &background = ( &background == "dark"? "light" : "dark" ) 
+    :let &background = ( &background ==? "dark"? "light" : "dark" ) 
 endfunction
 
 com! -nargs=0 ToggleColor
@@ -660,7 +662,7 @@ else
     let g:os=''
 endif
 
-let g:os_spec_string='' . g:os . (has("gui_running")?'':'').('')
+let g:os_spec_string=' ' . g:os . (has("gui_running")?'':'').('')
 
 let g:lightline = {
       \ 'active': {
