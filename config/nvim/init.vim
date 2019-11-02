@@ -1,5 +1,5 @@
 "
-" ~/.vimrc (local shell)
+" ~/confing/nvim/init.vim
 "
 
 set ruler
@@ -42,7 +42,6 @@ set number
 
 set tabstop=4
 set shiftwidth=4
-set ambiwidth
 set hlsearch
 set shiftround
 
@@ -89,7 +88,7 @@ if empty(glob(autoload_plug_path))
   silent ! exec '!curl -fLo ' . autoload_plug_path . 
                 \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   augroup plug_auto_update
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+      autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
     augroup END
 else
 exec 'set runtimepath=' . autoload_plug_path . ',' . &runtimepath
@@ -100,13 +99,15 @@ unlet autoload_plug_path
 call plug#begin('~/.config/nvim/plugged')
 
 " Colorscheme -------
+
 Plug 'flazz/vim-colorschemes'
 Plug 'iCyMind/NeoSolarized'
 Plug 'jacoborus/tender.vim'
 Plug 'rakr/vim-one'
 
 " Indent lines ------
-Plug 'nathanaelkane/vim-indent-guides'
+" Plug 'nathanaelkane/vim-indent-guides'
+Plug 'Yggdroot/indentLine'
 " Git gutter
 Plug 'mhinz/vim-signify'
 " Highlight colors
@@ -115,6 +116,8 @@ Plug 'ap/vim-css-color'
 Plug 'lilydjwg/Colorizer'
 
 " Hide sum and such as unicode 
+Plug 'ryanoasis/vim-devicons'
+Plug 'chrisbra/unicode.vim'
 Plug 'ehamberg/vim-cute-python'
 Plug 'mhinz/vim-startify'
 Plug 'merlinrebrovic/focus.vim'
@@ -150,7 +153,6 @@ Plug 'tpope/vim-fugitive'
 " mecurial client
 Plug 'ludovicchabant/vim-lawrencium'
 Plug 'majutsushi/tagbar'
-
 
 Plug 'w0rp/ale'
 Plug 'Shougo/echodoc.vim'
@@ -189,7 +191,6 @@ Plug 'tmhedberg/SimpylFold'
 " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
-Plug 'ryanoasis/vim-devicons'
 
 Plug 'jez/vim-superman'
 
@@ -278,12 +279,31 @@ execute 'match OverLength /\%'.linelen.'v.\+/'
 highlight Pmenu ctermbg=cyan ctermfg=white
 highlight PmenuSel ctermbg=black ctermfg=white
 
+"----------------------------------------------
+" Plugin: 'nathanaelkane/vim-indent-guides'
+"----------------------------------------------
+let g:indent_guides_enable_on_vim_startup = 0
+let g:indent_guides_guide_size = 4
+let g:indent_guides_start_level = 2
+
 augroup IndentGuide
 " base 00
-" autocmd VimEnter,Colorscheme * hi IndentGuidesOdd  ctermbg=6 guibg=#65c2cd
-" autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
-
+" autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=6 guibg=#353a44
+"autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
+"" Vim
 augroup END
+
+let g:indentLine_char_list = ['\ue621','┊']
+
+let g:indentLine_color_term = 49
+let g:indentLine_bgcolor_term = 231 
+" none X terminal
+let g:indentLine_color_tty_light = 4 " (default: 4)
+let g:indentLine_color_dark = 2 " (default: 2)
+
+" Background (Vim, GVim)
+let g:indentLine_color_gui = '#72bef2'
+let g:indentLine_bgcolor_gui = '#353a44'
 
 " set highlight cursor
 "augroup CursorLine
@@ -294,14 +314,7 @@ augroup END
 "augroup END
 "
 
-let s:blacklist = ['nofile', 'help']
 
-"----------------------------------------------
-" Plugin: 'nathanaelkane/vim-indent-guides'
-"----------------------------------------------
-let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_guide_size = 4
-let g:indent_guides_start_level = 2
 "----------------------------------------------
 " Plugin: 'tpope/vim-obsession'
 "----------------------------------------------
@@ -346,12 +359,7 @@ let g:vimwiki_ext2syntax = {'.md': 'markdown',
                   \ '.mkd': 'markdown',
                   \ '.wiki': 'media'}
 
-"----------------------------------------------
-" Plugin'tpope/vim-markdown'
-"----------------------------------------------
-let g:markdown_fenced_languages = ['html', 'css', 'scss', 'sql', 'javascript', 'go', 'python', 'bash=sh', 'c', 'ruby', 'zsh', 'yaml', 'json' ]
-
-"----------------------------------------------
+"---------------------------------------------
 " Plugin'tpope/vim-markdown'
 "----------------------------------------------
 let g:markdown_fenced_languages = ['html', 'css', 'scss', 'sql', 'javascript', 'go', 'python', 'bash=sh', 'c', 'ruby', 'zsh', 'yaml', 'json' ]
@@ -665,13 +673,23 @@ endif
 let g:os_spec_string=' ' . g:os . (has("gui_running")?'':'').('')
 
 let g:lightline = {
+      \ 'inactive': {
+      \   'left': [ [  'pyenv', 'pyenv_active', ],
+      \             [ 'fugitive', 'filename', 'tagbar' ],
+      \             [ 'readonly', 'lineinfo', 'linecount'], 
+      \           ],
+      \   'right': [ 
+      \             [ 'filetype', 'fileformat'],
+      \             [ 'linter_errors', 'linter_warnings', 'linter_ok' ],
+      \            ]
+      \ },
       \ 'active': {
       \   'left': [ [  'mode', 'paste', 'spell',
       \                'pyenv', 'pyenv_active', ],
       \             [ 'fugitive', 'filename', 'tagbar', ],
       \           ],
       \   'right': [ 
-      \             [ 'readonly', 'lineno', 'percent' ], 
+      \             [ 'readonly', 'percent', 'lineinfo',  'linecount',  ], 
       \             [ 'filetype', 'fileformat', 'readonly' ],
       \             [ 'linter_checking', 'linter_errors',
       \                'linter_warnings', 'linter_ok' ],
@@ -686,6 +704,8 @@ let g:lightline = {
       \  'gitbranch': 'fugitive#head',
       \ },
       \ 'component': {
+      \   'lineinfo': "%{line('.')}",
+      \   'linecount': "%{line('$')}",
       \   'close': '%9999X%{g:os_spec_string}', 
       \   'tagbar': '%{tagbar#currenttag("%s", "")}',
       \   'spell': '%{&spell?&spelllang:""}',
@@ -694,9 +714,9 @@ let g:lightline = {
       \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?"\uf00c":""}',
       \ },
       \ 'component_visible_condition': {
-      \   'readonly': '(&filetype!="help"&& &readonly)',
-      \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-      \   'fugitive': '(&filetype!="help"&&(winwidth(0) <80)&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
+      \   'readonly': '(index(["help","nofile"],&filetype)!=-1&& &readonly)',
+      \   'modified': '(index(["help","nofile"],&filetype)!=-1&&(&modified||!&modifiable))',
+      \   'fugitive': '(index(["help","nofile"],&filetype)!=-1&&(winwidth(0) <80)&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
       \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
       \   'tagbar': '(exists("tagbar#currenttag"))',
       \ },
@@ -709,9 +729,23 @@ let g:lightline = {
       \     'banner': 'tabsel',
       \ },
       \ 'component_function': {
-      \   'filetype': 'MyFiletype',
-      \   'fileformat': 'MyFileformat',
-      \   'method': 'NearestMethodOrFunction'
+      \     'mode': 'LightlineMode',
+      \     'filetype': 'MyFiletype',
+      \     'fileformat': 'MyFileformat',
+      \    'method': 'NearestMethodOrFunction'
+      \ },
+      \ 'mode_map' : {
+      \ 'no' : 'NORMAL',
+      \ '\U+fae6' : 'INSERT',
+      \ 'R' : 'REPLACE',
+      \ '\uf035' : 'VISUAL',
+      \ '\uf034' : 'V-LINE',
+      \ "\uf783": 'V-BLOCK',
+      \ '\ufb32' : 'COMMAND',
+      \ '\uf245' : 'SELECT',
+      \ 'S' : 'S-LINE',
+      \ "\<C-s>": 'S-BLOCK',
+      \ 't': 'TERMINAL',
       \ },
       \ 'tabline' : {
       \   'separator': { 'left': '┋', },
@@ -731,6 +765,17 @@ let g:lightline = {
       \   'subseparator': { 'left': '∶', 'right': '∷'},
       \ }
 
+function! LightlineMode()
+  return expand('%:t') ==# '__Tagbar__' ? 'Tagbar':
+        \ expand('%:t') ==# 'ControlP' ? 'CtrlP' :
+        \ expand('%:t') ==# 'NERDTree' ? '' :
+        \ &filetype ==# 'unite' ? 'Unite' :
+        \ &filetype ==# 'vimfiler' ? 'VimFiler' :
+        \ &filetype ==# 'vimshell' ? 'VimShell' :
+        \ lightline#mode()
+endfunction
+
+let g:lightlinpyenv#indicator_ok = ''
       "   'separator': { 'left': '', 'right':'' },
 function! LightlineTabmodified(n) abort
     let winnr = tabpagewinnr(a:n)
