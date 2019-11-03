@@ -207,6 +207,10 @@ Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'roxma/vim-tmux-clipboard'
 
 " --- languages
+Plug 'ekalinin/Dockerfile.vim'
+Plug 'kevinhui/vim-docker-tools'
+Plug 'juliosueiras/vim-terraform-completion'
+Plug 'towolf/vim-helm'
 Plug 'saltstack/salt-vim'
 Plug 'vim-scripts/applescript.vim'
 Plug 'hashivim/vim-terraform'
@@ -568,8 +572,8 @@ let g:ale_fixers = { 'python' : ['black' ],
             \        'terraform' : ['terraform'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
-let g:ale_python_flake8_args = "--max-line-length=" . linelen
-let g:ale_python_flake8_options = "--max-line-length=" . linelen
+let g:ale_python_flake8_args = '--max-line-length=' . linelen
+let g:ale_python_flake8_options = '--max-line-length=' . linelen
 
 let g:ale_fix_on_save = 0
 let g:ale_set_loclist = 0
@@ -589,7 +593,7 @@ let g:ale_virtualenv_dir_names = []
 let g:ale_python_auto_pipenv = 1
 
 augroup vim_blacklist_blacklist
-autocmd FileType * call s:ale_settings()
+    autocmd FileType * call s:ale_settings()
 augroup END
 
 function! s:ale_settings()
@@ -638,11 +642,11 @@ elseif has('win32unix')
 elseif has('win32')
     let g:os=''
 elseif has('unix')
-    if $DISTRO == 'Redhat'
+    if $DISTRO ==? 'Redhat'
         let g:os=''
-    elseif $DISTRO == 'Ubuntu'
+    elseif $DISTRO ==? 'Ubuntu'
         let g:os=''
-    elseif $DISTRO == 'Debian'
+    elseif $DISTRO ==? 'Debian'
         let g:os=''
     else
         let g:os=''
@@ -677,16 +681,16 @@ let g:lightline = {
       \            ]
       \ },
       \ 'component_expand' : {
-      \  'linter_checking': 'lightline#ale#indicator_checking',
-      \  'linter_warnings': 'lightline#ale#indicator_warnings',
-      \  'linter_errors': 'lightline#ale#indicator_errors',
-      \  'linter_ok': 'lightline#ale#indicator_ok',
+      \  'linter_checking': 'g:lightline#ale#indicator_checking',
+      \  'linter_warnings': 'g:lightline#ale#indicator_warnings',
+      \  'linter_errors': 'g:lightline#ale#indicator_errors',
+      \  'linter_ok': 'g:lightline#ale#indicator_ok',
       \  'pyenv': 'pyenv#pyenv#get_activated_env',
       \  'gitbranch': 'fugitive#head',
       \ },
       \ 'component': {
-      \   'lineinfo': "%{line('.')}",
-      \   'linecount': "%{line('$')}",
+      \   'lineinfo': '%{line(".")}',
+      \   'linecount': '%{line("$")}',
       \   'close': '%9999X%{g:os_spec_string}', 
       \   'tagbar': '%{tagbar#currenttag("%s", "")}',
       \   'spell': '%{&spell?&spelllang:""}',
@@ -714,19 +718,6 @@ let g:lightline = {
       \     'filetype': 'MyFiletype',
       \     'fileformat': 'MyFileformat',
       \    'method': 'NearestMethodOrFunction'
-      \ },
-      \ 'mode_map' : {
-      \  'NORMAL': 'no',
-      \  'INSERT': '\U+FAE6',
-      \  'REPLACE': 'R' ,
-      \  'VISUAL': '\U+f035',
-      \  'V-LINE': '\U+f034',
-      \  'V-BLOCK': '\U+f783',
-      \  'COMMAND': '\U+fb32',
-      \  'SELECT': '\U+f245',
-      \  'S-LINE': '\U+f783\U+f245' ,
-      \  'S-BLOCK': "\U+f034",
-      \  'TERMINAL': '',
       \ },
       \ 'tabline' : {
       \   'separator': { 'left': '┋', },
@@ -756,14 +747,13 @@ function! LightlineMode()
         \ lightline#mode()
 endfunction
 
-let g:lightlinpyenv#indicator_ok = ''
-      "   'separator': { 'left': '', 'right':'' },
+let g:lightline#pyenv#indicator_ok = ''
 function! LightlineTabmodified(n) abort
     let winnr = tabpagewinnr(a:n)
     let buflist = tabpagebuflist(a:n)
     let fname = expand('#'.buflist[winnr - 1].':t')
     let buf_modified = gettabwinvar(a:n, winnr, '&modified') ? '﯂' : ''
-    return ( '' != fname ? buf_modified : '')
+    return ( '' !=? fname ? buf_modified : '')
 endfunction
 
 function! LightlineTabReadonly (n) abort
@@ -784,13 +774,13 @@ function! LightlineTabname(n) abort
   let buflist = tabpagebuflist(a:n)
   let winnr = tabpagewinnr(a:n)
   let fname = expand('#'.buflist[winnr - 1].':t')
-  return fname =~ '__Tagbar__' ? 'Tagbar' :
-        \ fname =~ 'NERD_tree' ? 'NERDTree' : 
-        \ ('' != fname ? fname : '﬒')
+  return fname =~? '__Tagbar__' ? 'Tagbar' :
+        \ fname =~? 'NERD_tree' ? 'NERDTree' : 
+        \ ('' !=? fname ? fname : '﬒')
 endfunction
 
 function! LightlineFugitive()
-  if &ft !~? 'vimfiler' && exists('*fugitive#head')
+  if &filetype !~? 'vimfiler' && exists('*fugitive#head')
     let branch = fugitive#head()
     if len(branch) < 25
       return branch
@@ -814,18 +804,16 @@ endfun
 
 fun! s:lightlineColorschemes(...)
     return join(map(
-                \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
-                \ "fnamemodify(v:val,':t:r')"),
-                \ "\n")
+                \ globpath(&runtimepath,'autoload/lightline/colorscheme/*.vim',1,1),
+                \ 'fnamemodify(v:val,":t:r")'),
+                \ '\n')
 endfun
 
 com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
             \ call s:setLightlineColorscheme(<q-args>)
 
-LightlineColorscheme one
 
 function! s:LightLineUpdateColor()
-    :let &background = ( &background == "dark"? "light" : "dark" ) 
     call lightline#init()
     call lightline#colorscheme()
     call lightline#update()
@@ -864,8 +852,9 @@ let g:lightline#ale#indicator_ok = ''
 "----------------------------------------------
 "
 let g:go_auto_sameids = 1
-let g:go_fmt_command = "goimports"
+let g:go_fmt_command = 'goimports'
 
+augroup GOHELPERS
 au FileType go nmap <leader>gt :GoDeclsDir<cr>
 au Filetype go nmap <leader>ga <Plug>(go-alternate-edit)
 " Test coverage
@@ -877,7 +866,8 @@ au Filetype go nmap <leader>gav <Plug>(go-alternate-vertical)
 let g:go_auto_type_info = 1
 au FileType go nmap <Leader>d <Plug>(go-def)
 " Snake case or camel case
-let g:go_addtags_transform = "snakecase"
+let g:go_addtags_transform = 'snakecase'
+augroup END
 
 "----------------------------------------------
 " Plugin: christoomey/vim-tmux-navigator
@@ -886,14 +876,16 @@ let g:go_addtags_transform = "snakecase"
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
 if exists('$TMUX')
-    autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand("%:t") . "'")
+    augroup TMUX_TITLE
+    autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand('%:t') . "'")
     autocmd VimLeavePre * call system("tmux rename-window '-'")
+augroup END
     " tmux will send xterm-style keys when its xterm-keys option is on
-    if &term =~ '^screen'
-        execute "set <xUp>=\e[1;*A"
-        execute "set <xDown>=\e[1;*B"
-        execute "set <xRight>=\e[1;*C"
-        execute "set <xLeft>=\e[1;*D"
+    if &term =~? '^screen'
+        execute 'set <xUp>=\e[1;*A'
+        execute 'set <xDown>=\e[1;*B'
+        execute 'set <xRight>=\e[1;*C'
+        execute 'set <xLeft>=\e[1;*D'
     endif
 
     let g:tmux_navigator_save_on_switch = 1
@@ -915,7 +907,7 @@ if (empty($TMUX))
 else
     augroup TMUX_RENAME
         autocmd BufEnter * call system("tmux rename-window '" . tabpagenr() . ' ' . LightlineTabname(tabpagenr()) . ' ' . LightlineTabmodified(tabpagenr()) . "'")
-        autocmd VimLeave * call system("tmux setw automatic-rename")
+        autocmd VimLeave * call system('tmux setw automatic-rename")
     augroup END
 endif
 
@@ -945,8 +937,10 @@ let NERDTreeIgnore = [
     \ '^__pycache__$'
 \]
 
+augroup nerdtree_extra
 " Close vim if NERDTree is the only opened window.
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+autocmd bufenter * if (winnr('$') == 1 && exists('b:NERDTreeType') && b:NERDTreeType == 'primary') | q | endif
+augroup END
 
 let g:NERDTreeIndicatorMapCustom = {
     \ 'Modified'  : '✹',
@@ -976,6 +970,8 @@ call NERDTreeAddKeyMap({
         \ 'quickhelpText': 'put full path of current node into the default register' })
 endif
 
+" Show hidden files by default.
+let NERDTreeShowHidden = 1
 
 " Allow NERDTree to change session root.
 let g:NERDTreeChDirMode = 2
@@ -994,8 +990,9 @@ let g:ipy_perform_mappings=1
 " --------------------
 " Plugin 'janko/vim-test'
 " --------------------
+augroup VIMTEST_KEYMAP
 autocmd FileType * call s:vim_test_keymap()
-
+augroup END
 
 function! s:vim_test_keymap()
     nmap <silent> t<C-n> :TestNearest<CR>

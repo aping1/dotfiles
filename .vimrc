@@ -18,15 +18,19 @@ if ! has('gui_running')
 endif
 
 " memory leak problem
-if version >= 702
+if v:version >= 702
+    augroup CLEARMATCHES
     autocmd BufWinLeave * call clearmatches()
+    augroup END
 endif
 
 " Reload .vimrc immediately when edited
-autocmd! bufwritepost vimrc source ~/.vimrc
+augroup AUTOUPDATE
+autocmd! bufwritepost $MYVIMRC source $MYVIMRC
+augroup END
 
 set mouse+=a
-if has('ttymouse') && ( &term =~ '^screen' || &term =~ '^xterm' )
+if has('ttymouse') && ( &term =~? '^screen' || &term =~? '^xterm' )
     " tmux knows the extended mouse mode
     set ttymouse=xterm2
 endif
@@ -112,26 +116,24 @@ endif
 
 " === Auto install plug.vim ===
 let autoload_plug_path = '~/.vim/autoload/plug.vim'
+augroup plug_auto_update
 if ! empty(glob(autoload_plug_path))
-    exec "set rtp=" . autoload_plug_path . "," . &rtp 
+    exec 'set rtp=' . autoload_plug_path . ',' . &runtimepath
 elseif empty(glob(autoload_plug_path))
   silent ! exec '!curl -fLo ' . autoload_plug_path . 
                 \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   source &autoload_plug_path
-  augroup plug_auto_update
       autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-    augroup END
 else
     exec 'set runtimepath=' . autoload_plug_path . ',' . &runtimepath
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
-
-
+augroup END
 
 unlet autoload_plug_path
 
-if isdirectory("~/.config/nvim/plugged")
-    call plug#begin("~/.config/nvim/plugged")
+if isdirectory('~/.config/nvim/plugged')
+    call plug#begin('~/.config/nvim/plugged')
 else
     call plug#begin('~/.vim/plugged')
 endif
@@ -184,6 +186,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'ludovicchabant/vim-lawrencium'
 Plug 'majutsushi/tagbar'
 
+" Linting, syntax, autocomplete, semantic highlighting Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
+Plug 'w0rp/ale'
 Plug 'Shougo/echodoc.vim'
 Plug 'plytophogy/vim-virtualenv'
 Plug 'lambdalisue/vim-pyenv'
@@ -227,7 +231,7 @@ elseif (has('termguicolors'))
     set termguicolors
     silent! colorscheme tender
     silent! LightlineColorScheme tenderplus
-elseif &term =~ '256color'
+elseif &term =~? '256color'
     " Disable Background Color Erase (BCE) so that color schemes
     " work properly when Vim is used inside tmux and GNU screen.
     set t_ut=
@@ -243,7 +247,7 @@ endif
 set background=dark
 
 function! s:normalToggleColor()
-    :let &background = ( &background ==? "dark"? "light" : "dark" ) 
+    :let &background = ( &background ==? 'dark'? 'light' : 'dark' ) 
 endfunction
 
 com! -nargs=0 ToggleColor
@@ -253,9 +257,9 @@ map <F3> :ToggleColor<CR>
 
 " Set max line length.
     let linelen=120
-    execute "set colorcolumn=".linelen
+    execute 'set colorcolumn='.linelen
     highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-    execute "match OverLength /\%".linelen."v.\+/"
+    execute 'match OverLength /\%'.linelen.'v.\+/'
 
     " set highlight cursor
     "augroup CursorLine
@@ -265,8 +269,10 @@ map <F3> :ToggleColor<CR>
     "  au WinLeave * setlocal nocursorline
     "augroup END
 
+augroup AUTOUPDATE
 " Reload .vimrc immediately when edited
 autocmd! bufwritepost vimrc source ~/.vimrc
+augroup END
 " Change the Pmenu colors so they're more readable.
 highlight Pmenu ctermbg=cyan ctermfg=white
 highlight PmenuSel ctermbg=black ctermfg=white
@@ -286,12 +292,12 @@ autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
 augroup END
 
 " set highlight cursor
-"augroup CursorLine
+augroup CursorLine
 "  au!
 au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
 "  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
 "  au WinLeave * setlocal nocursorline
-"augroup END
+augroup END
 
 let g:easytags_dynamic_files = 1
 " ------------------------------------------------
@@ -300,8 +306,10 @@ let g:easytags_dynamic_files = 1
 "
 
 " Make underscores part of words for c files
+augroup KEYWORDFOR_C
 autocmd BufNewFile,BufWinEnter *.[h|c] set iskeyword+=_
 "autocmd BufNewFile,BufWinEnter *.[h|c] set iskeyword="a-z,A-Z,48-57,_,.,-,>"
+augroup END
 
 
 " ------------------------------------------------
@@ -320,22 +328,25 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 " filetype settings
 " ------------------------------------------------
 "
+"
+augroup FILETYPES
 :au BufNewFile,BufRead *.jinja set filetype=jinja
 
 " Run simple lint on structured files
-au FileType xml exe ":silent 1, $!xmllint --format --recover - 2> /dev/null"
-au FileType json exe ":silent 1, $!jq . - 2> /dev/null"
+au FileType xml exe ':silent 1, $!xmllint --format --recover - 2> /dev/null'
+au FileType json exe ':silent 1, $!jq . - 2> /dev/null'
+
+" ------------------------------------------------
+"  diff mode for commits
+" ------------------------------------------------
+au BufNewFile COMMIT_EDITING let syntax = diff
+augroup END
 
 imap OA <ESC>ki
 imap OB <ESC>ji
 imap OC <ESC>li
 imap OD <ESC>hi
 
-
-" ------------------------------------------------
-"  diff mode for commits
-" ------------------------------------------------
-au BufNewFile COMMIT_EDITING let syntax = diff
 " Use ag for vimgrep
 set grepprg=ag\ --vimgrep\ $* 
 set grepformat=%f:%l:%c:%m
@@ -358,8 +369,8 @@ let g:ale_fixers = { 'python' : ['black' ],
             \        'terraform' : ['terraform'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
-let g:ale_python_flake8_args = "--max-line-length=" . linelen
-let g:ale_python_flake8_options = "--max-line-length=" . linelen
+let g:ale_python_flake8_args = '--max-line-length=' . linelen
+let g:ale_python_flake8_options = '--max-line-length=' . linelen
 
 let g:ale_fix_on_save = 0
 let g:ale_set_loclist = 0
@@ -370,12 +381,6 @@ let g:ale_open_list = 1
 " This can be useful if you are combining ALE with
 " some other plugin which sets quickfix errors, etc.
 let g:ale_keep_list_window_open = 1
-" Set this if you want to.
-" Enable integration with " Check Python files with flake8 and pylint.
-let b:ale_linters = { 'python': ['flake8', 'mypy' ] }
-" Fix Python files with autopep8 and yapf.
-let b:ale_fixers = { 'python' : ['black'],
-                \    'lua' : ['trimwhitespace', 'remove_trailing_lines'] }
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
 
@@ -413,11 +418,11 @@ elseif has('win32unix')
 elseif has('win32')
     let g:os=''
 elseif has('unix')
-    if $DISTRO == 'Redhat'
+    if $DISTRO ==? 'Redhat'
         let g:os=''
-    elseif $DISTRO == 'Ubuntu'
+    elseif $DISTRO ==? 'Ubuntu'
         let g:os=''
-    elseif $DISTRO == 'Debian'
+    elseif $DISTRO ==? 'Debian'
         let g:os=''
     else
         let g:os=''
@@ -426,7 +431,7 @@ else
     let g:os=''
 endif
 
-let g:os_spec_string=' ' . g:os . (has("gui_running")?'': '').('')
+let g:os_spec_string=' ' . g:os . (has('gui_running')?'': '').('')
 
 let g:lightline = {
       \ 'inactive': {
@@ -452,16 +457,16 @@ let g:lightline = {
       \            ]
       \ },
       \ 'component_expand' : {
-      \  'linter_checking': 'lightline#ale#indicator_checking',
-      \  'linter_warnings': 'lightline#ale#indicator_warnings',
-      \  'linter_errors': 'lightline#ale#indicator_errors',
-      \  'linter_ok': 'lightline#ale#indicator_ok',
+      \  'linter_checking': 'g:lightline#ale#indicator_checking',
+      \  'linter_warnings': 'g:lightline#ale#indicator_warnings',
+      \  'linter_errors': 'g:lightline#ale#indicator_errors',
+      \  'linter_ok': 'g:lightline#ale#indicator_ok',
       \  'pyenv': 'pyenv#pyenv#get_activated_env',
       \  'gitbranch': 'fugitive#head',
       \ },
       \ 'component': {
-      \   'lineinfo': "%{line('.')}",
-      \   'linecount': "%{line('$')}",
+      \   'lineinfo': '%{line(".")}',
+      \   'linecount': '%{line("$")}',
       \   'close': '%9999X%{g:os_spec_string}', 
       \   'tagbar': '%{tagbar#currenttag("%s", "")}',
       \   'spell': '%{&spell?&spelllang:""}',
@@ -489,19 +494,6 @@ let g:lightline = {
       \     'filetype': 'MyFiletype',
       \     'fileformat': 'MyFileformat',
       \    'method': 'NearestMethodOrFunction'
-      \ },
-      \ 'mode_map' : {
-      \  'NORMAL': 'no',
-      \  'INSERT': '\U+FAE6',
-      \  'REPLACE': 'R' ,
-      \  'VISUAL': '\U+f035',
-      \  'V-LINE': '\U+f034',
-      \  'V-BLOCK': '\U+f783',
-      \  'COMMAND': '\U+fb32',
-      \  'SELECT': '\U+f245',
-      \  'S-LINE': '\U+f783\U+f245' ,
-      \  'S-BLOCK': "\U+f034",
-      \  'TERMINAL': '',
       \ },
       \ 'tabline' : {
       \   'separator': { 'left': '┋', },
@@ -531,14 +523,13 @@ function! LightlineMode()
         \ lightline#mode()
 endfunction
 
-let g:lightlinpyenv#indicator_ok = ''
-      "   'separator': { 'left': '', 'right':'' },
+let g:lightline#pyenv#indicator_ok = ''
 function! LightlineTabmodified(n) abort
     let winnr = tabpagewinnr(a:n)
     let buflist = tabpagebuflist(a:n)
     let fname = expand('#'.buflist[winnr - 1].':t')
     let buf_modified = gettabwinvar(a:n, winnr, '&modified') ? '﯂' : ''
-    return ( '' != fname ? buf_modified : '')
+    return ( '' !=? fname ? buf_modified : '')
 endfunction
 
 function! LightlineTabReadonly (n) abort
@@ -559,13 +550,13 @@ function! LightlineTabname(n) abort
   let buflist = tabpagebuflist(a:n)
   let winnr = tabpagewinnr(a:n)
   let fname = expand('#'.buflist[winnr - 1].':t')
-  return fname =~ '__Tagbar__' ? 'Tagbar' :
-        \ fname =~ 'NERD_tree' ? 'NERDTree' : 
-        \ ('' != fname ? fname : '﬒')
+  return fname =~? '__Tagbar__' ? 'Tagbar' :
+        \ fname =~? 'NERD_tree' ? 'NERDTree' : 
+        \ ('' !=? fname ? fname : '﬒')
 endfunction
 
 function! LightlineFugitive()
-  if &ft !~? 'vimfiler' && exists('*fugitive#head')
+  if &filetype !~? 'vimfiler' && exists('*fugitive#head')
     let branch = fugitive#head()
     if len(branch) < 25
       return branch
@@ -589,9 +580,9 @@ endfun
 
 fun! s:lightlineColorschemes(...)
     return join(map(
-                \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
-                \ "fnamemodify(v:val,':t:r')"),
-                \ "\n")
+                \ globpath(&runtimepath,'autoload/lightline/colorscheme/*.vim',1,1),
+                \ 'fnamemodify(v:val,":t:r")'),
+                \ '\n')
 endfun
 
 com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
@@ -636,8 +627,9 @@ let g:lightline#ale#indicator_ok = ''
 "----------------------------------------------
 "
 let g:go_auto_sameids = 1
-let g:go_fmt_command = "goimports"
+let g:go_fmt_command = 'goimports'
 
+augroup GOHELPERS
 au FileType go nmap <leader>gt :GoDeclsDir<cr>
 au Filetype go nmap <leader>ga <Plug>(go-alternate-edit)
 " Test coverage
@@ -649,7 +641,8 @@ au Filetype go nmap <leader>gav <Plug>(go-alternate-vertical)
 let g:go_auto_type_info = 1
 au FileType go nmap <Leader>d <Plug>(go-def)
 " Snake case or camel case
-let g:go_addtags_transform = "snakecase"
+let g:go_addtags_transform = 'snakecase'
+augroup END
 
 "----------------------------------------------
 " Plugin: christoomey/vim-tmux-navigator
@@ -658,14 +651,16 @@ let g:go_addtags_transform = "snakecase"
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
 if exists('$TMUX')
-    autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand("%:t") . "'")
+    augroup TMUX_TITLE
+    autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand('%:t') . "'")
     autocmd VimLeavePre * call system("tmux rename-window '-'")
+augroup END
     " tmux will send xterm-style keys when its xterm-keys option is on
-    if &term =~ '^screen'
-        execute "set <xUp>=\e[1;*A"
-        execute "set <xDown>=\e[1;*B"
-        execute "set <xRight>=\e[1;*C"
-        execute "set <xLeft>=\e[1;*D"
+    if &term =~? '^screen'
+        execute 'set <xUp>=\e[1;*A'
+        execute 'set <xDown>=\e[1;*B'
+        execute 'set <xRight>=\e[1;*C'
+        execute 'set <xLeft>=\e[1;*D'
     endif
 
     let g:tmux_navigator_save_on_switch = 1
@@ -687,7 +682,7 @@ if (empty($TMUX))
 else
     augroup TMUX_RENAME
         autocmd BufEnter * call system("tmux rename-window '" . tabpagenr() . ' ' . LightlineTabname(tabpagenr()) . ' ' . LightlineTabmodified(tabpagenr()) . "'")
-        autocmd VimLeave * call system("tmux setw automatic-rename")
+        autocmd VimLeave * call system('tmux setw automatic-rename")
     augroup END
 endif
 
@@ -717,10 +712,9 @@ let NERDTreeIgnore = [
     \ '^__pycache__$'
 \]
 
-" Close vim if NERDTree is the only opened window.
-
 augroup nerdtree_extra
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+" Close vim if NERDTree is the only opened window.
+autocmd bufenter * if (winnr('$') == 1 && exists('b:NERDTreeType') && b:NERDTreeType == 'primary') | q | endif
 augroup END
 
 let g:NERDTreeIndicatorMapCustom = {
@@ -771,8 +765,9 @@ let g:ipy_perform_mappings=1
 " --------------------
 " Plugin 'janko/vim-test'
 " --------------------
+augroup VIMTEST_KEYMAP
 autocmd FileType * call s:vim_test_keymap()
-
+augroup END
 
 function! s:vim_test_keymap()
     nmap <silent> t<C-n> :TestNearest<CR>
