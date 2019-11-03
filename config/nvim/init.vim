@@ -878,8 +878,7 @@ let g:go_addtags_transform = "snakecase"
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
 if exists('$TMUX')
-
-    autocmd WinEnter,TabEnter * call system("tmux rename-window '" . expand("%:t") . "'")
+    autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand("%:t") . "'")
     autocmd VimLeavePre * call system("tmux rename-window '-'")
     " tmux will send xterm-style keys when its xterm-keys option is on
     if &term =~ '^screen'
@@ -941,21 +940,6 @@ let NERDTreeIgnore = [
 " Close vim if NERDTree is the only opened window.
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
-function! NERDTreeYankCurrentNode()
-    let n = g:NERDTreeFileNode.GetSelected()
-    if n != {}
-        call setreg('=', n.path.str())
-        call setreg('+', n.path.str())
-    endif
-endfunction
-
-if exists('NERDTreeAddKeyMap')
-call NERDTreeAddKeyMap({
-        \ 'key': 'yy',
-        \ 'callback': 'NERDTreeYankCurrentNode',
-        \ 'quickhelpText': 'put full path of current node into the default register' })
-endif
-
 let g:NERDTreeIndicatorMapCustom = {
     \ 'Modified'  : '✹',
     \ 'Staged'    : '✚',
@@ -983,7 +967,6 @@ call NERDTreeAddKeyMap({
         \ 'callback': 'NERDTreeYankCurrentNode',
         \ 'quickhelpText': 'put full path of current node into the default register' })
 endif
-augroup END
 
 
 " Allow NERDTree to change session root.
