@@ -2,6 +2,8 @@
 " ~/confing/nvim/init.vim
 "
 
+set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
+
 set ruler
 set ignorecase
 set smartcase
@@ -25,6 +27,9 @@ try
 catch
 endtry
 
+" When shifting always round to the correct indentation.
+set shiftround
+
 set smarttab
 set expandtab
 set linebreak
@@ -35,6 +40,10 @@ set noignorecase
 set nosmartcase
 
 set foldcolumn=2
+set foldenable          " enable folding
+set foldlevelstart=10   " open most folds by default
+set foldnestmax=10      " 10 nested fold max
+set foldmethod=indent   " fold based on indent level
 " Fix up arrow not working in search.
 
 set laststatus=2
@@ -43,7 +52,6 @@ set number
 set tabstop=4
 set shiftwidth=4
 set hlsearch
-set shiftround
 
 set number relativenumber
 
@@ -87,19 +95,20 @@ let runtimepath=&runtimepath . ',' . substitute(expand('%:p'), autoload_plug_pat
 if empty(glob(autoload_plug_path))
   silent ! exec '!curl -fLo ' . autoload_plug_path . 
                 \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  source &autoload_plug_path
   augroup plug_auto_update
       autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
     augroup END
 else
-exec 'set runtimepath=' . autoload_plug_path . ',' . &runtimepath
+    exec 'set runtimepath=' . autoload_plug_path . ',' . &runtimepath
 endif
 
 unlet autoload_plug_path
 
 call plug#begin('~/.config/nvim/plugged')
 
-" Colorscheme -------
 
+" --- Colorscheme ---
 Plug 'flazz/vim-colorschemes'
 Plug 'iCyMind/NeoSolarized'
 Plug 'jacoborus/tender.vim'
@@ -120,7 +129,6 @@ Plug 'chrisbra/unicode.vim'
 " Use math symbols instead of keywords 
 "Plug 'ehamberg/vim-cute-python'
 Plug 'mhinz/vim-startify'
-Plug 'merlinrebrovic/focus.vim'
 
 " Vim exploration Modifications
 Plug 'Shougo/denite.nvim'
@@ -154,6 +162,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'ludovicchabant/vim-lawrencium'
 Plug 'majutsushi/tagbar'
 
+" Linting, syntax, autocomplete, semantic highlighting Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 Plug 'w0rp/ale'
 Plug 'Shougo/echodoc.vim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -162,10 +171,7 @@ Plug 'davidhalter/jedi-vim'
 Plug 'zchee/deoplete-jedi'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'aping1/deoplete-zsh', { 'branch': 'develop' }
-Plug 'juliosueiras/vim-terraform-completion'
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
-
-" Linting, syntax, autocomplete, semantic highlighting Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 
 " Tools for repl
 Plug 'Vigemus/impromptu.nvim'
@@ -179,11 +185,9 @@ Plug 'janko/vim-test'
 Plug 'Shougo/neoinclude.vim'
 Plug 'Shougo/context_filetype.vim'
 Plug 'janko/vim-test'
-Plug 'majutsushi/tagbar'
 
 " ZSH Autocomplete
 Plug 'mtikekar/nvim-send-to-term'
-Plug 'aping1/deoplete-zsh', { 'branch': 'fix_completion' }
 
 " Simply Fold 
 Plug 'tmhedberg/SimpylFold'
@@ -196,11 +200,16 @@ Plug 'jez/vim-superman'
 
 Plug 'ekalinin/Dockerfile.vim'
 Plug 'kevinhui/vim-docker-tools'
-Plug 'hashivim/vim-terraform'
+Plug 'juliosueiras/vim-terraform-completion'
 Plug 'towolf/vim-helm'
 
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'roxma/vim-tmux-clipboard'
+
+" --- languages
+Plug 'saltstack/salt-vim'
+Plug 'vim-scripts/applescript.vim'
+Plug 'hashivim/vim-terraform'
 
 call plug#end()
 filetype plugin indent on     " required
@@ -252,7 +261,6 @@ com! -nargs=0 ToggleColor
     \ call s:normalToggleColor()
 
 map <F3> :ToggleColor<CR>
-
 
 " Set max line length.
 let linelen = 120

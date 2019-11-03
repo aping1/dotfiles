@@ -31,14 +31,13 @@ if has('ttymouse') && ( &term =~ '^screen' || &term =~ '^xterm' )
     set ttymouse=xterm2
 endif
 
-" Tell VIM which tags file to use.
 set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
-
-set ruler
 
 set shell=/bin/bash
 set encoding=utf8
-set ffs=unix,dos,mac
+" required for iterm 
+set ambiwidth=double
+set fileformats=unix,dos,mac
 set nobackup
 set noswapfile
 set incsearch
@@ -57,6 +56,7 @@ endtry
 set shiftround
 
 set smarttab
+set expandtab
 set linebreak
 set textwidth=0
 
@@ -70,37 +70,65 @@ set foldlevelstart=10   " open most folds by default
 set foldnestmax=10      " 10 nested fold max
 set foldmethod=indent   " fold based on indent level
 " Fix up arrow not working in search.
+
 set laststatus=2
 set number
 
 set tabstop=4
-set sw=4
-set ai
-set expandtab
+set shiftwidth=4
 set hlsearch
 
-" === Auto install plug.vim ===
-if exists('*stdpath')
-    let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
-else
-    let autoload_plug_path = '~/.vim/autoload/plug.vim'
+set number relativenumber
+
+augroup numbertoggle
+autocmd!
+autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+autocmd BufReadPost * set norelativenumber
+augroup END
+
+" -----
+" 24-bit colors
+" -----
+"Credit joshdick
+"Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
+"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
+"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
+if (empty($TMUX))
+  if (has('nvim'))
+  "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
 endif
 
+set clipboard=unnamed
+
+if exists('$VIRTUAL_ENV')
+    let g:python_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
+endif
+
+" === Auto install plug.vim ===
+let autoload_plug_path = '~/.vim/autoload/plug.vim'
 if ! empty(glob(autoload_plug_path))
     exec "set rtp=" . autoload_plug_path . "," . &rtp 
-endif
-if empty(glob(autoload_plug_path))
+elseif empty(glob(autoload_plug_path))
   silent ! exec '!curl -fLo ' . autoload_plug_path . 
                 \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-    source &autoload_plug_path
- 
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  source &autoload_plug_path
+  augroup plug_auto_update
+      autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+    augroup END
+else
+    exec 'set runtimepath=' . autoload_plug_path . ',' . &runtimepath
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 
-if ! empty(glob(autoload_plug_path))
-    exec "set rtp=" . autoload_plug_path . "," . &rtp 
-endif
+
+unlet autoload_plug_path
 
 if isdirectory("~/.config/nvim/plugged")
     call plug#begin("~/.config/nvim/plugged")
@@ -108,48 +136,119 @@ else
     call plug#begin('~/.vim/plugged')
 endif
 
-if exists('*plug#end')
+" --- Colorscheme ---
+Plug 'jacoborus/tender.vim'
+Plug 'rakr/vim-one'
 
-    Plug 'jez/vim-superman'
-    " --- Colorscheme ---
-    Plug 'jacoborus/tender.vim'
-    Plug 'rakr/vim-one'
+" Indent lines
+Plug 'nathanaelkane/vim-indent-guides'
+" Git gutter
+Plug 'mhinz/vim-signify'
+" Highlight colors
+Plug 'ap/vim-css-color'
+" Auto color hex
+Plug 'lilydjwg/Colorizer'
 
-    Plug 'vim-scripts/ag.vim'
+" Hide sum and such as unicode 
+Plug 'ryanoasis/vim-devicons'
+Plug 'chrisbra/unicode.vim'
+" Use math symbols instead of keywords 
+"Plug 'ehamberg/vim-cute-python'
+Plug 'mhinz/vim-startify'
 
-    Plug 'scrooloose/nerdtree'
+" Vim exploration Modifications
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'numkil/ag.nvim'
+Plug 'leshill/vim-json'
 
-    Plug 'tpope/vim-fugitive'
-    Plug 'ludovicchabant/vim-lawrencium'
+" Projects
+Plug 'amiorin/vim-project'
+Plug 'tpope/vim-projectionist'
 
-    Plug 'plytophogy/vim-virtualenv'
+" Navigation
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 
-    Plug 'tmhedberg/SimpylFold'
-    Plug 'ryanoasis/vim-devicons'
+Plug 'scrooloose/nerdcommenter'
+Plug 'mg979/vim-visual-multi'
 
-    " Indent lines
-    Plug 'nathanaelkane/vim-indent-guides'
-    " Git gutter
-    Plug 'mhinz/vim-signify'
-    Plug 'itchyny/lightline.vim'
-    Plug 'maximbaz/lightline-ale'
+Plug 'SidOfc/mkdx'
+Plug 'vimwiki/vimwiki'
+Plug 'tpope/vim-markdown'
+Plug 'itspriddle/vim-marked'
+Plug 'gyim/vim-boxdraw'
 
-    Plug 'tmux-plugins/vim-tmux-focus-events'
-    Plug 'roxma/vim-tmux-clipboard'
+" Version Control
+Plug 'tpope/vim-fugitive'
+Plug 'ludovicchabant/vim-lawrencium'
+Plug 'majutsushi/tagbar'
 
-    " --- languages
-    Plug 'saltstack/salt-vim'
-    Plug 'vim-scripts/applescript.vim'
-    Plug 'hashivim/vim-terraform'
+Plug 'Shougo/echodoc.vim'
+Plug 'plytophogy/vim-virtualenv'
+Plug 'lambdalisue/vim-pyenv'
+Plug 'Shougo/context_filetype.vim'
+Plug 'janko/vim-test'
 
-    call plug#end()
 
+Plug 'tmhedberg/SimpylFold'
 
-    " Change the Pmenu colors so they're more readable.
-    highlight Pmenu ctermbg=cyan ctermfg=white
-    highlight PmenuSel ctermbg=black ctermfg=white
+Plug 'itchyny/lightline.vim'
+Plug 'maximbaz/lightline-ale'
 
+Plug 'jez/vim-superman'
+
+Plug 'ekalinin/Dockerfile.vim'
+Plug 'kevinhui/vim-docker-tools'
+Plug 'juliosueiras/vim-terraform-completion'
+Plug 'towolf/vim-helm'
+
+Plug 'tmux-plugins/vim-tmux-focus-events'
+Plug 'roxma/vim-tmux-clipboard'
+
+" --- languages
+Plug 'saltstack/salt-vim'
+Plug 'vim-scripts/applescript.vim'
+Plug 'hashivim/vim-terraform'
+
+call plug#end()
+
+" --------------------------------------------
+" Colorscheme 
+" --------------------------------------------
+" colorscheme
+
+if (has('gui_running'))
+    silent! colorscheme tender
+elseif (has('termguicolors'))
+    set termguicolors
+    silent! colorscheme tender
+elseif &term =~ '256color'
+    " Disable Background Color Erase (BCE) so that color schemes
+    " work properly when Vim is used inside tmux and GNU screen.
+    set t_ut=
+    set t_Co=256
+    silent! colorscheme solarized
+    let g:solarized_termcolors=256
+else
+    colorscheme default
+    set t_Co=16
+endif
+
+set background=dark
+
+function! s:normalToggleColor()
+    :let &background = ( &background ==? "dark"? "light" : "dark" ) 
+endfunction
+
+com! -nargs=0 ToggleColor
+    \ call s:normalToggleColor()
+
+map <F3> :ToggleColor<CR>
+
+" Set max line length.
     let linelen=120
+    execute "set colorcolumn=".linelen
     highlight OverLength ctermbg=red ctermfg=white guibg=#592929
     execute "match OverLength /\%".linelen."v.\+/"
 
@@ -160,13 +259,27 @@ if exists('*plug#end')
     "  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
     "  au WinLeave * setlocal nocursorline
     "augroup END
-endif
 
 " Reload .vimrc immediately when edited
 autocmd! bufwritepost vimrc source ~/.vimrc
 " Change the Pmenu colors so they're more readable.
 highlight Pmenu ctermbg=cyan ctermfg=white
 highlight PmenuSel ctermbg=black ctermfg=white
+
+"----------------------------------------------
+" Plugin: 'nathanaelkane/vim-indent-guides'
+"----------------------------------------------
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_guide_size = 2
+let g:indent_guides_start_level = 2
+
+augroup IndentGuide
+" base 00
+autocmd VimEnter,Colorscheme * hi IndentGuidesOdd ctermbg=6 guibg=#353a44
+autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
+"" Vim
+augroup END
+
 " set highlight cursor
 "augroup CursorLine
 "  au!
@@ -175,8 +288,6 @@ au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
 "  au WinLeave * setlocal nocursorline
 "augroup END
 
-" Tell VIM which tags file to use.
-set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
 let g:easytags_dynamic_files = 1
 " ------------------------------------------------
 "  cursor and line len settings
@@ -215,38 +326,6 @@ imap OB <ESC>ji
 imap OC <ESC>li
 imap OD <ESC>hi
 
-" colorscheme
-" 24-bit colors
-" -----
-"Credit joshdick
-"Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
-"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
-"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
-if (has("termguicolors"))
-    set termguicolors
-    silent! colorscheme tender
-else
-    set t_Co=256
-    silent! colorscheme solarized
-    let g:solarized_termcolors=256
-endif
-
-set background=dark
-
-map <F4> :let &background = ( &background == "dark"? "light" : "dark" )<CR>
-
-set clipboard=unnamed
-
-" Pythong Template =s
-"
-" au BufNewFile *.py 0r ~/.vim/python.skel | let IndentStyle = "python"
-
-
-if &term =~ '256color'
-    " Disable Background Color Erase (BCE) so that color schemes
-    " work properly when Vim is used inside tmux and GNU screen.
-    set t_ut=
-endif
 
 " ------------------------------------------------
 "  diff mode for commits
@@ -263,12 +342,24 @@ let g:ale_sign_error = '⤫'
 let g:ale_sign_warning = '⚠'
 
 let g:ale_linters_explicit = 1
+let g:ale_linters = { 'python' : ['flake8', 'pyre'], 
+                    \ 'vim' : ['vint'],
+                    \ 'sh' : ['shellcheck'],
+                    \ 'terraform' : ['tflint'],
+                    \ }
 " " Fix Python files with autopep8 and yapf.
+let g:ale_fixers = { 'python' : ['black' ],
+            \       'lua' : ['trimwhitespace', 'remove_trailing_lines'],
+            \        'terraform' : ['terraform'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
-let g:ale_fix_on_save=0
-let g:ale_set_loclist = 1
-let g:ale_set_quickfix = 0
+let g:ale_python_flake8_args = "--max-line-length=" . linelen
+let g:ale_python_flake8_options = "--max-line-length=" . linelen
+
+let g:ale_fix_on_save = 0
+let g:ale_set_loclist = 0
+" Us quickfix with 'qq' delete
+let g:ale_set_quickfix = 1
 let g:ale_open_list = 1
 " Set this if you want to.
 " This can be useful if you are combining ALE with
@@ -285,6 +376,7 @@ let b:ale_warn_about_trailing_whitespace = 0
 
 " user environment
 let g:ale_virtualenv_dir_names = []
+
 let g:ale_python_auto_pipenv = 1
 
 augroup vim_blacklist_blacklist
@@ -309,119 +401,263 @@ endfunction
 " Plugin: 'itchyny/lightline.vim'
 "----------------------------------------------
 
-let g:lightline = {
-            \ 'active': {
-            \   'left': [ [  'mode', 'paste', 'spell' ],
-            \             [ 'pyenv', 'pyenv_active' ],
-            \             [ 'fugitive' ] ],
-            \   'right': [ ['filename', 'lineno', 'percent' ], 
-            \              [ 'filetype', 'fileformat', 'readonly' ],
-            \              [ 'linter_checking', 'linter_errors',
-            \                'linter_warnings', 'linter_ok'  ]
-            \            ]
-            \ },
-            \ 'component_expand' : {
-            \  'linter_checking': 'lightline#ale#checking',
-            \  'linter_warnings': 'lightline#ale#warnings',
-            \  'linter_errors': 'lightline#ale#errors',
-            \  'linter_ok': 'lightline#ale#ok',
-            \  'gitbranch': 'fugitive#head'
-            \ },
-            \ 'component': {
-            \   'spell': '%{&spell?&spelllang:""}',
-            \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-            \   'fugitive': '%{&filetype=="help"?"":exists("*FugitiveStatusline")?FugitiveStatusline():""}',
-            \ },
-            \ 'component_visible_condition': {
-            \   'readonly': '(&filetype!="help"&& &readonly)',
-            \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-            \   'fugitive': '(&filetype!="help"&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
-            \ },
-            \ 'component_type': {
-            \     'linter_checking': 'left',
-            \     'linter_warnings': 'warning',
-            \     'linter_errors': 'error',
-            \     'linter_ok': 'left',
-            \ },
-            \ 'component_function': {
-            \   'filetype': 'MyFiletype',
-            \   'fileformat': 'MyFileformat',
-            \   'method': 'NearestMethodOrFunction'
-            \ },
-            \ 'colorscheme' : 'tender',
-            \   'separator': { 'left': ' ', 'right': '' },
-            \   'subseparator': { 'left': '◤', 'right': '◢' },
-            \ }
-
-if exists("*lightline#init") 
-    function! NearestMethodOrFunction() abort
-        return get(b:, 'vista_nearest_method_or_function', '')
-    endfunction
-
-    function! MyFiletype()
-        let symbol=WebDevIconsGetFileTypeSymbol() 
-        let new_ft=(strlen(&filetype) ? symbol . ' ' . &filetype  : '')
-        return winwidth(0) > 120 ?  new_ft : symbol
-    endfunction
-
-    function! MyFileformat()
-        let symbol=WebDevIconsGetFileFormatSymbol()
-        return ((winwidth(0) > 80) ? symbol . ' ' . &fileformat : symbol )
-    endfunction
-
-    " ----- colorscheme helpers
-    fun! s:setLightlineColorscheme(name)
-        let g:lightline.colorscheme = a:name
-        call lightline#init()
-        call lightline#colorscheme()
-        call lightline#update()
-        let s:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
-        " inject center bar blank into pallete (an interesting hack)
-        let s:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
-        "let s:palette.inactive.middle = s:palette.normal.middle
-        let s:palette.tabline.middle = s:palette.normal.middle
-    endfun
-
-    fun! s:lightlineColorschemes(...)
-        return join(map(
-                    \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
-                    \ "fnamemodify(v:val,':t:r')"),
-                    \ "\n")
-    endfun
-
-
-    com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
-                \ call s:setLightlineColorscheme(<q-args>)
-    LightlineColorscheme tender
+if has('macunix')
+    let g:os=''
+elseif has('win32unix')
+    let g:os=''
+elseif has('win32')
+    let g:os=''
+elseif has('unix')
+    if $DISTRO == 'Redhat'
+        let g:os=''
+    elseif $DISTRO == 'Ubuntu'
+        let g:os=''
+    elseif $DISTRO == 'Debian'
+        let g:os=''
+    else
+        let g:os=''
+    endif
+else
+    let g:os=''
 endif
 
+let g:os_spec_string=' ' . g:os . (has("gui_running")?'': '').('')
 
-" --------------------
-" Plugin 'janko/vim-test'
-" --------------------
-"
-autocmd FileType * call s:vim_test_keymap()
+let g:lightline = {
+      \ 'inactive': {
+      \   'left': [ [  'pyenv', 'pyenv_active', ],
+      \             [ 'fugitive', 'filename', 'tagbar' ],
+      \             [ 'readonly', 'lineinfo', 'linecount'], 
+      \           ],
+      \   'right': [ 
+      \             [ 'filetype', 'fileformat'],
+      \             [ 'linter_errors', 'linter_warnings', 'linter_ok' ],
+      \            ]
+      \ },
+      \ 'active': {
+      \   'left': [ [  'mode', 'paste', 'spell',
+      \                'pyenv', 'pyenv_active', ],
+      \             [ 'fugitive', 'filename', 'tagbar', ],
+      \           ],
+      \   'right': [ 
+      \             [ 'readonly', 'percent', 'lineinfo',  'linecount',  ], 
+      \             [ 'filetype', 'fileformat', 'readonly' ],
+      \             [ 'linter_checking', 'linter_errors',
+      \                'linter_warnings', 'linter_ok' ],
+      \            ]
+      \ },
+      \ 'component_expand' : {
+      \  'linter_checking': 'lightline#ale#indicator_checking',
+      \  'linter_warnings': 'lightline#ale#indicator_warnings',
+      \  'linter_errors': 'lightline#ale#indicator_errors',
+      \  'linter_ok': 'lightline#ale#indicator_ok',
+      \  'pyenv': 'pyenv#pyenv#get_activated_env',
+      \  'gitbranch': 'fugitive#head',
+      \ },
+      \ 'component': {
+      \   'lineinfo': "%{line('.')}",
+      \   'linecount': "%{line('$')}",
+      \   'close': '%9999X%{g:os_spec_string}', 
+      \   'tagbar': '%{tagbar#currenttag("%s", "")}',
+      \   'spell': '%{&spell?&spelllang:""}',
+      \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
+      \   'fugitive': '%{&filetype=="help"?"":exists("*LightlineFugitive")?LightlineFugitive():""}',
+      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?WebDevIconsGetFileTypeSymbol("main.py", 1):""}',
+      \ },
+      \ 'component_visible_condition': {
+      \   'readonly': '(index(["help","nofile"],&filetype)!=-1&& &readonly)',
+      \   'modified': '(index(["help","nofile"],&filetype)!=-1&&(&modified||!&modifiable))',
+      \   'fugitive': '(index(["help","nofile"],&filetype)!=-1&&(winwidth(0) <80)&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
+      \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
+      \   'tagbar': '(exists("tagbar#currenttag"))',
+      \ },
+      \ 'component_type': {
+      \     'linter_checking': 'left',
+      \     'linter_warnings': 'warning',
+      \     'linter_errors': 'error',
+      \     'linter_ok': 'left',
+      \     'pyenv_active': 'ok',
+      \     'banner': 'tabsel',
+      \ },
+      \ 'component_function': {
+      \     'mode': 'LightlineMode',
+      \     'filetype': 'MyFiletype',
+      \     'fileformat': 'MyFileformat',
+      \    'method': 'NearestMethodOrFunction'
+      \ },
+      \ 'mode_map' : {
+      \  'NORMAL': 'no',
+      \  'INSERT': '\U+FAE6',
+      \  'REPLACE': 'R' ,
+      \  'VISUAL': '\U+f035',
+      \  'V-LINE': '\U+f034',
+      \  'V-BLOCK': '\U+f783',
+      \  'COMMAND': '\U+fb32',
+      \  'SELECT': '\U+f245',
+      \  'S-LINE': '\U+f783\U+f245' ,
+      \  'S-BLOCK': "\U+f034",
+      \  'TERMINAL': '',
+      \ },
+      \ 'tabline' : {
+      \   'separator': { 'left': '┋', },
+      \   'active': [ 
+      \       'tabnum', 'filename', 'modified', 'readonly',
+      \   ],
+      \ },
+      \ 'tab_component_function': {
+      \ 'filename': 'LightlineTabname',
+      \ 'modified': 'LightlineTabmodified',
+      \ 'readonly': 'LightlineTabReadonly',
+      \ 'tabnum': 'LightlineTabNumber',
+      \ 'banner': 'LightlineBanner',
+      \ },
+      \ 'colorscheme' : 'tender',
+      \   'separator': { 'left': '', 'right':'' },
+      \   'subseparator': { 'left': '∶', 'right': '∷'},
+      \ }
 
-
-function! s:vim_test_keymap()
-    nmap <silent> t<C-n> :TestNearest<CR>
-    nmap <silent> t<C-f> :TestFile<CR>
-    nmap <silent> t<C-s> :TestSuite<CR>
-    nmap <silent> t<C-l> :TestLast<CR>
-    nmap <silent> t<C-g> :TestVisit<CR>
+function! LightlineMode()
+  return expand('%:t') ==# '__Tagbar__' ? 'Tagbar':
+        \ expand('%:t') ==# 'ControlP' ? 'CtrlP' :
+        \ expand('%:t') ==# 'NERDTree' ? '' :
+        \ &filetype ==# 'unite' ? 'Unite' :
+        \ &filetype ==# 'vimfiler' ? 'VimFiler' :
+        \ &filetype ==# 'vimshell' ? 'VimShell' :
+        \ lightline#mode()
 endfunction
 
-let g:test#runner_commands = ['buck']
-let test#python#buck#executable = 'buck test'
-let test#python#runner = 'buck'
+let g:lightlinpyenv#indicator_ok = ''
+      "   'separator': { 'left': '', 'right':'' },
+function! LightlineTabmodified(n) abort
+    let winnr = tabpagewinnr(a:n)
+    let buflist = tabpagebuflist(a:n)
+    let fname = expand('#'.buflist[winnr - 1].':t')
+    let buf_modified = gettabwinvar(a:n, winnr, '&modified') ? '﯂' : ''
+    return ( '' != fname ? buf_modified : '')
+endfunction
+
+function! LightlineTabReadonly (n) abort
+    let winnr = tabpagewinnr(a:n)
+      return gettabwinvar(a:n, winnr, '&readonly') ? '' : gettabwinvar(a:n, winnr, '&modifiable') ? '' : ''
+endfunction
+
+function! LightlineTabNumber(n) abort
+    let buflist = tabpagebuflist(a:n)
+    let winnr = tabpagewinnr(a:n)
+    let fname = expand('#'.buflist[winnr - 1].':t')
+    " [ buf# ] [icon|]
+    " expand('%:t:r')
+    return ( WebDevIconsGetFileTypeSymbol(fname, isdirectory(fname)) . string(a:n) )
+endfunction
+" https://github.com/inkarkat/vim-StatusLineHighlight/blob/master/plugin/StatusLineHighlight.vim
+function! LightlineTabname(n) abort
+  let buflist = tabpagebuflist(a:n)
+  let winnr = tabpagewinnr(a:n)
+  let fname = expand('#'.buflist[winnr - 1].':t')
+  return fname =~ '__Tagbar__' ? 'Tagbar' :
+        \ fname =~ 'NERD_tree' ? 'NERDTree' : 
+        \ ('' != fname ? fname : '﬒')
+endfunction
+
+function! LightlineFugitive()
+  if &ft !~? 'vimfiler' && exists('*fugitive#head')
+    let branch = fugitive#head()
+    if len(branch) < 25
+      return branch
+    endif
+    return branch[:15] . ' .. ' . branch[(len(branch)-15):]
+  endif
+  return ''
+endfunction
+"  
+fun! s:setLightlineColorscheme(name)
+    let g:lightline.colorscheme = a:name
+    call lightline#init()
+    call lightline#colorscheme()
+    call lightline#update()
+    let s:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
+    " inject center bar blank into pallete (an interesting hack)
+    let s:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
+    "let s:palette.inactive.middle = s:palette.normal.middle
+    let s:palette.tabline.middle = s:palette.normal.middle
+endfun
+
+fun! s:lightlineColorschemes(...)
+    return join(map(
+                \ globpath(&rtp,"autoload/lightline/colorscheme/*.vim",1,1),
+                \ "fnamemodify(v:val,':t:r')"),
+                \ "\n")
+endfun
+
+com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
+            \ call s:setLightlineColorscheme(<q-args>)
+
+LightlineColorscheme one
+
+function! s:LightLineUpdateColor()
+    :let &background = ( &background == "dark"? "light" : "dark" ) 
+    call lightline#init()
+    call lightline#colorscheme()
+    call lightline#update()
+    let s:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
+    " inject center bar blank into pallete (an interesting hack)
+    let s:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
+    "let s:palette.inactive.middle = s:palette.normal.middle
+    let s:palette.tabline.middle = s:palette.normal.middle
+endfunction
+
+com! -nargs=0 ToggleColor
+    \ call s:LightLineUpdateColor()
+
+function! NearestMethodOrFunction() abort
+  return get(b:, 'vista_nearest_method_or_function', '')
+endfunction
+
+function! MyFiletype()
+    let symbol=WebDevIconsGetFileTypeSymbol() 
+    let new_ft=(strlen(&filetype) ? symbol . ' ' . &filetype  : '')
+    return winwidth(0) > 120 ?  new_ft : symbol
+endfunction
+
+function! MyFileformat()
+    let symbol=WebDevIconsGetFileFormatSymbol()
+    return ((winwidth(0) > 80) ? symbol . ' ' . &fileformat : symbol )
+endfunction
+
+let g:lightline#ale#indicator_checking = ''
+let g:lightline#ale#indicator_warnings = ''
+let g:lightline#ale#indicator_errors = ''
+let g:lightline#ale#indicator_ok = ''
+
+"----------------------------------------------
+" Plugin: bling/vim-go
+"----------------------------------------------
+"
+let g:go_auto_sameids = 1
+let g:go_fmt_command = "goimports"
+
+au FileType go nmap <leader>gt :GoDeclsDir<cr>
+au Filetype go nmap <leader>ga <Plug>(go-alternate-edit)
+" Test coverage
+au FileType go nmap <F9> :GoCoverageToggle -short<cr>
+au Filetype go nmap <leader>gah <Plug>(go-alternate-split)
+au Filetype go nmap <leader>gav <Plug>(go-alternate-vertical)
+
+" show type in status bar
+let g:go_auto_type_info = 1
+au FileType go nmap <Leader>d <Plug>(go-def)
+" Snake case or camel case
+let g:go_addtags_transform = "snakecase"
+
 "----------------------------------------------
 " Plugin: christoomey/vim-tmux-navigator
 "----------------------------------------------
 " Tmux vim integration
 let g:tmux_navigator_no_mappings = 1
+let g:tmux_navigator_save_on_switch = 1
 if exists('$TMUX')
-    autocmd BufEnter * call system("tmux rename-window '" . expand("%:t") . "'")
-    autocmd VimLeave * call system("tmux setw automatic-rename")
+    autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand("%:t") . "'")
+    autocmd VimLeavePre * call system("tmux rename-window '-'")
     " tmux will send xterm-style keys when its xterm-keys option is on
     if &term =~ '^screen'
         execute "set <xUp>=\e[1;*A"
@@ -440,6 +676,19 @@ if exists('$TMUX')
     nnoremap <silent> <leader><c-\> :TmuxNavigatePrevious<cr>
 endif
 
+if (empty($TMUX))
+  if (has("nvim"))
+  "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+else
+    augroup TMUX_RENAME
+        autocmd BufEnter * call system("tmux rename-window '" . tabpagenr() . ' ' . LightlineTabname(tabpagenr()) . ' ' . LightlineTabmodified(tabpagenr()) . "'")
+        autocmd VimLeave * call system("tmux setw automatic-rename")
+    augroup END
+endif
+
 "----------------------------------------------
 " Plugin: scrooloose/nerdtree
 "----------------------------------------------
@@ -447,9 +696,11 @@ nnoremap <leader>d :NERDTreeToggle<cr>
 nnoremap <F2> :NERDTreeToggle<cr>
 
 let NERDTreeShowBookmarks=1
+" Allow NERDTree to change session root.
 let NERDTreeChDirMode=2
 let NERDTreeQuitOnOpen=0
 
+" Show hidden files by default.
 let NERDTreeShowHidden=1
 let NERDTreeIgnore=['\.pyc','\~$','\.swo$','\.swp$','\.git','\.hg','\.svn','\.bzr']
 let NERDTreeKeepTreeInNewTab=1
@@ -470,9 +721,33 @@ augroup nerdtree_extra
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 augroup END
 
-augroup commit_extra
-au BufNewFile COMMIT_EDITING let syntax = diff
-augroup END
+let g:NERDTreeIndicatorMapCustom = {
+    \ 'Modified'  : '✹',
+    \ 'Staged'    : '✚',
+    \ 'Untracked' : '✭',
+    \ 'Renamed'   : '➜',
+    \ 'Unmerged'  : '═',
+    \ 'Deleted'   : '✖',
+    \ 'Dirty'     : '✗',
+    \ 'Clean'     : '✔︎',
+    \ 'Ignored'   : '☒',
+    \ 'Unknown'   : '?'
+    \ }
+
+function! NERDTreeYankCurrentNode()
+    let n = g:NERDTreeFileNode.GetSelected()
+    if n != {}
+        call setreg('=', n.path.str())
+        call setreg('+', n.path.str())
+    endif
+endfunction
+
+if exists('NERDTreeAddKeyMap')
+call NERDTreeAddKeyMap({
+        \ 'key': 'yy',
+        \ 'callback': 'NERDTreeYankCurrentNode',
+        \ 'quickhelpText': 'put full path of current node into the default register' })
+endif
 
 " Show hidden files by default.
 let NERDTreeShowHidden = 1
@@ -484,3 +759,52 @@ let NERDTreeShowBookmarks=1
 let NERDTreeChDirMode=2
 let NERDTreeQuitOnOpen=0
 
+let g:webdevicons_enable_nerdtree = 1
+let g:webdevicons_conceal_nerdtree_brackets = 1
+" --------------------
+" Plug 'bfredl/nvim-ipy'
+" --------------------
+let g:ipy_perform_mappings=1
+
+" --------------------
+" Plugin 'janko/vim-test'
+" --------------------
+autocmd FileType * call s:vim_test_keymap()
+
+
+function! s:vim_test_keymap()
+    nmap <silent> t<C-n> :TestNearest<CR>
+    nmap <silent> t<C-f> :TestFile<CR>
+    nmap <silent> t<C-s> :TestSuite<CR>
+    nmap <silent> t<C-l> :TestLast<CR>
+    nmap <silent> t<C-g> :TestVisit<CR>
+endfunction
+
+function! TabMessage(cmd)
+  redir => message
+  silent execute a:cmd
+  redir END
+  if empty(message)
+    echoerr 'no output'
+  else
+    " use "new" instead of "tabnew" below if you prefer split windows instead of tabs
+    tabnew
+    setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nomodified
+    silent put=message
+
+  endif
+endfunction
+command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+" When using `dd` in the quickfix list, remove the item from the quickfix list.
+function! RemoveQFItem()
+  let curqfidx = line('.') - 1
+  let qfall = getqflist()
+  call remove(qfall, curqfidx)
+  call setqflist(qfall, 'r')
+  execute curqfidx + 1 . 'cfirst'
+  :copen
+endfunction
+command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+" { :set sw=2 ts=2 et }
