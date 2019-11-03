@@ -49,7 +49,7 @@ set number relativenumber
 
 augroup numbertoggle
 autocmd!
-autocmd TabEnter,BufEnter,FocusGained,InsertLeave * set relativenumber
+autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
 autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 autocmd BufReadPost * set norelativenumber
 augroup END
@@ -273,7 +273,7 @@ let g:indent_guides_start_level = 2
 
 augroup IndentGuide
 " base 00
-" autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=6 guibg=#353a44
+autocmd VimEnter,Colorscheme * hi IndentGuidesOdd ctermbg=6 guibg=#353a44
 autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
 "" Vim
 augroup END
@@ -878,8 +878,9 @@ let g:go_addtags_transform = "snakecase"
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
 if exists('$TMUX')
-    autocmd BufEnter * call system("tmux rename-window '" . expand("%:t") . "'")
-    autocmd VimLeave * call system("tmux setw automatic-rename")
+
+    autocmd WinEnter,TabEnter * call system("tmux rename-window '" . expand("%:t") . "'")
+    autocmd VimLeavePre * call system("tmux rename-window '-'")
     " tmux will send xterm-style keys when its xterm-keys option is on
     if &term =~ '^screen'
         execute "set <xUp>=\e[1;*A"
