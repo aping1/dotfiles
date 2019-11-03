@@ -117,7 +117,8 @@ Plug 'lilydjwg/Colorizer'
 " Hide sum and such as unicode 
 Plug 'ryanoasis/vim-devicons'
 Plug 'chrisbra/unicode.vim'
-Plug 'ehamberg/vim-cute-python'
+" Use math symbols instead of keywords 
+"Plug 'ehamberg/vim-cute-python'
 Plug 'mhinz/vim-startify'
 Plug 'merlinrebrovic/focus.vim'
 
