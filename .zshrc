@@ -8,7 +8,7 @@ export MYPROMPT="${MYPROMPT:-spaceship-async}"
 
 [[ ${+MACHINE_RC_LOADED} -eq 1 ]] \
     && printf -- 'Skipping: %s' "${HOME}/.machinerc" \
-    || source "${HOME}/.machinerc"
+    || { [[ -f "${HOME}/.machinerc" ]] && source "${HOME}/.machinerc"; }
 
 # === Profiling ===
 if [[ ${+PROFILING} -eq 1 ]]; then
