@@ -34,19 +34,21 @@ DOTFILES=$HOME/.dotfiles
 DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 export GOPATH=$HOME/go
 
-# Homebrew
 # This is one of examples why I want to keep my dotfiles private
 #export HOMEBREW_GITHUB_API_TOKEN=MY_GITHUB_TOKEN
 #export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 #
-# === PYENV === 
-if (( $+command[nvim] )) && [[ ${PYENV_ROOT} ]]; then
-
+# Standard path includes
+path=(
+    /usr/local/{bin,sbin}
+    ${HOME}/bin
+    $path
+)
+typeset -U path
 if [[ -n "${DOTFILES}" ]]; then 
     path=(
         $path
         ${DOTFILES}/scripts
-        ${HOME}/bin
     )
 	typeset -U path
 fi
@@ -69,17 +71,6 @@ elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
 fi
-    # add to end of path
-fi
-
-[[ ${DOTFILES} ]] && \
-    path=(
-        $path
-        ${DOTFILES}/scripts
-        ${HOME}/bin
-    )
-
-typeset -U path
 
 COMPLETION_WAITING_DOTS="true"
 
