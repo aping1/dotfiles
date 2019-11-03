@@ -106,8 +106,7 @@ Plug 'jacoborus/tender.vim'
 Plug 'rakr/vim-one'
 
 " Indent lines ------
-" Plug 'nathanaelkane/vim-indent-guides'
-Plug 'Yggdroot/indentLine'
+Plug 'nathanaelkane/vim-indent-guides'
 " Git gutter
 Plug 'mhinz/vim-signify'
 " Highlight colors
@@ -208,22 +207,7 @@ filetype plugin indent on     " required
 " --------------------------------------------
 " Colorscheme 
 " --------------------------------------------
-    hi semshiLocal           guifg=#e88388
-    hi semshiGlobal          guifg=#56b6c2
-    hi semshiImported        ctermfg=214 guifg=#56b6c2 cterm=bold gui=bold
-    hi semshiParameter       ctermfg=75  guifg=#61AFEF
-    hi semshiParameterUnused ctermfg=117 guifg=#61AFEF cterm=underline gui=underline
-    hi semshiFree            ctermfg=218 guifg=#ffafd7
-    hi semshiBuiltin         ctermfg=207 guifg=#c678dd
-    hi semshiAttribute       ctermfg=49  guifg=#a7cc8c
-    hi semshiSelf            ctermfg=249 guifg=#abb2bf
-    hi semshiUnresolved      ctermfg=226 guifg=#e5c07b cterm=underline gui=underline
-    hi semshiSelected        ctermfg=231 guifg=#ffffff ctermbg=161 guibg=#
-
-    hi semshiErrorSign       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
-    hi semshiErrorChar       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
-
- if has('nvim')
+if has('nvim')
     " One Colorscheme
     "
  	hi one_terminal_color_fg0 guifg=#353a44
@@ -282,28 +266,16 @@ highlight PmenuSel ctermbg=black ctermfg=white
 "----------------------------------------------
 " Plugin: 'nathanaelkane/vim-indent-guides'
 "----------------------------------------------
-let g:indent_guides_enable_on_vim_startup = 0
-let g:indent_guides_guide_size = 4
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_guide_size = 2
 let g:indent_guides_start_level = 2
 
 augroup IndentGuide
 " base 00
 " autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=6 guibg=#353a44
-"autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
+autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
 "" Vim
 augroup END
-
-let g:indentLine_char_list = ['\ue621','┊']
-
-let g:indentLine_color_term = 49
-let g:indentLine_bgcolor_term = 231 
-" none X terminal
-let g:indentLine_color_tty_light = 4 " (default: 4)
-let g:indentLine_color_dark = 2 " (default: 2)
-
-" Background (Vim, GVim)
-let g:indentLine_color_gui = '#72bef2'
-let g:indentLine_bgcolor_gui = '#353a44'
 
 " set highlight cursor
 "augroup CursorLine
@@ -410,16 +382,16 @@ let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 " --------------------------------------------
 function! SemhiOneHighlights()
     hi semshiLocal           ctermfg=209 guifg=#e88388
-    hi semshiGlobal          ctermfg=214 guifg=#56b6c2
+    hi semshiGlobal          ctermfg=214 guifg=#c678dd
     hi semshiImported        ctermfg=214 guifg=#56b6c2 cterm=bold gui=bold
     hi semshiParameter       ctermfg=75  guifg=#61AFEF
-    hi semshiParameterUnused ctermfg=117 guifg=#61AFEF cterm=underline gui=underline
+    hi semshiParameterUnused ctermfg=117 guifg=#56b6c2
     hi semshiFree            ctermfg=218 guifg=#ffafd7
     hi semshiBuiltin         ctermfg=207 guifg=#c678dd
     hi semshiAttribute       ctermfg=49  guifg=#a7cc8c
     hi semshiSelf            ctermfg=249 guifg=#abb2bf
     hi semshiUnresolved      ctermfg=226 guifg=#e5c07b cterm=underline gui=underline
-    hi semshiSelected        ctermfg=231 guifg=#ffffff ctermbg=161 guibg=#
+    hi semshiSelected        ctermfg=231 guifg=#c678dd guibg=#353a44 
 
     hi semshiErrorSign       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
     hi semshiErrorChar       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
@@ -670,7 +642,7 @@ else
     let g:os=''
 endif
 
-let g:os_spec_string=' ' . g:os . (has("gui_running")?'':'').('')
+let g:os_spec_string=' ' . g:os . (has("gui_running")?'': '').('')
 
 let g:lightline = {
       \ 'inactive': {
@@ -696,10 +668,10 @@ let g:lightline = {
       \            ]
       \ },
       \ 'component_expand' : {
-      \  'linter_checking': 'lightline#ale#checking',
-      \  'linter_warnings': 'lightline#ale#warnings',
-      \  'linter_errors': 'lightline#ale#errors',
-      \  'linter_ok': 'lightline#ale#ok',
+      \  'linter_checking': 'lightline#ale#indicator_checking',
+      \  'linter_warnings': 'lightline#ale#indicator_warnings',
+      \  'linter_errors': 'lightline#ale#indicator_errors',
+      \  'linter_ok': 'lightline#ale#indicator_ok',
       \  'pyenv': 'pyenv#pyenv#get_activated_env',
       \  'gitbranch': 'fugitive#head',
       \ },
@@ -711,7 +683,7 @@ let g:lightline = {
       \   'spell': '%{&spell?&spelllang:""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
       \   'fugitive': '%{&filetype=="help"?"":exists("*LightlineFugitive")?LightlineFugitive():""}',
-      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?"\uf00c":""}',
+      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?WebDevIconsGetFileTypeSymbol("main.py", 1):""}',
       \ },
       \ 'component_visible_condition': {
       \   'readonly': '(index(["help","nofile"],&filetype)!=-1&& &readonly)',
@@ -735,17 +707,17 @@ let g:lightline = {
       \    'method': 'NearestMethodOrFunction'
       \ },
       \ 'mode_map' : {
-      \ 'no' : 'NORMAL',
-      \ '\U+fae6' : 'INSERT',
-      \ 'R' : 'REPLACE',
-      \ '\uf035' : 'VISUAL',
-      \ '\uf034' : 'V-LINE',
-      \ "\uf783": 'V-BLOCK',
-      \ '\ufb32' : 'COMMAND',
-      \ '\uf245' : 'SELECT',
-      \ 'S' : 'S-LINE',
-      \ "\<C-s>": 'S-BLOCK',
-      \ 't': 'TERMINAL',
+      \  'NORMAL': 'no',
+      \  'INSERT': '\U+FAE6',
+      \  'REPLACE': 'R' ,
+      \  'VISUAL': '\U+f035',
+      \  'V-LINE': '\U+f034',
+      \  'V-BLOCK': '\U+f783',
+      \  'COMMAND': '\U+fb32',
+      \  'SELECT': '\U+f245',
+      \  'S-LINE': '\U+f783\U+f245' ,
+      \  'S-BLOCK': "\U+f034",
+      \  'TERMINAL': '',
       \ },
       \ 'tabline' : {
       \   'separator': { 'left': '┋', },
