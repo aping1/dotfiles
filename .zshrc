@@ -45,7 +45,8 @@ path=(
     $path
 )
 typeset -U path
-if [[ -n "${DOTFILES}" ]]; then 
+
+if [[ -d "${DOTFILES}" ]]; then 
     path=(
         $path
         ${DOTFILES}/scripts
@@ -65,11 +66,9 @@ if (( $+command[brew] )) ; then
         ${brew_prefix}/share/man/man*
         $manpath
     )
-elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
-    echo "Install Homebrew" >&2
-    if read -q ; then
-        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    fi
+elif [[ "${DISTRO:="darwin"}" == "darwin" && ! -x /usr/local/bin/brew ]]; then
+    printf -- "Install Homebrew" >&2
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 
 COMPLETION_WAITING_DOTS="true"
