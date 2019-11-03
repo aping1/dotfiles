@@ -137,6 +137,7 @@ else
 endif
 
 " --- Colorscheme ---
+"
 Plug 'jacoborus/tender.vim'
 Plug 'rakr/vim-one'
 
@@ -153,13 +154,13 @@ Plug 'lilydjwg/Colorizer'
 Plug 'ryanoasis/vim-devicons'
 Plug 'chrisbra/unicode.vim'
 " Use math symbols instead of keywords 
-"Plug 'ehamberg/vim-cute-python'
 Plug 'mhinz/vim-startify'
 
 " Vim exploration Modifications
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'numkil/ag.nvim'
+Plug 'vim-scripts/ag.vim'
+
 Plug 'leshill/vim-json'
 
 " Projects
@@ -171,7 +172,6 @@ Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 
 Plug 'scrooloose/nerdcommenter'
-Plug 'mg979/vim-visual-multi'
 
 Plug 'SidOfc/mkdx'
 Plug 'vimwiki/vimwiki'
@@ -190,6 +190,9 @@ Plug 'lambdalisue/vim-pyenv'
 Plug 'Shougo/context_filetype.vim'
 Plug 'janko/vim-test'
 
+Plug 'Shougo/neomru.vim'
+Plug 'Shougo/unite.vim'
+Plug 'Shougo/unite-outline.vim'
 
 Plug 'tmhedberg/SimpylFold'
 
@@ -198,15 +201,14 @@ Plug 'maximbaz/lightline-ale'
 
 Plug 'jez/vim-superman'
 
-Plug 'ekalinin/Dockerfile.vim'
-Plug 'kevinhui/vim-docker-tools'
-Plug 'juliosueiras/vim-terraform-completion'
-Plug 'towolf/vim-helm'
-
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'roxma/vim-tmux-clipboard'
 
 " --- languages
+Plug 'ekalinin/Dockerfile.vim'
+Plug 'kevinhui/vim-docker-tools'
+Plug 'juliosueiras/vim-terraform-completion'
+Plug 'towolf/vim-helm'
 Plug 'saltstack/salt-vim'
 Plug 'vim-scripts/applescript.vim'
 Plug 'hashivim/vim-terraform'
