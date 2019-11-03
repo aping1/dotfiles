@@ -1,8 +1,6 @@
 [user]
     name = Allison Wampler
     email = aping1@apt-miss.com
-[diff]
-    tool = vimdiff
 [merge]
     tool = vimdiff
     guitool = vimrdiff
