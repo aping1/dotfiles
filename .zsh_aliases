@@ -1,8 +1,6 @@
 
 export ZSH_ALIASES_LOADED
 
-function vi () {
-
 if (( $+command[nvim] )); then
     alias vim=nvim
     alias vi=nvim
@@ -17,13 +15,6 @@ elif [[ ${DISTRO} == "darwin" ]]; then
     alias vimr='vimr --cur-env --nvim'
     alias vim='vimr'
 fi
-
-}
-
-pyenv() {
-    eval "$( command pyenv init - )"
-    pyenv "$@"
-}
 
 function ls () {
     if [[ $TERM =~ ^xterm ]]; then
