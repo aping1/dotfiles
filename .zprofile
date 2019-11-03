@@ -10,6 +10,8 @@ export DOTFILES="$HOME/.dotfiles"
 export TERM="xterm-256color"
 export TERM="${TERM:-xterm}"
 
+export FZF_BASE=${HOME}/.fzf
+command -v uname &>/dev/null || return 1
 case $(uname) in
   Darwin)
     # commands for OS X go here

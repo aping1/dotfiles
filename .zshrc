@@ -6,6 +6,18 @@ export VISUAL='vim'
 export PAGER='less'
 export MYPROMPT="${MYPROMPT:-spaceship-async}"
 
+[[ ${+MACHINE_RC_LOADED} -eq 1 ]] \
+    && printf -- 'Skipping: %s' "${HOME}/.machinerc" \
+    || source "${HOME}/.machinerc"
+
+# === Profiling ===
+if [[ ${+PROFILING} -eq 1 ]]; then
+    zmodload zsh/zprof 
+    PS4=$'%D{%M%S%.} %N:%i> '
+    exec 3>&2 2>$HOME/tmp/startlog.$$
+    setopt xtrace prompt_subst
+fi
+
 # === zprofile if not autoloaded ===
 [[ ${+ZPROFILE_LOADED} -eq 1 ]] \
     && printf -- 'Skipping: %s' "${HOME}/.zprofiles" \
@@ -15,15 +27,6 @@ export MYPROMPT="${MYPROMPT:-spaceship-async}"
     && printf -- 'Skipping: %s' "${HOME}/.zsh_aliases" \
     || source "${HOME}/.zsh_aliases"
 
-[[ ${+MACHINE_RC_LOADED} -eq 1 ]] \
-    && printf -- 'Skipping: %s' "${HOME}/.machinerc" \
-    || source "${HOME}/.machinerc"
-
-# === Profiling ===
-if [[ ${+PROFILING} -eq 1 ]]; then
-    zmodload zsh/zprof 
-    PS4=$'%D{%M%S%.} %N:%i> '
-fi
 
 # === PATHS and EVNS 
 # Location of my dotfiles
@@ -31,56 +34,23 @@ DOTFILES=$HOME/.dotfiles
 DOTFILESDEPS=${DOTFILES:-$HOME}/deps
 export GOPATH=$HOME/go
 
-## Setup PATH
-# Standard path includes
-path=(
-    /usr/local/{bin,sbin}
-    ${DOTFILES}/scripts
-    ${HOME}/bin
-    $path
-)
-# Brew for OSX
-if [[ "${DISTRO}" == "darwin" ]] && command -v brew &>/dev/null; then
-    # Add to start of path
-    path=(
-        $(brew --prefix coreutils)/libexec/gnubin
-        $(brew --prefix python)/libexec/bin
-        $(brew --prefix)/bin/
-        $path
-    )
-elif [[ "${DISTRO:="posix"}" == "darwin" ]] && ! command -v 'brew'; then
-    # Auto install brew
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-fi
-
-# Add dotfiles to end of path
-path=(
-    $path
-    ${DOTFILES}/scripts
-    ${HOME}/bin
-)
-
-typeset -U path
-
-COMPLETION_WAITING_DOTS="true"
-
-# change the size of history files
-export HISTSIZE=32768;
-export HISTFILESIZE=$HISTSIZE;
-
 # Homebrew
 # This is one of examples why I want to keep my dotfiles private
 #export HOMEBREW_GITHUB_API_TOKEN=MY_GITHUB_TOKEN
 #export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 #
 # === PYENV === 
-if [[ ${+PYENV_ROOT} -eq 1  ]]; then
-    command -v pyenv &> /dev/null && eval "$(pyenv init -)"
-    command -v pyenv-virtualenv-init &> /dev/null && eval "$(pyenv virtualenv-init -)"
-fi
+if (( $+command[nvim] )) && [[ ${PYENV_ROOT} ]]; then
 
-# Brew for OSX
-if command -v brew &>/dev/null; then
+if [[ -n "${DOTFILES}" ]]; then 
+    path=(
+        $path
+        ${DOTFILES}/scripts
+        ${HOME}/bin
+    )
+	typeset -U path
+fi
+if (( $+command[brew] )) ; then
     # Add to start of path
     brew_prefix=$(brew --prefix)
     path=(
@@ -95,6 +65,10 @@ if command -v brew &>/dev/null; then
     )
 elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
     echo "Install Homebrew" >&2
+    if read -q ; then
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    fi
+fi
     # add to end of path
 fi
 
@@ -200,34 +174,15 @@ ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
 export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 
-# Brew for OSX
-if command -v brew &>/dev/null; then
-    # Add to start of path
-    path=(
-        $(brew --prefix coreutils)/libexec/gnubin
-        $(brew --prefix python)/libexec/bin
-        $(brew --prefix)/bin/
-        $path
-    )
-elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
-    echo "Install Homebrew" >&2
-    # add to end of path
-fi
-
-if [[ -n "${DOTFILES}" ]]; then 
-    path=(
-        $path
-        ${DOTFILES}/scripts
-        ${HOME}/bin
-    )
-	typeset -U path
-fi
 
 setopt EXTENDED_HISTORY
 setopt HIST_EXPIRE_DUPS_FIRST
 # setopt HIST_IGNORE_SPACE
 setopt HIST_FIND_NO_DUPS
 setopt HIST_BEEP
+
+## Setup PATH
+COMPLETION_WAITING_DOTS="true"
 
 # change the size of history files
 export HISTSIZE=32768;
@@ -261,7 +216,7 @@ export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 export ZSH_AUTOSUGGEST_STRATEGY=("match_prev_cmd" "completion")
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline" # Red
 export ZSH_AUTOSUGGEST_USE_ASYNC="y"
-[[ ${+ZSH_HIGHLIGHT_STYLES} == 1 ]] && \
+(( $+ZSH_HIGHLIGHT_STYLES )) && \
 export ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
 
 # === Customization ===
@@ -285,6 +240,8 @@ export FZF_COMPLETION_OPTS='+c -x'
 # Vim mode
 bindkey -v
 
-if [[ ${+PROFILING} -eq 1 ]]; then
+if (( $+PROFILING )); then
+    unsetopt xtrace
+    exec 2>&3 3>&-
     zprof
 fi

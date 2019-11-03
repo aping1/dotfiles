@@ -1,14 +1,16 @@
 
 export ZSH_ALIASES_LOADED
 
-if command -v nvim &>/dev/null; then
+function vi () {
+
+if (( $+command[nvim] )); then
     alias vim=nvim
     alias vi=nvim
-elif command -v vim &>/dev/null ; then
+elif (( $+command[vim] )); then
     alias vi=vim
 fi
 
-if !  command -v vimr &>/dev/null; then
+if (( $+command[vimr] )); then
     echo 'vimr not installed' >&2
     return 1
 elif [[ ${DISTRO} == "darwin" ]]; then
@@ -16,10 +18,19 @@ elif [[ ${DISTRO} == "darwin" ]]; then
     alias vim='vimr'
 fi
 
-if [[ $TERM =~ ^xterm ]]; then
-    if command -v lsd &>/dev/null; then
-        alias ls=lsd
-    elif command -v ls &>/dev/null; then
-        alias ls='ls --color=always'
+}
+
+pyenv() {
+    eval "$( command pyenv init - )"
+    pyenv "$@"
+}
+
+function ls () {
+    if [[ $TERM =~ ^xterm ]]; then
+        if command -v lsd &>/dev/null; then
+            alias ls=lsd
+        elif command -v ls &>/dev/null; then
+            alias ls='ls --color=always'
+        fi
     fi
-fi
+}
