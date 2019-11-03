@@ -220,15 +220,18 @@ call plug#end()
 
 if (has('gui_running'))
     silent! colorscheme tender
+    silent! LightlineColorScheme tenderplus
 elseif (has('termguicolors'))
     set termguicolors
     silent! colorscheme tender
+    silent! LightlineColorScheme tenderplus
 elseif &term =~ '256color'
     " Disable Background Color Erase (BCE) so that color schemes
     " work properly when Vim is used inside tmux and GNU screen.
     set t_ut=
     set t_Co=256
     silent! colorscheme solarized
+    silent! LightlineColorScheme solarized
     let g:solarized_termcolors=256
 else
     colorscheme default
@@ -511,7 +514,7 @@ let g:lightline = {
       \ 'tabnum': 'LightlineTabNumber',
       \ 'banner': 'LightlineBanner',
       \ },
-      \ 'colorscheme' : 'tender',
+      \ 'colorscheme' : 'PaperColor_' . &background,
       \   'separator': { 'left': '', 'right':'' },
       \   'subseparator': { 'left': '∶', 'right': '∷'},
       \ }
@@ -592,10 +595,7 @@ endfun
 com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
             \ call s:setLightlineColorscheme(<q-args>)
 
-LightlineColorscheme one
-
 function! s:LightLineUpdateColor()
-    :let &background = ( &background == "dark"? "light" : "dark" ) 
     call lightline#init()
     call lightline#colorscheme()
     call lightline#update()
