@@ -48,7 +48,7 @@ if [[ "${DISTRO}" == "darwin" ]] && command -v brew &>/dev/null; then
         $(brew --prefix)/bin/
         $path
     )
-elif [[ "${DISTRO:="darwin"}" == "darwin" ]]; then
+elif [[ "${DISTRO:="posix"}" == "darwin" ]] && ! command -v 'brew'; then
     # Auto install brew
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
@@ -151,6 +151,7 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/python
         zgen oh-my-zsh plugins/sudo
         zgen oh-my-zsh plugins/tmuxinator
+        zgen oh-my-zsh plugins/tmux
         zgen oh-my-zsh plugins/terraform
         zgen oh-my-zsh plugins/urltools
         zgen oh-my-zsh plugins/vault
@@ -161,8 +162,6 @@ if [ ! $TERM = dumb ]; then
         zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
         #zgen load Tarrasch/zsh-autoenv
-        # https://github.com/zsh-users/zsh-completions
-        # zgen load joel-porquet/zsh-dircolors-solarized
         zgen load zsh-users/zsh-completions src
         zgen load zsh-users/zsh-autosuggestions
         zgen load qoomon/zsh-lazyload
@@ -173,7 +172,6 @@ if [ ! $TERM = dumb ]; then
         zgen load ${DOTFILES}/plugins/navigation
         zgen load ${DOTFILES}/plugins/autocomplete-extra
         # zgen load whiteinge/dotfiles /bin/diffconflicts master
-
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
         # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
