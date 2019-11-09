@@ -132,6 +132,7 @@ brew "exa" #Tools
 brew "lsd" #Tools
 brew "bat" #Tools
 brew "tig" #Tools
+brew "catimg" #Tools
 brew "tmux" #Tools #tmux
 brew "the_silver_searcher" #Tools
 brew "ctags" #Tools
