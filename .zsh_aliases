@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 
 export ZSH_ALIASES_LOADED
 
@@ -24,4 +25,6 @@ function ls () {
             alias ls='ls --color=always'
         fi
     fi
+    unset -f ls
+    ls
 }
