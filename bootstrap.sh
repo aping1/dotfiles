@@ -35,7 +35,7 @@ export DOTFILES_SOURCE=( ${DOTFILES}/dotfiles ${DOTFILES}/${DISTRO:-posix}/dotfi
 function brew_from_dotfiles () 
 {
     [[ -d ${DOTFILES} ]] || return 1
-    cat ${DOTFILES_SOURCE[*]} | awk '/^brew|^cask|^tap/{ gsub(/\#.*$/, "",$0); print; }' |  tr '"' "'" 
+    awk '/^brew|^cask|^tap/{ gsub(/\#.*$/, "",$0); print; }' ${DOTFILES_SOURCE[*]} |  tr '"' "'" 
 }
 
 function bundle_install_dotfiles() 
@@ -61,28 +61,28 @@ command -v zsh || return 1
 
 (
 cd
-ln -sf ${DOTFILES}/.zprofile
-ln -sf ${DOTFILES}/.zshrc
-ln -sf ${DOTFILES}/.zsh_aliases 
-ln -sf ${DOTFILES}/.gitconfig 
-ln -sf ${DOTFILES}/.gitignore_global .gitignore
-
+ln -sf "${DOTFILES}/.profile"
+ln -sf "${DOTFILES}/.zprofile"
+ln -sf "${DOTFILES}/.zshrc"
+ln -sf "${DOTFILES}/.zsh_aliases"
+ln -sf "${DOTFILES}/.gitconfig"
+ln -sf "${DOTFILES}/.gitignore_global .gitignore"
 # Vim 
 mkdir -p .vim/autoload
-ln -sf ${DOTFILES}/.vimrc
-ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .vim/autoload
-ln -sf ${DOTFILES}/.gitignore_global .gitignore
+ln -sf ${DOTFILES}/.vimrc .
+ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .vim/autoload .
+ln -sf ${DOTFILES}/.gitignore_global .gitignore .
 
 
 # NVIM
-mkdir -p .config/nvim/autoload
-ln -sf ${DOTFILES}/config/nvim/init.vim .config/nvim/
-ln -sf ${DOTFILES}/config/nvim/iron.plugin.lua .config/nvim/
-ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .config/nvim/autoload
+mkdir -p .config/nvim/autoload .
+ln -sf ${DOTFILES}/config/nvim/init.vim .config/nvim/ .
+ln -sf ${DOTFILES}/config/nvim/iron.plugin.lua .config/nvim/ .
+ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .config/nvim/autoload .
 
 # ipython
-ln -sf ${DOTFILES}/ipython .config/
-ln -s ${DOTFILES}/.zshenv 
+ln -sf ${DOTFILES}/ipython .config/ .
+ln -s "${DOTFILES}/.zshenv" .
 ) || echo "Failed to link"
 exec zsh -lx "${HOME}/.dotfiles/install.zsh"
 
