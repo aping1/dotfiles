@@ -2,7 +2,6 @@
 " ~/confing/nvim/init.vim
 "
 
-set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
 
 set ruler
 set ignorecase
@@ -104,9 +103,16 @@ else
 endif
 
 unlet autoload_plug_path
+" Reload .vimrc immediately when edited
+augroup AUTOUPDATE
+autocmd! bufwritepost $MYVIMRC source $MYVIMRC
+augroup END
+
 
 call plug#begin('~/.config/nvim/plugged')
 
+" --- Sesnible defaults ---
+Plug  'tpope/vim-sensible'
 
 " --- Colorscheme ---
 Plug 'flazz/vim-colorschemes'
@@ -114,7 +120,7 @@ Plug 'iCyMind/NeoSolarized'
 Plug 'jacoborus/tender.vim'
 Plug 'rakr/vim-one'
 
-" Indent lines ------
+" === Indent lines ===
 Plug 'nathanaelkane/vim-indent-guides'
 " Git gutter
 Plug 'mhinz/vim-signify'
@@ -136,7 +142,7 @@ Plug 'dunstontc/denite-mapping'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'numkil/ag.nvim'
-Plug 'Chiel92/vim-autoformat'
+
 Plug 'leshill/vim-json'
 
 " Projects
@@ -158,7 +164,7 @@ Plug 'gyim/vim-boxdraw'
 
 " Version Control
 Plug 'tpope/vim-fugitive'
-" mecurial client
+" == mecurial client ==
 Plug 'ludovicchabant/vim-lawrencium'
 Plug 'majutsushi/tagbar'
 
@@ -181,12 +187,11 @@ Plug 'Vigemus/iron.nvim'
 Plug 'plytophogy/vim-virtualenv'
 Plug 'lambdalisue/vim-pyenv'
 Plug 'bfredl/nvim-ipy'
-Plug 'janko/vim-test'
 Plug 'Shougo/neoinclude.vim'
 Plug 'Shougo/context_filetype.vim'
 Plug 'janko/vim-test'
 
-" ZSH Autocomplete
+" for ZSH Autocomplete
 Plug 'mtikekar/nvim-send-to-term'
 
 " Simply Fold 
@@ -206,13 +211,15 @@ Plug 'towolf/vim-helm'
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'roxma/vim-tmux-clipboard'
 
-" --- languages
-Plug 'ekalinin/Dockerfile.vim'
+" --- management
 Plug 'kevinhui/vim-docker-tools'
+
+" --- languages
+Plug 'vim-scripts/applescript.vim'
+Plug 'ekalinin/Dockerfile.vim'
 Plug 'juliosueiras/vim-terraform-completion'
 Plug 'towolf/vim-helm'
 Plug 'saltstack/salt-vim'
-Plug 'vim-scripts/applescript.vim'
 Plug 'hashivim/vim-terraform'
 
 call plug#end()
@@ -221,44 +228,53 @@ filetype plugin indent on     " required
 " --------------------------------------------
 " Colorscheme 
 " --------------------------------------------
-if has('nvim')
-    " One Colorscheme
-    "
- 	hi one_terminal_color_fg0 guifg=#353a44
- 	hi one_terminal_color_fg1 ctermfg=209 guifg=#e88388
- 	hi one_terminal_color_fg2 ctermfg=49 guifg=#a7cc8c 
- 	hi one_terminal_color_fg3 ctermfg=226 guifg=#ebca8d
- 	hi one_terminal_color_fg4 ctermfg=117 guifg=#72bef2
- 	hi one_terminal_color_fg5 ctermfg=207 guifg=#d291e4
- 	hi one_terminal_color_fg6 ctermfg=214 guifg=#65c2cd
- 	hi one_terminal_color_fg7 ctermfg=231 guifg=#e3e5e9
- 	hi one_terminal_color_fg8 ctermfg=231 guifg=#353a44
-    hi one_terminal_color_fg9 ctermfg=249 guifg=#abb2bf
+" Pallet One Colorscheme
+    "hi one_terminal_color_fg0 guifg=#353a44
+    "hi one_terminal_color_fg1 ctermfg=209 guifg=#e88388
+    "hi one_terminal_color_fg2 ctermfg=49 guifg=#a7cc8c 
+    "hi one_terminal_color_fg3 ctermfg=226 guifg=#ebca8d
+    "hi one_terminal_color_fg4 ctermfg=117 guifg=#72bef2
+    "hi one_terminal_color_fg5 ctermfg=207 guifg=#d291e4
+    "hi one_terminal_color_fg6 ctermfg=214 guifg=#65c2cd
+    "hi one_terminal_color_fg7 ctermfg=231 guifg=#e3e5e9
+    "hi one_terminal_color_fg8 ctermfg=231 guifg=#353a44
+    "hi one_terminal_color_fg9 ctermfg=249 guifg=#abb2bf
 
- 	hi one_terminal_color_bg9 ctermfg=209 guibg=#e88388
- 	hi one_terminal_color_bg10 guibg=#a7cc8c
- 	hi one_terminal_color_bg11 ctermfg=226 guibg=#ebca8d
- 	hi one_terminal_color_bg12 ctermfg=117 guibg=#72bef2
- 	hi one_terminal_color_bg13 ctermfg=207 guibg=#d291e4
- 	hi one_terminal_color_bg14 ctermbg=214 guibg=#65c2cd
- 	hi one_terminal_color_bg15 guibg=#e3e5e9
- endif
+    "hi one_terminal_color_bg9 ctermfg=209 guibg=#e88388
+    "hi one_terminal_color_bg10 guibg=#a7cc8c
+    "hi one_terminal_color_bg11 ctermfg=226 guibg=#ebca8d
+    "hi one_terminal_color_bg12 ctermfg=117 guibg=#72bef2
+    "hi one_terminal_color_bg13 ctermfg=207 guibg=#d291e4
+    "hi one_terminal_color_bg14 ctermbg=214 guibg=#65c2cd
+    "hi one_terminal_color_bg15 guibg=#e3e5e9
 
 if (has('gui_running'))
     silent! colorscheme one
 elseif (has('termguicolors'))
     set termguicolors
-    let g:one_allow_italics = 0 " I love italic for comments
-    silent! colorscheme one
+    silent! colorscheme one  
+    silent! LightlineColorScheme one
+elseif &term =~? '256color'
+    " Disable Background Color Erase (BCE) so that color schemes
+    " work properly when Vim is used inside tmux and GNU screen.
+    set t_ut=
+    set t_Co=256
+    silent! colorscheme solarized
+    silent! LightlineColorScheme solarized
+    let g:solarized_termcolors=256
 else
     colorscheme default
     set t_Co=16
 endif
 
+" Change the Pmenu colors so they're more readable.
+highlight Pmenu ctermbg=cyan ctermfg=white
+highlight PmenuSel ctermbg=black ctermfg=white
+
 set background=dark
 
 function! s:normalToggleColor()
-    :let &background = ( &background ==? "dark"? "light" : "dark" ) 
+    :let &background = ( &background ==? 'dark'? 'light' : 'dark' ) 
 endfunction
 
 com! -nargs=0 ToggleColor
@@ -291,15 +307,61 @@ autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
 augroup END
 
 " set highlight cursor
-"augroup CursorLine
+augroup CursorLine
 "  au!
-"  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
 "  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
 "  au WinLeave * setlocal nocursorline
-"augroup END
-"
+augroup END
+
+set mouse+=a
+
+if has("autoread")
+    " Reload .vimrc immediately when edited
+    set autoread
+else
+    " Reload .vimrc immediately when edited
+    autocmd! bufwritepost ~/.config/nvim/init.vim source ~/.config/nvim/init.vim
+endif
+
+" Tell VIM which tags file to use.
+set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
+" === list settings ===
+set list
+set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
+" ------------------------------------------------
+"  diff mode for commits
+" ------------------------------------------------
+au BufNewFile COMMIT_EDITING let syntax = diff
+augroup END
+
+" Make Arrow Keys work
+imap OA <ESC>ki
+imap OB <ESC>ji
+imap OC <ESC>li
+imap OD <ESC>hi
+
+" Use ag for vimgrep
+set grepprg=ag\ --vimgrep\ $* 
+set grepformat=%f:%l:%c:%m
+
+if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
+    silent! luafile $HOME/.config/nvim/iron.plugin.lua
+endif
+
+" === fold settings ==
+
+set foldenable          " enable folding
+set foldlevelstart=10   " open most folds by default
+set foldnestmax=10      " 10 nested fold max
+set foldmethod=indent   " fold based on indent level
 
 
+" For local replace
+nnoremap gr gd[{V%::s/<C-R>///gc<left><left><left>
+
+" For global replace
+nnoremap gR gD:%s/<C-R>///gc<left><left><left>
 "----------------------------------------------
 " Plugin: 'tpope/vim-obsession'
 "----------------------------------------------
@@ -393,6 +455,7 @@ let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 " --------------------------------------------
 " Plugin: 'numirias/semshi'
 " --------------------------------------------
+nmap <silent> <F4> :Semshi toggle<CR>
 function! SemhiOneHighlights()
     hi semshiLocal           ctermfg=209 guifg=#e88388
     hi semshiGlobal          ctermfg=214 guifg=#c678dd
@@ -412,54 +475,6 @@ endfunction
 
 autocmd FileType python call SemhiOneHighlights()
 " 
-
-" Change the Pmenu colors so they're more readable.
-highlight Pmenu ctermbg=cyan ctermfg=white
-highlight PmenuSel ctermbg=black ctermfg=white
-
-" Tell VIM which tags file to use.
-set tags=./.tags,./tags,./docs/tags,tags,TAGS;$HOME
-
-set list
-set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
-
-" Make Arrow Keys work
-imap OA <ESC>ki
-imap OB <ESC>ji
-imap OC <ESC>li
-imap OD <ESC>hi
-
-set mouse+=a
-
-if has("autoread")
-    " Reload .vimrc immediately when edited
-    set autoread
-else
-    " Reload .vimrc immediately when edited
-    autocmd! bufwritepost ~/.config/nvim/init.vim source ~/.config/nvim/init.vim
-endif
-
-au BufNewFile COMMIT_EDITING let syntax = diff
-
-" Use ag for vimgrep
-set grepprg=ag\ --vimgrep\ $* 
-set grepformat=%f:%l:%c:%m
-
-if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
-    silent! luafile $HOME/.config/nvim/iron.plugin.lua
-endif
-
-set foldenable          " enable folding
-set foldlevelstart=10   " open most folds by default
-set foldnestmax=10      " 10 nested fold max
-set foldmethod=indent   " fold based on indent level
-
-
-" For local replace
-nnoremap gr gd[{V%::s/<C-R>///gc<left><left><left>
-
-" For global replace
-nnoremap gR gD:%s/<C-R>///gc<left><left><left>
 
 "----------------------------------------------
 " Plugin: 'Vigemus/iron.nvim'
@@ -498,11 +513,7 @@ if has('python3') && has('*jed*') && exists('*jedi#init_python') && jedi#init_py
   augroup END
 endif
 
-nmap <silent> <leader>m :Denite mapping<CR>
-nmap <silent> <F5> :Denite outline<CR>
-nmap <silent> <F4> :Semshi toggle<CR>
 let g:deoplete#auto_complete_delay = 10
-" let g:deoplete#enable_at_startup = 1
 
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
@@ -529,36 +540,14 @@ autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 augroup  END
 
-"----------------------------------------------
-" Plugin Shougo/denite.nvim'
-"----------------------------------------------
-
-augroup DeniteAction
-autocmd FileType denite call s:denite_my_settings()
-function! s:denite_my_settings() abort
-  nnoremap <silent><buffer><expr> <CR>
-  \ denite#do_map('do_action')
-  nnoremap <silent><buffer><expr> d
-  \ denite#do_map('do_action', 'delete')
-  nnoremap <silent><buffer><expr> p
-  \ denite#do_map('do_action', 'preview')
-  nnoremap <silent><buffer><expr> q
-  \ denite#do_map('quit')
-  nnoremap <silent><buffer><expr> i
-  \ denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <Space>
-  \ denite#do_map('toggle_select').'j'
-endfunction
-augroup END
-
-
+" call this again
 call deoplete#initialize()
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
 " Gutter Error and warning signs.
-let g:ale_sign_error = '⤫'
-let g:ale_sign_warning = '⚠'
+let g:ale_sign_error = '窱'
+let g:ale_sign_warning = '碌'
 
 let g:ale_linters_explicit = 1
 let g:ale_linters = { 'python' : ['flake8', 'pyre'], 
@@ -569,7 +558,8 @@ let g:ale_linters = { 'python' : ['flake8', 'pyre'],
 " " Fix Python files with autopep8 and yapf.
 let g:ale_fixers = { 'python' : ['black' ],
             \       'lua' : ['trimwhitespace', 'remove_trailing_lines'],
-            \        'terraform' : ['terraform'] }
+            \        'terraform' : ['terraform'],
+            \        'json' : ['jq'] }
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
 let g:ale_python_flake8_args = '--max-line-length=' . linelen
@@ -610,6 +600,9 @@ endfunction
 " Plugin 'ryanoasis/vim-devicons'
 "----------------------------------------------
 let g:webdevicons_enable_denite = 1
+let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
+
+
 
 autocmd FileType denite call s:denite_my_settings()
 function! s:denite_my_settings() abort
@@ -629,7 +622,6 @@ endfunction
 
 " Run lint on these file types.
 au FileType xml exe ":silent 1, $!xmllint --format --recover - 2> /dev/null"
-au FileType json exe ":silent 1, $!jq . - 2> /dev/null"
 
 "----------------------------------------------
 " Plugin: 'itchyny/lightline.vim'
@@ -655,7 +647,7 @@ else
     let g:os=''
 endif
 
-let g:os_spec_string=' ' . g:os . (has("gui_running")?'': '').('')
+let g:os_spec_string=' n' . g:os . (has("gui_running")?'': '').('')
 
 let g:lightline = {
       \ 'inactive': {
@@ -675,16 +667,16 @@ let g:lightline = {
       \           ],
       \   'right': [ 
       \             [ 'readonly', 'percent', 'lineinfo',  'linecount',  ], 
-      \             [ 'filetype', 'fileformat', 'readonly' ],
+      \             [ 'readonly', 'filetype', 'fileformat', ],
       \             [ 'linter_checking', 'linter_errors',
       \                'linter_warnings', 'linter_ok' ],
       \            ]
       \ },
       \ 'component_expand' : {
-      \  'linter_checking': 'g:lightline#ale#indicator_checking',
-      \  'linter_warnings': 'g:lightline#ale#indicator_warnings',
-      \  'linter_errors': 'g:lightline#ale#indicator_errors',
-      \  'linter_ok': 'g:lightline#ale#indicator_ok',
+      \  'linter_checking': 'g:lightline#ale#checking',
+      \  'linter_warnings': 'g:lightline#ale#warnings',
+      \  'linter_errors': 'g:lightline#ale#errors',
+      \  'linter_ok': 'g:lightline#ale#ok',
       \  'pyenv': 'pyenv#pyenv#get_activated_env',
       \  'gitbranch': 'fugitive#head',
       \ },
@@ -738,10 +730,9 @@ let g:lightline = {
       \ }
 
 function! LightlineMode()
-  return expand('%:t') ==# '__Tagbar__' ? 'Tagbar':
-        \ expand('%:t') ==# 'ControlP' ? 'CtrlP' :
-        \ expand('%:t') ==# 'NERDTree' ? '' :
-        \ &filetype ==# 'unite' ? 'Unite' :
+  let l:tabname=expand('%:t')
+  return l:tabname ==# '__Tagbar__' ? 'Tagbar':
+        \ l:tabname ==# 'NERDTree' ? '' :
         \ &filetype ==# 'vimfiler' ? 'VimFiler' :
         \ &filetype ==# 'vimshell' ? 'VimShell' :
         \ lightline#mode()
@@ -811,7 +802,6 @@ endfun
 
 com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
             \ call s:setLightlineColorscheme(<q-args>)
-
 
 function! s:LightLineUpdateColor()
     call lightline#init()
@@ -981,7 +971,10 @@ let NERDTreeChDirMode=2
 let NERDTreeQuitOnOpen=0
 
 let g:webdevicons_enable_nerdtree = 1
+" Force extra padding in NERDTree so that the filetype icons line up vertically
+let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
 let g:webdevicons_conceal_nerdtree_brackets = 1
+let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
 " --------------------
 " Plug 'bfredl/nvim-ipy'
 " --------------------

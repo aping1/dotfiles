@@ -24,11 +24,6 @@ if v:version >= 702
     augroup END
 endif
 
-" Reload .vimrc immediately when edited
-augroup AUTOUPDATE
-autocmd! bufwritepost $MYVIMRC source $MYVIMRC
-augroup END
-
 set mouse+=a
 if has('ttymouse') && ( &term =~? '^screen' || &term =~? '^xterm' )
     " tmux knows the extended mouse mode
@@ -131,6 +126,10 @@ endif
 augroup END
 
 unlet autoload_plug_path
+" Reload .vimrc immediately when edited
+augroup AUTOUPDATE
+autocmd! bufwritepost $MYVIMRC source $MYVIMRC
+augroup END
 
 if isdirectory('~/.config/nvim/plugged')
     call plug#begin('~/.config/nvim/plugged')
@@ -139,11 +138,10 @@ else
 endif
 
 " --- Colorscheme ---
-"
 Plug 'jacoborus/tender.vim'
 Plug 'rakr/vim-one'
 
-" Indent lines
+" === Indent lines ===
 Plug 'nathanaelkane/vim-indent-guides'
 " Git gutter
 Plug 'mhinz/vim-signify'
@@ -159,6 +157,10 @@ Plug 'chrisbra/unicode.vim'
 Plug 'mhinz/vim-startify'
 
 " Vim exploration Modifications
+Plug 'Shougo/unite.vim'
+Plug 'Shougo/unite-outline.vim'
+Plug 'Shougo/neomru.vim'
+
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'vim-scripts/ag.vim'
@@ -174,6 +176,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 
 Plug 'scrooloose/nerdcommenter'
+Plug 'mg979/vim-visual-multi'
 
 Plug 'SidOfc/mkdx'
 Plug 'vimwiki/vimwiki'
@@ -183,6 +186,7 @@ Plug 'gyim/vim-boxdraw'
 
 " Version Control
 Plug 'tpope/vim-fugitive'
+" == mecurial client ==
 Plug 'ludovicchabant/vim-lawrencium'
 Plug 'majutsushi/tagbar'
 
@@ -194,10 +198,6 @@ Plug 'lambdalisue/vim-pyenv'
 Plug 'Shougo/context_filetype.vim'
 Plug 'janko/vim-test'
 
-Plug 'Shougo/neomru.vim'
-Plug 'Shougo/unite.vim'
-Plug 'Shougo/unite-outline.vim'
-
 Plug 'tmhedberg/SimpylFold'
 
 Plug 'itchyny/lightline.vim'
@@ -205,16 +205,19 @@ Plug 'maximbaz/lightline-ale'
 
 Plug 'jez/vim-superman'
 
+Plug 'ekalinin/Dockerfile.vim'
+Plug 'kevinhui/vim-docker-tools'
+Plug 'juliosueiras/vim-terraform-completion'
+Plug 'towolf/vim-helm'
+
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'roxma/vim-tmux-clipboard'
 
 " --- languages
 Plug 'ekalinin/Dockerfile.vim'
-Plug 'kevinhui/vim-docker-tools'
 Plug 'juliosueiras/vim-terraform-completion'
 Plug 'towolf/vim-helm'
 Plug 'saltstack/salt-vim'
-Plug 'vim-scripts/applescript.vim'
 Plug 'hashivim/vim-terraform'
 
 call plug#end()
@@ -229,8 +232,8 @@ if (has('gui_running'))
     silent! LightlineColorScheme tenderplus
 elseif (has('termguicolors'))
     set termguicolors
-    silent! colorscheme tender
-    silent! LightlineColorScheme tenderplus
+    silent! colorscheme one
+    silent! LightlineColorScheme one
 elseif &term =~? '256color'
     " Disable Background Color Erase (BCE) so that color schemes
     " work properly when Vim is used inside tmux and GNU screen.
@@ -244,6 +247,11 @@ else
     set t_Co=16
 endif
 
+" Change the Pmenu colors so they're more readable.
+highlight Pmenu ctermbg=cyan ctermfg=white
+highlight PmenuSel ctermbg=black ctermfg=white
+
+
 set background=dark
 
 function! s:normalToggleColor()
@@ -256,10 +264,10 @@ com! -nargs=0 ToggleColor
 map <F3> :ToggleColor<CR>
 
 " Set max line length.
-    let linelen=120
-    execute 'set colorcolumn='.linelen
-    highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-    execute 'match OverLength /\%'.linelen.'v.\+/'
+let linelen=120
+execute 'set colorcolumn='.linelen
+highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+execute 'match OverLength /\%'.linelen.'v.\+/'
 
     " set highlight cursor
     "augroup CursorLine
@@ -287,7 +295,7 @@ let g:indent_guides_start_level = 2
 augroup IndentGuide
 " base 00
 autocmd VimEnter,Colorscheme * hi IndentGuidesOdd ctermbg=6 guibg=#353a44
-autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
+autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=grey guibg=#d291e4
 "" Vim
 augroup END
 
@@ -300,18 +308,6 @@ au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
 augroup END
 
 let g:easytags_dynamic_files = 1
-" ------------------------------------------------
-"  cursor and line len settings
-" ------------------------------------------------
-"
-
-" Make underscores part of words for c files
-augroup KEYWORDFOR_C
-autocmd BufNewFile,BufWinEnter *.[h|c] set iskeyword+=_
-"autocmd BufNewFile,BufWinEnter *.[h|c] set iskeyword="a-z,A-Z,48-57,_,.,-,>"
-augroup END
-
-
 " ------------------------------------------------
 "  list settings
 " ------------------------------------------------
@@ -331,10 +327,7 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 "
 augroup FILETYPES
 :au BufNewFile,BufRead *.jinja set filetype=jinja
-
-" Run simple lint on structured files
-au FileType xml exe ':silent 1, $!xmllint --format --recover - 2> /dev/null'
-au FileType json exe ':silent 1, $!jq . - 2> /dev/null'
+:au BufNewFile,BufRead *.zsh,*.bash let l:linelen=240
 
 " ------------------------------------------------
 "  diff mode for commits
@@ -342,6 +335,7 @@ au FileType json exe ':silent 1, $!jq . - 2> /dev/null'
 au BufNewFile COMMIT_EDITING let syntax = diff
 augroup END
 
+" Make Arrow Keys work
 imap OA <ESC>ki
 imap OB <ESC>ji
 imap OC <ESC>li
@@ -354,14 +348,15 @@ set grepformat=%f:%l:%c:%m
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
 " Gutter Error and warning signs.
-let g:ale_sign_error = '⤫'
-let g:ale_sign_warning = '⚠'
+let g:ale_sign_error = '窱'
+let g:ale_sign_warning = '碌'
 
 let g:ale_linters_explicit = 1
 let g:ale_linters = { 'python' : ['flake8', 'pyre'], 
                     \ 'vim' : ['vint'],
                     \ 'sh' : ['shellcheck'],
                     \ 'terraform' : ['tflint'],
+                    \ 'json' : ['jq'] }
                     \ }
 " " Fix Python files with autopep8 and yapf.
 let g:ale_fixers = { 'python' : ['black' ],
@@ -376,7 +371,7 @@ let g:ale_fix_on_save = 0
 let g:ale_set_loclist = 0
 " Us quickfix with 'qq' delete
 let g:ale_set_quickfix = 1
-let g:ale_open_list = 1
+let g:ale_open_list = 0
 " Set this if you want to.
 " This can be useful if you are combining ALE with
 " some other plugin which sets quickfix errors, etc.
@@ -406,32 +401,14 @@ endfunction
 "----------------------------------------------
 " Plugin 'ryanoasis/vim-devicons'
 "----------------------------------------------
-
+let g:webdevicons_enable_unite = 1
+let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
 "----------------------------------------------
 " Plugin: 'itchyny/lightline.vim'
 "----------------------------------------------
 
-if has('macunix')
-    let g:os=''
-elseif has('win32unix')
-    let g:os=''
-elseif has('win32')
-    let g:os=''
-elseif has('unix')
-    if $DISTRO ==? 'Redhat'
-        let g:os=''
-    elseif $DISTRO ==? 'Ubuntu'
-        let g:os=''
-    elseif $DISTRO ==? 'Debian'
-        let g:os=''
-    else
-        let g:os=''
-    endif
-else
-    let g:os=''
-endif
 
-let g:os_spec_string=' ' . g:os . (has('gui_running')?'': '').('')
+let g:os_spec_string=' ' . g:web. (has('gui_running')?'': '').('')
 
 let g:lightline = {
       \ 'inactive': {
@@ -451,16 +428,16 @@ let g:lightline = {
       \           ],
       \   'right': [ 
       \             [ 'readonly', 'percent', 'lineinfo',  'linecount',  ], 
-      \             [ 'filetype', 'fileformat', 'readonly' ],
+      \             [ 'readonly', 'filetype', 'fileformat', ],
       \             [ 'linter_checking', 'linter_errors',
       \                'linter_warnings', 'linter_ok' ],
       \            ]
       \ },
       \ 'component_expand' : {
-      \  'linter_checking': 'g:lightline#ale#indicator_checking',
-      \  'linter_warnings': 'g:lightline#ale#indicator_warnings',
-      \  'linter_errors': 'g:lightline#ale#indicator_errors',
-      \  'linter_ok': 'g:lightline#ale#indicator_ok',
+      \  'linter_checking': 'g:lightline#ale#checking',
+      \  'linter_warnings': 'g:lightline#ale#warnings',
+      \  'linter_errors': 'g:lightline#ale#errors',
+      \  'linter_ok': 'g:lightline#ale#ok',
       \  'pyenv': 'pyenv#pyenv#get_activated_env',
       \  'gitbranch': 'fugitive#head',
       \ },
@@ -514,9 +491,9 @@ let g:lightline = {
       \ }
 
 function! LightlineMode()
-  return expand('%:t') ==# '__Tagbar__' ? 'Tagbar':
-        \ expand('%:t') ==# 'ControlP' ? 'CtrlP' :
-        \ expand('%:t') ==# 'NERDTree' ? '' :
+  let l:tabname=expand('%:t')
+  return l:tabname ==# '__Tagbar__' ? 'Tagbar':
+        \ l:tabname ==# 'NERDTree' ? '' :
         \ &filetype ==# 'unite' ? 'Unite' :
         \ &filetype ==# 'vimfiler' ? 'VimFiler' :
         \ &filetype ==# 'vimshell' ? 'VimShell' :
@@ -756,7 +733,10 @@ let NERDTreeChDirMode=2
 let NERDTreeQuitOnOpen=0
 
 let g:webdevicons_enable_nerdtree = 1
+" Force extra padding in NERDTree so that the filetype icons line up vertically
+let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
 let g:webdevicons_conceal_nerdtree_brackets = 1
+let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
 " --------------------
 " Plug 'bfredl/nvim-ipy'
 " --------------------
