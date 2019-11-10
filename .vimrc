@@ -356,7 +356,7 @@ let g:ale_linters = { 'python' : ['flake8', 'pyre'],
                     \ 'vim' : ['vint'],
                     \ 'sh' : ['shellcheck'],
                     \ 'terraform' : ['tflint'],
-                    \ 'json' : ['jq'] }
+                    \ 'json' : ['jq'] ,
                     \ }
 " " Fix Python files with autopep8 and yapf.
 let g:ale_fixers = { 'python' : ['black' ],
@@ -408,7 +408,27 @@ let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
 "----------------------------------------------
 
 
-let g:os_spec_string=' ' . g:web. (has('gui_running')?'': '').('')
+if has('macunix')
+    let g:os=''
+elseif has('win32unix')
+    let g:os=''
+elseif has('win32')
+    let g:os=''
+elseif has('unix')
+    if $DISTRO ==? 'Redhat'
+        let g:os=''
+    elseif $DISTRO ==? 'Ubuntu'
+        let g:os=''
+    elseif $DISTRO ==? 'Debian'
+        let g:os=''
+    else
+        let g:os=''
+    endif
+else
+    let g:os=''
+endif
+
+let g:os_spec_string=' ' . g:os . (has('gui_running')?'': '').('')
 
 let g:lightline = {
       \ 'inactive': {
