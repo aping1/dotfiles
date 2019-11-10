@@ -7,44 +7,9 @@ export ZPROFILE_LOADED
 
 [[ -f ~/.profile ]] && source "${HOME}/.profile"
 
-# === PATHS and EVNS 
-# Location of my dotfiles
-
-# Standard path includes
-path=(
-    /usr/local/{bin,sbin}
-    ${HOME}/bin
-    $path
-)
-typeset -U path
-
-if [[ -d "${DOTFILES}" ]]; then 
-    path=(
-        $path
-        ${DOTFILES}/scripts
-    )
-	typeset -U path
+if ! (( $+ZSHENV )) ; then 
+    [[ -f ~/.zshenv ]] && source ~/.zshenv
 fi
-
-if (( $+command[brew] )) ; then
-    # Add to start of path
-    brew_prefix=$(brew --prefix)
-    path=(
-        $(brew --prefix coreutils)/libexec/gnubin
-        $(brew --prefix python)/libexec/bin
-        ${brew_prefix}/bin/
-        $path
-    )
-    manpath=(
-        ${brew_prefix}/share/man/man*
-        $manpath
-    )
-elif [[ "${DISTRO:="darwin"}" == "darwin" && ! -x /usr/local/bin/brew ]]; then
-    printf -- "Install Homebrew" >&2
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-fi
-
-export DOTFILES="$HOME/.dotfiles"
 
 export TERM="xterm-256color"
 export TERM="${TERM:-xterm}"
@@ -78,4 +43,13 @@ else
         export LC_CTYPE="C.UTF-8"
     ;;
     esac
+fi
+
+if ! (( $+commands[brew] )) && [[ "${DISTRO}" == "darwin" ]]; then
+    printf -- "Install Homebrew? --- ['y' or Press enter] ---\n" >&2
+    if read -q; then
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    fi
+else
+    setup_brew_env &>/dev/null
 fi

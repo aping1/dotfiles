@@ -37,7 +37,7 @@ if [ ! $TERM = dumb ]; then
     fi
 
     # load zgen
-    source $DOTFILESDEPS/zgen/zgen.zsh
+    source "${DOTFILESDEPS:-"${HOME}"}/zgen/zgen.zsh"
     if [[ ${ZGENRESET:-N} =~ ^[Yy]$ ]]; then
         zgen reset
     fi
