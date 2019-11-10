@@ -20,11 +20,10 @@ fi
 
 # === zprofile if not autoloaded ===
 [[ ${+ZPROFILE_LOADED} -eq 1 ]] \
-    && printf -- 'Skipping: %s' "${HOME}/.zprofiles" \
     || source "${HOME}/.zprofile"
 
 [[ ${+ZSH_ALIASES_LOADED} -eq 1 ]] \
-    && printf -- 'Skipping: %s' "${HOME}/.zsh_aliases" \
+    && printf -- 'Skipping: %s\n' "${HOME}/.zsh_aliases" \
     || source "${HOME}/.zsh_aliases"
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
