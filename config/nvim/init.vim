@@ -867,9 +867,11 @@ let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
 if exists('$TMUX')
     augroup TMUX_TITLE
-    autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand('%:t') . "'")
-    autocmd VimLeavePre * call system("tmux rename-window '-'")
-augroup END
+        let g:tmux_window_name=system('tmux display-message -p "\#W"')
+        autocmd VimLeavePre * call system('tmux rename-window ' . g:tmux_window_name
+        autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand('%:t') . "'")
+        autocmd VimLeavePre * call system('tmux rename-window ' . g:tmux_window_name
+    augroup END
     " tmux will send xterm-style keys when its xterm-keys option is on
     if &term =~? '^screen'
         execute 'set <xUp>=\e[1;*A'
