@@ -647,7 +647,7 @@ augroup END
 " Tmux vim integration
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
-if exists('$TMUX')
+if exists('$TMUX') || ! empty("TMUX")
     augroup TMUX_TITLE
     autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand('%:t') . "'")
     autocmd VimLeavePre * call system("tmux rename-window '-'")
@@ -696,7 +696,6 @@ let NERDTreeQuitOnOpen=0
 
 " Show hidden files by default.
 let NERDTreeShowHidden=1
-let NERDTreeIgnore=['\.pyc','\~$','\.swo$','\.swp$','\.git','\.hg','\.svn','\.bzr']
 let NERDTreeKeepTreeInNewTab=1
 
 " Files to ignore
