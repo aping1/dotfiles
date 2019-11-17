@@ -622,6 +622,14 @@ endfunction
 au FileType xml exe ":silent 1, $!xmllint --format --recover - 2> /dev/null"
 
 "----------------------------------------------
+" Plugin 'mhinz/vim-startify' 
+"----------------------------------------------
+" add webdev icon
+function! StartifyEntryFormat()
+    return 'WebDevIconsGetFileTypeSymbol(absolute_path) ." ". entry_path'
+endfunction
+
+"----------------------------------------------
 " Plugin: 'itchyny/lightline.vim'
 "----------------------------------------------
 
@@ -983,7 +991,7 @@ let g:webdevicons_enable_nerdtree = 1
 " Force extra padding in NERDTree so that the filetype icons line up vertically
 let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
 let g:webdevicons_conceal_nerdtree_brackets = 1
-let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
+let g:WebDevIconsNerdTreeAfterGlyphPadding = '  '
 " --------------------
 " Plug 'bfredl/nvim-ipy'
 " --------------------
