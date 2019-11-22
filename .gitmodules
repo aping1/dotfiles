@@ -4,6 +4,6 @@
 [submodule "vim-plug"]
 	path = deps/vim-plug
 	url = https://github.com/junegunn/vim-plug.git
-[submodule "deps/zplug"]
-	path = deps/zplug
-	url = https://github.com/zplug/zplug
+[submodule "deps/zgen"]
+	path = deps/zgen
+	url = https://github.com/tarjoilija/zgen.git
