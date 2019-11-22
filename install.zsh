@@ -199,13 +199,14 @@ function pip_install_dotfiles()
 }
 
 # Install the pip
-pip_install_dotfiles
+python -m ensurepip && pip_from_dotfiles && print -l "Install? [n]" && read -q && pip_install_dotfiles
+
 
 # === vim setup ===
 # Init vim and nvim even if aliased
 if command -v vim &>/dev/null ; then
     NEXT_VIM=$(type -a vim | head -n2 | grep -A2 'alias' | tail -n1 | awk '{print $NF}')
-    while !  [[ -x ${NEXT_VIM} ]] && ${NEXT_VIM} +'silent! PlugInstall --sync' +qall
+    while !  [[ ${NEXT_VIM} && -x ${NEXT_VIM} ]] && command -v "${NEXT_VIM}" &>/dev/null && ${NEXT_VIM} +'silent! PlugInstall --sync' +qall; do echo "${NEXT_VIM}";  done
 fi
 command -v nvim && nvim +'silent! PlugInstall --sync' +qall && \
     ln -sf ${DOTFILES}/config/nvim/iron.plugin.lua .config/nvim/
@@ -214,13 +215,3 @@ command -v nvim && nvim +'silent! PlugInstall --sync' +qall && \
     && cd ${PYENV_HOME} \
     && ln -s $(brew --cellar python)/* "${PYENV_HOME}/versions/"
 
-
-# Install the pip
-pip_install_dotfiles
-
-# === vim setup ===
-# Init vim and nvim even if aliased
-if command -v vim &>/dev/null ; then
-    NEXT_VIM=$(type -a vim | head -n2 | grep -A2 'alias' | tail -n1 | awk '{print $NF}')
-    while !  [[ -x ${NEXT_VIM} ]] && ${NEXT_VIM} +'silent! PlugInstall --sync' +qall
-fi
