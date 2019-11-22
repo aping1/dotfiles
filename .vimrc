@@ -114,12 +114,10 @@ let autoload_plug_path = '~/.vim/autoload/plug.vim'
 augroup plug_auto_update
 if ! empty(glob(autoload_plug_path))
     exec 'set rtp=' . autoload_plug_path . ',' . &runtimepath
-elseif empty(glob(autoload_plug_path))
-  silent ! exec '!curl -fLo ' . autoload_plug_path . 
-                \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+else
+  silent! exec '!curl -fLo ' . autoload_plug_path . ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   source &autoload_plug_path
       autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-else
     exec 'set runtimepath=' . autoload_plug_path . ',' . &runtimepath
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
