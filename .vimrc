@@ -140,6 +140,7 @@ endif
 " --- Colorscheme ---
 Plug 'jacoborus/tender.vim'
 Plug 'rakr/vim-one'
+Plug 'mtdl9/vim-log-highlighting'
 
 " === Indent lines ===
 Plug 'nathanaelkane/vim-indent-guides'

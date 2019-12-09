@@ -49,12 +49,18 @@ yabai -m rule --add title='Alfred Preferences' manage=off
 
 echo "yabai configuration loaded.."
 
+CENTER_SCREEN="4:4:1:0:2:2"
+CORNER_SCREEN="4:4:0:0:2:2"
+FULL_SCREEN="4:4:1:0:2:2"
 
-yabai -m rule --add label="dash_floats" app="^Dash$" manage=off 
-yabai -m rule --add label="dash_floats" title="Dash" grid=4:4:1:1:2:2 manage=off
-yabai -m rule --add label="sys_pref_floats" app="System Preferences" grid=4:4:0:0:2:2 manage=off
-yabai -m rule --add label="iStatMenus" app="iStatMenus" grid=4:4:1:0:2:2 manage=off
-yabai -m rule --add label="prefs_float" title="[pP]reference[s]?$" manage=off
-yabai -m rule --add label="vmware_settings_float" title="[Ss]etting[s]?$" manage=off
-yabai -m rule --add label="vmware_Lib_float" title="Virtual Machine Library"
+yabai -m rule --add app="^Dash$" manage=off label="dash_floats" 
+yabai -m rule --add title="Dash" grid=${FULL_SCREEN} manage=off label="dash_floats" 
+yabai -m rule --add app="System Preferences" grid=${CENTER_SCREEN} manage=off label="sys_pref_floats" 
+yabai -m rule --add app="iStat Menus" grid=${FULL_SCREEN} manage=off label="iStatMenus" 
+yabai -m rule --add app="Drobo Dashboard" grid=${CENTER_SCREEN} manage=off label="Drobo_no_manage" 
+yabai -m rule --add app="Accessibility Inspector" grid=${CORNER_SCREEN} manage=off label="no_mng_accessibility" 
+yabai -m rule --add app="Alfred" grid=${FULL_SCREEN} manage=off label="no_mng_alfred" 
+yabai -m rule --add title="[pP]reference[s]?" grid=${CENTER_SCREEN} manage=off label="prefs_float" 
+yabai -m rule --add title="[Ss]etting[s]?$" manage=off label="vmware_settings_float" 
+yabai -m rule --add title="Virtual Machine Library" label="vmware_Lib_float" 
 

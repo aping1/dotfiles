@@ -3,6 +3,11 @@
 "
 
 
+" time to wait for new mapping seq
+" ttimeoutlen is used for key code delays
+" Credit: https://www.johnhawthorn.com/2012/09/vi-escape-delays/
+set timeoutlen=600 ttimeoutlen=0
+
 set ruler
 set ignorecase
 set smartcase
@@ -114,6 +119,8 @@ call plug#begin('~/.config/nvim/plugged')
 " --- Sesnible defaults ---
 Plug  'tpope/vim-sensible'
 
+Plug 'mtdl9/vim-log-highlighting'
+
 " --- Colorscheme ---
 Plug 'flazz/vim-colorschemes'
 Plug 'iCyMind/NeoSolarized'
@@ -183,6 +190,7 @@ Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
 Plug 'Vigemus/impromptu.nvim'
 Plug 'Vigemus/iron.nvim'
 
+Plug 'rizzatti/dash.vim'
 " Python 
 Plug 'plytophogy/vim-virtualenv'
 Plug 'lambdalisue/vim-pyenv'
@@ -551,12 +559,14 @@ let g:ale_sign_warning = '碌'
 
 let g:ale_linters_explicit = 1
 let g:ale_linters = { 'python' : ['flake8', 'pyre'], 
+                    \ 'c' : ['cppcheck'],
                     \ 'vim' : ['vint'],
                     \ 'sh' : ['shellcheck'],
                     \ 'terraform' : ['tflint'],
                     \ }
 " " Fix Python files with autopep8 and yapf.
 let g:ale_fixers = { 'python' : ['black' ],
+            \       'c' : ['clang-format', 'remove_trailing_lines'],
             \       'lua' : ['trimwhitespace', 'remove_trailing_lines'],
             \        'terraform' : ['terraform'],
             \        'json' : ['jq'] }
@@ -587,9 +597,9 @@ augroup vim_blacklist_blacklist
 augroup END
 
 function! s:ale_settings()
-    nmap ]a :ALENextWrap<CR>
-    nmap [a :ALEPreviousWrap<CR>
-    nmap ]A :ALELast
+    nmap ]v :ALENextWrap<CR>
+    nmap [v :ALEPreviousWrap<CR>
+    nmap ]V :ALELast
     nmap [A :ALEFirst
     nmap <F8> <Plug>(ale_fix)
     nmap <silent> <C-k> <Plug>(ale_previous_wrap)
@@ -868,9 +878,9 @@ let g:tmux_navigator_save_on_switch = 1
 if exists('$TMUX')
     augroup TMUX_TITLE
         let g:tmux_window_name=system('tmux display-message -p "\#W"')
-        autocmd VimLeavePre * call system('tmux rename-window ' . g:tmux_window_name
+        autocmd VimLeavePre * call system('tmux rename-window ' . g:tmux_window_name)
         autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand('%:t') . "'")
-        autocmd VimLeavePre * call system('tmux rename-window ' . g:tmux_window_name
+        autocmd VimLeavePre * call system('tmux rename-window ' . g:tmux_window_name)
     augroup END
     " tmux will send xterm-style keys when its xterm-keys option is on
     if &term =~? '^screen'
@@ -1023,5 +1033,9 @@ function! RemoveQFItem()
   :copen
 endfunction
 command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+let g:dash_map = {
+        \ 'c' : ['cpp']
+        \ }
 
 " { :set sw=2 ts=2 et }
