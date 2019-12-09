@@ -116,6 +116,10 @@ if [ ! $TERM = dumb ]; then
 
 fi
 
+
+# Transistion between vi states faster (default: 4)
+KEYTIMEOUT=1
+
 # === Completion ===
 # Bindkey ... autosuggest-*
 #   autosuggest-accept: Accepts the current suggestion.
@@ -198,3 +202,4 @@ if (( $+PROFILING )); then
     exec 2>&3 3>&-
     zprof
 fi
+
