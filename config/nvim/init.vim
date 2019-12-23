@@ -785,7 +785,7 @@ let g:lightline = {
       \ },
       \ 'component': {
       \   'linecount': '%{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":line("$")}',
-      \   'lineinfo': '%{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":(&fenc==#"")?"":winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"C".col("."):"C".col(".").":"."L".line(".")}',
+      \   'lineinfo': '%4{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":(&fenc==#"")?"":winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"C".col("."):"C".col(".").":"."L".line(".")}',
       \   'close': '%9999X%{g:os_spec_string}',
       \   'spell': '%{winwidth(0) <= getbufvar("b:", "small_threshold", g:small_threshold)?"":&fenc==#""?"":&spell?"":winwidth(0)>getbufvar("b:", "large_threshold", g:large_threshold)?"暈".&spelllang:"暈"}',
       \   'modified': '%{&modified?"﯂":&modifiable?"":""}',
@@ -805,7 +805,7 @@ let g:lightline = {
       \     'modified': '(!(&readonly)&&index(g:lightline_blacklist,&filetype)!=-1&&(modified||!&modifiable))',
       \     'fugitive': '(index(g:lightline_blacklist,&filetype)==-1&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline() && winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold))',
       \     'paste': '(index(g:lightline_blacklist,&filetype)==-1&&(&paste))',
-      \     'pyenv': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated()&&winwidth(0)>getbufvar("b:", "medium_threshold", g:medium_threshold))',
+      \     'pyenv': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated()&&winwidth(0)>getbufvar("b:", "small_threshold", g:small_threshold))',
       \     'pyenv_active': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
       \     'method': '(index(g:lightline_blacklist,&filetype)!=-1&&winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold)&&getbufvar("vista_nearest_method_or_function","")!==#"")',
       \ },
@@ -878,8 +878,8 @@ endfunction
 
 function! LightlinePyEnvName ()
     let l:env = pyenv#pyenv#get_activated_env()
-    let l:large_threshold = getbufvar("b:", " large_threshold", g:large_threshold)
-    return winwidth(0) < l:large_threshold  ? "" : l:env
+    let l:medium_threshold = getbufvar("b:", " medium_threshold", g:medium_threshold)
+    return winwidth(0) < l:medium_threshold  ? "" : l:env
 endfunction
 
 
