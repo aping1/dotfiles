@@ -296,7 +296,7 @@ syntax enable
     "hi one_terminal_color_bg14 ctermbg=214 guibg=#65c2cd
     "hi one_terminal_color_bg15 guibg=#e3e5e9
 
-if (has('gui_running'))
+if has('gui_running')
     silent! colorscheme one
 elseif (has('termguicolors'))
     set termguicolors
@@ -803,7 +803,7 @@ let g:lightline = {
       \     'spell': '(winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold)&&index(g:lightline_blacklist,&filetype)==-1)',
       \     'readonly': '(index(g:lightline_blacklist,&filetype)==-1&&(&readonly))',
       \     'modified': '(!(&readonly)&&index(g:lightline_blacklist,&filetype)!=-1&&(modified||!&modifiable))',
-      \     'fugitive': '(index(g:lightline_blacklist,&filetype)==-1&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline() && winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold))',
+      \     'fugitive': '(index(g:lightline_blacklist,&filetype)==-1&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline() && winwidth(0)>=getbufvar("b:", "small_threshold", g:small_threshold))',
       \     'paste': '(index(g:lightline_blacklist,&filetype)==-1&&(&paste))',
       \     'pyenv': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated()&&winwidth(0)>getbufvar("b:", "small_threshold", g:small_threshold))',
       \     'pyenv_active': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
@@ -1328,5 +1328,20 @@ call SetupCommandAbbrs('C', 'CocConfig')
 " If you want to show the nearest function in your statusline automatically,
 " you can add the following line to your vimrc 
 autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
+
+au FileType qf call AdjustWindowHeight(3, 10)
+function! AdjustWindowHeight(minheight, maxheight)
+    let l = 1
+    let n_lines = 0
+    let w_width = winwidth(0)
+    while l <= line('$')
+        " number to float for division
+        let l_len = strlen(getline(l)) + 0.0
+        let line_width = l_len/w_width
+        let n_lines += float2nr(ceil(line_width))
+        let l += 1
+    endw
+    exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
+endfunction
 
 " { :set sw=2 ts=2 et }
