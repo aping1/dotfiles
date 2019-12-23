@@ -1,8 +1,3 @@
-"
-" ~/confing/nvim/init.vim
-"
-
-
 " time to wait for new mapping seq
 " ttimeoutlen is used for key code delays
 " Credit: https://www.johnhawthorn.com/2012/09/vi-escape-delays/
@@ -43,11 +38,6 @@ set textwidth=0
 set noignorecase
 set nosmartcase
 
-set foldcolumn=2
-set foldenable          " enable folding
-set foldlevelstart=10   " open most folds by default
-set foldnestmax=10      " 10 nested fold max
-set foldmethod=indent   " fold based on indent level
 " Fix up arrow not working in search.
 
 set laststatus=2
@@ -83,155 +73,205 @@ if (empty($TMUX))
   " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
 endif
 
+" function that sets host prog from inherited shell
+function! s:python_from_virtualenv()
+    if exists("$VIRTUAL_ENV")
+        let g:python_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
+    else
+        let g:python_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
+    endif
+endfunction
+
 set clipboard=unnamedplus
 
-if exists('$VIRTUAL_ENV')
-    let g:python_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
-    let g:python3_host_prog=g:python_host_prog
-else
-    let g:python_host_prog=substitute(system('command -v python3 || command -v python'), '\n', '', 'g')
-    let g:python3_host_prog=g:python_host_prog
-endif
-
-
-let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
-let runtimepath=&runtimepath . ',' . substitute(expand('%:p'), autoload_plug_path, '', 'g')
-if empty(glob(autoload_plug_path))
-  silent ! exec '!curl -fLo ' . autoload_plug_path . 
-                \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  source &autoload_plug_path
-  augroup plug_auto_update
-      autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-    augroup END
-else
-    exec 'set runtimepath=' . autoload_plug_path . ',' . &runtimepath
-endif
-
-unlet autoload_plug_path
 " Reload .vimrc immediately when edited
 augroup AUTOUPDATE
 autocmd! bufwritepost $MYVIMRC source $MYVIMRC
 augroup END
 
+if &compatible
+    set nocompatible
+endif
+" Add the dein installation directory into runtimepath
+set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 
-call plug#begin('~/.config/nvim/plugged')
+if dein#load_state('~/.cache/dein')
+  call dein#begin('~/.cache/dein')
 
-" --- Sesnible defaults ---
-Plug  'tpope/vim-sensible'
+  " === Plugins! ===
+  " --- Sesnible defaults ---
+  call dein#add('tpope/vim-sensible')
+  call dein#add('mhinz/vim-startify')
+  if has('nvim')
+    call dein#add('neoclide/coc.nvim', {'merged':0, 'rev': 'release'})
+      call dein#add('iamcco/coc-vimlsp',
+                    \{'on_ft': ['vim']})
+  endif
 
-Plug 'mtdl9/vim-log-highlighting'
+  call dein#add('mtdl9/vim-log-highlighting')
 
-" --- Colorscheme ---
-Plug 'flazz/vim-colorschemes'
-Plug 'iCyMind/NeoSolarized'
-Plug 'jacoborus/tender.vim'
-Plug 'rakr/vim-one'
+  " --- Colorscheme ---
+  call dein#add('flazz/vim-colorschemes')
+  call dein#add('iCyMind/NeoSolarized')
+  call dein#add('jacoborus/tender.vim')
+  call dein#add('rakr/vim-one')
 
-" === Indent lines ===
-Plug 'nathanaelkane/vim-indent-guides'
-" Git gutter
-Plug 'mhinz/vim-signify'
-" Highlight colors
-Plug 'ap/vim-css-color'
-" Auto color hex
-Plug 'lilydjwg/Colorizer'
+  " === Indent lines ===
+  call dein#add('nathanaelkane/vim-indent-guides')
+  " Git gutter
+  call dein#add('mhinz/vim-signify')
+  " Highlight colors
+  call dein#add('ap/vim-css-color',
+              \{'on_ft': ['vim']})
+  " Auto color hex
+  call dein#add('lilydjwg/Colorizer')
 
-" Hide sum and such as unicode 
-Plug 'ryanoasis/vim-devicons'
-Plug 'chrisbra/unicode.vim'
-" Use math symbols instead of keywords 
-"Plug 'ehamberg/vim-cute-python'
-Plug 'mhinz/vim-startify'
+  " Hide sum and such as unicode 
+  call dein#add('ryanoasis/vim-devicons')
+  call dein#add('chrisbra/unicode.vim', 
+              \{'on_ft': 'vim'})
+  " Use math symbols instead of keywords 
+  " it is very very slow
+  " call dein#add('ehamberg/vim-cute-python')
 
-" Vim exploration Modifications
-Plug 'Shougo/denite.nvim'
-Plug 'dunstontc/denite-mapping'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-Plug 'numkil/ag.nvim'
+  if has('nvim')
+      " Vim exploration Modifications
+      call dein#add('Shougo/denite.nvim')
+      call dein#add('dunstontc/denite-mapping')
+  else
+      call dein#add('Shougo/unite.vim')
+      call dein#add('Shougo/unite-outline.vim')
+      call dein#add('Shougo/neomru.vim')
+  endif
 
-Plug 'leshill/vim-json'
+  " Vim exploration Modifications
+  call dein#add('junegunn/fzf', {
+              \ 'build': './install --all'})
+  call dein#add('junegunn/fzf.vim')
+  if !has('nvim')
+      call dein#add('vim-scripts/ag.vim',{'on_cmd':'Ag'})
+  else
+      call dein#add('numkil/ag.nvim',{'on_cmd':'Ag'})
 
-" Projects
-Plug 'amiorin/vim-project'
-Plug 'tpope/vim-projectionist'
+  endif
 
-" Navigation
-Plug 'scrooloose/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
+  call dein#add('leshill/vim-json',
+              \ {'on_ft': ['json']})
 
-Plug 'scrooloose/nerdcommenter'
-Plug 'mg979/vim-visual-multi'
+  call dein#add('Shougo/vimproc.vim', {
+              \ 'build' : {
+              \     'windows' : 'tools\\update-dll-mingw',
+              \     'cygwin' : 'make -f make_cygwin.mak',
+              \     'mac' : 'make',
+              \     'linux' : 'make',
+              \     'unix' : 'gmake',
+              \    },
+              \ })
 
-Plug 'SidOfc/mkdx'
-Plug 'vimwiki/vimwiki'
-Plug 'tpope/vim-markdown'
-Plug 'itspriddle/vim-marked'
-Plug 'gyim/vim-boxdraw'
+  " Projects
+  call dein#add('amiorin/vim-project')
+  call dein#add('tpope/vim-projectionist')
 
-" Version Control
-Plug 'tpope/vim-fugitive'
-" == mecurial client ==
-Plug 'ludovicchabant/vim-lawrencium'
-Plug 'majutsushi/tagbar'
+  " Navigation
+  call dein#add('scrooloose/nerdtree',
+              \{'on_cmd': 'NERDTreeToggle'})
 
-" Linting, syntax, autocomplete, semantic highlighting Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
-Plug 'w0rp/ale'
-Plug 'Shougo/echodoc.vim'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'zchee/deoplete-jedi'
-Plug 'davidhalter/jedi-vim'
-Plug 'zchee/deoplete-jedi'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'aping1/deoplete-zsh', { 'branch': 'develop' }
-Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
+  call dein#add('Xuyuanp/nerdtree-git-plugin',
+              \{'on_cmd': 'NERDTreeToggle'})
 
-" Tools for repl
-Plug 'Vigemus/impromptu.nvim'
-Plug 'Vigemus/iron.nvim'
+  call dein#add('scrooloose/nerdcommenter')
+  call dein#add('mg979/vim-visual-multi')
 
-Plug 'rizzatti/dash.vim'
-" Python 
-Plug 'plytophogy/vim-virtualenv'
-Plug 'lambdalisue/vim-pyenv'
-Plug 'bfredl/nvim-ipy'
-Plug 'Shougo/neoinclude.vim'
-Plug 'Shougo/context_filetype.vim'
-Plug 'janko/vim-test'
+  call dein#add('SidOfc/mkdx',
+              \{'on_ft': 'markdown'})
+  call dein#add('vimwiki/vimwiki')
+  call dein#add('tpope/vim-markdown',
+              \{'on_ft': 'markdown'})
+  call dein#add('itspriddle/vim-marked',
+              \{'on_ft': 'markdown'})
+  call dein#add('gyim/vim-boxdraw')
 
-" for ZSH Autocomplete
-Plug 'mtikekar/nvim-send-to-term'
+  " Version Control
+  call dein#add('tpope/vim-fugitive')
+  " == mecurial client ==
+  call dein#add('ludovicchabant/vim-lawrencium')
+  call dein#add('liuchengxu/vista.vim')
 
-" Simply Fold 
-Plug 'tmhedberg/SimpylFold'
+  " Linting, syntax, autocomplete, semantic highlighting call dein#add('numirias/semshi', {'do': ':UpdateRemotePlugins')}
+  call dein#add('w0rp/ale')
+  call dein#add('Shougo/echodoc.vim')
+  call dein#add('zchee/deoplete-jedi',
+              \{'on_ft':['python', 'ipython'],
+              \'commad': 'UpdateRemotePlugins'})
+  call dein#add('davidhalter/jedi-vim', 
+              \{'on_ft': ['python', 'ipython'],
+              \'commad': 'UpdateRemotePlugins'})
+  " Python 
+  " call dein#add('plytophogy/vim-virtualenv')
+  call dein#add('lambdalisue/vim-pyenv')
+  call dein#add('Shougo/neoinclude.vim')
 
-" Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
-Plug 'itchyny/lightline.vim'
-Plug 'maximbaz/lightline-ale'
+  " === nvim feature ===
+  if has('nvim')
+      call dein#add('Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins'})
+      call dein#add('aping1/deoplete-zsh', {
+                  \'rev': 'develop',
+                  \'on_ft':['zsh']
+                  \})
+      call dein#add('numirias/semshi', {'do': ':UpdateRemotePlugins'})
+      call dein#add('bfredl/nvim-ipy',
+                  \{'on_ft':['python', 'ipython']})
+      " Tools for repl
+      call dein#add('Vigemus/impromptu.nvim')
+      call dein#add('Vigemus/iron.nvim')
+  endif
 
-Plug 'jez/vim-superman'
+  if has('macunix')
+      call dein#add('rizzatti/dash.vim')
+  endif
 
-Plug 'ekalinin/Dockerfile.vim'
-Plug 'kevinhui/vim-docker-tools'
-Plug 'juliosueiras/vim-terraform-completion'
-Plug 'towolf/vim-helm'
+  call dein#add('Shougo/context_filetype.vim')
+  call dein#add('janko/vim-test')
 
-Plug 'tmux-plugins/vim-tmux-focus-events'
-Plug 'roxma/vim-tmux-clipboard'
+  " for ZSH Autocomplete
+  call dein#add('mtikekar/nvim-send-to-term')
 
-" --- management
-Plug 'kevinhui/vim-docker-tools'
+  " Simply Fold 
+  call dein#add('tmhedberg/SimpylFold')
+  call dein#add('itchyny/lightline.vim')
+  call dein#add('maximbaz/lightline-ale')
 
-" --- languages
-Plug 'vim-scripts/applescript.vim'
-Plug 'ekalinin/Dockerfile.vim'
-Plug 'juliosueiras/vim-terraform-completion'
-Plug 'towolf/vim-helm'
-Plug 'saltstack/salt-vim'
-Plug 'hashivim/vim-terraform'
+  call dein#add('jez/vim-superman')
 
-call plug#end()
-filetype plugin indent on     " required
+  call dein#add('vim-scripts/applescript.vim',
+              \ {'on_ft': ['applescript']})
+  call dein#add('ekalinin/Dockerfile.vim',
+              \ {'on_ft': ['dockerfile']})
+  call dein#add('kevinhui/vim-docker-tools')
+  call dein#add('towolf/vim-helm', {'on_ft': ['helm']})
+
+  call dein#add('tmux-plugins/vim-tmux-focus-events')
+  call dein#add('roxma/vim-tmux-clipboard')
+
+  " --- management
+  call dein#add('kevinhui/vim-docker-tools')
+
+  " --- languages
+  call dein#add('saltstack/salt-vim',
+              \ {'on_ft': ['salt']})
+  call dein#add('hashivim/vim-terraform')
+  call dein#add('juliosueiras/vim-terraform-completion',
+              \ {'on_ft': ['tf', 'tfvars']})
+
+  " === end Plugins! ===
+  call dein#end()
+  call dein#save_state()
+endif
+
+filetype plugin indent on
+syntax enable
 
 " --------------------------------------------
 " Colorscheme 
@@ -261,14 +301,14 @@ if (has('gui_running'))
 elseif (has('termguicolors'))
     set termguicolors
     silent! colorscheme one  
-    silent! LightlineColorScheme one
+    silent! LightlineColorscheme one
 elseif &term =~? '256color'
     " Disable Background Color Erase (BCE) so that color schemes
     " work properly when Vim is used inside tmux and GNU screen.
     set t_ut=
     set t_Co=256
     silent! colorscheme solarized
-    silent! LightlineColorScheme solarized
+    silent! LightlineColorscheme solarized
     let g:solarized_termcolors=256
 else
     colorscheme default
@@ -292,7 +332,7 @@ map <F3> :ToggleColor<CR>
 
 " Set max line length.
 let linelen = 120
-execute "set colorcolumn=".linelen
+execute 'set colorcolumn='.linelen
 highlight OverLength ctermbg=red ctermfg=white ctermfg=231 guifg=#e88388
 execute 'match OverLength /\%'.linelen.'v.\+/'
 
@@ -410,14 +450,15 @@ let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
 "----------------------------------------------
 let g:vimwiki_list = [{'path': '~/wiki/',
                      \ 'syntax': 'markdown', 'ext': '.md'}]
-let g:vimwiki_ext2syntax = {'.md': 'markdown',
-                  \ '.mkd': 'markdown',
-                  \ '.wiki': 'media'}
+let g:vimwiki_ext2syntax = {
+                     \'.md': 'markdown',
+                     \ '.mkd': 'markdown',
+                     \ '.wiki': 'media'}
 
 "---------------------------------------------
 " Plugin'tpope/vim-markdown'
 "----------------------------------------------
-let g:markdown_fenced_languages = ['html', 'css', 'scss', 'sql', 'javascript', 'go', 'python', 'bash=sh', 'c', 'ruby', 'zsh', 'yaml', 'json' ]
+let g:markdown_fenced_languages = ['vim', 'help', 'html', 'css', 'scss', 'sql', 'javascript', 'go', 'python', 'bash=sh', 'c', 'ruby', 'zsh', 'yaml', 'json' ]
 "----------------------------------------------
 " Plugin: 'SidOfc/mkdx'
 "----------------------------------------------
@@ -446,7 +487,7 @@ fun! s:MkdxFzfQuickfixHeaders()
     " this allows you to create a 'source' for fzf.
     " first we map each item (formatted for quickfix use) using the function MkdxFormatHeader()
     " then, we strip out any remaining empty headers.
-    let headers = filter(map(mkdx#QuickfixHeaders(0), function('<SID>MkdxFormatHeader')), 'v:val != ""')
+    let headers = filter(map(mkdx#QuickfixHeaders(0), function('<SID>MkdxFormatHeader')), 'v:val !=#:w ""')
 
     " run the fzf function with the formatted data and as a 'sink' (action to execute on selected entry)
     " supply the MkdxGoToHeader() function which will parse the line, extract the line number and move the cursor to it.
@@ -481,8 +522,9 @@ function! SemhiOneHighlights()
     hi semshiErrorChar       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
 endfunction
 
-autocmd FileType python call SemhiOneHighlights()
-" 
+augroup python_semshi
+    autocmd FileType python call SemhiOneHighlights()
+augroup END
 
 "----------------------------------------------
 " Plugin: 'Vigemus/iron.nvim'
@@ -494,31 +536,58 @@ luafile $HOME/.config/nvim/iron.plugin.lua
 "----------------------------------------------
 " disable autocompletion, we use deoplete for completion
 let g:jedi#completions_enabled = 0
+let g:jedi#show_call_signatures = 1
 
 " open the go-to function in split, not another buffer
 let g:jedi#use_splits_not_buffers = 'right'
 " <leader>n: show the usage of a name in current file
-" <leader>r: rename a name
+" <leader>r: rename a nameexists('pyenv#python*') 
+
+" for pyenv ...
+if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
+    if exists('$PYENV_VIRTUAL_ENV')
+      autocmd VimEnter python silent! command PyenvActivate 
+    endif
+    function! s:pyenv_init()
+        " Active external version
+        if pyenv#pyenv#is_activated() && pyenv#python#get_external_major_version() != 0
+            let g:jedi#force_py_version=pyenv#python#get_external_major_version()
+            if pyenv#python#get_external_major_version() == 3
+                let g:python_host_prog=substitute(system('command -v python'), '\n', '', 'g')
+                let g:python3_host_prog=g:pyenv#python_exec
+            elseif pyenv#python#get_external_major_version() == 2 
+                let g:python_host_prog=g:pyenv#python_exec
+                let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
+            endif
+        elseif exists('*pyenv#pyenv#is_activated') && pyenv#python#get_internal_major_version() != 0
+            "  Not active: user internal
+            let g:jedi#force_py_version=pyenv#python#get_internal_major_version()
+            if pyenv#python#get_internal_major_version() == 3
+                let g:python3_host_prog=substitute(system('command -v python'), '\n', '', 'g')
+                let g:python3_host_prog=g:pyenv#python_exec
+            elseif pyenv#python#get_internal_major_version() == 2
+                let g:python_host_prog=g:pyenv#python_exec
+                let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
+            endif
+        else
+            " Fallback in case something happends
+            call s:python_from_virtualenv()
+            let g:jedi#force_py_version='3'
+        endif
+    endfunction
+endif
 
 " let g:deoplete#sources#jedi#extra_path = ['/dev/shm/fbcode-vimcache']
-
-if has('python3') && has('*jed*') && exists('*jedi#init_python') && jedi#init_python()
-  function! s:jedi_auto_force_py_version() abort
-    let g:jedi#force_py_version = pyenv#python#get_internal_major_version()
-    if exists("$VIRTUAL_ENV")
-        let g:python_host_prog=substitute(system('which -a python | head -n1 | tail -n1'), '\n', '', 'g')
-        let g:python3_host_prog=substitute(system('which -a python3 | head -n1 | tail -n1'), '\n', '', 'g')
-        let g:jedi#force_py_version='3'
-    else
-        let g:python_host_prog=substitute(system("which python"), '\n', '', 'g')
-        let g:python3_host_prog=substitute(system('which python3'), '\n', '', 'g')
-    endif
-  endfunction
+if exists('*jedi#init_python') && jedi#init_python()
+  call s:python_from_virtualenv()
   augroup vim-pyenv-custom-augroup
-    autocmd! *
-    autocmd User vim-pyenv-activate-post   call s:jedi_auto_force_py_version()
-    autocmd User vim-pyenv-deactivate-post call s:jedi_auto_force_py_version()
+    if exists('*s:pyenv_init')
+        autocmd User vim-pyenv-activate-post   call s:pyenv_init()
+        autocmd User vim-pyenv-deactivate-post call s:pyenv_init()
+    endif
   augroup END
+else
+   call s:python_from_virtualenv()
 endif
 
 let g:deoplete#auto_complete_delay = 10
@@ -529,12 +598,14 @@ let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 function! s:check_back_space() abort "{{{
   let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
+  return !col || getline('.')[col - 1]  =~# '\s'
 endfunction"}}}
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ deoplete#manual_complete()
+" inoremap <silent><expr> <TAB>
+"       \ pumvisible() ? "\<C-n>" :
+"       \ <SID>check_back_space() ? "\<TAB>" :
+"       \ deoplete#manual_complete() | coc#refresh()
+
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
@@ -542,34 +613,59 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
-let g:jedi#show_call_signatures = "1"
 augroup deopleteExtre
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+" autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType python call deoplete#initialize()
 augroup  END
 
 " call this again
-call deoplete#initialize()
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
 " Gutter Error and warning signs.
+" let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_enter = 1
+"let g:ale_completion_enabled = 1
 let g:ale_sign_error = '窱'
 let g:ale_sign_warning = '碌'
 
+" Auto import with typescript`
+let g:ale_completion_tsserver_autoimport = 1
+
+let g:ale_python_pyls_use_global=1
+let g:ale_python_pyls_use_autoenv=1
+
+if executable('vim-language-server')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'vim-language-server',
+        \ 'cmd': {server_info->['vim-language-server']},
+        \ 'whitelist': ['vim',]
+        \ })
+endif
+if executable('pyls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'whitelist': ['python', 'ipython'],
+        \ })
+endif
+
 let g:ale_linters_explicit = 1
-let g:ale_linters = { 'python' : ['flake8', 'pyre'], 
+let g:ale_linters = { 'python' : ['pyls'], 
                     \ 'c' : ['cppcheck'],
-                    \ 'vim' : ['vint'],
+                    \ 'vim' : ['vim-language-server'],
                     \ 'sh' : ['shellcheck'],
                     \ 'terraform' : ['tflint'],
                     \ }
 " " Fix Python files with autopep8 and yapf.
 let g:ale_fixers = { 'python' : ['black' ],
-            \       'c' : ['clang-format', 'remove_trailing_lines'],
-            \       'lua' : ['trimwhitespace', 'remove_trailing_lines'],
-            \        'terraform' : ['terraform'],
-            \        'json' : ['jq'] }
+                   \ 'c' : ['clang-format', 'remove_trailing_lines'],
+                   \ 'lua' : ['trimwhitespace', 'remove_trailing_lines'],
+                   \ 'terraform' : ['terraform'],
+                   \ 'json' : ['jq'] }
+
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
 let g:ale_python_flake8_args = '--max-line-length=' . linelen
@@ -611,8 +707,6 @@ endfunction
 "----------------------------------------------
 let g:webdevicons_enable_denite = 1
 let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
-
-
 
 autocmd FileType denite call s:denite_my_settings()
 function! s:denite_my_settings() abort
@@ -658,27 +752,27 @@ else
 endif
 
 let g:os_spec_string=' n' . g:os . (has("gui_running")?'': '').('')
+let g:lightline_blacklist=["help","nofile","nerdtree", "vista", "qf"]
 
 let g:lightline = {
       \ 'inactive': {
-      \   'left': [ [  'pyenv', 'pyenv_active', ],
-      \             [ 'fugitive', 'filename', 'tagbar' ],
-      \             [ 'readonly', 'lineinfo', 'linecount'], 
+      \   'left': [ [  'pyenv_active', 'pyenv' ],
+      \             [ 'fugitive', 'filename'],
       \           ],
       \   'right': [ 
+      \             [ 'readonly', 'lineinfo', 'linecount'], 
       \             [ 'filetype', 'fileformat'],
-      \             [ 'linter_errors', 'linter_warnings', 'linter_ok' ],
       \            ]
       \ },
       \ 'active': {
-      \   'left': [ [  'mode', 'paste', 'spell',
-      \                'pyenv', 'pyenv_active', ],
-      \             [ 'fugitive', 'filename', 'tagbar', ],
+      \   'left': [ [  'mode', 'paste', ],  
+      \             [  'pyenv_active', 'pyenv', ],
+      \             [ 'fugitive', 'filename', 'method', ],
       \           ],
       \   'right': [ 
-      \             [ 'readonly', 'percent', 'lineinfo',  'linecount',  ], 
-      \             [ 'readonly', 'filetype', 'fileformat', ],
-      \             [ 'linter_checking', 'linter_errors',
+      \             [ 'readonly', 'percentwin', 'lineinfo',  'linecount',  ],
+      \             [ 'filetype', 'fileformat', ], 
+      \             [ 'spell', ], [ 'linter_checking', 'linter_errors',
       \                'linter_warnings', 'linter_ok' ],
       \            ]
       \ },
@@ -687,39 +781,51 @@ let g:lightline = {
       \  'linter_warnings': 'g:lightline#ale#warnings',
       \  'linter_errors': 'g:lightline#ale#errors',
       \  'linter_ok': 'g:lightline#ale#ok',
-      \  'pyenv': 'pyenv#pyenv#get_activated_env',
       \  'gitbranch': 'fugitive#head',
       \ },
       \ 'component': {
-      \   'lineinfo': '%{line(".")}',
-      \   'linecount': '%{line("$")}',
-      \   'close': '%9999X%{g:os_spec_string}', 
-      \   'tagbar': '%{tagbar#currenttag("%s", "")}',
-      \   'spell': '%{&spell?&spelllang:""}',
-      \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{&filetype=="help"?"":exists("*LightlineFugitive")?LightlineFugitive():""}',
-      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?WebDevIconsGetFileTypeSymbol("main.py", 1):""}',
+      \   'linecount': '%{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":line("$")}',
+      \   'lineinfo': '%{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":(&fenc==#"")?"":winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"C".col("."):"C".col(".").":"."L".line(".")}',
+      \   'close': '%9999X%{g:os_spec_string}',
+      \   'spell': '%{winwidth(0) <= getbufvar("b:", "small_threshold", g:small_threshold)?"":&fenc==#""?"":&spell?"":winwidth(0)>getbufvar("b:", "large_threshold", g:large_threshold)?"暈".&spelllang:"暈"}',
+      \   'modified': '%{&modified?"﯂":&modifiable?"":""}',
+      \   'readonly': '%{index(g:lightline_blacklist,&filetype)==-1&&(&fenc==#"")?"":(&readonly)?"":""}',
       \ },
       \ 'component_visible_condition': {
-      \   'readonly': '(index(["help","nofile"],&filetype)!=-1&& &readonly)',
-      \   'modified': '(index(["help","nofile"],&filetype)!=-1&&(&modified||!&modifiable))',
-      \   'fugitive': '(index(["help","nofile"],&filetype)!=-1&&(winwidth(0) <80)&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
-      \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
-      \   'tagbar': '(exists("tagbar#currenttag"))',
+      \     'linecount': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
+      \     'lineinfo': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
+      \     'linter_checking': '(index(g:lightline_blacklist,&filetype)==-1)',
+      \     'fileformat' : '(winwidth(0) > getbufvar("b:", "medium_threshold", g:medium_threshold))',
+      \     'linter_warnings': '(index(g:lightline_blacklist,&filetype)==-1)',
+      \     'linter_errors': '(index(g:lightline_blacklist,&filetype)==-1)',
+      \     'linter_ok': '(index(g:lightline_blacklist,&filetype)==-1)',
+      \     'close': '(index(g:lightline_blacklist,&filetype)==-1)',
+      \     'spell': '(winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold)&&index(g:lightline_blacklist,&filetype)==-1)',
+      \     'readonly': '(index(g:lightline_blacklist,&filetype)==-1&&(&readonly))',
+      \     'modified': '(!(&readonly)&&index(g:lightline_blacklist,&filetype)!=-1&&(modified||!&modifiable))',
+      \     'fugitive': '(index(g:lightline_blacklist,&filetype)==-1&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline() && winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold))',
+      \     'paste': '(index(g:lightline_blacklist,&filetype)==-1&&(&paste))',
+      \     'pyenv': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated()&&winwidth(0)>getbufvar("b:", "medium_threshold", g:medium_threshold))',
+      \     'pyenv_active': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
+      \     'method': '(index(g:lightline_blacklist,&filetype)!=-1&&winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold)&&getbufvar("vista_nearest_method_or_function","")!==#"")',
       \ },
       \ 'component_type': {
       \     'linter_checking': 'left',
       \     'linter_warnings': 'warning',
       \     'linter_errors': 'error',
       \     'linter_ok': 'left',
-      \     'pyenv_active': 'ok',
       \     'banner': 'tabsel',
       \ },
       \ 'component_function': {
       \     'mode': 'LightlineMode',
-      \     'filetype': 'MyFiletype',
-      \     'fileformat': 'MyFileformat',
-      \    'method': 'NearestMethodOrFunction'
+      \     'filetype': 'LightlineFiletype',
+      \     'filename': 'LightlineFilename',
+      \     'fileformat': 'LightlineFileFormat',
+      \     'method': 'NearestMethodOrFunction',
+      \     'fugitive': 'LightlineFugitive',
+      \     'paste': 'LightlinePaste',
+      \     'pyenv_active': 'LightlinePyEnv',
+      \  'pyenv': 'LightlinePyEnvName',
       \ },
       \ 'tabline' : {
       \   'separator': { 'left': '┋', },
@@ -739,13 +845,113 @@ let g:lightline = {
       \   'subseparator': { 'left': '∶', 'right': '∷'},
       \ }
 
+let g:small_threshold=51
+let g:medium_threshold=75
+let g:large_threshold=96
+
+function! LightlineFilename()
+    let l:longname=expand('%')
+    let l:shortname=expand('%:t')
+    let l:l = len(l:longname)
+    if winwidth(0) > g:large_threshold + l:l
+        let l:shortname=l:longname
+    endif
+    let l:l = len(l:shortname) + 19
+    " 16 = (max length of fugitive) + (~len of seperator)
+    let b:small_theshold = g:small_threshold + l:l
+    let b:medium_theshold = g:medium_threshold + l:l
+    let b:large_theshold = g:large_threshold + l:l
+    return l:shortname ==# '__Tagbar__' ? 'Tagbar':
+                \ l:shortname ==# '__vista__' ? 'Vista':
+                \ l:shortname =~# 'NERDTree' ? '' :
+                \ &filetype ==# 'vimfiler' ? 'VimFiler' :
+                \ &filetype ==# 'vimshell' ? 'VimShell' : 
+                \ l:shortname
+endfunction
+
+function! LightlinePyEnv ()
+    let l:small_threshold = getbufvar("small_threshold", g:small_threshold)
+    let l:medium_threshold = getbufvar("medium_threshold", g:medium_threshold)
+    let l:large_threshold = getbufvar("large_threshold", g:large_threshold)
+    return WebDevIconsGetFileTypeSymbol('__init__.py',0)
+endfunction
+
+function! LightlinePyEnvName ()
+    let l:env = pyenv#pyenv#get_activated_env()
+    let l:large_threshold = getbufvar("b:", " large_threshold", g:large_threshold)
+    return winwidth(0) < l:large_threshold  ? "" : l:env
+endfunction
+
+
+function! LightlinePaste ()
+  let l:small_threshold = getbufvar("b:", "small_threshold", g:small_threshold)
+  if index(g:lightline_blacklist,&filetype)==-1
+      return (&paste) && winwidth(0) > l:small_threshold ? "" : ""
+  endif
+  return ''
+endfunction
+
+function! Pad(s,amt)
+    return a:s . repeat(' ',a:amt - len(a:s))
+endfunction
+
 function! LightlineMode()
-  let l:tabname=expand('%:t')
-  return l:tabname ==# '__Tagbar__' ? 'Tagbar':
-        \ l:tabname ==# 'NERDTree' ? '' :
-        \ &filetype ==# 'vimfiler' ? 'VimFiler' :
-        \ &filetype ==# 'vimshell' ? 'VimShell' :
-        \ lightline#mode()
+        let l:mode=lightline#mode()
+        let l:newmode = (l:mode ==? 'INSERT' ? "" :
+             \ l:mode ==? 'NORMAL' ? "" :
+             \ l:mode ==? 'COMMAND' ? "" :
+             \ l:mode ==? 'VISUAL' ? "﯎" :
+             \ l:mode =~? '^V' ? "" :
+             \ l:mode)
+        return l:newmode 
+endfunction
+
+function! LightlineFugitive()
+    let l:medium_threshold = getbufvar("b:", "medium_threshold", g:medium_threshold)
+    if index(g:lightline_blacklist,&filetype)!=-1 || winwidth(0) <  l:medium_threshold || !exists('*fugitive#head')
+        return ""
+    endif 
+    let l:branch = fugitive#head()
+    if branch ==#""
+        return ""
+    elseif len(branch) < 16
+        return branch
+    else
+        return branch[:15] . ' .. ' . branch[(len(branch)-15):]
+    endif 
+endfunction
+
+function! NearestMethodOrFunction() abort
+    let l:medium_threshold = getbufvar("b:", "medium_threshold", g:medium_threshold)
+    if index(g:lightline_blacklist,&filetype)==-1 && winwidth(0) >= l:medium_threshold
+        return get(b:, 'vista_nearest_method_or_function', '')
+    endif
+    return ''
+endfunction
+
+function! LightlineFiletype()
+    let l:wide = winwidth(0)
+    let l:large_threshold = getbufvar("b:", "large_threshold", g:large_threshold)
+    if index(g:lightline_blacklist,&filetype)==-1 &&
+                \ &fenc!=#''
+        let symbol=WebDevIconsGetFileTypeSymbol()
+        let new_ft=(strlen(&filetype) ? symbol . ' ' . &filetype  : '')
+        return l:wide > l:large_threshold ? new_ft : symbol
+    endif
+    return ''
+endfunction
+
+function! LightlineFileFormat()
+    if index(g:lightline_blacklist,&filetype)==-1 
+        let l:small_threshold = getbufvar("b:", "small_threshold", g:small_threshold)
+        let l:medium_threshold = getbufvar("b:", "medium_threshold", g:medium_threshold)
+        let l:large_threshold = getbufvar("b:", "large_threshold", g:large_threshold)
+        let l:symbol=WebDevIconsGetFileFormatSymbol()
+        let l:wide = winwidth(0)
+        return l:wide <= l:small_threshold ? "" : 
+                    \ l:wide <= l:large_threshold ? symbol : symbol . ' ' . &fileformat
+    endif
+    return ''
 endfunction
 
 let g:lightline#pyenv#indicator_ok = ''
@@ -776,19 +982,9 @@ function! LightlineTabname(n) abort
   let winnr = tabpagewinnr(a:n)
   let fname = expand('#'.buflist[winnr - 1].':t')
   return fname =~? '__Tagbar__' ? 'Tagbar' :
-        \ fname =~? 'NERD_tree' ? 'NERDTree' : 
-        \ ('' !=? fname ? fname : '﬒')
-endfunction
-
-function! LightlineFugitive()
-  if &filetype !~? 'vimfiler' && exists('*fugitive#head')
-    let branch = fugitive#head()
-    if len(branch) < 25
-      return branch
-    endif
-    return branch[:15] . ' .. ' . branch[(len(branch)-15):]
-  endif
-  return ''
+              \  fname =~? '__Vista__' ? 'Vista' :
+              \ fname =~? 'NERD_tree' ? 'NERDTree' : 
+              \ ('' !=? fname ? fname : '﬒')
 endfunction
 "  
 fun! s:setLightlineColorscheme(name)
@@ -804,13 +1000,12 @@ fun! s:setLightlineColorscheme(name)
 endfun
 
 fun! s:lightlineColorschemes(...)
-    return join(map(
+    return map(
                 \ globpath(&runtimepath,'autoload/lightline/colorscheme/*.vim',1,1),
-                \ 'fnamemodify(v:val,":t:r")'),
-                \ '\n')
+                \ 'fnamemodify(v:val,":t:r")')
 endfun
 
-com! -nargs=1 -complete=custom,s:lightlineColorschemes LightlineColorscheme
+com! -nargs=1 -complete=customlist,s:lightlineColorschemes LightlineColorscheme
             \ call s:setLightlineColorscheme(<q-args>)
 
 function! s:LightLineUpdateColor()
@@ -826,21 +1021,6 @@ endfunction
 
 com! -nargs=0 ToggleColor
     \ call s:LightLineUpdateColor()
-
-function! NearestMethodOrFunction() abort
-  return get(b:, 'vista_nearest_method_or_function', '')
-endfunction
-
-function! MyFiletype()
-    let symbol=WebDevIconsGetFileTypeSymbol() 
-    let new_ft=(strlen(&filetype) ? symbol . ' ' . &filetype  : '')
-    return winwidth(0) > 120 ?  new_ft : symbol
-endfunction
-
-function! MyFileformat()
-    let symbol=WebDevIconsGetFileFormatSymbol()
-    return ((winwidth(0) > 80) ? symbol . ' ' . &fileformat : symbol )
-endfunction
 
 let g:lightline#ale#indicator_checking = ''
 let g:lightline#ale#indicator_warnings = ''
@@ -926,7 +1106,16 @@ let NERDTreeQuitOnOpen=0
 
 " Show hidden files by default.
 let NERDTreeShowHidden=1
-let NERDTreeIgnore=['\.pyc','\~$','\.swo$','\.swp$','\.git','\.hg','\.svn','\.bzr']
+let NERDTreeIgnore=[
+            \'\.pyc',
+            \'\~$',
+            \'\.swo$',
+            \'\.swp$',
+            \'\.git',
+            \'\.hg',
+            \'\.svn',
+            \'\.bzr'
+            \]
 let NERDTreeKeepTreeInNewTab=1
 
 " Files to ignore
@@ -941,7 +1130,9 @@ let NERDTreeIgnore = [
 
 augroup nerdtree_extra
 " Close vim if NERDTree is the only opened window.
-autocmd bufenter * if (winnr('$') == 1 && exists('b:NERDTreeType') && b:NERDTreeType == 'primary') | q | endif
+autocmd bufenter * if (winnr('$') == 1 &&
+            \ (( exists('b:NERDTreeType') && b:NERDTreeType == 'primary') || 
+            \ (&buftype ==# 'quickfix'))) | q | endif
 augroup END
 
 let g:NERDTreeIndicatorMapCustom = {
@@ -990,8 +1181,15 @@ let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
 " --------------------
 " Plug 'bfredl/nvim-ipy'
 " --------------------
-let g:ipy_perform_mappings=1
-
+let g:ipy_perform_mappings=0
+    "set titlestring=%t%(\ %M%)%(\ (%{expand(\"%:p:h\")})%)%(\ %a%)%(\ -\ %{g:ipy_status}%)
+nmap <silent> <c-s> <Plug>(IPy-Run)
+vmap <silent> <c-s> <Plug>(IPy-Run)
+nmap <silent> <c-}> <Plug>(IPy-RunCell)
+nmap <silent> <leader> <c-}> <Plug>(IPy-RunAll)
+map <silent> <leader> <c-c> <Plug>(IPy-Interrupt)
+imap <c-f> <Plug>(IPy-Complete)
+map <silent> <leader>? <Plug>(IPy-WordObjInfo)
 " --------------------
 " Plugin 'janko/vim-test'
 " --------------------
@@ -1032,10 +1230,103 @@ function! RemoveQFItem()
   execute curqfidx + 1 . 'cfirst'
   :copen
 endfunction
-command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
 
 let g:dash_map = {
         \ 'c' : ['cpp']
         \ }
+
+" plugin neoclide/coc.nvim
+"
+" if hidden is not set, TextEdit might fail.
+set hidden
+
+" Some servers have issues with backup files, see #649
+set nobackup
+set nowritebackup
+
+" Better display for messages
+set cmdheight=2
+
+" You will have bad experience for diagnostic messages when it's default 4000.
+" Write diag to disk every 2.5 seconds
+set updatetime=2500
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" always show signcolumns
+set signcolumn=yes
+
+highlight lspReference ctermfg=red guifg=red ctermbg=green guibg=green
+let g:lsp_highlight_references_enabled = 1
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+" inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" Or use `complete_info` if your vim support it, like:
+" inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" plugin: Vista.vim
+" Ensure you have installed some decent font to show these pretty symbols, then you can enable icon for the kind.
+let g:vista_fzf_preview = ['right:50%']
+let g:vista_executive_for = {
+  \ 'vim': 'coc',
+  \ }
+" Executive used when opening vista sidebar without specifying it.
+" See all the avaliable executives via `:echo g:vista#executives`.
+"let g:vista_default_executive = 'ctags'
+let g:vista#renderer#enable_icon = 1
+let g:vista#renderer#icons = {
+\   "function": "\uf794",
+\   "variable": "\uf71b",
+\  }
+function! SetupCommandAbbrs(from, to)
+  exec 'cnoreabbrev <expr> '.a:from
+        \ .' ((getcmdtype() ==# ":" && getcmdline() ==# "'.a:from.'")'
+        \ .'? ("'.a:to.'") : ("'.a:from.'"))'
+endfunction
+
+" Use C to open coc config
+call SetupCommandAbbrs('C', 'CocConfig')
+
+" Plugin: liuchengxu/vista.vim
+" By default vista.vim never run if you don't call it explicitly.
+"
+" If you want to show the nearest function in your statusline automatically,
+" you can add the following line to your vimrc 
+autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 
 " { :set sw=2 ts=2 et }
