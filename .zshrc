@@ -24,7 +24,6 @@ fi
     || source "${HOME}/.zprofile"
 
 [[ ${+ZSH_ALIASES_LOADED} -eq 1 ]] \
-    && printf -- 'Skipping: %s\n' "${HOME}/.zsh_aliases" \
     || source "${HOME}/.zsh_aliases"
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
@@ -83,14 +82,6 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/vault
         zgen oh-my-zsh plugins/fzf
 
-        zgen oh-my-zsh plugins/pip
-        zgen oh-my-zsh plugins/python
-        zgen oh-my-zsh plugins/sudo
-
-        zgen oh-my-zsh plugins/terraform
-        zgen oh-my-zsh plugins/vault
-        zgen oh-my-zsh plugins/fzf
-
         zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
         # zgen load Tarrasch/zsh-autoenv
@@ -133,6 +124,7 @@ KEYTIMEOUT=1
 # Auto complete from anywhere in word
 setopt COMPLETE_IN_WORD BRACE_CCL AUTO_PARAM_SLASH
 export COMPLETION_WAITING_DOTS="true"
+export CASE_SENSITIVE="true"
 
 # automatically decide when to page a list of completions
 # LISTMAX=0
@@ -179,7 +171,7 @@ export FZF_COMPLETION_OPTS='+c -x'
 # Setc Crtl+R to fzf
 
 # Setc Crtl+R to fzf
-[[ ${FZF_BASE:="${HOME}/.fzf"} ]] && source "${FZF_BASE%/}/shell/key-bindings.zsh"
+# [[ ${FZF_BASE:="${HOME}/.fzf"} ]] && source "${FZF_BASE%/}/shell/key-bindings.zsh"
 
 # === Customization ===
 setopt extendedglob nomatch
@@ -203,3 +195,4 @@ if (( $+PROFILING )); then
     zprof
 fi
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

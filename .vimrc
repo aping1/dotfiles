@@ -123,7 +123,7 @@ endif
 " Colorscheme 
 " --------------------------------------------
 " colorscheme
-
+colorscheme default
 if (has('gui_running'))
     silent! colorscheme tender
     silent! LightlineColorScheme tenderplus

@@ -3,6 +3,14 @@
 "
 
 
+set ttimeoutlen=10
+set timeoutlen=1000
+augroup FastEscape
+    autocmd!
+    au InsertEnter * set timeoutlen=0
+    au InsertLeave * set timeoutlen=1000
+augroup END
+
 set ruler
 set ignorecase
 set smartcase
@@ -131,7 +139,6 @@ Plug 'lilydjwg/Colorizer'
 
 " Hide sum and such as unicode 
 Plug 'ryanoasis/vim-devicons'
-Plug 'chrisbra/unicode.vim'
 " Use math symbols instead of keywords 
 "Plug 'ehamberg/vim-cute-python'
 Plug 'mhinz/vim-startify'
@@ -144,6 +151,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'numkil/ag.nvim'
 
 Plug 'leshill/vim-json'
+Plug 'lmeijvogel/vim-yaml-helper'
 
 " Projects
 Plug 'amiorin/vim-project'
@@ -164,6 +172,7 @@ Plug 'gyim/vim-boxdraw'
 
 " Version Control
 Plug 'tpope/vim-fugitive'
+Plug 'idanarye/vim-merginal'
 " == mecurial client ==
 Plug 'ludovicchabant/vim-lawrencium'
 Plug 'majutsushi/tagbar'
@@ -298,6 +307,7 @@ highlight PmenuSel ctermbg=black ctermfg=white
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_guide_size = 2
 let g:indent_guides_start_level = 2
+let g:indent_guides_exclude_filetypes = ['nerdtree']
 
 augroup IndentGuide
 " base 00
@@ -1039,4 +1049,22 @@ function! RemoveQFItem()
 endfunction
 command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
 
+
+augroup autoquickfixheigh
+au FileType qf call AdjustWindowHeight(3, 10)
+augroup END
+
+function! AdjustWindowHeight(minheight, maxheight)
+    let l = 1
+    let n_lines = 0
+    let w_width = winwidth(0)
+    while l <= line('$')
+        " number to float for division
+        let l_len = strlen(getline(l)) + 0.0
+        let line_width = l_len/w_width
+        let n_lines += float2nr(ceil(line_width))
+        let l += 1
+    endw
+    exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
+endfunction
 " { :set sw=2 ts=2 et }

@@ -5,6 +5,8 @@
  local _CERT_DEST_PATH=${2:-${CSR_PATH:h}}
 alias deploy_container='() {[[ "${1}" ]] || return 1; cd $(task_home)/deployment && KEY_PATH=$(get_projects_home) SKIP_VERIFY=y scripts/docker_build.sh all $@} '
 
+alias gwhoami='cloud config list account --format "value(core.account)"'
+
 cortex_parse_and_export () {
     # Function to get PROJECT_BASE ENVIRONMENT and CONTINENT from the requested project
     local proj=${1}
@@ -169,6 +171,25 @@ wrap_json () {
 	#jq '.' <(echo -n '{"csr": "'; base64 < "${1}" | tr -Cd '[[:print:]]' ; echo -n '"}' | tee /dev/stderr )
 }
 
-
-
-
+function vault-ldap-token () { 
+case ${1} in 
+    'dev') 
+        local vaultaddr=https://vault.gns-dev-shared-infra.gcp.pan.local 
+        ;;
+    'prod')
+        local vaultaddr=https://vault.gns-prod-shared-infra.gcp.pan.local 
+        ;;
+    'normal')
+        vault login -token-only -method=ldap username=$(whoami)
+        return $?
+        ;;
+    *)
+        local vaultaddr=http://127.0.0.1
+    ;;
+esac
+vault login -address=${vaultaddr} -token-only -method=ldap username=$(whoami)
+}
+alias vault-dev-ldap-token='vault-ldap-token dev'
+alias vault-prod-ldap-token='vault-ldap-token prod'
+alias vault-local-ldap-token='vault-ldap-token ""'
+alias vault-login='vault-ldap-login normal'

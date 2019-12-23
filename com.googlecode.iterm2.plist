@@ -822,11 +822,11 @@
 	<key>NSFontPanelAttributes</key>
 	<string>1, 1</string>
 	<key>NSNavLastRootDirectory</key>
-	<string>~/.dotfiles</string>
+	<string>~</string>
 	<key>NSNavLastUserSetHideExtensionButtonState</key>
 	<true/>
 	<key>NSNavPanelExpandedSizeForOpenMode</key>
-	<string>{799, 448}</string>
+	<string>{799, 388}</string>
 	<key>NSNavPanelExpandedSizeForSaveMode</key>
 	<string>{712, 448}</string>
 	<key>NSNavPanelExpandedStateForSaveMode</key>
@@ -873,23 +873,23 @@
 		<integer>1</integer>
 	</dict>
 	<key>NSWindow Frame NSColorPanel</key>
-	<string>0 266 224 606 0 0 3008 1669 </string>
+	<string>0 118 224 570 0 0 1680 1027 </string>
 	<key>NSWindow Frame NSFontPanel</key>
 	<string>146 94 445 472 0 0 1280 777 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
-	<string>410 363 620 392 0 0 1440 877 </string>
+	<string>530 493 620 392 0 0 1680 1050 </string>
 	<key>NSWindow Frame SessionsPreferences</key>
 	<string>266 378 606 469 0 0 1920 1057 </string>
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>0 354 918 514 0 0 1440 877 </string>
 	<key>NSWindow Frame UKCrashReporter</key>
-	<string>372 486 592 372 0 0 1440 877 </string>
+	<string>20 486 592 372 0 0 1440 877 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>20 27 810 981 0 0 1680 1027 </string>
+	<string>109 426 650 451 0 0 1440 877 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>20 27 810 981 0 0 1680 1027 </string>
+	<string>20 49 1386 828 0 0 1440 877 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
-	<string>260 912 538 692 -1165 900 2560 1417 </string>
+	<string>20 30 1386 828 0 0 1440 877 </string>
 	<key>NSWindow Frame iTerm Window 3</key>
 	<string>822 912 538 692 -1165 900 2560 1417 </string>
 	<key>NSWindow Frame iTerm Window 4</key>
@@ -1246,8 +1246,34 @@
 			</dict>
 			<key>Guid</key>
 			<string>A07696FA-3B52-4A1B-BC05-D3B3B94E9096</string>
+			<key>Has Hotkey</key>
+			<true/>
 			<key>Horizontal Spacing</key>
 			<real>1</real>
+			<key>HotKey Activated By Modifier</key>
+			<false/>
+			<key>HotKey Alternate Shortcuts</key>
+			<array/>
+			<key>HotKey Characters</key>
+			<string>n</string>
+			<key>HotKey Characters Ignoring Modifiers</key>
+			<string>N</string>
+			<key>HotKey Key Code</key>
+			<integer>45</integer>
+			<key>HotKey Modifier Activation</key>
+			<integer>0</integer>
+			<key>HotKey Modifier Flags</key>
+			<integer>1179648</integer>
+			<key>HotKey Window Animates</key>
+			<true/>
+			<key>HotKey Window AutoHides</key>
+			<true/>
+			<key>HotKey Window Dock Click Action</key>
+			<integer>0</integer>
+			<key>HotKey Window Floats</key>
+			<true/>
+			<key>HotKey Window Reopens On Activation</key>
+			<false/>
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Jobs to Ignore</key>
@@ -1558,11 +1584,11 @@
 			<key>Name</key>
 			<string>Default</string>
 			<key>Non Ascii Font</key>
-			<string>SauceCodeProNerdFontCM-Regular 14</string>
+			<string>Hack-Regular 14</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>KnackNerdFontCM-Regular 14</string>
+			<string>Hack-Regular 14</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>
@@ -2655,11 +2681,11 @@
 			<key>Name</key>
 			<string>tmux</string>
 			<key>Non Ascii Font</key>
-			<string>SauceCodeProNerdFontCM-Regular 14</string>
+			<string>Hack-Regular 14</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>KnackNerdFontCM-Regular 14</string>
+			<string>HackNerdFontComplete-Regular 14</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>
@@ -2727,6 +2753,17 @@
 					<string>([a-zA-Z0-9_]+::)+[a-zA-Z0-9_]+</string>
 				</dict>
 				<dict>
+					<key>actions</key>
+					<array>
+						<dict>
+							<key>action</key>
+							<integer>4</integer>
+							<key>parameter</key>
+							<string>\0</string>
+							<key>title</key>
+							<string>directory</string>
+						</dict>
+					</array>
 					<key>notes</key>
 					<string>Paths</string>
 					<key>precision</key>
@@ -3077,7 +3114,7 @@
 			<key>Use Italic Font</key>
 			<true/>
 			<key>Use Non-ASCII Font</key>
-			<true/>
+			<false/>
 			<key>Use Tab Color</key>
 			<true/>
 			<key>Vertical Spacing</key>
@@ -9243,11 +9280,11 @@
 			<key>Name</key>
 			<string>login</string>
 			<key>Non Ascii Font</key>
-			<string>SauceCodeProNerdFontCM-Regular 14</string>
+			<string>Hack-Regular 14</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>KnackNerdFontCM-Regular 14</string>
+			<string>Hack-Regular 14</string>
 			<key>Option Key Sends</key>
 			<integer>0</integer>
 			<key>Prompt Before Closing 2</key>
@@ -9678,22 +9715,27 @@
 	<key>NoSyncAllAppVersions</key>
 	<array>
 		<string>3.3.6</string>
-		<string>3.3.2</string>
+		<string>3.3.4</string>
 		<string>3.3.1</string>
 		<string>3.3.3</string>
 		<string>3.3.5</string>
+		<string>3.3.7</string>
 		<string>3.2.9</string>
+		<string>3.3.2</string>
 		<string>3.3.0</string>
-		<string>3.3.4</string>
 	</array>
 	<key>NoSyncAutoBurialReveal</key>
 	<true/>
+	<key>NoSyncBFPFavorites</key>
+	<array>
+		<string>Hack Nerd Font</string>
+	</array>
 	<key>NoSyncBFPRecents</key>
 	<array>
-		<string>Monaco</string>
-		<string>Menlo</string>
-		<string>SauceCodePro Nerd Font</string>
+		<string>Hack</string>
 		<string>Knack Nerd Font</string>
+		<string>Hack Nerd Font</string>
+		<string>SauceCodePro Nerd Font</string>
 	</array>
 	<key>NoSyncCommandHistoryHasEverBeenUsed</key>
 	<true/>
@@ -9707,10 +9749,12 @@
 	<key>NoSyncFrame_SharedPreferences</key>
 	<dict>
 		<key>screenFrame</key>
-		<string>{{0, 0}, {1440, 900}}</string>
+		<string>{{0, 0}, {1680, 1050}}</string>
 		<key>topLeft</key>
-		<string>{229, 662}</string>
+		<string>{355, 1027}</string>
 	</dict>
+	<key>NoSyncHaveUsedCopyMode</key>
+	<true/>
 	<key>NoSyncHaveWarnedAboutPasteConfirmationChange</key>
 	<true/>
 	<key>NoSyncInstallationId</key>
@@ -9718,7 +9762,7 @@
 	<key>NoSyncLastTipTime</key>
 	<real>585272462.17839503</real>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>24</integer>
+	<integer>33</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -10524,16 +10568,15 @@
 	</array>
 	<key>NoSyncSearchHistory2</key>
 	<array>
-		<string>main-us-</string>
-		<string>main-stg-us</string>
-		<string>``prd1</string>
-		<string>`prd1</string>
-		<string>prd1</string>
-		<string>nodePool</string>
-		<string>prov</string>
-		<string>"cat</string>
-		<string>bash </string>
-		<string>ca.cert</string>
+		<string>render</string>
+		<string>infra_charts_values</string>
+		<string>.infra_charts_values</string>
+		<string>d.infra_charts_values</string>
+		<string>da.infra_charts_values</string>
+		<string>dat.infra_charts_values</string>
+		<string>date.infra_charts_values</string>
+		<string>datle.infra_charts_values</string>
+		<string>datile.infra_charts_values</string>
 	</array>
 	<key>NoSyncTimeOfFirstLaunchOfVersionWithTip</key>
 	<real>584387220.58384895</real>
@@ -10544,7 +10587,7 @@
 		<string>000</string>
 	</array>
 	<key>OpenTmuxWindowsIn</key>
-	<integer>0</integer>
+	<integer>1</integer>
 	<key>PasteTabToStringTabStopSize</key>
 	<integer>4</integer>
 	<key>PointerActions</key>
@@ -10595,7 +10638,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-11-08T19:09:43Z</date>
+	<date>2019-12-13T11:03:12Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SUUpdateRelaunchingMarker</key>
@@ -10622,15 +10665,19 @@
 	<integer>0</integer>
 	<key>TmuxDashboardLimit</key>
 	<integer>11</integer>
+	<key>TmuxUsesDedicatedProfile</key>
+	<true/>
 	<key>ToolbeltTools</key>
 	<array>
 		<string>Profiles</string>
 		<string>Captured Output</string>
 	</array>
 	<key>UKCrashReporterLastCrashReportDate</key>
-	<real>1570556672</real>
+	<real>1575607168</real>
 	<key>UseBorder</key>
 	<false/>
+	<key>UseTmuxStatusBar</key>
+	<true/>
 	<key>VisualIndicatorForEsc</key>
 	<false/>
 	<key>WordCharacters</key>
@@ -10638,7 +10685,7 @@
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
 	<key>iTerm Version</key>
-	<string>3.3.6</string>
+	<string>3.3.7</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>
 	<integer>7</integer>
 	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>

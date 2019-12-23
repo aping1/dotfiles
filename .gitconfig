@@ -12,8 +12,9 @@
 	prompt = true
     conflictstyle = diff3
 	keepBackup = false
+    tool=nvimdiff
 [mergetool "fugitive"]
-    cmd = vim -f "$MERGED" -c "Gdiff $LOCAL" -c "Gdiff $REMOTE" -c 'wincmd w' -c 'wincmd L' 
+    cmd = nvim -f "$MERGED" -c "Gdiff $LOCAL" -c "Gdiff $REMOTE" -c 'wincmd w' -c 'wincmd L' 
 [mergetool "vimdiff"]
 	cmd = vim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
 [mergetool "nvimdiff"]
