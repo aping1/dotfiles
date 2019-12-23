@@ -68,7 +68,7 @@ SPACESHIP_DIR_TRUNC='1' # show only last directory
 SPACESHIP_GIT_SYMBOL="" # disable git prefix
 SPACESHIP_GIT_BRANCH_PREFIX="" # disable branch prefix too
 # Wrap git in `git:(...)`
-SPACESHIP_GIT_PREFIX=':('
+SPACESHIP_GIT_PREFIX='[]:('
 SPACESHIP_GIT_SUFFIX=") "
 SPACESHIP_GIT_BRANCH_SUFFIX="" # remove space after branch name
 # Unwrap git status from `[...]`

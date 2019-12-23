@@ -3,7 +3,7 @@ local impromptu = require("impromptu")
 local iron = require("iron")
 
 _G.repl_globs = function()
-    local globs = _G.split(nvim.nvim_eval('glob(\'/home/aping1/projects/Katchin/*/buck-fbcode.fbsource-fbcode.datainfra.katchin/*/*-ipython.par\')'))
+    local globs = _G.split(nvim.nvim_eval('glob(\'~/*-ipython.par\')'))
     local t = "ipython"
     local nopts = {}
     local cb = nvim.nvim_get_current_buf()
@@ -39,22 +39,32 @@ _G.set_preferred_repl = function()
     local defs = iron.core.list_definitions_for_ft(ft)
     local opts = {}
 
-for _, kv in ipairs(defs) do
-    if not ( kv[1] == 'venv_python' ) then
-        opts[kv[1]] = {
-            description = table.concat(kv[2].command, " ")
-        }
+    for _, kv in ipairs(defs) do
+        if not ( kv[1] == 'venv_python' ) then
+            opts[kv[1]] = {
+                description = table.concat(kv[2].command, " ")
+            }
+        end
     end
-end
 
-impromptu.ask{
-    title = "Select preferred repl",
-    options = opts,
-    handler = function(_, opt)
-        iron.core.set_config{preferred = {[ft] = opt.description}}
-        return true
+    for _, kv in ipairs(defs) do
+        if not ( kv[1] == 'venv_python' ) then
+            if( kv[2].command[1] ~= opts ) then
+                opts[kv[2].command[1]] = {
+                    description = kv[2].command[1]
+                }
+            end
+        end
     end
-}
+
+    impromptu.ask{
+        title = "Select preferred repl",
+        options = opts,
+        handler = function(_, opt)
+            iron.core.set_config{preferred = {[ft] = opt.description}}
+            return true
+        end
+    }
 end
 
 _G.dump = function(o)
