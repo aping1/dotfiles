@@ -1,7 +1,6 @@
 "
 " ~/.vimrc (local shell)
 "
-
 set nocompatible              " be iMproved, required
 filetype off                  " required
 filetype plugin indent on     " required
@@ -109,23 +108,6 @@ if exists('$VIRTUAL_ENV')
     let g:python_host_prog=substitute(system('which -a python3 | head -n2 | tail -n1'), '\n', '', 'g')
 endif
 
-" === Auto install plug.vim ===
-let autoload_plug_path = '~/.vim/autoload/plug.vim'
-augroup plug_auto_update
-if ! empty(glob(autoload_plug_path))
-    exec 'set rtp=' . autoload_plug_path . ',' . &runtimepath
-elseif empty(glob(autoload_plug_path))
-  silent ! exec '!curl -fLo ' . autoload_plug_path . 
-                \ ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  source &autoload_plug_path
-      autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-else
-    exec 'set runtimepath=' . autoload_plug_path . ',' . &runtimepath
-    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-augroup END
-
-unlet autoload_plug_path
 " Reload .vimrc immediately when edited
 augroup AUTOUPDATE
 autocmd! bufwritepost $MYVIMRC source $MYVIMRC
@@ -136,92 +118,6 @@ if isdirectory('~/.config/nvim/plugged')
 else
     call plug#begin('~/.vim/plugged')
 endif
-
-" --- Colorscheme ---
-Plug 'jacoborus/tender.vim'
-Plug 'rakr/vim-one'
-Plug 'mtdl9/vim-log-highlighting'
-
-" === Indent lines ===
-Plug 'nathanaelkane/vim-indent-guides'
-" Git gutter
-Plug 'mhinz/vim-signify'
-" Highlight colors
-Plug 'ap/vim-css-color'
-" Auto color hex
-Plug 'lilydjwg/Colorizer'
-
-" Hide sum and such as unicode 
-Plug 'ryanoasis/vim-devicons'
-Plug 'chrisbra/unicode.vim'
-" Use math symbols instead of keywords 
-Plug 'mhinz/vim-startify'
-
-" Vim exploration Modifications
-Plug 'Shougo/unite.vim'
-Plug 'Shougo/unite-outline.vim'
-Plug 'Shougo/neomru.vim'
-
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-Plug 'vim-scripts/ag.vim'
-
-Plug 'leshill/vim-json'
-
-" Projects
-Plug 'amiorin/vim-project'
-Plug 'tpope/vim-projectionist'
-
-" Navigation
-Plug 'scrooloose/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
-
-Plug 'scrooloose/nerdcommenter'
-Plug 'mg979/vim-visual-multi'
-
-Plug 'SidOfc/mkdx'
-Plug 'vimwiki/vimwiki'
-Plug 'tpope/vim-markdown'
-Plug 'itspriddle/vim-marked'
-Plug 'gyim/vim-boxdraw'
-
-" Version Control
-Plug 'tpope/vim-fugitive'
-" == mecurial client ==
-Plug 'ludovicchabant/vim-lawrencium'
-Plug 'majutsushi/tagbar'
-
-" Linting, syntax, autocomplete, semantic highlighting Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
-Plug 'w0rp/ale'
-Plug 'Shougo/echodoc.vim'
-Plug 'plytophogy/vim-virtualenv'
-Plug 'lambdalisue/vim-pyenv'
-Plug 'Shougo/context_filetype.vim'
-Plug 'janko/vim-test'
-
-Plug 'tmhedberg/SimpylFold'
-
-Plug 'itchyny/lightline.vim'
-Plug 'maximbaz/lightline-ale'
-
-Plug 'jez/vim-superman'
-
-Plug 'ekalinin/Dockerfile.vim'
-Plug 'kevinhui/vim-docker-tools'
-Plug 'juliosueiras/vim-terraform-completion'
-Plug 'towolf/vim-helm'
-
-Plug 'tmux-plugins/vim-tmux-focus-events'
-Plug 'roxma/vim-tmux-clipboard'
-
-" --- languages
-Plug 'ekalinin/Dockerfile.vim'
-Plug 'juliosueiras/vim-terraform-completion'
-Plug 'towolf/vim-helm'
-Plug 'saltstack/salt-vim'
-Plug 'hashivim/vim-terraform'
-
-call plug#end()
 
 " --------------------------------------------
 " Colorscheme 
@@ -648,7 +544,7 @@ augroup END
 " Tmux vim integration
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
-if exists('$TMUX') || ! empty("TMUX")
+if exists('$TMUX') || ! empty('TMUX')
     augroup TMUX_TITLE
         let g:tmux_window_name=system('tmux display-message -p "\#W"')
         autocmd VimLeavePre * call system('tmux rename-window ' . g:tmux_window_name
@@ -674,7 +570,7 @@ augroup END
 endif
 
 if (empty($TMUX))
-  if (has("nvim"))
+  if (has('nvim'))
   "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
   let $NVIM_TUI_ENABLE_TRUE_COLOR=1
   endif
