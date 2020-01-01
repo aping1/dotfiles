@@ -341,6 +341,14 @@ highlight Pmenu ctermbg=cyan ctermfg=white
 highlight PmenuSel ctermbg=black ctermfg=white
 
 "----------------------------------------------
+" Plugin: 'mhinz/vim-startify'
+"----------------------------------------------
+augroup numbertoggle
+autocmd!
+autocmd BufEnter * if !exists('t:startified') | Startify | let t:startified = 1 | endif
+augroup END
+
+"----------------------------------------------
 " Plugin: 'nathanaelkane/vim-indent-guides'
 "----------------------------------------------
 let g:indent_guides_enable_on_vim_startup = 1
@@ -443,15 +451,16 @@ command! -bang -nargs=? -complete=dir Files
 "----------------------------------------------
 " Plugin: vimwiki/vimwiki
 "----------------------------------------------
-let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
-                      \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_list = [{
+            \ 'path': '~/Dropbox/wiki',
+            \ 'syntax': 'markdown',
+            \ 'ext': '.md'
+            \ }]
 "----------------------------------------------
 " Plugin: 'vimwiki/vimwiki'
 "----------------------------------------------
-let g:vimwiki_list = [{'path': '~/wiki/',
-                     \ 'syntax': 'markdown', 'ext': '.md'}]
 let g:vimwiki_ext2syntax = {
-                     \'.md': 'markdown',
+                     \ '.md': 'markdown',
                      \ '.mkd': 'markdown',
                      \ '.wiki': 'media'}
 
@@ -493,7 +502,7 @@ fun! s:MkdxFzfQuickfixHeaders()
     " supply the MkdxGoToHeader() function which will parse the line, extract the line number and move the cursor to it.
     call fzf#run(fzf#wrap(
             \ {'source': headers, 'sink': function('<SID>MkdxGoToHeader') }
-          \ ))
+            \ ))
 endfun
 
 " finally, map it -- in this case, I mapped it to overwrite the default action for toggling quickfix (<PREFIX>I)
@@ -672,9 +681,10 @@ let g:ale_python_flake8_args = '--max-line-length=' . linelen
 let g:ale_python_flake8_options = '--max-line-length=' . linelen
 
 let g:ale_fix_on_save = 0
-let g:ale_set_loclist = 0
 " Us quickfix with 'qq' delete
-let g:ale_set_quickfix = 1
+" quickfix can be set with 'nvim -d FILENAME' so use loclist
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
 " Set this if you want to.
 " This can be useful if you are combining ALE with
