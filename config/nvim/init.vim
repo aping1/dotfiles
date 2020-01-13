@@ -100,6 +100,8 @@ set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 if dein#load_state('~/.cache/dein')
     call dein#begin('~/.cache/dein')
 
+    call dein#add('wsdjeg/dein-ui.vim')
+
     " === Plugins! ===
     " --- Sesnible defaults ---
     call dein#add('tpope/vim-sensible')
@@ -108,7 +110,7 @@ if dein#load_state('~/.cache/dein')
         call dein#add('neoclide/coc.nvim', {
                     \ 'merged':0,
                     \ 'rev': 'release',
-                    \ 'on_ft': ['vim', 'python']
+                    \ 'on_ft': ['vim', 'python', 'zsh']
                     \ })
     endif
 
@@ -153,10 +155,9 @@ if dein#load_state('~/.cache/dein')
                 \ 'build': './install --all'})
     call dein#add('junegunn/fzf.vim')
     if !has('nvim')
-        call dein#add('vim-scripts/ag.vim',{'on_cmd':'Ag'})
+        " call dein#add('vim-scripts/ag.vim',{'on_cmd':'Ag'})
     else
-        call dein#add('numkil/ag.nvim',{'on_cmd':'Ag'})
-
+        " call dein#add('numkil/ag.nvim',{'on_cmd':'Ag'})
     endif
 
     call dein#add('leshill/vim-json',
@@ -178,10 +179,10 @@ if dein#load_state('~/.cache/dein')
 
     " Navigation
     call dein#add('scrooloose/nerdtree',
-                \{'on_cmd': 'NERDTreeToggle'})
+                \{'on_cmd': ['NERDTreeToggle', 'NERDTreeVCS']})
 
     call dein#add('Xuyuanp/nerdtree-git-plugin',
-                \{'on_cmd': 'NERDTreeToggle'})
+                \{'on_cmd': ['NERDTreeToggle', 'NERDTreeVCS']})
 
     call dein#add('scrooloose/nerdcommenter')
     call dein#add('mg979/vim-visual-multi')
@@ -200,6 +201,8 @@ if dein#load_state('~/.cache/dein')
     " == mecurial client ==
     call dein#add('ludovicchabant/vim-lawrencium')
     call dein#add('liuchengxu/vista.vim')
+    call dein#add('tjdevries/coc-zsh')
+
 
     " Linting, syntax, autocomplete, semantic highlighting call dein#add('numirias/semshi', {'do': ':UpdateRemotePlugins')}
     call dein#add('w0rp/ale')
@@ -475,7 +478,23 @@ let g:vimwiki_ext2syntax = {
 "---------------------------------------------
 " Plugin'tpope/vim-markdown'
 "----------------------------------------------
-let g:markdown_fenced_languages = ['vim', 'help', 'html', 'css', 'scss', 'sql', 'javascript', 'go', 'python', 'bash=sh', 'c', 'ruby', 'zsh', 'yaml', 'json' ]
+let g:markdown_fenced_languages = [
+            \ 'vim',
+            \ 'help',
+            \ 'html',
+            \ 'css',
+            \ 'scss',
+            \ 'sql',
+            \ 'javascript',
+            \ 'go',
+            \ 'python',
+            \ 'bash=sh',
+            \ 'c',
+            \ 'ruby',
+            \ 'zsh',
+            \ 'yaml',
+            \ 'json'
+            \ ]
 "----------------------------------------------
 " Plugin: 'SidOfc/mkdx'
 "----------------------------------------------
@@ -673,6 +692,7 @@ let g:ale_linters = { 'python' : ['pyls'],
             \ 'c' : ['cppcheck'],
             \ 'vim' : ['vim-language-server'],
             \ 'sh' : ['shellcheck'],
+            \ 'zsh' : ['coc-zsh'],
             \ 'terraform' : ['tflint'],
             \ }
 " " Fix Python files with autopep8 and yapf.
@@ -773,24 +793,24 @@ let g:lightline_blacklist=["help","nofile","nerdtree", "vista", "qf"]
 
 let g:lightline = {
             \ 'inactive': {
-            \   'left': [ [  'pyenv_active', 'pyenv' ],
-            \             [ 'fugitive', 'filename'],
+            \   'left': [ [ 'pyenv_active', 'pyenv' ],
+            \             [ 'fugitive', 'filename' ],
             \           ],
             \   'right': [ 
-            \             [ 'readonly', 'lineinfo', 'linecount'], 
-            \             [ 'filetype', 'fileformat'],
+            \             [ 'readonly', 'lineinfo', 'linecount' ],
+            \             [ 'filetype', 'fileformatl' ],
             \            ]
             \ },
             \ 'active': {
-            \   'left': [ [  'mode', 'paste', ],  
-            \             [  'pyenv_active', 'pyenv', ],
+            \   'left': [ [ 'mode', 'paste', ],
+            \             [ 'pyenv_active', 'pyenv', ],
             \             [ 'fugitive', 'filename', 'method', ],
             \           ],
             \   'right': [ 
-            \             [ 'readonly', 'percentwin', 'lineinfo',  'linecount',  ],
+            \             [ 'readonly', 'percentwin', 'lineinfo',  'linecount', ],
             \             [ 'filetype', 'fileformat', ], 
             \             [ 'spell', ], [ 'linter_checking', 'linter_errors',
-            \                'linter_warnings', 'linter_ok' ],
+            \                'linter_warnings', 'linter_ok' ], [ 'coc_diagnostic', 'coc_status' ],
             \            ]
             \ },
             \ 'component_expand' : {
@@ -802,13 +822,16 @@ let g:lightline = {
             \ },
             \ 'component': {
             \   'linecount': '%{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":line("$")}',
-            \   'lineinfo': '%4{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":(&fenc==#"")?"":winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"C".col("."):"C".col(".").":"."L".line(".")}',
+            \   'lineinfo': '%4{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":(&fenc==#"")?"":(winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)||len(col("."))>1000)?"C".col("."):"C".col(".").":"."L".line(".")}',
             \   'close': '%9999X%{g:os_spec_string}',
-            \   'spell': '%{winwidth(0) <= getbufvar("b:", "small_threshold", g:small_threshold)?"":&fenc==#""?"":&spell?"":winwidth(0)>getbufvar("b:", "large_threshold", g:large_threshold)?"暈".&spelllang:"暈"}',
+            \   'coc_status': '%{coc#status()}',
+            \   'spell': '%{winwidth(0) <= getbufvar("b:", "small_threshold", g:small_threshold)?"":&fenc==#""?"":&spell?"":"暈"}%{winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"":&spelllang}',
             \   'modified': '%{&modified?"﯂":&modifiable?"":""}',
             \   'readonly': '%{index(g:lightline_blacklist,&filetype)==-1&&(&fenc==#"")?"":(&readonly)?"":""}',
             \ },
             \ 'component_visible_condition': {
+            \     'coc_diagnostic': 'g:coc_status!=#""',
+            \     'coc_status': 'g:coc_status!=#""',
             \     'linecount': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'lineinfo': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'linter_checking': '(index(g:lightline_blacklist,&filetype)==-1)',
@@ -842,7 +865,8 @@ let g:lightline = {
             \     'fugitive': 'LightlineFugitive',
             \     'paste': 'LightlinePaste',
             \     'pyenv_active': 'LightlinePyEnv',
-            \  'pyenv': 'LightlinePyEnvName',
+            \     'coc_diagnostic': 'StatusDiagnostic',
+            \     'pyenv': 'LightlinePyEnvName',
             \ },
             \ 'tabline' : {
             \   'separator': { 'left': '┋', },
@@ -864,7 +888,7 @@ let g:lightline = {
 
 let g:small_threshold=51
 let g:medium_threshold=75
-let g:large_threshold=96
+let g:large_threshold=116
 
 function! LightlineFilename()
     let l:longname=expand('%')
@@ -949,6 +973,7 @@ endfunction
 function! LightlineFiletype()
     let l:wide = winwidth(0)
     let l:large_threshold = getbufvar("b:", "large_threshold", g:large_threshold)
+    let l:medium_threshold = getbufvar("b:", "medium_threshold", g:medium_threshold)
     if index(g:lightline_blacklist,&filetype)==-1 &&
                 \ &fenc!=#''
         let symbol=WebDevIconsGetFileTypeSymbol()
@@ -1114,7 +1139,7 @@ endif
 " Plugin: scrooloose/nerdtree
 "----------------------------------------------
 nnoremap <leader>d :NERDTreeToggle<cr>
-nnoremap <F2> :NERDTreeToggle<cr>
+nnoremap <F2> :NERDTreeToggleVCS<cr>
 
 let NERDTreeShowBookmarks=1
 " Allow NERDTree to change session root.
@@ -1194,7 +1219,7 @@ let g:webdevicons_enable_nerdtree = 1
 " Force extra padding in NERDTree so that the filetype icons line up vertically
 let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
 let g:webdevicons_conceal_nerdtree_brackets = 1
-let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
+let g:WebDevIconsNerdTreeAfterGlyphPadding = '  '
 " --------------------
 " Plug 'bfredl/nvim-ipy'
 " --------------------
@@ -1283,6 +1308,30 @@ function! s:check_back_space() abort
     return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
+function! StatusDiagnosticToClipboard()
+  let diagList=CocAction('diagnosticList')
+  let line=line('.') 
+  for diagItem in diagList
+    if line == diagItem['lnum']
+      let str=diagItem['message']
+      return str
+    endif
+  endfor 
+endfunction
+
+function! StatusDiagnostic() abort
+  let info = get(b:, 'coc_diagnostic_info', {})
+  if empty(info) | return '' | endif
+  let msgs = []
+  if get(info, 'error', 0)
+    call add(msgs, 'E' . info['error'])
+  endif
+  if get(info, 'warning', 0)
+    call add(msgs, 'W' . info['warning'])
+  endif
+  return join(msgs, ' '). ' ' . get(g:, 'coc_status', '')
+endfunction
+
 " Use <c-space> to trigger completion.
 " inoremap <silent><expr> <c-space> coc#refresh()
 
@@ -1329,7 +1378,9 @@ let g:vista#renderer#enable_icon = 1
 let g:vista#renderer#icons = {
             \   "function": "\uf794",
             \   "variable": "\uf71b",
+            \   "default": "",
             \  }
+
 function! SetupCommandAbbrs(from, to)
     exec 'cnoreabbrev <expr> '.a:from
                 \ .' ((getcmdtype() ==# ":" && getcmdline() ==# "'.a:from.'")'
@@ -1339,7 +1390,10 @@ endfunction
 " Use C to open coc config
 call SetupCommandAbbrs('C', 'CocConfig')
 
+" --------------------
 " Plugin: liuchengxu/vista.vim
+" --------------------
+"
 " By default vista.vim never run if you don't call it explicitly.
 "
 " If you want to show the nearest function in your statusline automatically,
