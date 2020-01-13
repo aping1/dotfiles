@@ -24,7 +24,7 @@ golang        # Go section
 # julia       # Julia section (Disabled)
 docker      # Docker section (Disabled)
 # aws           # Amazon Web Services section
-venv          # virtualenv section
+# venv          # virtualenv section
 # conda         # conda virtualenv section
 pyenv         # Pyenv section
 # dotnet        # .NET section
@@ -43,6 +43,7 @@ SPACESHIP_GIT_LAST_COMMIT_SHOW=true
 SPACESHIP_VI_MODE_NORMAL="NORMAL"
 SPACESHIP_VI_MODE_INSERT=INSERT
 SPACESHIP_VI_MODE_COLOR=green
+SPACESHIP_VI_MODE_NORMAL=blue
 
 SPACESHIP_EXIT_CODE_SHOW=true
 
@@ -117,7 +118,7 @@ SPACESHIP_VENV_SUFFIX=") "
 # PYENV
 SPACESHIP_PYENV_PREFIX="pyenv:("
 SPACESHIP_PYENV_SUFFIX=") "
-SPACESHIP_PYENV_SYMBOL=""
+SPACESHIP_PYENV_SYMBOL=" "
 
 
 SPACESHIP_WIP_PREFIX="${SPACESHIP_WIP_PREFIX="$SPACESHIP_PROMPT_DEFAULT_PREFIX"}"
@@ -166,3 +167,6 @@ spaceship_git_last_commit() {
     "$SPACESHIP_GIT_LAST_COMMIT_SUFFIX"
 
 }
+autoload -Uz history-beginning-search-menu
+zle -N history-beginning-search-menu
+bindkey '^X^X' history-beginning-search-menu
