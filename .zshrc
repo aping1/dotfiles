@@ -61,7 +61,6 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/git-completion
 
         zgen oh-my-zsh plugins/brew
-        zgen oh-my-zsh plugins/cask
         zgen oh-my-zsh plugins/osx
         zgen oh-my-zsh plugins/iterm2
         zgen oh-my-zsh plugins/emoji
@@ -180,3 +179,28 @@ if (( $+PROFILING )); then
     zprof
 fi
 
+# see https://invisible-island.net/xterm/terminfo-contents.html#tic-xterm-r6
+# https://www.ibm.com/support/knowledgecenter/en/ssw_aix_71/filesreference/terminfo.html
+    typeset -A key
+    key=(
+        BackSpace  "${terminfo[kbs]}"
+        Home       "${terminfo[khome]}"
+        End        "${terminfo[kend]}"
+        Insert     "${terminfo[kich1]}"
+        Delete     "${terminfo[kdch1]}"
+        Up         "${terminfo[kcuu1]}"
+        Down       "${terminfo[kcud1]}"
+        Left       "${terminfo[kcub1]}"
+        Right      "${terminfo[kcuf1]}"
+        PageUp     "${terminfo[kpp]}"
+        PageDown   "${terminfo[knp]}"
+        BackTab    "${terminfo[kcbt]}"
+    )
+
+bindkey "${terminfo[kcbt]}" up-line-or-history
+# bindkey -M autosuggest-fetch '^[[Z' 
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+#export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
+export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
