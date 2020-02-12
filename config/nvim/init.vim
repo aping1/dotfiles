@@ -175,10 +175,10 @@ if dein#load_state('~/.cache/dein')
 
   " Navigation
   call dein#add('scrooloose/nerdtree',
-              \{'on_cmd': 'NERDTreeToggle'})
+              \{'on_cmd': ['NERDTreeToggle', 'NERDTreeToggleVCS']})
 
   call dein#add('Xuyuanp/nerdtree-git-plugin',
-              \{'on_cmd': 'NERDTreeToggle'})
+              \{'on_cmd': ['NERDTreeToggle', 'NERDTreeToggleVCS']})
 
   call dein#add('scrooloose/nerdcommenter')
   call dein#add('mg979/vim-visual-multi')
