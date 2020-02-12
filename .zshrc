@@ -26,6 +26,11 @@ fi
 [[ ${+ZSH_ALIASES_LOADED} -eq 1 ]] \
     || source "${HOME}/.zsh_aliases"
 
+if [[ ${+commands[go]} -eq 1 ]] ; then
+    export GOPATH=${HOME}/go
+    export PATH="${GOPATH}/bin:${PATH}"
+fi
+
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
 if [ ! $TERM = dumb ]; then
     ZGEN_AUTOLOAD_COMPINIT=true
