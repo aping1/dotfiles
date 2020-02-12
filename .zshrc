@@ -66,10 +66,6 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/git-completion
 
         zgen oh-my-zsh plugins/brew
-        zgen oh-my-zsh plugins/cask
-        zgen oh-my-zsh plugins/osx
-        zgen oh-my-zsh plugins/iterm2
-        zgen oh-my-zsh plugins/emoji
         zgen oh-my-zsh plugins/osx
         zgen oh-my-zsh plugins/iterm2
         zgen oh-my-zsh plugins/emoji
@@ -92,8 +88,6 @@ if [ ! $TERM = dumb ]; then
         # zgen load Tarrasch/zsh-autoenv
         zgen load zsh-users/zsh-completions src
         zgen load zsh-users/zsh-autosuggestions
-        zgen load zsh-users/zsh-completions src
-        zgen load zsh-users/zsh-autosuggestions
         zgen load qoomon/zsh-lazyload
 
         # my own plugins each of these folders use init.zsh entry point
@@ -102,7 +96,6 @@ if [ ! $TERM = dumb ]; then
         zgen load ${DOTFILES}/plugins/navigation
         zgen load ${DOTFILES}/plugins/autocomplete-extra
         # zgen load whiteinge/dotfiles /bin/diffconflicts master
-        zgen oh-my-zsh plugins/vi-mode
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
         # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
@@ -150,17 +143,6 @@ export HISTFILESIZE=$HISTSIZE;
 
 setopt EXTENDED_HISTORY
 setopt HIST_EXPIRE_DUPS_FIRST
-
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
-export ZSH_AUTOSUGGEST_USE_ASYNC="y"
-
-# -- History --------------
-# change the size of history files
-export HISTSIZE=32768;
-export HISTFILESIZE=$HISTSIZE;
-
-setopt EXTENDED_HISTORY
-setopt HIST_EXPIRE_DUPS_FIRST
 # setopt HIST_IGNORE_SPACE
 setopt HIST_FIND_NO_DUPS
 setopt HIST_BEEP
@@ -174,9 +156,7 @@ export FZF_COMPLETION_TRIGGER='~~'
 export FZF_COMPLETION_OPTS='+c -x'
 
 # Setc Crtl+R to fzf
-
-# Setc Crtl+R to fzf
-# [[ ${FZF_BASE:="${HOME}/.fzf"} ]] && source "${FZF_BASE%/}/shell/key-bindings.zsh"
+[[ ${FZF_BASE:="${HOME}/.fzf"} ]] && source "${FZF_BASE%/}/shell/key-bindings.zsh"
 
 # === Customization ===
 setopt extendedglob nomatch
@@ -200,4 +180,28 @@ if (( $+PROFILING )); then
     zprof
 fi
 
+# see https://invisible-island.net/xterm/terminfo-contents.html#tic-xterm-r6
+# https://www.ibm.com/support/knowledgecenter/en/ssw_aix_71/filesreference/terminfo.html
+    typeset -A key
+    key=(
+        BackSpace  "${terminfo[kbs]}"
+        Home       "${terminfo[khome]}"
+        End        "${terminfo[kend]}"
+        Insert     "${terminfo[kich1]}"
+        Up         "${terminfo[kcuu1]}"
+        Delete     "${terminfo[kdch1]}"
+        Down       "${terminfo[kcud1]}"
+        Left       "${terminfo[kcub1]}"
+        Right      "${terminfo[kcuf1]}"
+        PageUp     "${terminfo[kpp]}"
+        PageDown   "${terminfo[knp]}"
+        BackTab    "${terminfo[kcbt]}"
+    )
+
+bindkey "${terminfo[kcbt]}" up-line-or-history
+# bindkey -M autosuggest-fetch '^[[Z' 
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+#export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
+export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"

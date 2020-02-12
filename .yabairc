@@ -43,10 +43,8 @@ yabai -m config window_gap                   10
 
 yabai -m rule --add title='tmux Dashboard' manage=off
 yabai -m rule --add title='Karabiner Elements Preferences' manage=off
-yabai -m rule --add app='System Preferences' manage=off
-yabai -m rule --add app='Alfred' manage=off
-yabai -m rule --add app='Dash' manage=off
 yabai -m rule --add title='iStat Menus' manage=off
+yabai -m rule --add title='Alfred Preferences' manage=off
 
 echo "yabai configuration loaded.."
 
@@ -56,7 +54,6 @@ FULL_SCREEN="4:4:1:0:2:2"
 
 yabai -m rule --add app="^Dash$" manage=off label="dash_floats" 
 yabai -m rule --add title="Dash" grid=${FULL_SCREEN} manage=off label="dash_floats" 
-yabai -m rule --add title="zoom" grid=${FULL_SCREEN} manage=off label="zoom_floats" 
 yabai -m rule --add app="System Preferences" grid=${CENTER_SCREEN} manage=off label="sys_pref_floats" 
 yabai -m rule --add app="iStat Menus" grid=${FULL_SCREEN} manage=off label="iStatMenus" 
 yabai -m rule --add app="Drobo Dashboard" grid=${CENTER_SCREEN} manage=off label="Drobo_no_manage" 

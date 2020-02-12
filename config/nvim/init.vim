@@ -1,15 +1,7 @@
-"
-" ~/confing/nvim/init.vim
-"
-
-
-set ttimeoutlen=10
-set timeoutlen=1000
-augroup FastEscape
-    autocmd!
-    au InsertEnter * set timeoutlen=0
-    au InsertLeave * set timeoutlen=100
-augroup END
+" time to wait for new mapping seq
+" ttimeoutlen is used for key code delays
+" Credit: https://www.johnhawthorn.com/2012/09/vi-escape-delays/
+set timeoutlen=600 ttimeoutlen=0
 
 set ruler
 set ignorecase
@@ -341,10 +333,23 @@ com! -nargs=0 ToggleColor
 map <F3> :ToggleColor<CR>
 
 " Set max line length.
-let linelen = 80
-autocmd FileType * execute 'set colorcolumn='.linelen
-" highlight OverLength ctermbg=red ctermfg=white ctermfg=231 guifg=#e88388
-" execute 'match OverLength /\%'.linelen.'v.\+/'
+let linelen = 120
+execute 'set colorcolumn='.linelen
+highlight OverLength ctermbg=red ctermfg=white ctermfg=231 guifg=#e88388
+execute 'match OverLength /\%'.linelen.'v.\+/'
+
+" Change the Pmenu colors so they're more readable.
+highlight Pmenu ctermbg=cyan ctermfg=white
+highlight PmenuSel ctermbg=black ctermfg=white
+
+"----------------------------------------------
+" Plugin: 'mhinz/vim-startify'
+"----------------------------------------------
+" augroup numbertoggle
+" autocmd BufEnter * if !exists('t:startified') | Startify | let t:startified = 1 | endif
+autocmd BufEnter python :CocDisable
+autocmd BufLeave python :CocEnable
+" augroup END
 
 "----------------------------------------------
 " Plugin: 'nathanaelkane/vim-indent-guides'
@@ -454,10 +459,11 @@ let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
 "----------------------------------------------
 " Plugin: 'vimwiki/vimwiki'
 "----------------------------------------------
-let g:vimwiki_ext2syntax = {
-                     \'.md': 'markdown',
-                     \ '.mkd': 'markdown',
-                     \ '.wiki': 'media'}
+let g:vimwiki_list = [{'path': '~/wiki/',
+                     \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_ext2syntax = {'.md': 'markdown',
+                  \ '.mkd': 'markdown',
+                  \ '.wiki': 'media'}
 
 "---------------------------------------------
 " Plugin'tpope/vim-markdown'
@@ -659,12 +665,13 @@ if executable('pyls')
 endif
 
 let g:ale_linters_explicit = 1
-let g:ale_linters = { 'python' : ['flake8'], 
-                    \ 'c' : ['cppcheck'],
-                    \ 'vim' : ['vim-language-server'],
-                    \ 'sh' : ['shellcheck'],
-                    \ 'terraform' : ['tflint'],
-                    \ }
+let g:ale_linters = { 'python' : ['pyls'], 
+            \ 'c' : ['cppcheck'],
+            \ 'vim' : ['vim-language-server'],
+            \ 'sh' : ['shellcheck'],
+            \ 'zsh' : ['coc-zsh'],
+            \ 'terraform' : ['tflint'],
+            \ }
 " " Fix Python files with autopep8 and yapf.
 let g:ale_fixers = { 'python' : ['black', 'trim_whitespace', 'remove_trailing_lines'],
                    \ 'c' : ['clang-format', 'remove_trailing_lines'],
@@ -681,7 +688,9 @@ autocmd FileType python let g:ale_python_flake8_options = '--max-line-length=' .
 let g:ale_fix_on_save = 0
 let g:ale_set_loclist = 0
 " Us quickfix with 'qq' delete
-let g:ale_set_quickfix = 1
+" quickfix can be set with 'nvim -d FILENAME' so use loclist
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
 " Set this if you want to.
 " This can be useful if you are combining ALE with
@@ -944,6 +953,7 @@ endfunction
 function! LightlineFiletype()
     let l:wide = winwidth(0)
     let l:large_threshold = getbufvar("b:", "large_threshold", g:large_threshold)
+    let l:medium_threshold = getbufvar("b:", "medium_threshold", g:medium_threshold)
     if index(g:lightline_blacklist,&filetype)==-1 &&
                 \ &fenc!=#''
         let symbol=WebDevIconsGetFileTypeSymbol()
@@ -1299,8 +1309,32 @@ highlight lspReference ctermfg=red guifg=red ctermbg=green guibg=green
 let g:lsp_highlight_references_enabled = 1
 
 function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+function! StatusDiagnosticToClipboard()
+  let diagList=CocAction('diagnosticList')
+  let line=line('.') 
+  for diagItem in diagList
+    if line == diagItem['lnum']
+      let str=diagItem['message']
+      return str
+    endif
+  endfor 
+endfunction
+
+function! StatusDiagnostic() abort
+  let info = get(b:, 'coc_diagnostic_info', {})
+  if empty(info) | return '' | endif
+  let msgs = []
+  if get(info, 'error', 0)
+    call add(msgs, 'E' . info['error'])
+  endif
+  if get(info, 'warning', 0)
+    call add(msgs, 'W' . info['warning'])
+  endif
+  return join(msgs, ' '). ' ' . get(g:, 'coc_status', '')
 endfunction
 
 " Use <c-space> to trigger completion.
@@ -1347,9 +1381,11 @@ let g:vista_executive_for = {
 "let g:vista_default_executive = 'ctags'
 let g:vista#renderer#enable_icon = 1
 let g:vista#renderer#icons = {
-\   "function": "\uf794",
-\   "variable": "\uf71b",
-\  }
+            \   "function": "\uf794",
+            \   "variable": "\uf71b",
+            \   "default": "",
+            \  }
+
 function! SetupCommandAbbrs(from, to)
   exec 'cnoreabbrev <expr> '.a:from
         \ .' ((getcmdtype() ==# ":" && getcmdline() ==# "'.a:from.'")'

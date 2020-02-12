@@ -8,7 +8,7 @@ zstyle ':completion:*' rehash true
 
 #https://github.com/ThiefMaster/zsh-config/blob/master/zshrc.d/completion.zsh
 zstyle ':completion:*:*:cd:*:directory-stack' force-list always
-zstyle ':completion:*:*:cd:*:directory-stack' menu yes select=long-list
+zstyle ':completion:*:*:cd:*:directory-stack' menu select=long-list yes search
 
 zstyle ':completion:*:*:*:*:file' force-list always
 
