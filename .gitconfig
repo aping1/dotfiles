@@ -14,11 +14,12 @@
 	keepBackup = false
     tool=nvimdiff
 [mergetool "fugitive"]
-    cmd = nvim -f "$MERGED" -c "Gdiff $LOCAL" -c "Gdiff $REMOTE" -c 'wincmd w' -c 'wincmd L' 
+    # Ancestor :1 :2 HEAD :3 merge
+    cmd = nvim -f "$MERGED" -c 'Gread :1:% | set scrollbind diff' -c 'Gvsplit :2:% | set scrollbind diff | ALEDisableBuffer'  -c 'Gvsplit :3:% | set scrollbind diff | ALEDisableBuffer' -c 'wincmd w' -c '2wincmd l' 
 [mergetool "vimdiff"]
-	cmd = vim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
+	cmd = vim  -f -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J' -c 'Gvsplit :1:%' -c 'set scrollbind diff' -c '$wincmd w' -c 'wincmd l' -c 'set scrollbind'
 [mergetool "nvimdiff"]
-	cmd = nvim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
+	cmd = nvim -f -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J' -c 'Gvsplit :1:%' -c 'set scrollbind diff' -c '$wincmd w' -c 'wincmd l' -c 'set scrollbind'
 [mergetool "vimrdiff"]
     cmd = vimr --wait --nvim $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [mergetool "diffconflicts"]
@@ -29,14 +30,16 @@
 [difftool]
     prompt = false
     conflictstyle = diff3
-[difftool "vimdiff"]
-	cmd = vim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "env"]
+    cmd = env | vim -
+[difftool "vimdiff"] 
+	cmd = vim -f -d $LOCAL $REMOTE $MERGED -c 'wincmd w' -c 'wincmd J' -c 'set scrollbind' -c 'wincmd w' -c 'wincmd l' -c 'set scrollbind'
 [difftool "nvimdiff"]
-	cmd = nvim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
+	cmd = nvim -f -d $LOCAL $REMOTE $MERGED -c 'wincmd w' -c 'wincmd J' -c 'set scrollbind' -c 'wincmd w' -c 'wincmd l' -c 'set scrollbind'
 [difftool "vimrdiff"]
-    cmd = vimr --wait --neovim -f -d $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+    cmd = vimr --wait --neovim -f -d $LOCAL $REMOTE $MERGED -c 'wincmd w' -c 'wincmd J' -c 'set scrollbind' -c 'wincmd w' -c 'wincmd l' -c 'set scrollbind'
 [difftool "diffconflicts"]
-	cmd = diffconflicts vim $BASE $LOCAL $REMOTE $MERGED
+	cmd = diffconflicts vim $LOCAL $REMOTE $MERGED
 [color]
 	pager = yes
 [filter "lfs"]
