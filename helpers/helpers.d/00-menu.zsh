@@ -8,7 +8,7 @@ zstyle ':completion:*' rehash true
 
 #https://github.com/ThiefMaster/zsh-config/blob/master/zshrc.d/completion.zsh
 zstyle ':completion:*:*:cd:*:directory-stack' force-list always
-zstyle ':completion:*:*:cd:*:directory-stack' menu select=long-list yes search
+zstyle ':completion:*:*:cd:*:directory-stack' menu select=long-list search
 
 zstyle ':completion:*:*:*:*:file' force-list always
 
@@ -25,7 +25,7 @@ zstyle -e ':completion:*' hosts 'reply=()'
 zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec)|TRAP*)'
 zstyle ':completion:*' single-ignored show
 
-zstyle ':completion:*:complete:ls:*:*' menu yes select=long-list
+zstyle ':completion:*:complete:ls:*:*' menu select=long-list yes
 zstyle ':completion:*:complete:ls:*:*' verbose yes
 
 zstyle ':completion:*' group-name ''

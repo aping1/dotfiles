@@ -33,5 +33,4 @@ function ls () {
 
 function ipython_bootstrap () {
     python -c 'import IPython; IPython.embed(colors="Linux")'
-fi
 }

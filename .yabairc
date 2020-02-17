@@ -54,6 +54,7 @@ CORNER_SCREEN="4:4:0:0:2:2"
 FULL_SCREEN="4:4:1:0:2:2"
 
 yabai -m rule --add app="^Dash$" manage=off label="dash_floats" 
+yabai -m rule --add app="^DEVONthink 3$" manage=off label="devonthink" 
 yabai -m rule --add title="Dash" grid=${FULL_SCREEN} manage=off label="dash_floats" 
 yabai -m rule --add app="System Preferences" grid=${CENTER_SCREEN} manage=off label="sys_pref_floats" 
 yabai -m rule --add app="iStat Menus" grid=${FULL_SCREEN} manage=off label="iStatMenus" 
