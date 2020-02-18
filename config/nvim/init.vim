@@ -1046,9 +1046,14 @@ fun! s:lightlineColorschemes(...)
                 \ globpath(&runtimepath,'autoload/lightline/colorscheme/*.vim',1,1),
                 \ 'fnamemodify(v:val,":t:r")')
 endfun
-
 com! -nargs=1 -complete=customlist,s:lightlineColorschemes LightlineColorscheme
             \ call s:setLightlineColorscheme(<q-args>)
+
+function! s:ipython_kernels()
+    l:kernels_available=substitute(system('ipython kernelspec list | awk "/python3/{print \$2}"'), '\n', '', 'g')
+endfun
+com! -nargs=1 -complete=customlist,s:ipython_kernels FileType python 
+            \ call s:ipython_kernels
 
 function! s:LightLineUpdateColor()
     call lightline#init()

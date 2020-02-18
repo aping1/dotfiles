@@ -6,6 +6,9 @@
 # Automatically update PATH entries
 zstyle ':completion:*' rehash true
 
+# glob complete
+zstyle ':completion*:default' menu 'select=0'
+
 #https://github.com/ThiefMaster/zsh-config/blob/master/zshrc.d/completion.zsh
 zstyle ':completion:*:*:cd:*:directory-stack' force-list always
 zstyle ':completion:*:*:cd:*:directory-stack' menu select=long-list search

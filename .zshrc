@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+#b
 # === Shell ===
 export CLICOLOR=1
 export EDITOR='vim'
@@ -59,6 +60,7 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
         zgen oh-my-zsh plugins/git-completion
+        zgen oh-my-zsh plugins/npm
 
         zgen oh-my-zsh plugins/brew
         zgen oh-my-zsh plugins/osx
@@ -115,7 +117,8 @@ KEYTIMEOUT=1
 #   autosuggest-toggle: Toggles between enabled/disabled suggestions.
 
 # Auto complete from anywhere in word
-setopt COMPLETE_IN_WORD BRACE_CCL AUTO_PARAM_SLASH
+setopt COMPLETE_IN_WORD BRACE_CCL AUTO_PARAM_SLASH GLOBCOMPLETE
+setopt globcomplete globsubst
 export COMPLETION_WAITING_DOTS="true"
 
 # automatically decide when to page a list of completions
@@ -204,3 +207,6 @@ bindkey "${terminfo[kcbt]}" up-line-or-history
 
 #export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
 export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+
+export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
+
