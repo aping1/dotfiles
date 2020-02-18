@@ -7,6 +7,7 @@ export VISUAL='vim'
 export PAGER='less'
 export MYPROMPT="${MYPROMPT:-spaceship-async}"
 
+
 [[ ${+MACHINE_RC_LOADED} -eq 1 ]] \
     && printf -- 'Skipping: %s' "${HOME}/.machinerc" \
     || { [[ -f "${HOME}/.machinerc" ]] && source "${HOME}/.machinerc"; }
@@ -66,6 +67,9 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/osx
         zgen oh-my-zsh plugins/iterm2
         zgen oh-my-zsh plugins/emoji
+        zgen oh-my-zsh plugins/osx
+        zgen oh-my-zsh plugins/iterm2
+        zgen oh-my-zsh plugins/emoji
 
         zgen oh-my-zsh plugins/docker
         zgen oh-my-zsh plugins/docker-compose
@@ -80,9 +84,19 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/vault
         zgen oh-my-zsh plugins/fzf
 
+        zgen oh-my-zsh plugins/pip
+        zgen oh-my-zsh plugins/python
+        zgen oh-my-zsh plugins/sudo
+
+        zgen oh-my-zsh plugins/terraform
+        zgen oh-my-zsh plugins/vault
+        zgen oh-my-zsh plugins/fzf
+
         zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
         # zgen load Tarrasch/zsh-autoenv
+        zgen load zsh-users/zsh-completions src
+        zgen load zsh-users/zsh-autosuggestions
         zgen load zsh-users/zsh-completions src
         zgen load zsh-users/zsh-autosuggestions
         zgen load qoomon/zsh-lazyload
@@ -93,6 +107,7 @@ if [ ! $TERM = dumb ]; then
         zgen load ${DOTFILES}/plugins/navigation
         zgen load ${DOTFILES}/plugins/autocomplete-extra
         # zgen load whiteinge/dotfiles /bin/diffconflicts master
+        zgen oh-my-zsh plugins/vi-mode
         zgen oh-my-zsh plugins/vi-mode
         # async update vim mode
         # zgen load dritter/powerlevel9k powerlevel9k.zsh-theme async_all_the_segments
@@ -125,17 +140,22 @@ export COMPLETION_WAITING_DOTS="true"
 # LISTMAX=0
 
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
-export ZSH_AUTOSUGGEST_STRATEGY=("match_prev_cmd" "completion")
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline" # Red
-export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 (( $+ZSH_HIGHLIGHT_STYLES )) && \
 export ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
-# -- Completion --------------
-## Auto complete from anywhere in word
-
 ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 # ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Red
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
+export ZSH_AUTOSUGGEST_USE_ASYNC="y"
+
+# -- History --------------
+# change the size of history files
+export HISTSIZE=32768;
+export HISTFILESIZE=$HISTSIZE;
+
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
 export ZSH_AUTOSUGGEST_USE_ASYNC="y"
 
@@ -150,12 +170,15 @@ setopt HIST_EXPIRE_DUPS_FIRST
 setopt HIST_FIND_NO_DUPS
 setopt HIST_BEEP
 
+
 # === Fzf ===
 # End of lines configured by zsh-newuser-install
 # export FZF_DEFAULT_OPTS="--ansi --preview-window 'right:60%' --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
 export FZF_COMPLETION_TRIGGER='~~'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
+
+# Setc Crtl+R to fzf
 
 # Setc Crtl+R to fzf
 [[ ${FZF_BASE:="${HOME}/.fzf"} ]] && source "${FZF_BASE%/}/shell/key-bindings.zsh"
