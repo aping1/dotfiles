@@ -26,11 +26,13 @@ function setup_brew_env () {
     brew_prefix=$(brew --prefix)
     path=(
         $(brew --prefix coreutils)/libexec/gnubin
-        $(brew --prefix python)/libexec/bin
         ${brew_prefix}/bin/
         $path
     )
 	typeset -U path
+}
+
+function setup_man_path () {
     manpath=(
         ${brew_prefix}/share/man/man*
         $manpath

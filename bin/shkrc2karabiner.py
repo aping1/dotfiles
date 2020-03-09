@@ -1,5 +1,7 @@
+#!python3
 import json
 import os
+import sys
 import click
 import logging
 
@@ -26,7 +28,7 @@ class Converter(object):
             global logger
             logging.getLogger("").setLevel(logging.DEBUG)
         self.skhdrc = os.path.abspath(
-            profile or os.path.join(os.environment["HOME"], ".skhdrc")
+            profile or os.path.join(os.environ["HOME"], ".skhdrc")
         )
 
     modifications = {
@@ -91,7 +93,7 @@ class Converter(object):
 @click.option("--filename", default="/dev/stdout")
 @click.option("--title", default="skhdrc")
 @click.option("--debug/--no-debug", default=False, envvar="CONVERTER_DEBUG")
-@click.argument("profile", default=".skhdrc")
+@click.argument("profile", default=os.path.join(os.environ["HOME"], ".skhdrc"))
 @click.command()
 def cli(ctx=None, allow_caps=False, filename=None, title=None, debug=False, profile=None):
     ctx = Converter(allow_caps=allow_caps, debug=debug, profile=profile)

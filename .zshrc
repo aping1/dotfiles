@@ -88,10 +88,6 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/python
         zgen oh-my-zsh plugins/sudo
 
-        zgen oh-my-zsh plugins/terraform
-        zgen oh-my-zsh plugins/vault
-        zgen oh-my-zsh plugins/fzf
-
         zgen load zsh-users/zsh-syntax-highlighting
         # https://github.com/Tarrasch/zsh-autoenv
         # zgen load Tarrasch/zsh-autoenv
@@ -178,10 +174,6 @@ export FZF_COMPLETION_TRIGGER='~~'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
 
-# Setc Crtl+R to fzf
-
-# Setc Crtl+R to fzf
-[[ ${FZF_BASE:="${HOME}/.fzf"} ]] && source "${FZF_BASE%/}/shell/key-bindings.zsh"
 
 # === Customization ===
 setopt extendedglob nomatch

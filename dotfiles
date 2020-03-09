@@ -164,6 +164,9 @@ brew "wireshark"  #Networks
 brew "nmap" #Network
 brew "mosh" #Network
 
+pip -r dev-requirements.txt
+pip -r requirements.txt
 pip pynvim
 pip psutil
 link "${HOME}/Library/Application Scripts/com.omnigroup.OmniFocus2.MacAppStore" .local/omnifocus-scripts
+link "${HOME}"/.config/karabiner/assets/complex_modifications ~/.dotfiles/config/karabiner/assets/complex_modifications/karabiner-shkrc.json

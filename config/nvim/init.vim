@@ -194,17 +194,40 @@ if dein#load_state('~/.cache/dein')
                 \{'on_ft': 'markdown'})
     call dein#add('itspriddle/vim-marked',
                 \{'on_ft': 'markdown'})
-    call dein#add('gyim/vim-boxdraw')
+    call dein#add('gyim/vim-boxdraw',
+                \{'on_ft': 'markdown'})
 
+    " Git gutter
+    call dein#add('mhinz/vim-signify')
     " Version Control
+    " git 
     call dein#add('tpope/vim-fugitive')
     " == mecurial client ==
     call dein#add('ludovicchabant/vim-lawrencium')
+
+    " --- Tags (ctags, lsp)
     call dein#add('liuchengxu/vista.vim')
-    call dein#add('tjdevries/coc-zsh')
+
+    " --- languages
+    if has('nvim')
+        call dein#add('neoclide/coc.nvim', {
+                    \ 'merged':0,
+                    \ 'rev': 'release',
+                    \ 'on_ft': ['vim', 'python', 'zsh']
+                    \ })
+        call dein#add('tjdevries/coc-zsh')
+    endif
+    call dein#add('leshill/vim-json',
+                \ {'on_ft': ['json']})
+
+    call dein#add('saltstack/salt-vim',
+                \ {'on_ft': ['salt']})
+    call dein#add('hashivim/vim-terraform')
+    call dein#add('juliosueiras/vim-terraform-completion',
+                \ {'on_ft': ['tf', 'tfvars']})
 
 
-    " Linting, syntax, autocomplete, semantic highlighting call dein#add('numirias/semshi', {'do': ':UpdateRemotePlugins')}
+    " Linting, syntax, autocomplete, semantic highlighting 
     call dein#add('w0rp/ale')
     call dein#add('Shougo/echodoc.vim')
     call dein#add('Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins'})
@@ -215,14 +238,18 @@ if dein#load_state('~/.cache/dein')
         call dein#add('roxma/nvim-yarp')
         call dein#add('roxma/vim-hug-neovim-rpc')
     endif
-    " Python 
-    " call dein#add('plytophogy/vim-virtualenv')
-    call dein#add('lambdalisue/vim-pyenv')
-    call dein#add('Shougo/neoinclude.vim')
+    " Python virtuel env
+    if executable('pyenv')
+        call dein#add('lambdalisue/vim-pyenv')
+    else
+        call dein#add('plytophogy/vim-virtualenv')
+    endif
 
     " === nvim feature ===
     " if !has('nvim')
     if has('nvim')
+        call dein#add('Shougo/context_filetype.vim')
+        call dein#add('Shougo/neoinclude.vim')
         call dein#add('zchee/deoplete-jedi',
                     \ {'on_ft':['python', 'ipython'],
                     \ 'commad': 'UpdateRemotePlugins'
@@ -230,7 +257,6 @@ if dein#load_state('~/.cache/dein')
         call dein#add('deoplete-plugins/deoplete-zsh', {
                     \ 'on_ft':['zsh']
                     \ })
-        call dein#add('numirias/semshi', {'do': ':UpdateRemotePlugins'})
         call dein#add('bfredl/nvim-ipy',
                     \{'on_ft':['python', 'ipython']})
         " Tools for repl
@@ -242,8 +268,6 @@ if dein#load_state('~/.cache/dein')
         call dein#add('rizzatti/dash.vim')
     endif
 
-    call dein#add('Shougo/context_filetype.vim')
-    call dein#add('janko/vim-test')
 
     " for ZSH Autocomplete
     call dein#add('mtikekar/nvim-send-to-term')
@@ -268,12 +292,6 @@ if dein#load_state('~/.cache/dein')
     " --- management
     call dein#add('kevinhui/vim-docker-tools')
 
-    " --- languages
-    call dein#add('saltstack/salt-vim',
-                \ {'on_ft': ['salt']})
-    call dein#add('hashivim/vim-terraform')
-    call dein#add('juliosueiras/vim-terraform-completion',
-                \ {'on_ft': ['tf', 'tfvars']})
 
     " === end Plugins! ===
     call dein#end()
@@ -286,7 +304,7 @@ syntax enable
 " --------------------------------------------
 " Colorscheme 
 " --------------------------------------------
-" Pallet One Colorscheme
+" Pallet One Colorscheme CheatSheet
 "hi one_terminal_color_fg0 guifg=#353a44
 "hi one_terminal_color_fg1 ctermfg=209 guifg=#e88388
 "hi one_terminal_color_fg2 ctermfg=49 guifg=#a7cc8c 
@@ -412,6 +430,7 @@ imap OD <ESC>hi
 set grepprg=ag\ --vimgrep\ $* 
 set grepformat=%f:%l:%c:%m
 
+" Adds for IronRepl: PickRepl PickVirtualEnv PickIPython
 if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
     silent! luafile $HOME/.config/nvim/iron.plugin.lua
 endif
@@ -423,7 +442,7 @@ set foldlevelstart=10   " open most folds by default
 set foldnestmax=10      " 10 nested fold max
 set foldmethod=indent   " fold based on indent level
 
-
+" === Maps
 " For local replace
 nnoremap gr gd[{V%::s/<C-R>///gc<left><left><left>
 
@@ -449,16 +468,27 @@ let g:nvimgdb_config_override = {
             \ 'key_breakpoint': 'b',
             \ 'set_tkeymaps': 'NvimGdbNoTKeymaps',
             \ }
+
+"----------------------------------------------
+" Plugin: 'ack.vim'
+"----------------------------------------------
+    if executable('ag')
+        let g:ackprg = 'ag --vimgrep'
+    endif
 "----------------------------------------------
 " Plugin: 'fzf.vim'
 "----------------------------------------------
 
 " Syntax highlight preview
-let g:fzf_preview_highlighter = 'highlight -O xterm256 --line-number --style rdark --force'
+if executable('highlight')
+    let g:fzf_preview_highlighter = 'highlight -O xterm256 --line-number --style rdark --force'
+endif
 
 " Files with bat previewer
-command! -bang -nargs=? -complete=dir Files
-            \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'bat -p --color always {}']}, <bang>0)
+if executable('bat')
+    command! -bang -nargs=? -complete=dir Files
+                \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'bat -p --color always {}']}, <bang>0)
+endif
 "----------------------------------------------
 " Plugin: vimwiki/vimwiki
 "----------------------------------------------
@@ -486,6 +516,9 @@ let g:markdown_fenced_languages = [
             \ 'scss',
             \ 'sql',
             \ 'javascript',
+            \ 'javascriptjsx',
+            \ 'terraform',
+            \ 'tf=terraform',
             \ 'go',
             \ 'python',
             \ 'bash=sh',
@@ -493,6 +526,7 @@ let g:markdown_fenced_languages = [
             \ 'ruby',
             \ 'zsh',
             \ 'yaml',
+            \ "yml=yaml",
             \ 'json'
             \ ]
 "----------------------------------------------
@@ -536,31 +570,6 @@ endfun
 nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
 
 let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
-
-" --------------------------------------------
-" Plugin: 'numirias/semshi'
-" --------------------------------------------
-nmap <silent> <F4> :Semshi toggle<CR>
-function! SemhiOneHighlights()
-    hi semshiLocal           ctermfg=209 guifg=#e88388
-    hi semshiGlobal          ctermfg=214 guifg=#c678dd
-    hi semshiImported        ctermfg=214 guifg=#56b6c2 cterm=bold gui=bold
-    hi semshiParameter       ctermfg=75  guifg=#61AFEF
-    hi semshiParameterUnused ctermfg=117 guifg=#56b6c2
-    hi semshiFree            ctermfg=218 guifg=#ffafd7
-    hi semshiBuiltin         ctermfg=207 guifg=#c678dd
-    hi semshiAttribute       ctermfg=49  guifg=#a7cc8c
-    hi semshiSelf            ctermfg=249 guifg=#abb2bf
-    hi semshiUnresolved      ctermfg=226 guifg=#e5c07b cterm=underline gui=underline
-    hi semshiSelected        ctermfg=231 guifg=#c678dd guibg=#353a44 
-
-    hi semshiErrorSign       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
-    hi semshiErrorChar       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
-endfunction
-
-augroup python_semshi
-    autocmd FileType python call SemhiOneHighlights()
-augroup END
 
 "----------------------------------------------
 " Plugin: 'Vigemus/iron.nvim'
@@ -629,16 +638,16 @@ endif
 " let g:deoplete#auto_complete_delay = 10
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
+
 " use tab
-inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 function! s:check_back_space() abort "{{{
     let col = col('.') - 1
+    if exists('*coc#refresh')
+    call coc#refresh()
+    endif
     return !col || getline('.')[col - 1]  =~# '\s'
 endfunction"}}}
-" inoremap <silent><expr> <TAB>
-"       \ pumvisible() ? "\<C-n>" :
-"       \ <SID>check_back_space() ? "\<TAB>" :
-"       \ deoplete#manual_complete() | coc#refresh()
+inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" :  deoplete#manual_complete()
 
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
@@ -654,15 +663,13 @@ augroup deopleteExtra
     autocmd FileType * call deoplete#initialize()
 augroup  END
 
-" call this again
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
 " Gutter Error and warning signs.
-" let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 0
 let g:ale_lint_on_enter = 1
-"let g:ale_completion_enabled = 1
+let g:ale_completion_enabled = 1
 let g:ale_sign_error = '窱'
 let g:ale_sign_warning = '碌'
 
@@ -672,6 +679,13 @@ let g:ale_completion_tsserver_autoimport = 1
 let g:ale_python_pyls_use_global=1
 let g:ale_python_pyls_use_autoenv=1
 
+if executable('javascript-typescript-server')
+    au User lsp_setup call lsp#register_server({
+                \ 'name': 'javascript-typescript-server',
+                \ 'cmd': {server_info->['javascript-typescript-server']},
+                \ 'whitelist': ['javascript', 'javascriptjsx']
+                \ })
+endif
 if executable('vim-language-server')
     au User lsp_setup call lsp#register_server({
                 \ 'name': 'vim-language-server',
@@ -824,14 +838,14 @@ let g:lightline = {
             \   'linecount': '%{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":line("$")}',
             \   'lineinfo': '%4{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":(&fenc==#"")?"":(winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)||len(col("."))>1000)?"C".col("."):"C".col(".").":"."L".line(".")}',
             \   'close': '%9999X%{g:os_spec_string}',
-            \   'coc_status': '%{coc#status()}',
+            \   'coc_status': '%{exists("*g:coc#status")&&g:coc#status()}',
             \   'spell': '%{winwidth(0) <= getbufvar("b:", "small_threshold", g:small_threshold)?"":&fenc==#""?"":&spell?"":"暈"}%{winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"":&spelllang}',
             \   'modified': '%{&modified?"﯂":&modifiable?"":""}',
             \   'readonly': '%{index(g:lightline_blacklist,&filetype)==-1&&(&fenc==#"")?"":(&readonly)?"":""}',
             \ },
             \ 'component_visible_condition': {
-            \     'coc_diagnostic': 'g:coc_status!=#""',
-            \     'coc_status': 'g:coc_status!=#""',
+            \     'coc_diagnostic': '(exists("g:coc_status")&&g:coc_status!=#"")',
+            \     'coc_status': '(exists("g:coc_status")&&g:coc_status!=#"")',
             \     'linecount': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'lineinfo': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'linter_checking': '(index(g:lightline_blacklist,&filetype)==-1)',
@@ -1237,6 +1251,8 @@ nmap <silent> <leader> <c-}> <Plug>(IPy-RunAll)
 map <silent> <leader> <c-c> <Plug>(IPy-Interrupt)
 imap <c-f> <Plug>(IPy-Complete)
 map <silent> <leader>? <Plug>(IPy-WordObjInfo)
+let g:ipy_celldef = '^##'
+let g:ipy_shortprompt=1
 " --------------------
 " Plugin 'janko/vim-test'
 " --------------------
@@ -1307,11 +1323,6 @@ set signcolumn=yes
 
 highlight lspReference ctermfg=red guifg=red ctermbg=green guibg=green
 let g:lsp_highlight_references_enabled = 1
-
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
 
 function! StatusDiagnosticToClipboard()
   let diagList=CocAction('diagnosticList')

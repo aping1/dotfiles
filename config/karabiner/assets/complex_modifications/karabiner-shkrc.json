@@ -2009,6 +2009,30 @@
                     }
                 }
             ]
+        },
+        {
+            "description": "ctrl + alt + cmd - r | launchctl kickstart -k \"gui/${UID}/homebrew.mxcl.yabai\"",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_ctrl",
+                                "left_alt",
+                                "left_cmd"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "r"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/launchctl kickstart -k \"gui/${UID}/homebrew.mxcl.yabai\""
+                    }
+                }
+            ]
         }
     ]
 }
