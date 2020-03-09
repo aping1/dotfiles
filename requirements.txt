@@ -1,0 +1,4 @@
+pynvim
+neovim
+mgspack>=1.0.0
+
