@@ -1,11 +1,11 @@
 [user]
-    name = Allison Wampler
-    email = aping1@apt-miss.com
+	name = Allison Wampler
+	email = awampler@paloaltonetworks.com
 [merge]
     tool = vimdiff
     guitool = vimrdiff
 [core]
-	excludesfile = ~/.gitignore_global
+	excludesfile = /Users/awampler/.gitignore_global
 	editor = nvim
 	page = less
 [mergetool]
@@ -51,3 +51,13 @@
     sl = !git smartlog
     smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)%an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
     local-branches = !git branch -vv | cut -c 3- | awk '$3 !~/\\[/ { print $1 }'
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[commit]
+	template = /Users/awampler/.stCommitMsg
+[push]
+	default = matching
