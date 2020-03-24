@@ -203,5 +203,5 @@ bindkey "${terminfo[kcbt]}" up-line-or-history
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-#export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
 export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"

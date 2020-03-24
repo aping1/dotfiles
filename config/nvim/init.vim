@@ -1,7 +1,7 @@
 " time to wait for new mapping seq
 " ttimeoutlen is used for key code delays
 " Credit: https://www.johnhawthorn.com/2012/09/vi-escape-delays/
-set timeoutlen=600 ttimeoutlen=0
+set timeoutlen=600 ttimeoutlen=100
 
 set ruler
 set ignorecase
@@ -10,7 +10,7 @@ set smartcase
 set shell=/bin/bash
 set encoding=utf8
 " required for iterm 
-set ambiwidth=double
+set ambiwidth=single
 set fileformats=unix,dos,mac
 set nobackup
 set noswapfile
@@ -75,13 +75,19 @@ endif
 
 " function that sets host prog from inherited shell
 function! s:python_from_virtualenv()
-    if exists("$VIRTUAL_ENV")
-        let g:python_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
-        let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
+    if pyenv#pyenv#is_activated() && executable(g:pyenv#python_exec)
+        let g:python3_host_prog = g:pyenv#python_exec
+        let g:python_host_prog = g:pyenv#python_exec
     else
-        let g:python_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
-        let g:python3_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
+        let g:python_host_prog=substitute(system('command -v python'), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
     endif
+    let g:projectionist_heuristics = {
+                \ "*.py": {
+                \   "*.py": { "make": g:python3_host_prog . "{file}", "alternate": "{}_test.py" },
+                \   "*_test.py": {"dispatch": "pyunit {file}", "type": "test", "alternate": "{}.py" },
+                \   }
+                \ }
 endfunction
 
 set clipboard=unnamedplus
@@ -106,8 +112,8 @@ if dein#load_state('~/.cache/dein')
   call dein#add('mhinz/vim-startify')
   if has('nvim')
     call dein#add('neoclide/coc.nvim', {'merged':0, 'rev': 'release'})
-      call dein#add('iamcco/coc-vimlsp',
-                    \{'on_ft': ['vim']})
+    call dein#add('iamcco/coc-vimlsp',
+                \{'on_ft': ['vim']})
   endif
 
   call dein#add('mtdl9/vim-log-highlighting')
@@ -151,8 +157,8 @@ if dein#load_state('~/.cache/dein')
               \ 'build': './install --all'})
   call dein#add('junegunn/fzf.vim')
 
+  call dein#add('mileszs/ack.vim',{'on_cmd':['Ack','Ag']})
   if executable('ag')
-      call dein#add('mileszs/ack.vim',{'on_cmd':'Ag'})
       let g:ackprg = 'ag --vimgrep'
   endif
 
@@ -452,15 +458,11 @@ let g:fzf_preview_highlighter = 'highlight -O xterm256 --line-number --style rda
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'bat -p --color always {}']}, <bang>0)
 "----------------------------------------------
-" Plugin: vimwiki/vimwiki
-"----------------------------------------------
-let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
-                      \ 'syntax': 'markdown', 'ext': '.md'}]
-"----------------------------------------------
 " Plugin: 'vimwiki/vimwiki'
 "----------------------------------------------
-let g:vimwiki_list = [{'path': '~/wiki/',
-                     \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
+                     \ 'syntax': 'markdown', 
+                     \ 'ext': '.md'}]
 let g:vimwiki_ext2syntax = {'.md': 'markdown',
                   \ '.mkd': 'markdown',
                   \ '.wiki': 'media'}
@@ -546,44 +548,27 @@ luafile $HOME/.config/nvim/iron.plugin.lua
 "----------------------------------------------
 " disable autocompletion, we use deoplete for completion
 let g:jedi#completions_enabled = 0
-let g:jedi#show_call_signatures = 1
+let g:jedi#show_call_signatures = 0
 
 " open the go-to function in split, not another buffer
 let g:jedi#use_splits_not_buffers = 'right'
 " <leader>n: show the usage of a name in current file
 " <leader>r: rename a nameexists('pyenv#python*') 
-
+"
 " for pyenv ...
 if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
-    if exists('$PYENV_VIRTUAL_ENV')
-      autocmd VimEnter python silent! command PyenvActivate 
-    endif
     function! s:pyenv_init()
         " Active external version
-        if pyenv#pyenv#is_activated() && pyenv#python#get_external_major_version() != 0
-            let g:jedi#force_py_version=pyenv#python#get_external_major_version()
-            if pyenv#python#get_external_major_version() == 3
-                let g:python_host_prog=substitute(system('command -v python'), '\n', '', 'g')
-                let g:python3_host_prog=g:pyenv#python_exec
-            elseif pyenv#python#get_external_major_version() == 2 
-                let g:python_host_prog=g:pyenv#python_exec
-                let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
-            endif
-        elseif exists('*pyenv#pyenv#is_activated') && pyenv#python#get_internal_major_version() != 0
-            "  Not active: user internal
-            let g:jedi#force_py_version=pyenv#python#get_internal_major_version()
-            if pyenv#python#get_internal_major_version() == 3
-                let g:python3_host_prog=substitute(system('command -v python'), '\n', '', 'g')
-                let g:python3_host_prog=g:pyenv#python_exec
-            elseif pyenv#python#get_internal_major_version() == 2
-                let g:python_host_prog=g:pyenv#python_exec
-                let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
-            endif
-        else
-            " Fallback in case something happends
-            call s:python_from_virtualenv()
-            let g:jedi#force_py_version='3'
-        endif
+        let major_version = pyenv#python#get_internal_major_version()
+        call jedi#force_py_version(major_version)
+        let g:python3_host_prog = g:pyenv#python_exec
+        let g:python_host_prog = g:pyenv#python_exec
+        let g:projectionist_heuristics = {
+                    \ "*.py": {
+                    \   "*.py": { "make": g:python3_host_prog, "alternate": "{}_test.py" },
+                    \   "*_test.py": {"dispatch": "pyunit {file}", "type": "test", "alternate": "{}.py" },
+                    \   }
+                    \ }
     endfunction
 endif
 
@@ -656,6 +641,14 @@ if executable('vim-language-server')
         \ 'whitelist': ['vim',]
         \ })
 endif
+if executable('terrafrom lsp')
+    au User lsp_setup call lsp#register_server({
+                \ 'name': 'terrafrom-lsp]',
+                \ 'cmd': {server_info->['terrafrom-lsp']},
+                \ 'whitelist': ['tf',]
+                \ })
+endif
+
 if executable('pyls')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'pyls',
@@ -665,7 +658,7 @@ if executable('pyls')
 endif
 
 let g:ale_linters_explicit = 1
-let g:ale_linters = { 'python' : ['pyls'], 
+let g:ale_linters = { 'python' : ['pyls', 'flake8'], 
             \ 'c' : ['cppcheck'],
             \ 'vim' : ['vim-language-server'],
             \ 'sh' : ['shellcheck'],
@@ -687,6 +680,7 @@ autocmd FileType python let g:ale_python_flake8_options = '--max-line-length=' .
 
 let g:ale_fix_on_save = 0
 let g:ale_set_loclist = 0
+let g:ale_set_baloon = 1
 " Us quickfix with 'qq' delete
 " quickfix can be set with 'nvim -d FILENAME' so use loclist
 let g:ale_set_loclist = 1
@@ -903,7 +897,7 @@ endfunction
 function! LightlinePaste ()
   let l:small_threshold = getbufvar("b:", "small_threshold", g:small_threshold)
   if index(g:lightline_blacklist,&filetype)==-1
-      return (&paste) && winwidth(0) > l:small_threshold ? "" : ""
+      return (&paste) && winwidth(0) > l:small_threshold ? " " : ""
   endif
   return ''
 endfunction
@@ -914,10 +908,10 @@ endfunction
 
 function! LightlineMode()
         let l:mode=lightline#mode()
-        let l:newmode = (l:mode ==? 'INSERT' ? "" :
-             \ l:mode ==? 'NORMAL' ? "" :
-             \ l:mode ==? 'COMMAND' ? "" :
-             \ l:mode ==? 'VISUAL' ? "﯎" :
+        let l:newmode = (l:mode ==? 'INSERT' ? " " :
+             \ l:mode ==? 'NORMAL' ? " " :
+             \ l:mode ==? 'COMMAND' ? " " :
+             \ l:mode ==? 'VISUAL' ? "﯎ " :
              \ l:mode =~? '^V' ? "" :
              \ l:mode)
         return l:newmode 
@@ -1077,7 +1071,7 @@ augroup END
 " Tmux vim integration
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
-if exists('$TMUX')
+if exists('$TMUX') && !has('gui_vimr')
     augroup TMUX_TITLE
         let g:tmux_window_name=system('tmux display-message -p "\#W"')
         autocmd VimLeavePre * call system('tmux rename-window ' . g:tmux_window_name)
@@ -1111,7 +1105,7 @@ if (empty($TMUX))
 else
     augroup TMUX_RENAME
         autocmd BufEnter * call system("tmux rename-window '" . tabpagenr() . ' ' . LightlineTabname(tabpagenr()) . ' ' . LightlineTabmodified(tabpagenr()) . "'")
-        autocmd VimLeave * call system('tmux setw automatic-rename")
+        autocmd VimLeave * call system("tmux setw automatic-rename")
     augroup END
 endif
 
@@ -1204,6 +1198,7 @@ let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
 " Plug 'bfredl/nvim-ipy'
 " --------------------
 let g:ipy_perform_mappings=0
+let g:ipy_highlight=1
     "set titlestring=%t%(\ %M%)%(\ (%{expand(\"%:p:h\")})%)%(\ %a%)%(\ -\ %{g:ipy_status}%)
 nmap <silent> <c-s> <Plug>(IPy-Run)
 vmap <silent> <c-s> <Plug>(IPy-Run)
@@ -1219,13 +1214,7 @@ augroup VIMTEST_KEYMAP
 autocmd FileType * call s:vim_test_keymap()
 augroup END
 
-let g:projectionist_heuristics = {
-            \ "*.py": {
-            \   "*.py": { "make": g:python3_host_prog, "alternate": "{}_test.py" },
-            \   "*_test.py": {"dispatch": "pyunit {file}", "type": "test", "alternate": "{}.py" },
-            \   }
-            \ }
-"autocmd BufReadPost python setlocal makeprg=python3\ -m\ unittest\ discover
+autocmd BufReadPost python setlocal makeprg=python3\ -m\ unittest\ discover
 "autocmd BufReadPost python compiler pyunit
 let test#strategy = {
   \ 'nearest': 'neovim',
@@ -1370,11 +1359,12 @@ endfunction
 " Highlight symbol under cursor on CursorHold
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
+let g:vista_default_executive = 'ctags'
+
 " plugin: Vista.vim
-" Ensure you have installed some decent font to show these pretty symbols, then you can enable icon for the kind.
-let g:vista_fzf_preview = ['right:50%']
 let g:vista_executive_for = {
-  \ 'vim': 'coc',
+  \ 'vim': 'ale',
+  \ 'python': 'ale',
   \ }
 " Executive used when opening vista sidebar without specifying it.
 " See all the avaliable executives via `:echo g:vista#executives`.
@@ -1383,7 +1373,6 @@ let g:vista#renderer#enable_icon = 1
 let g:vista#renderer#icons = {
             \   "function": "\uf794",
             \   "variable": "\uf71b",
-            \   "default": "",
             \  }
 
 function! SetupCommandAbbrs(from, to)
@@ -1416,5 +1405,9 @@ function! AdjustWindowHeight(minheight, maxheight)
     endw
     exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
 endfunction
+
+augroup VISTA
+autocmd FileType vista_kind set ambiwidth=single
+augroup END
 
 " { :set sw=2 ts=2 et }
