@@ -124,8 +124,6 @@ if dein#load_state('~/.cache/dein')
 
     " === Indent lines ===
     call dein#add('nathanaelkane/vim-indent-guides')
-    " Git gutter
-    call dein#add('mhinz/vim-signify')
     " Highlight colors
     call dein#add('ap/vim-css-color',
                 \{'on_ft': ['vim']})
@@ -134,48 +132,45 @@ if dein#load_state('~/.cache/dein')
 
     " Hide sum and such as unicode 
     call dein#add('ryanoasis/vim-devicons')
+    " View unicode sets
     call dein#add('chrisbra/unicode.vim', 
                 \{'on_ft': 'vim'})
     " Use math symbols instead of keywords 
     " it is very very slow
     " call dein#add('ehamberg/vim-cute-python')
-
+    "
+    " --- Denite/Unite
     if has('nvim')
         " Vim exploration Modifications
         call dein#add('Shougo/denite.nvim')
-        call dein#add('dunstontc/denite-mapping')
+        " call dein#add('dunstontc/denite-mapping')
     else
         call dein#add('Shougo/unite.vim')
         call dein#add('Shougo/unite-outline.vim')
         call dein#add('Shougo/neomru.vim')
+        " --- Uncomment for vim
+        call dein#add('Shougo/vimproc.vim', {
+                    \ 'build' : {
+                    \     'windows' : 'tools\\update-dll-mingw',
+                    \     'cygwin' : 'make -f make_cygwin.mak',
+                    \     'mac' : 'make',
+                    \     'linux' : 'make',
+                    \     'unix' : 'gmake',
+                    \    },
+                    \ })
     endif
 
     " Vim exploration Modifications
     call dein#add('junegunn/fzf', {
                 \ 'build': './install --all'})
     call dein#add('junegunn/fzf.vim')
-    if !has('nvim')
-        " call dein#add('vim-scripts/ag.vim',{'on_cmd':'Ag'})
-    else
-        " call dein#add('numkil/ag.nvim',{'on_cmd':'Ag'})
-    endif
 
-    call dein#add('leshill/vim-json',
-                \ {'on_ft': ['json']})
-
-    call dein#add('Shougo/vimproc.vim', {
-                \ 'build' : {
-                \     'windows' : 'tools\\update-dll-mingw',
-                \     'cygwin' : 'make -f make_cygwin.mak',
-                \     'mac' : 'make',
-                \     'linux' : 'make',
-                \     'unix' : 'gmake',
-                \    },
-                \ })
+    call dein#add('mileszs/ack.vim')
 
     " Projects
     call dein#add('amiorin/vim-project')
     call dein#add('tpope/vim-projectionist')
+    call dein#add('janko/vim-test')
 
     " Navigation
     call dein#add('scrooloose/nerdtree',
@@ -187,6 +182,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('scrooloose/nerdcommenter')
     call dein#add('mg979/vim-visual-multi')
 
+    " Markdown tools
     call dein#add('SidOfc/mkdx',
                 \{'on_ft': 'markdown'})
     call dein#add('vimwiki/vimwiki')
