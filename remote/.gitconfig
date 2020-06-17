@@ -1,0 +1,45 @@
+[user]
+    name = Allison Wampler
+    email = aping1@apt-miss.com
+[merge]
+    tool = vimdiff
+    guitool = vimrdiff
+[core]
+	excludesfile = ~/.gitignore_global
+	editor = nvim
+	page = less
+[mergetool]
+	prompt = true
+    conflictstyle = diff3
+	keepBackup = false
+[mergetool "fugitive"]
+    cmd = vim -f "$MERGED" -c "Gdiff $LOCAL" -c "Gdiff $REMOTE" -c 'wincmd w' -c 'wincmd L' 
+[mergetool "vimdiff"]
+	cmd = vim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
+[mergetool "nvimdiff"]
+	cmd = nvim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
+[mergetool "vimrdiff"]
+    cmd = vimr --wait --nvim $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[mergetool "diffconflicts"]
+	cmd = diffconflicts vim $BASE $LOCAL $REMOTE $MERGED
+[diff]
+	tool = vimdiff
+    guitool = vimrdiff
+[difftool]
+    prompt = false
+    conflictstyle = diff3
+[difftool "vimdiff"]
+	cmd = vim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "nvimdiff"]
+	cmd = nvim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "vimrdiff"]
+    cmd = vimr --wait --neovim -f -d $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[difftool "diffconflicts"]
+	cmd = diffconflicts vim $BASE $LOCAL $REMOTE $MERGED
+[color]
+	pager = yes
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
