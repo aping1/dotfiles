@@ -44,14 +44,28 @@ class Converter(object):
 
     def convert(self):
         def parse(line):
+            def keymap(k):
+                if k == 'ctrl':
+                    return "control"
+                if k == 'alt':
+                    return "option"
+                elif k == 'cmd':
+                    return "command"
+                elif k in ('up', 'down', 'left', 'right' ):
+                    return f"{k}_arrow"
+                elif k == 'cmd':
+                    return "command"
+                else:
+                    return k
             keylist = line.partition(":")
             lhs, _, keycode = keylist[0].rpartition("-")
             modifiers = [
-                f"left_{mod.strip()}"
+                f"left_{keymap(mod.strip())}"
                 for mod in lhs.split("+")
                 if mod.strip() in ["alt", "shift", "cmd", "ctrl"]
             ]
             modifiers = {"mandatory": modifiers}
+            keycode = keymap(keycode.strip())
             if self.allow_caps:
                 modifiers["optional"] = ["caps_lock"]
             if any('"' in cmd for cmd in keylist[2]):
