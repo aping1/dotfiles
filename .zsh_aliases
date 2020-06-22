@@ -1,6 +1,4 @@
 #!/usr/bin/env zsh
-
-alias ipy="python -c 'import IPython; IPython.terminal.ipapp.launch_new_instance()'"
 export ZSH_ALIASES_LOADED
 
 if (( $+command[nvim] )); then
@@ -34,3 +32,9 @@ function ls () {
 function ipython_bootstrap () {
     python -c 'import IPython; IPython.embed(colors="Linux")'
 }
+function ipython3_bootstrap () {
+    python3 -c 'import IPython; IPython.embed(colors="Linux")'
+}
+
+alias ipy="python -c 'import IPython; IPython.terminal.ipapp.launch_new_instance()'"
+alias ipy3="python3 -c 'import IPython; IPython.terminal.ipapp.launch_new_instance()'"

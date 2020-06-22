@@ -1,4 +1,6 @@
+ARG GIT_BRANCH=${GITBRANCH:-HEAD}
 FROM linuxbrew/brew as brew
+RUN useradd -ms /bin/noshell git && mkdir -p ~/bin
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends software-properties-common \
 	&& add-apt-repository -y ppa:git-core/ppa \
@@ -28,17 +30,21 @@ ARG git_branch=$DOTFILES_GIT_BRANCH
 WORKDIR /home/user
 ENV PATH="/home/user/linuxbrew/Homebrew/Library/bin/:$PATH"
 RUN sudo chown -R "$(whoami)" "$(brew --prefix)"
-COPY dotfiles.git.tar.gz .
-RUN tar xvzf dotfiles.git.tar.gz
-RUN git clone --recursive --branch ${git_branch} file://${HOME}/dotfiles.git .dotfiles
+# COPY [d]otfiles.git.tar.gz .
+# RUN [[ -s dotfiles.git.tar.gz ]] && tar xvzf dotfiles.git.tar.gz
+COPY . .dotfiles
+ADD . .dotfiles
+#RUN git clone --recursive --branch ${git_branch} file://${HOME}/dotfiles.git .dotfiles
 WORKDIR /home/user/.dotfiles
 RUN git status
 RUN git check-ref-format ${dotfiles_git_rev} && git reset --hard ${dotfiles_git_rev} || echo
 WORKDIR /home/user/
+RUN brew install git python@3
 RUN bash -x .dotfiles/bootstrap.sh
-RUN brew install git python@2 python@3
-run command -v nvim && nvim +'silent! PlugInstall --sync' +qall || vim +'silent! PlugInstall --sync'
+RUN command -v nvim && nvim +'silent! PlugInstall --sync' +qall 
+RUN command -v vim && vim +'silent! PlugInstall --sync' +qall
 ENV USER=user
 ENV SHELL=/usr/bin/bash
 LABEL name=dotfiles
+
 

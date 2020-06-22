@@ -155,6 +155,7 @@ brew "luarocks" #Language #lua
 brew "boost" #Libs
 brew "readline" #Libs
 cask "osxfuse" #Libs
+cask "lulu"  #firewall
 brew "libvorbis" #Libs
 brew "xz" #Libs
 brew "zlib" #Libs
