@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export GOPATH="${HOME}/go"
+export GOPATH="${HOME}/Library/go"
 
 export DOTFILES="$HOME/.dotfiles"
 export DOTFILESDEPS="${DOTFILES}/deps/"

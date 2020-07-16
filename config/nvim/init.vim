@@ -73,17 +73,6 @@ if (empty($TMUX))
     " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
 endif
 
-" function that sets host prog from inherited shell
-function! s:python_from_virtualenv()
-    if exists("$VIRTUAL_ENV")
-        let g:python_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
-        let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
-    else
-        let g:python_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
-        let g:python3_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
-    endif
-endfunction
-
 set clipboard=unnamedplus
 
 " Reload .vimrc immediately when edited
@@ -97,6 +86,80 @@ endif
 " Add the dein installation directory into runtimepath
 set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 
+"----------------------------------------------
+" Plugin: 'davidhalter/jedi-vim'
+"----------------------------------------------
+" disable autocompletion, we use deoplete for completion
+let g:jedi#completions_enabled = 0
+let g:jedi#show_call_signatures = 1
+
+" open the go-to function in split, not another buffer
+let g:jedi#use_splits_not_buffers = 'right'
+" <leader>n: show the usage of a name in current file
+" <leader>r: rename a nameexists('pyenv#python*') 
+
+" function that sets host prog from inherited shell
+function! s:python_from_virtualenv()
+    if exists("$VIRTUAL_ENV")
+        let g:python_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
+    else
+        let g:python_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
+    endif
+endfunction
+
+" for pyenv ...
+if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
+    if exists('$PYENV_VIRTUAL_ENV')
+        autocmd VimEnter python silent! command PyenvActivate 
+    endif
+    function! s:pyenv_init()
+        " Active external version
+        if exists('*jedi#init_python') && jedi#init_python()
+            let g:jedi#force_py_version='3'
+        endif
+        if ! exists('*pyenv#pyenv#is_activated') || ! pyenv#pyenv#is_activated()
+            call s:python_from_virtualenv()
+            if pyenv#python#get_internal_major_version() >= 2
+                let g:jedi#force_py_version=pyenv#python#get_internal_major_version()
+            else 
+                let g:jedi#force_py_version=3
+            endif 
+        else
+            if pyenv#python#get_external_major_version() == 2 
+                let g:python_host_prog=g:pyenv#python_exec
+                let g:python3_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
+                let g:jedi#force_py_version=pyenv#python#get_external_major_version()
+            else
+                let g:jedi#force_py_version=3
+                if g:pyenv#python_exec =~ '[[:digit:].]\+$'
+                    let g:python_host_prog=g:pyenv#python_exec
+                    let g:python3_host_prog=g:pyenv#python_exec
+                else
+                    let g:python_host_prog=g:pyenv#python_exec . '3'
+                    let g:python3_host_prog=g:pyenv#python_exec . '3'
+                endif 
+            endif
+        endif
+    endfunction
+    augroup vim-pyenv-custom-augroup
+        autocmd User vim-pyenv-activate-post   call s:pyenv_init()
+        autocmd User vim-pyenv-deactivate-post call s:pyenv_init()
+    augroup END
+    call s:pyenv_init()
+else
+    call s:python_from_virtualenv()
+endif
+
+" let g:deoplete#auto_complete_delay = 10
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
+
+
+"----------------------------------------------
+" Dein
+"----------------------------------------------
 if dein#load_state('~/.cache/dein')
     call dein#begin('~/.cache/dein')
 
@@ -106,13 +169,6 @@ if dein#load_state('~/.cache/dein')
     " --- Sesnible defaults ---
     call dein#add('tpope/vim-sensible')
     call dein#add('mhinz/vim-startify')
-    if has('nvim')
-        call dein#add('neoclide/coc.nvim', {
-                    \ 'merged':0,
-                    \ 'rev': 'release',
-                    \ 'on_ft': ['vim', 'python', 'zsh']
-                    \ })
-    endif
 
     call dein#add('mtdl9/vim-log-highlighting')
 
@@ -173,6 +229,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('janko/vim-test')
 
     " Navigation
+    call dein#add('jistr/vim-nerdtree-tabs')
     call dein#add('scrooloose/nerdtree',
                 \{'on_cmd': ['NERDTreeToggle', 'NERDTreeVCS']})
 
@@ -284,7 +341,7 @@ if dein#load_state('~/.cache/dein')
 
     call dein#add('tmux-plugins/vim-tmux-focus-events')
     call dein#add('roxma/vim-tmux-clipboard')
-
+    call dein#add('kchmck/vim-coffee-script')
     " --- management
     call dein#add('kevinhui/vim-docker-tools')
 
@@ -369,14 +426,15 @@ highlight PmenuSel ctermbg=black ctermfg=white
 "----------------------------------------------
 " augroup numbertoggle
 " autocmd BufEnter * if !exists('t:startified') | Startify | let t:startified = 1 | endif
-autocmd BufEnter python :CocDisable
-autocmd BufLeave python :CocEnable
+"autocmd BufEnter python :CocDisable
+"autocmd BufLeave python :CocEnable
 " augroup END
 
 "----------------------------------------------
 " Plugin: 'nathanaelkane/vim-indent-guides'
 "----------------------------------------------
 let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_auto_colors=0
 let g:indent_guides_guide_size = 2
 let g:indent_guides_start_level = 2
 
@@ -509,10 +567,10 @@ let g:markdown_fenced_languages = [
             \ 'help',
             \ 'html',
             \ 'css',
+            \ 'coffee',
             \ 'scss',
             \ 'sql',
             \ 'javascript',
-            \ 'javascriptjsx',
             \ 'terraform',
             \ 'tf=terraform',
             \ 'go',
@@ -572,68 +630,6 @@ let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 "----------------------------------------------
 luafile $HOME/.config/nvim/iron.plugin.lua
 
-"----------------------------------------------
-" Plugin: 'davidhalter/jedi-vim'
-"----------------------------------------------
-" disable autocompletion, we use deoplete for completion
-let g:jedi#completions_enabled = 0
-let g:jedi#show_call_signatures = 1
-
-" open the go-to function in split, not another buffer
-let g:jedi#use_splits_not_buffers = 'right'
-" <leader>n: show the usage of a name in current file
-" <leader>r: rename a nameexists('pyenv#python*') 
-
-" for pyenv ...
-if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
-    if exists('$PYENV_VIRTUAL_ENV')
-        autocmd VimEnter python silent! command PyenvActivate 
-    endif
-    function! s:pyenv_init()
-        " Active external version
-        if pyenv#pyenv#is_activated() && pyenv#python#get_external_major_version() != 0
-            let g:jedi#force_py_version=pyenv#python#get_external_major_version()
-            if pyenv#python#get_external_major_version() == 3
-                let g:python_host_prog=substitute(system('command -v python'), '\n', '', 'g')
-                let g:python3_host_prog=g:pyenv#python_exec
-            elseif pyenv#python#get_external_major_version() == 2 
-                let g:python_host_prog=g:pyenv#python_exec
-                let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
-            endif
-        elseif exists('*pyenv#pyenv#is_activated') && pyenv#python#get_internal_major_version() != 0
-            "  Not active: user internal
-            let g:jedi#force_py_version=pyenv#python#get_internal_major_version()
-            if pyenv#python#get_internal_major_version() == 3
-                let g:python3_host_prog=substitute(system('command -v python'), '\n', '', 'g')
-                let g:python3_host_prog=g:pyenv#python_exec
-            elseif pyenv#python#get_internal_major_version() == 2
-                let g:python_host_prog=g:pyenv#python_exec
-                let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
-            endif
-        else
-            " Fallback in case something happends
-            call s:python_from_virtualenv()
-            let g:jedi#force_py_version='3'
-        endif
-    endfunction
-endif
-
-" let g:deoplete#sources#jedi#extra_path = ['/dev/shm/fbcode-vimcache']
-if exists('*jedi#init_python') && jedi#init_python()
-    call s:python_from_virtualenv()
-    augroup vim-pyenv-custom-augroup
-        if exists('*s:pyenv_init')
-            autocmd User vim-pyenv-activate-post   call s:pyenv_init()
-            autocmd User vim-pyenv-deactivate-post call s:pyenv_init()
-        endif
-    augroup END
-else
-    call s:python_from_virtualenv()
-endif
-
-" let g:deoplete#auto_complete_delay = 10
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 
 " use tab
 function! s:check_back_space() abort "{{{
@@ -654,9 +650,9 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 augroup deopleteExtra
-    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+    "    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    autocmd FileType * call deoplete#initialize()
+    autocmd FileType python call deoplete#initialize()
 augroup  END
 
 "----------------------------------------------
@@ -754,7 +750,6 @@ endfunction
 "----------------------------------------------
 let g:webdevicons_enable_denite = 1
 let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
-
 autocmd FileType denite call s:denite_my_settings()
 function! s:denite_my_settings() abort
     nnoremap <silent><buffer><expr> <CR>
@@ -1221,12 +1216,10 @@ if exists('NERDTreeAddKeyMap')
 endif
 
 " Show hidden files by default.
-let NERDTreeShowHidden = 1
-
-" Allow NERDTree to change session root.
-let g:NERDTreeChDirMode = 2
+let NERDTreeShowHidden = 0
 
 let NERDTreeShowBookmarks=1
+" Allow NERDTree to change session root.
 let NERDTreeChDirMode=2
 let NERDTreeQuitOnOpen=0
 
@@ -1234,7 +1227,6 @@ let g:webdevicons_enable_nerdtree = 1
 " Force extra padding in NERDTree so that the filetype icons line up vertically
 let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
 let g:webdevicons_conceal_nerdtree_brackets = 1
-let g:WebDevIconsNerdTreeAfterGlyphPadding = '  '
 " --------------------
 " Plug 'bfredl/nvim-ipy'
 " --------------------
