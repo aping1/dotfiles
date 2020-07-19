@@ -46,8 +46,10 @@ if [ ! $TERM = dumb ]; then
     if ! zgen saved; then
         # https://github.com/denysdovhan/spaceship-prompt
         # https://github.com/denysdovhan/spaceship-prompt/tree/master/docs
-        zgen load denysdovhan/spaceship-prompt spaceship
-        zgen load ${DOTFILES}/themes/spaceship
+        # zgen load denysdovhan/spaceship-prompt spaceship
+        # zgen load ${DOTFILES}/themes/spaceship
+-        zgen load romkatv/powerlevel10k powerlevel10k
+-        zgen load $DOTFILES/themes/p10k
 
         # zgen will load oh-my-zsh and download it if required
         zgen oh-my-zsh
@@ -56,11 +58,14 @@ if [ ! $TERM = dumb ]; then
         zgen oh-my-zsh plugins/urltools
 
         # === Source mgmt ===
-        zgen oh-my-zsh plugins/mecurial
+        # depricated?
+        # zgen oh-my-zsh plugins/mecurial
         zgen oh-my-zsh plugins/git
-        zgen oh-my-zsh plugins/git-extras
+        zgen oh-my-zsh plugins/gitfast
+        # zgen oh-my-zsh plugins/git-extras
         zgen oh-my-zsh plugins/gitignore
-        zgen oh-my-zsh plugins/git-completion
+        # depricated
+        # zgen oh-my-zsh plugins/git-completion
         zgen oh-my-zsh plugins/npm
 
         zgen oh-my-zsh plugins/brew
