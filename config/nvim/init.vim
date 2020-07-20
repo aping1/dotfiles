@@ -1,7 +1,8 @@
-" time to wait for new mapping seq
+" FileType js UltiSnipsAddFiletypes javascript-jasmine time to wait for new mapping seq
 " ttimeoutlen is used for key code delays
 " Credit: https://www.johnhawthorn.com/2012/09/vi-escape-delays/
 set timeoutlen=600 ttimeoutlen=0
+
 
 set ruler
 set ignorecase
@@ -10,7 +11,8 @@ set smartcase
 set shell=/bin/bash
 set encoding=utf8
 " required for iterm 
-set ambiwidth=double
+"set ambiwidth=double
+set ambiwidth=
 set fileformats=unix,dos,mac
 set nobackup
 set noswapfile
@@ -90,7 +92,6 @@ set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 " Plugin: 'davidhalter/jedi-vim'
 "----------------------------------------------
 " disable autocompletion, we use deoplete for completion
-let g:jedi#completions_enabled = 0
 let g:jedi#show_call_signatures = 1
 
 " open the go-to function in split, not another buffer
@@ -109,6 +110,7 @@ function! s:python_from_virtualenv()
     endif
 endfunction
 
+autocmd Filetype python silent! call deoplete#enable() 
 " for pyenv ...
 if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
     if exists('$PYENV_VIRTUAL_ENV')
@@ -153,7 +155,7 @@ else
 endif
 
 " let g:deoplete#auto_complete_delay = 10
-let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_at_startup = 0
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 
 
@@ -228,6 +230,12 @@ if dein#load_state('~/.cache/dein')
     call dein#add('tpope/vim-projectionist')
     call dein#add('janko/vim-test')
 
+    " Track the engine.
+    call dein#add('SirVer/ultisnips',
+                   \{ 'tag': '1.3'})
+
+    " Snippets are separated from the engine. Add this if you want them:
+    call dein#add('honza/vim-snippets')
     " Navigation
     call dein#add('jistr/vim-nerdtree-tabs')
     call dein#add('scrooloose/nerdtree',
@@ -261,14 +269,25 @@ if dein#load_state('~/.cache/dein')
     " --- Tags (ctags, lsp)
     call dein#add('liuchengxu/vista.vim')
 
+
     " --- languages
     if has('nvim')
-        call dein#add('neoclide/coc.nvim', {
-                    \ 'merged':0,
-                    \ 'rev': 'release',
-                    \ 'on_ft': ['vim', 'python', 'zsh']
-                    \ })
-        call dein#add('tjdevries/coc-zsh')
+       call dein#add('neoclide/coc.nvim', {
+                   \ 'merged':0,
+                   \ 'branch': 'release',
+                   \ 'on_cmd': 'command call coc#util#install()'
+                   \ })
+
+       "Deoplete framework"
+       call dein#add('jsfaint/coc-neoinclude')
+       call dein#add('neoclide/coc-snippets')
+       "" 
+       call dein#add('Shougo/neco-vim',
+                \{'on_ft': 'vim'})
+       call dein#add('neoclide/coc-neco',
+                \{'on_ft': 'vim'})
+       " call dein#add('tjdevries/coc-zsh')
+       " call dein#add('neovim/nvim-lsp')
     endif
     call dein#add('leshill/vim-json',
                 \ {'on_ft': ['json']})
@@ -441,7 +460,7 @@ let g:indent_guides_start_level = 2
 augroup IndentGuide
     " base 00
     autocmd VimEnter,Colorscheme * hi IndentGuidesOdd ctermbg=6 guibg=#353a44
-    autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guibg=#d291e4
+    autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guifg=#abb2bf
     "" Vim
 augroup END
 
@@ -641,6 +660,20 @@ function! s:check_back_space() abort "{{{
 endfunction"}}}
 inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" :  deoplete#manual_complete()
 
+function! OmniPopup(action)
+    if pumvisible()
+        if a:action == 'j'
+            return "\<C-N>"
+        elseif a:action == 'k'
+            return "\<C-P>"
+        endif
+    endif
+    return a:action
+endfunction
+
+inoremap <silent>j <C-R>=OmniPopup('j')<CR>
+inoremap <silent>k <C-R>=OmniPopup('k')<CR>
+
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
@@ -652,13 +685,15 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 augroup deopleteExtra
     "    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    autocmd FileType python call deoplete#initialize()
+    autocmd FileType python,zsh call deoplete#enable()
+    autocmd FileType * :UltiSnipsAddFiletypes &filetype
 augroup  END
 
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
 " Gutter Error and warning signs.
+
 let g:ale_lint_on_insert_leave = 0
 let g:ale_lint_on_enter = 1
 let g:ale_completion_enabled = 1
@@ -693,14 +728,17 @@ if executable('pyls')
                 \ })
 endif
 
+let g:ale_linter_aliases = {'jsx': ['css', 'javascript']}
 let g:ale_linters_explicit = 1
-let g:ale_linters = { 'python' : ['pyls'], 
+let g:ale_linters = { 'python' : ['flake8', 'pyls'], 
             \ 'c' : ['cppcheck'],
-            \ 'vim' : ['vim-language-server'],
+            \ 'vim' : ['vimls'],
             \ 'sh' : ['shellcheck'],
-            \ 'zsh' : ['coc-zsh'],
+            \ 'zsh' : ['deoplete-zsh'],
             \ 'terraform' : ['tflint'],
+            \ 'jsx' : ['stylelint', 'eslint'],
             \ }
+
 " " Fix Python files with autopep8 and yapf.
 let g:ale_fixers = { 'python' : ['black' ],
             \ 'c' : ['clang-format', 'remove_trailing_lines'],
@@ -725,21 +763,34 @@ let g:ale_open_list = 1
 let g:ale_keep_list_window_open = 1
 " Disable warnings about trailing whitespace for Python files.
 let b:ale_warn_about_trailing_whitespace = 0
+let g:ale_completion_tsserver_autoimport = 1
+augroup FiletypeGroup
+    autocmd!
+    au BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+augroup END
+" ['stylelint', 'eslint']
 
 " user environment
 let g:ale_virtualenv_dir_names = []
 
 let g:ale_python_auto_pipenv = 1
+let g:ale_hover_to_preview = 1
 
 augroup vim_blacklist_blacklist
     autocmd FileType * call s:ale_settings()
+    autocmd FileType help silent! :ALEDisable<CR>
 augroup END
 
 function! s:ale_settings()
+    set omnifunc=ale#completion#OmniFunc
+    set completeopt+=preview
+    nmap <silent> gd :ALEGoToDefinitionInTab<CR> " because I prefer tabs
+    nmap <silent> gr :ALEFindReferences<CR>
     nmap ]v :ALENextWrap<CR>
     nmap [v :ALEPreviousWrap<CR>
     nmap ]V :ALELast
     nmap [A :ALEFirst
+    nmap K :ALEHover<CR>
     nmap <F8> <Plug>(ale_fix)
     nmap <silent> <C-k> <Plug>(ale_previous_wrap)
     nmap <silent> <C-j> <Plug>(ale_next_wrap)
@@ -815,7 +866,7 @@ let g:lightline = {
             \             [ 'readonly', 'percentwin', 'lineinfo',  'linecount', ],
             \             [ 'filetype', 'fileformat', ], 
             \             [ 'spell', ], [ 'linter_checking', 'linter_errors',
-            \                'linter_warnings', 'linter_ok' ], [ 'coc_diagnostic', 'coc_status' ],
+            \                'linter_warnings', 'linter_ok' ],
             \            ]
             \ },
             \ 'component_expand' : {
@@ -829,14 +880,11 @@ let g:lightline = {
             \   'linecount': '%{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":line("$")}',
             \   'lineinfo': '%4{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":(&fenc==#"")?"":(winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)||len(col("."))>1000)?"C".col("."):"C".col(".").":"."L".line(".")}',
             \   'close': '%9999X%{g:os_spec_string}',
-            \   'coc_status': '%{exists("*g:coc#status")&&g:coc#status()}',
             \   'spell': '%{winwidth(0) <= getbufvar("b:", "small_threshold", g:small_threshold)?"":&fenc==#""?"":&spell?"":"暈"}%{winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"":&spelllang}',
             \   'modified': '%{&modified?"﯂":&modifiable?"":""}',
             \   'readonly': '%{index(g:lightline_blacklist,&filetype)==-1&&(&fenc==#"")?"":(&readonly)?"":""}',
             \ },
             \ 'component_visible_condition': {
-            \     'coc_diagnostic': '(exists("g:coc_status")&&g:coc_status!=#"")',
-            \     'coc_status': '(exists("g:coc_status")&&g:coc_status!=#"")',
             \     'linecount': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'lineinfo': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'linter_checking': '(index(g:lightline_blacklist,&filetype)==-1)',
@@ -870,7 +918,6 @@ let g:lightline = {
             \     'fugitive': 'LightlineFugitive',
             \     'paste': 'LightlinePaste',
             \     'pyenv_active': 'LightlinePyEnv',
-            \     'coc_diagnostic': 'StatusDiagnostic',
             \     'pyenv': 'LightlinePyEnvName',
             \ },
             \ 'tabline' : {
@@ -909,6 +956,7 @@ function! LightlineFilename()
     let b:large_theshold = g:large_threshold + l:l
     return l:shortname ==# '__Tagbar__' ? 'Tagbar':
                 \ l:shortname ==# '__vista__' ? 'Vista':
+                \ l:shortname ==# '__doc__' ? '龎':
                 \ l:shortname =~# 'NERDTree' ? '' :
                 \ &filetype ==# 'vimfiler' ? 'VimFiler' :
                 \ &filetype ==# 'vimshell' ? 'VimShell' : 
@@ -1030,6 +1078,7 @@ function! LightlineTabname(n) abort
     let fname = expand('#'.buflist[winnr - 1].':t')
     return fname =~? '__Tagbar__' ? 'Tagbar' :
                 \  fname =~? '__Vista__' ? 'Vista' :
+                \ fname ==# '__doc__' ? '龎':
                 \ fname =~? 'NERD_tree' ? 'NERDTree' : 
                 \ ('' !=? fname ? fname : '﬒')
 endfunction
@@ -1312,68 +1361,12 @@ set signcolumn=yes
 highlight lspReference ctermfg=red guifg=red ctermbg=green guibg=green
 let g:lsp_highlight_references_enabled = 1
 
-function! StatusDiagnosticToClipboard()
-  let diagList=CocAction('diagnosticList')
-  let line=line('.') 
-  for diagItem in diagList
-    if line == diagItem['lnum']
-      let str=diagItem['message']
-      return str
-    endif
-  endfor 
-endfunction
-
-function! StatusDiagnostic() abort
-  let info = get(b:, 'coc_diagnostic_info', {})
-  if empty(info) | return '' | endif
-  let msgs = []
-  if get(info, 'error', 0)
-    call add(msgs, 'E' . info['error'])
-  endif
-  if get(info, 'warning', 0)
-    call add(msgs, 'W' . info['warning'])
-  endif
-  return join(msgs, ' '). ' ' . get(g:, 'coc_status', '')
-endfunction
-
-" Use <c-space> to trigger completion.
-" inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-" Coc only does snippet and additional edit on confirm.
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-" Or use `complete_info` if your vim support it, like:
-" inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
-
-" Use `[g` and `]g` to navigate diagnostics
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" Use K to show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-    if (index(['vim','help'], &filetype) >= 0)
-        execute 'h '.expand('<cword>')
-    else
-        call CocAction('doHover')
-    endif
-endfunction
-
-" Highlight symbol under cursor on CursorHold
-" autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " plugin: Vista.vim
 " Ensure you have installed some decent font to show these pretty symbols, then you can enable icon for the kind.
 let g:vista_fzf_preview = ['right:50%']
 let g:vista_executive_for = {
-            \ 'vim': 'coc',
+            \ 'vim': 'ale',
             \ }
 " Executive used when opening vista sidebar without specifying it.
 " See all the avaliable executives via `:echo g:vista#executives`.
@@ -1391,6 +1384,18 @@ function! SetupCommandAbbrs(from, to)
                 \ .'? ("'.a:to.'") : ("'.a:from.'"))'
 endfunction
 
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? coc#_select_confirm() :
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+let g:coc_snippet_next = '<tab>'
 " Use C to open coc config
 call SetupCommandAbbrs('C', 'CocConfig')
 
@@ -1419,4 +1424,36 @@ function! AdjustWindowHeight(minheight, maxheight)
     exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
 endfunction
 
+" --------------------
+" Plugin: 'SirVer/ultisnips'
+"    'honza/vim-snippets'
+" -------------------- 
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+" let g:UltiSnipsExpandTrigger="<tab>"
+" let g:UltiSnipsJumpForwardTrigger="<c-b>"
+" let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+"let g:UltiSnipsUsePythonVersion = 2
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
+function! GetAllSnippets()
+  call UltiSnips#SnippetsInCurrentScope(1)
+  let list = []
+  for [key, info] in items(g:current_ulti_dict_info)
+    let parts = split(info.location, ':')
+    call add(list, {
+      \"key": key,
+      \"path": parts[0],
+      \"linenr": parts[1],
+      \"description": info.description,
+      \})
+  endfor
+  return list
+endfunction
+
+command! UltiSnipsList echo GetAllSnippets()
 " { :set sw=2 ts=2 et }
