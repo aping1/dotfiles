@@ -17,7 +17,7 @@ export TERM="${TERM:-xterm}"
 export FZF_BASE="${HOME}/.fzf"
 
 if (( $+command[uname] )); then
-    export DISTRO=unknown
+    export DISTRO=enknownAIL
 else
     case $(uname) in
     Darwin)
@@ -53,3 +53,6 @@ if ! (( $+commands[brew] )) && [[ "${DISTRO}" == "darwin" ]]; then
 else
     setup_brew_env &>/dev/null
 fi
+
+# this is needed for p10k status Pipe return codes
+set +o PIPEFAIL
