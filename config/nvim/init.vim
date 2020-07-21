@@ -219,15 +219,16 @@ if dein#load_state('~/.cache/dein')
     endif
 
     " Vim exploration Modifications
-    call dein#add('junegunn/fzf', {
-                \ 'build': './install --all'})
-    call dein#add('junegunn/fzf.vim')
+    call dein#add('junegunn/fzf', { 'build': './install --all', 'merged': 0 })
+    call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release' })
 
     call dein#add('mileszs/ack.vim')
 
     " Projects
     call dein#add('amiorin/vim-project')
     call dein#add('tpope/vim-projectionist')
+
+    call dein#add('tpope/vim-dispatch')
     call dein#add('janko/vim-test')
 
     " Track the engine.
@@ -236,6 +237,7 @@ if dein#load_state('~/.cache/dein')
 
     " Snippets are separated from the engine. Add this if you want them:
     call dein#add('honza/vim-snippets')
+    call dein#add('srydell/vim-skeleton')
     " Navigation
     call dein#add('jistr/vim-nerdtree-tabs')
     call dein#add('scrooloose/nerdtree',
@@ -283,9 +285,8 @@ if dein#load_state('~/.cache/dein')
        call dein#add('neoclide/coc-snippets')
        "" 
        call dein#add('Shougo/neco-vim',
-                \{'on_ft': 'vim'})
-       call dein#add('neoclide/coc-neco',
-                \{'on_ft': 'vim'})
+                   \ {'on_ft': 'vim'})
+       call dein#add('neoclide/coc-neco')
        " call dein#add('tjdevries/coc-zsh')
        " call dein#add('neovim/nvim-lsp')
     endif
@@ -415,6 +416,7 @@ else
     set t_Co=16
 endif
 
+autocmd VimResized * wincmd =
 " Change the Pmenu colors so they're more readable.
 highlight Pmenu ctermbg=cyan ctermfg=white
 highlight PmenuSel ctermbg=black ctermfg=white
@@ -545,9 +547,10 @@ let g:nvimgdb_config_override = {
 "----------------------------------------------
 " Plugin: 'ack.vim'
 "----------------------------------------------
-    if executable('ag')
-        let g:ackprg = 'ag --vimgrep'
-    endif
+if executable('ag')
+    let g:ackprg = 'ag --vimgrep'
+endif
+let g:ack_use_dispatch=1
 "----------------------------------------------
 " Plugin: 'fzf.vim'
 "----------------------------------------------
@@ -683,10 +686,10 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 augroup deopleteExtra
-    "    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+    " autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
     autocmd FileType python,zsh call deoplete#enable()
-    autocmd FileType * :UltiSnipsAddFiletypes &filetype
+    autocmd FileType * exe 'UltiSnipsAddFiletypes ' . &filetype
 augroup  END
 
 "----------------------------------------------
@@ -728,15 +731,18 @@ if executable('pyls')
                 \ })
 endif
 
-let g:ale_linter_aliases = {'jsx': ['css', 'javascript']}
+let g:ale_linter_aliases = {
+            \ 'jsx': ['css', 'javascript'],
+            \ }
 let g:ale_linters_explicit = 1
 let g:ale_linters = { 'python' : ['flake8', 'pyls'], 
             \ 'c' : ['cppcheck'],
-            \ 'vim' : ['vimls'],
+            \ 'vim' : ['vimls', 'coc'],
             \ 'sh' : ['shellcheck'],
             \ 'zsh' : ['deoplete-zsh'],
             \ 'terraform' : ['tflint'],
             \ 'jsx' : ['stylelint', 'eslint'],
+            \ 'dockerfile' : ['hadolint'],
             \ }
 
 " " Fix Python files with autopep8 and yapf.
@@ -754,8 +760,8 @@ let g:ale_python_flake8_options = '--max-line-length=' . linelen
 let g:ale_fix_on_save = 0
 " Us quickfix with 'qq' delete
 " quickfix can be set with 'nvim -d FILENAME' so use loclist
-let g:ale_set_loclist = 1
-let g:ale_set_quickfix = 0
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
 let g:ale_open_list = 1
 " Set this if you want to.
 " This can be useful if you are combining ALE with
@@ -844,7 +850,7 @@ else
     let g:os=''
 endif
 
-let g:os_spec_string=' n' . g:os . (has("gui_running")?'': '').('')
+let g:os_spec_string=' n ' . g:os . ' '. (has("gui_running")?'': '').(' ')
 let g:lightline_blacklist=["help","nofile","nerdtree", "vista", "qf"]
 
 let g:lightline = {
@@ -1008,9 +1014,10 @@ function! LightlineFugitive()
     let l:branch = fugitive#head()
     if branch ==#""
         return ""
-    elseif len(branch) < 16
+    elseif len(branch) < 36
         return branch
     else
+        "only show 16 characters if it's a hash
         return branch[:15] . ' .. ' . branch[(len(branch)-15):]
     endif 
 endfunction
@@ -1102,17 +1109,23 @@ fun! s:lightlineColorschemes(...)
 endfun
 com! -nargs=1 -complete=customlist,s:lightlineColorschemes LightlineColorscheme
             \ call s:setLightlineColorscheme(<q-args>)
+call s:lightlineColorschemes()
 
 function! s:ipython_kernels()
-    l:kernels_available=substitute(system('ipython kernelspec list | awk "/python3/{print \$2}"'), '\n', '', 'g')
+    l:kernels_available=substitute(system('ipython kernelspec list \| awk "/python3/{print \$2}"'), '\n', '', 'g')
 endfun
 com! -nargs=1 -complete=customlist,s:ipython_kernels FileType python 
             \ call s:ipython_kernels
 
-function! s:LightLineUpdateColor()
+
+function! s:LightLineRefresh()
     call lightline#init()
     call lightline#colorscheme()
     call lightline#update()
+endfunction
+
+function! s:LightLineUpdateColor()
+    call s:LightLineRefresh()
     let s:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
     " inject center bar blank into pallete (an interesting hack)
     let s:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
@@ -1122,6 +1135,9 @@ endfunction
 
 com! -nargs=0 ToggleColor
             \ call s:LightLineUpdateColor()
+com! -nargs=0 LightLineRefresh
+            \ call s:LightLineRefresh()
+
 
 let g:lightline#ale#indicator_checking = ''
 let g:lightline#ale#indicator_warnings = ''
@@ -1249,21 +1265,6 @@ let g:NERDTreeIndicatorMapCustom = {
             \ 'Unknown'   : '?'
             \ }
 
-function! NERDTreeYankCurrentNode()
-    let n = g:NERDTreeFileNode.GetSelected()
-    if n != {}
-        call setreg('=', n.path.str())
-        call setreg('+', n.path.str())
-    endif
-endfunction
-
-if exists('NERDTreeAddKeyMap')
-    call NERDTreeAddKeyMap({
-                \ 'key': 'yy',
-                \ 'callback': 'NERDTreeYankCurrentNode',
-                \ 'quickhelpText': 'put full path of current node into the default register' })
-endif
-
 " Show hidden files by default.
 let NERDTreeShowHidden = 0
 
@@ -1304,6 +1305,9 @@ function! s:vim_test_keymap()
     nmap <silent> t<C-l> :TestLast<CR>
     nmap <silent> t<C-g> :TestVisit<CR>
 endfunction
+
+" make test commands execute using dispatch.vim
+let test#strategy = "dispatch"
 
 function! TabMessage(cmd)
     redir => message
