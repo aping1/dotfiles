@@ -493,7 +493,6 @@ set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:.
 "  diff mode for commits
 " ------------------------------------------------
 au BufNewFile COMMIT_EDITING let syntax = diff
-augroup END
 
 " Make Arrow Keys work
 imap OA <ESC>ki
@@ -506,9 +505,9 @@ set grepprg=ag\ --vimgrep\ $*
 set grepformat=%f:%l:%c:%m
 
 " Adds for IronRepl: PickRepl PickVirtualEnv PickIPython
-if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
-    silent! luafile $HOME/.config/nvim/iron.plugin.lua
-endif
+"if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
+"    silent! luafile $HOME/.config/nvim/iron.plugin.lua
+"endif
 
 " === fold settings ==
 
@@ -650,7 +649,7 @@ let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 "----------------------------------------------
 " Plugin: 'Vigemus/iron.nvim'
 "----------------------------------------------
-luafile $HOME/.config/nvim/iron.plugin.lua
+"luafile $HOME/.config/nvim/iron.plugin.lua
 
 
 " use tab
@@ -735,13 +734,14 @@ let g:ale_linter_aliases = {
             \ 'jsx': ['css', 'javascript'],
             \ }
 let g:ale_linters_explicit = 1
-let g:ale_linters = { 'python' : ['flake8', 'pyls'], 
+let g:ale_linters = { 'python' : ['flake8'], 
             \ 'c' : ['cppcheck'],
             \ 'vim' : ['vimls', 'coc'],
             \ 'sh' : ['shellcheck'],
             \ 'zsh' : ['deoplete-zsh'],
             \ 'terraform' : ['tflint'],
             \ 'jsx' : ['stylelint', 'eslint'],
+            \ 'json' : ['jsonlint'],
             \ 'dockerfile' : ['hadolint'],
             \ }
 
@@ -750,7 +750,7 @@ let g:ale_fixers = { 'python' : ['black' ],
             \ 'c' : ['clang-format', 'remove_trailing_lines'],
             \ 'lua' : ['trimwhitespace', 'remove_trailing_lines'],
             \ 'terraform' : ['terraform'],
-            \ 'json' : ['jq'] }
+            \ 'json' : ['prettier'] }
 
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 

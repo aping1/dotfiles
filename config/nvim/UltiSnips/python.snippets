@@ -1,0 +1,53 @@
+snippet _skel "python skeleton" b
+import os
+import sys
+
+def main():
+    $0
+
+if __name__=="__main__":
+    main()
+endsnippet
+
+snippet flaskunittest
+import os
+import tempfile
+
+import pytest
+
+from flask import flask
+
+
+@pytest.fixture
+def client():
+    db_fd, flaskr.app.config['$1'] = tempfile.mkstemp()
+    flaskr.app.config['$2'] = True
+
+    with flaskr.app.test_client() as client:
+        with flaskr.app.app_context():
+            flaskr.init_db()
+        yield client
+
+    os.close(db_fd)
+    os.unlink(flaskr.app.config['$1'])
+endsnippet
+
+snippet unittest
+import ${0:VISUAL}
+import unittest
+
+class TestAdd(unittest.TestCase):
+    """
+    Test the add function from the $0 library
+    """
+
+    def test_$1(self):
+        """
+        Test $1
+        """
+		$2
+
+if __name__ == '__main__':
+    unittest.main()
+endsnippet
+
