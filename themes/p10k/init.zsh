@@ -67,6 +67,10 @@
   # ===============================================================
   typeset -g POWERLEVEL9K_MODE=nerdfont-complete
   typeset -g POWERLEVEL9K_ICON_BEFORE_CONTENT=true
+    # When set to `moderate`, some icons will have an extra space after them. This is meant to avoid
+  # icon overlap when using non-monospace fonts. When set to `none`, spaces are not added.
+  typeset -g POWERLEVEL9K_ICON_PADDING=none
+
   # typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
   typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
   typeset -g POWERLEVEL9K_TIME_UPDATE_ON_COMMAND=true
@@ -201,7 +205,7 @@
   typeset -g POWERLEVEL9K_VCS_{INCOMING,OUTGOING}_CHANGESFORMAT_FOREGROUND=$magenta0x
   # Don't show remote branch, current tag or stashes.
   typeset -g POWERLEVEL9K_VCS_GIT_HOOKS=(vcs-detect-changes git-untracked git-aheadbehind)
-  typeset -g POWERLEVEL9K_VCS_GIT_ICON=
+  typeset -g POWERLEVEL9K_VCS_GIT_ICON=''
   # typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=
   typeset -g POWERLEVEL9K_VCS_COMMIT_ICON='#' #<commit>
   # Don't show staged, unstaged, untracked indicators.

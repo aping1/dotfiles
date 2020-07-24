@@ -229,4 +229,39 @@ bindkey "${terminfo[kcbt]}" up-line-or-history
 export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
 
 export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
+export REMOVELEADINGSPACES='{if(NR==1 && $1~/^ *[[:digit:]]+[*]? */){$1=""};gsub(/\\n/,RS);print}'
 
+export BAT_THEME=TwoDark
+export FZF_DEFAULT_OPTS="--bind='esc:print-query,tab:toggle-preview,f1:execute(less -f {}),ctrl-y:yank+abort' --preview='printf -- %s {} | awk "${(q)REMOVELEADINGSPACES}" | bat --decorations=always --pager=never --line-range :300 --number --terminal-width=\$(( FZF_PREVIEW_COLUMNS - 20 )) --color=always --language zsh /dev/stdin' --preview-window=right:40%:hidden:wrap"
+
+# some benmakrs on bat vs https://github.com/sharkdp/bat/blob/master/doc/alternatives.md
+#  *auto*, full, plain, changes, header, grid, numbers, snip.
+export BAT_STYLE=snip
+
+# (EXPERIMENTAL) Advanced customization of fzf options via _fzf_comprun function
+# - The first argument to the function is the name of the command.
+# - You should make sure to pass the rest of the arguments to fzf.
+# _fzf_comprun() {
+#   local command=$1
+#   shift
+# 
+#   case "$command" in
+#     cd)           fzf "$@" --preview 'tree -C {} | head -200' ;;
+#     export|unset) fzf "$@" --preview "eval 'echo \$'{}" ;;
+#     ssh)          fzf "$@" --preview 'dig {}' ;;
+#     *)            fzf "$@" ;;
+#   esac
+# }
+# #  -history-widget() {
+#   local selected num
+#   setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2> /dev/null
+#   local ret=$?
+#   if [ -n "$selected" ]; then
+#     num=$selected[1]
+#     if [ -n "$num" ]; then
+#       zle vi-fetch-history -n $num
+#     fi
+#   fi
+#   zle reset-prompt
+#   return $ret
+# }
