@@ -3,10 +3,17 @@ if exists('g:loaded_vim_projectionist_global')
 endif
 let g:loaded_vim_projectionist_custom = 1
 let s:base_dir = resolve(expand("<sfile>:p:h"))
-let s:projjsn = s:base_dir . "/projections.json"
-let s:projson = readfile(s:projjsn)
-let s:project= projectionist#json_parse(s:projson)
-let g:projectionist_heuristics = s:project
+let g:projjsn = s:base_dir . "/projections.json"
+
+
+let g:projectionist_custom#verbose = 0
+
+function! s:ReloadHeuristics()
+    let l:projson = readfile(g:projjsn)
+    let l:project= projectionist#json_parse(l:projson)
+    let g:projectionist_heuristics = l:project
+endfunction
+call s:ReloadHeuristics()
 
 " Function: lh#path#join(pathparts, {path_separator}) {{{3
 " Thanks: https://stackoverflow.com/questions/62458122/suggested-way-to-join-filepaths-in-vim
@@ -20,7 +27,7 @@ function! s:pathjoin(pathparts, ...) abort
   return join(a:pathparts, sep)
 endfunction
 
-function! s:setProjections()
+function! s:SetProjections()
     if exists('b:projectionist')
         for p in keys(b:projectionist)
             let l:p = projectionist#path(p)
@@ -33,18 +40,21 @@ function! s:setProjections()
                 catch  
                     echoerr "Failed for " .  l:jfp
                 endtry
-            catch
-                echo "Failed file for " .  l:jfp . " " . v:exception
+            catch /^Vim\%((\a\+)\)\=:E484/ "Unable to find the file"
+                if g:projectionist_custom#verbose ==# 1
+                    echomsg "Failed to load " . v:exception
+                endif
             endtry
         endfor
     endif
 endfunction
 
-command! LoadProjections call s:setProjections()
+command! LoadProjections call s:SetProjections()
+command! ResetProjections call s:ReloadHeuristics() | call s:SetProjections() | call projectionist#activate()
 
 augroup detect_project
     autocmd!
-    autocmd User ProjectionistDetect call s:setProjections()
+    autocmd User ProjectionistDetect call s:SetProjections()
 augroup end
 
 "augroup detect_project
@@ -60,3 +70,4 @@ augroup end
 "    break
 "    endfor
 "endfunction
+"

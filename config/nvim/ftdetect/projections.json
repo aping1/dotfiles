@@ -10,19 +10,31 @@
       "start": "docker-compose up -d -f docker-compose.{}"
     },
     "plugin/*.vim": {
-        "type": "plugin"
+      "type": "plugin"
     },
     "ftdetect/*.vim": {
-        "type": "plugin"
+      "type": "plugin"
     },
     "autoload/*.vim": {
-        "type": "autoload"
+      "type": "autoload"
     },
     "docs/*.txt": {
-        "type": "doc"
+      "type": "doc"
     },
-    "README*"
-        "type": "doc"
+    "test_*.py": {
+      "type": "test:pyunit",
+      "alternate": "{}.py",
+      "skeleton": "clickunittest"
+    },
+    "*.py": {
+      "type": "source",
+      "alternate": "test_{}.py",
+      "skeleton": "clickcli"
+    },
+    "setup.py": {
+      "type": "setuptools",
+      "make": "python setup.py sdist bdist_wheel",
+      "skeleton": "setup"
     }
   }
 }

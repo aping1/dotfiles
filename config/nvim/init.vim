@@ -88,6 +88,7 @@ endif
 " Add the dein installation directory into runtimepath
 set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 
+let g:lightline_blacklist=["help","nofile","nerdtree", "vista", "qf"]
 "----------------------------------------------
 " Plugin: 'davidhalter/jedi-vim'
 "----------------------------------------------
@@ -144,6 +145,9 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
                 endif 
             endif
         endif
+        " for vim-test
+        let g:test#python#runner = g:python3_host_prog
+        let g:test#python#pyunit#executable =  g:python3_host_prog .  '-m unittest'
     endfunction
     augroup vim-pyenv-custom-augroup
         autocmd User vim-pyenv-activate-post   call s:pyenv_init()
@@ -277,8 +281,9 @@ if dein#load_state('~/.cache/dein')
        call dein#add('neoclide/coc.nvim', {
                    \ 'merged':0,
                    \ 'branch': 'release',
-                   \ 'on_cmd': 'command call coc#util#install()'
+                   \ 'on_ft': 'vim',
                    \ })
+                   "\ 'on_cmd': 'command call coc#util#install()'
 
        "Deoplete framework"
        call dein#add('jsfaint/coc-neoinclude')
@@ -286,7 +291,8 @@ if dein#load_state('~/.cache/dein')
        "" 
        call dein#add('Shougo/neco-vim',
                    \ {'on_ft': 'vim'})
-       call dein#add('neoclide/coc-neco')
+       call dein#add('neoclide/coc-neco',
+                   \ {'on_ft': 'vim'})
        " call dein#add('tjdevries/coc-zsh')
        " call dein#add('neovim/nvim-lsp')
     endif
@@ -302,7 +308,6 @@ if dein#load_state('~/.cache/dein')
 
     " Linting, syntax, autocomplete, semantic highlighting 
     call dein#add('w0rp/ale')
-    call dein#add('Shougo/echodoc.vim')
     call dein#add('Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins'})
     call dein#add('davidhalter/jedi-vim', 
                 \{'on_ft': ['python', 'ipython'],
@@ -417,9 +422,6 @@ else
 endif
 
 autocmd VimResized * wincmd =
-" Change the Pmenu colors so they're more readable.
-highlight Pmenu ctermbg=cyan ctermfg=white
-highlight PmenuSel ctermbg=black ctermfg=white
 
 set background=dark
 
@@ -434,13 +436,27 @@ map <F3> :ToggleColor<CR>
 
 " Set max line length.
 let linelen = 120
-execute 'set colorcolumn='.linelen
-highlight OverLength ctermbg=red ctermfg=white ctermfg=231 guifg=#e88388
-execute 'match OverLength /\%'.linelen.'v.\+/'
+ execute 'set colorcolumn='.linelen
+"highlight OverLength ctermbg=red ctermfg=white ctermfg=231 guifg=#e88388
+"execute 'match OverLength /\%'.linelen.'v.\+/'
 
 " Change the Pmenu colors so they're more readable.
-highlight Pmenu ctermbg=cyan ctermfg=white
-highlight PmenuSel ctermbg=black ctermfg=white
+"guibg=#353a44 
+augroup extracolors
+    autocmd!
+autocmd VimEnter,Colorscheme * hi ALEWarning ctermbg=0 guibg=#282c34 guifg=#ebca8d ctermfg=yellow
+autocmd VimEnter,Colorscheme * hi ALEError ctermbg=0 guibg=#282c34 guifg=#e88388 ctermfg=red
+autocmd VimEnter,Colorscheme * hi Pmenu ctermbg=black ctermfg=grey guifg=#abb2bf guibg=#353a44 
+autocmd VimEnter,ColorScheme * hi PmenuSbar ctermbg=16 guibg=#282c34
+autocmd VimEnter,Colorscheme * hi PmenuSel ctermbg=cyan guibg=#abb2bf 
+autocmd VimEnter,Colorscheme * hi PmenuThumb  guibg=#353a44 guifg=#ebca8d
+autocmd VimEnter,Colorscheme * hi PmenuThumb  guibg=#353a44 guifg=#ebca8d
+autocmd VimEnter,Colorscheme * if exists(g:lightline) | call s:setLightlineColorscheme("one") | endif
+
+augroup END
+
+set cmdheight=2
+" To use a custom highlight for the float window,
 
 "----------------------------------------------
 " Plugin: 'mhinz/vim-startify'
@@ -461,6 +477,7 @@ let g:indent_guides_start_level = 2
 
 augroup IndentGuide
     " base 00
+    autocmd!
     autocmd VimEnter,Colorscheme * hi IndentGuidesOdd ctermbg=6 guibg=#353a44
     autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guifg=#abb2bf
     "" Vim
@@ -469,6 +486,7 @@ augroup END
 " set highlight cursor
 augroup CursorLine
     "  au!
+    autocmd!
     au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
     "  au VimEnter,WinEnter,BufWinEnter * hi CursorLine ctermfg=136
     "  au WinLeave * setlocal nocursorline
@@ -673,20 +691,15 @@ function! OmniPopup(action)
     return a:action
 endfunction
 
-inoremap <silent>j <C-R>=OmniPopup('j')<CR>
-inoremap <silent>k <C-R>=OmniPopup('k')<CR>
-
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
+" Control-0
+inoremap <silent><c-j> <C-R>=OmniPopup('j')<CR>
+inoremap <silent><c-k> <C-R>=OmniPopup('k')<CR>
 
 
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
 augroup deopleteExtra
     " autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+    autocmd!
     autocmd FileType python,zsh call deoplete#enable()
     autocmd FileType * exe 'UltiSnipsAddFiletypes ' . &filetype
 augroup  END
@@ -696,7 +709,21 @@ augroup  END
 "----------------------------------------------
 " Gutter Error and warning signs.
 
-let g:ale_lint_on_insert_leave = 0
+let g:ale_virtualtext_prefix=' '
+" let g:ale_echo_delay=15
+let g:ale_hover_to_preview=0
+" preview window
+" let g:ale_virtualtext_delay=15
+let g:ale_sign_column_always=1
+let g:ale_set_balloons=1
+let g:ale_virtualtext_cursor=1
+" errors at cursor (in preview window)
+let g:ale_echo_cursor=1
+" shows details for err i cure
+let g:ale_cursor_detail=0
+
+let g:ale_lint_on_insert_leave = 1
+let g:ale_close_preview_on_insert=0
 let g:ale_lint_on_enter = 1
 let g:ale_completion_enabled = 1
 let g:ale_sign_error = '窱'
@@ -704,7 +731,6 @@ let g:ale_sign_warning = '碌'
 
 " Auto import with typescript`
 let g:ale_completion_tsserver_autoimport = 1
-
 let g:ale_python_pyls_use_global=1
 let g:ale_python_pyls_use_autoenv=1
 
@@ -712,8 +738,11 @@ if executable('javascript-typescript-server')
     au User lsp_setup call lsp#register_server({
                 \ 'name': 'javascript-typescript-server',
                 \ 'cmd': {server_info->['javascript-typescript-server']},
-                \ 'whitelist': ['javascript', 'javascriptjsx']
+                \ 'whitelist': ['javascript', 'javascriptjsx', 'jsx']
                 \ })
+else
+    echomsg "pyls is not available"
+" \ 'whitelist': ['javascript', 'javascriptjsx']
 endif
 if executable('vim-language-server')
     au User lsp_setup call lsp#register_server({
@@ -721,6 +750,8 @@ if executable('vim-language-server')
                 \ 'cmd': {server_info->['vim-language-server']},
                 \ 'whitelist': ['vim',]
                 \ })
+else
+    echoerr "vim-language-server is not available"
 endif
 if executable('pyls')
     au User lsp_setup call lsp#register_server({
@@ -728,6 +759,8 @@ if executable('pyls')
                 \ 'cmd': {server_info->['pyls']},
                 \ 'whitelist': ['python', 'ipython'],
                 \ })
+else
+    echomsg "pyls is not available"
 endif
 
 let g:ale_linter_aliases = {
@@ -780,16 +813,16 @@ augroup END
 let g:ale_virtualenv_dir_names = []
 
 let g:ale_python_auto_pipenv = 1
-let g:ale_hover_to_preview = 1
 
 augroup vim_blacklist_blacklist
+    autocmd!
     autocmd FileType * call s:ale_settings()
-    autocmd FileType help silent! :ALEDisable<CR>
+    exec 'autocmd FileType '.join(g:lightline_blacklist,",") .'silent! ALEDisable'
 augroup END
 
 function! s:ale_settings()
     set omnifunc=ale#completion#OmniFunc
-    set completeopt+=preview
+    " set completeopt+=preview
     nmap <silent> gd :ALEGoToDefinitionInTab<CR> " because I prefer tabs
     nmap <silent> gr :ALEFindReferences<CR>
     nmap ]v :ALENextWrap<CR>
@@ -802,6 +835,13 @@ function! s:ale_settings()
     nmap <silent> <C-j> <Plug>(ale_next_wrap)
 endfunction
 "
+inoremap <expr><ESC><ESC> pumvisible() ? "\<C-p>" : "\<C-h>"
+"inoremap <silent><expr> <TAB>
+"      \ pumvisible() ? coc#_select_confirm() :
+"      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+"      \ <SID>check_back_space() ? "\<TAB>" :
+"      \ coc#refresh()
+
 "----------------------------------------------
 " Plugin 'ryanoasis/vim-devicons'
 "----------------------------------------------
@@ -851,7 +891,6 @@ else
 endif
 
 let g:os_spec_string=' n ' . g:os . ' '. (has("gui_running")?'': '').(' ')
-let g:lightline_blacklist=["help","nofile","nerdtree", "vista", "qf"]
 
 let g:lightline = {
             \ 'inactive': {
@@ -1095,12 +1134,13 @@ fun! s:setLightlineColorscheme(name)
     call lightline#init()
     call lightline#colorscheme()
     call lightline#update()
-    let s:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
+    let l:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
     " inject center bar blank into pallete (an interesting hack)
-    let s:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
+    let l:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
     "let s:palette.inactive.middle = s:palette.normal.middle
-    let s:palette.tabline.middle = s:palette.normal.middle
+    let l:palette.tabline.middle = l:palette.normal.middle
 endfun
+
 
 fun! s:lightlineColorschemes(...)
     return map(
@@ -1109,7 +1149,6 @@ fun! s:lightlineColorschemes(...)
 endfun
 com! -nargs=1 -complete=customlist,s:lightlineColorschemes LightlineColorscheme
             \ call s:setLightlineColorscheme(<q-args>)
-call s:lightlineColorschemes()
 
 function! s:ipython_kernels()
     l:kernels_available=substitute(system('ipython kernelspec list \| awk "/python3/{print \$2}"'), '\n', '', 'g')
@@ -1126,7 +1165,7 @@ endfunction
 
 function! s:LightLineUpdateColor()
     call s:LightLineRefresh()
-    let s:palette = g:lightline#colorscheme#{g:lightline.colorscheme}#palette
+    let s:palette = g:lightline#colorscheme#{g:lightline#.colorscheme}#palette
     " inject center bar blank into pallete (an interesting hack)
     let s:palette.normal.middle = [ [ 'NONE', 'NONE', 'NONE', 'NONE' ] ]
     "let s:palette.inactive.middle = s:palette.normal.middle
@@ -1152,6 +1191,7 @@ let g:go_auto_sameids = 1
 let g:go_fmt_command = 'goimports'
 
 augroup GOHELPERS
+    autocmd!
     au FileType go nmap <leader>gt :GoDeclsDir<cr>
     au Filetype go nmap <leader>ga <Plug>(go-alternate-edit)
     " Test coverage
@@ -1174,6 +1214,7 @@ let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
 if exists('$TMUX')
     augroup TMUX_TITLE
+        autocmd!
         let g:tmux_window_name=system('tmux display-message -p "\#W"')
         autocmd VimLeavePre * call system('tmux rename-window ' . g:tmux_window_name)
         autocmd WinEnter,TabEnter,BufWritePost * call system("tmux rename-window '" . expand('%:t') . "'")
@@ -1205,6 +1246,7 @@ if (empty($TMUX))
     "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
 else
     augroup TMUX_RENAME
+        autocmd!
         autocmd BufEnter * call system("tmux rename-window '" . tabpagenr() . ' ' . LightlineTabname(tabpagenr()) . ' ' . LightlineTabmodified(tabpagenr()) . "'")
         autocmd VimLeave * call system('tmux setw automatic-rename")
     augroup END
@@ -1247,6 +1289,7 @@ let NERDTreeIgnore = [
 
 augroup nerdtree_extra
     " Close vim if NERDTree is the only opened window.
+    autocmd!
     autocmd bufenter * if (winnr('$') == 1 &&
                 \ (( exists('b:NERDTreeType') && b:NERDTreeType == 'primary') || 
                 \ (&buftype ==# 'quickfix'))) | q | endif
@@ -1295,6 +1338,7 @@ let g:ipy_shortprompt=1
 " Plugin 'janko/vim-test'
 " --------------------
 augroup VIMTEST_KEYMAP
+    autocmd!
     autocmd FileType * call s:vim_test_keymap()
 augroup END
 
@@ -1305,9 +1349,10 @@ function! s:vim_test_keymap()
     nmap <silent> t<C-l> :TestLast<CR>
     nmap <silent> t<C-g> :TestVisit<CR>
 endfunction
-
-" make test commands execute using dispatch.vim
+let g:test#python#runner = g:python3_host_prog
+let g:test#python#pyunit#executable =  g:python3_host_prog .  '-m pyunit'
 let test#strategy = "dispatch"
+" make test commands execute using dispatch.vim
 
 function! TabMessage(cmd)
     redir => message
@@ -1326,7 +1371,7 @@ endfunction
 command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
 
 " When using `dd` in the quickfix list, remove the item from the quickfix list.
-function! RemoveQFItem()
+function! s:removeQFItem()
     let curqfidx = line('.') - 1
     let qfall = getqflist()
     call remove(qfall, curqfidx)
@@ -1334,6 +1379,7 @@ function! RemoveQFItem()
     execute curqfidx + 1 . 'cfirst'
     :copen
 endfunction
+command! RemoveQFItem -nargs=0 s:removeQFItem
 autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
 
 let g:dash_map = {
@@ -1362,8 +1408,8 @@ set shortmess+=c
 " always show signcolumns
 set signcolumn=yes
 
-highlight lspReference ctermfg=red guifg=red ctermbg=green guibg=green
-let g:lsp_highlight_references_enabled = 1
+" ighlight lspReference ctermfg=red guifg=red ctermbg=green guibg=green
+" let g:lsp_highlight_references_enabled = 1
 
 
 " plugin: Vista.vim
@@ -1388,18 +1434,12 @@ function! SetupCommandAbbrs(from, to)
                 \ .'? ("'.a:to.'") : ("'.a:from.'"))'
 endfunction
 
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? coc#_select_confirm() :
-      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
 
 function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-let g:coc_snippet_next = '<tab>'
 " Use C to open coc config
 call SetupCommandAbbrs('C', 'CocConfig')
 
@@ -1458,6 +1498,28 @@ function! GetAllSnippets()
   endfor
   return list
 endfunction
-
 command! UltiSnipsList echo GetAllSnippets()
+
+function! GetFileAlternate()
+if exists('g:loaded_projectionist')
+    echo get(filter(projectionist#query_file('alternate'), 'filereadable(v:val)'), 0, '')
+  endif
+  echo "None"
+endfunction
+command! FileAlternate call GetFileAlternate()
+
+function! s:newtest_file(file) abort
+    if exists('g:loaded_projectionist')  && g:loaded_projectionist
+        for [root, value] in g:projectionist#query('type', {'file': fnamemodify(a:file, ':p')})
+            if value =~? '^\(test[:]\+\)\?pyunit$'
+                return root . ':' . value
+            else
+                echoerr 'Value(' . value . ') in file(' . a:file . ') is not [test:]pyunit'
+            endif
+        endfor
+    endif
+  endif
+endfunction
+command! -nargs=0 ShowTestFile echo s:newtest_file(expand('%:p'))
+
 " { :set sw=2 ts=2 et }

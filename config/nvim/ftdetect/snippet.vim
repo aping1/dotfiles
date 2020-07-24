@@ -31,9 +31,7 @@ function! snippet#InsertSkeleton() abort
     " Loop through projections with 'skeleton' key and try each one until the
     " snippet expands
     for [root, value] in projectionist#query('skeleton')
-      if s:try_insert(value)
-        return
-      endif
+      return s:try_insert(value)
     endfor
   endif
 
