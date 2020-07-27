@@ -1,4 +1,11 @@
 {
     "diagnostic.displayByAle": true,
-    "coc.preferences.currentFunctionSymbolAutoUpdate": true
+      "diagnostic.errorSign": "✘",
+  "diagnostic.warningSign": "⚠",
+  "diagnostic.infoSign": "i",
+  "diagnostic.hintSign": "➤",
+    "coc.preferences.currentFunctionSymbolAutoUpdate": true,
+    "suggest.keepCompleteopt" : true,
+    "suggest.noselect": true,
+    "suggest.autoTrigger": false
 }

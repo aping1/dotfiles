@@ -40,13 +40,23 @@ set textwidth=0
 set noignorecase
 set nosmartcase
 
-" Fix up arrow not working in search.
-
 set laststatus=2
 set number
 
+" --------------------
+"  TABs 
+" --------------------
+" To control the number of space characters that will be inserted when the tab key is pressed,
 set tabstop=4
+" `retab` command To change all the existing tab characters to match the current tab settings
+"       :h retab
+" shiftwidth: change the number of space characters inserted for indentation
 set shiftwidth=4
+" Expand tab to spaces whenever the tab key is pressed
+set expandtab
+"Highlight Search results
+" `noh`: Command to cancel current highlight
+"       :h noh[higlight]
 set hlsearch
 
 set number relativenumber
@@ -57,6 +67,11 @@ augroup numbertoggle
     autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
     autocmd BufReadPost * set norelativenumber
 augroup END
+let linelen=120
+
+set fillchars=stlnc:─
+" Shift Tab insterts '\t' c-I ^I 
+inoremap <S-Tab> <C-V><Tab>
 
 " -----
 " 24-bit colors
@@ -89,16 +104,30 @@ endif
 set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 
 let g:lightline_blacklist=["help","nofile","nerdtree", "vista", "qf"]
+
+
 "----------------------------------------------
 " Plugin: 'davidhalter/jedi-vim'
 "----------------------------------------------
-" disable autocompletion, we use deoplete for completion
+"
+let g:jedi#auto_vim_configuration = 0
+let g:jedi#completions_enabled=0
+" disable autocompletion, this vimrc uses ale for completion
 let g:jedi#show_call_signatures = 1
-
 " open the go-to function in split, not another buffer
 let g:jedi#use_splits_not_buffers = 'right'
 " <leader>n: show the usage of a name in current file
 " <leader>r: rename a nameexists('pyenv#python*') 
+function! s:SetupJedi()
+    let g:jedi#goto_command = "<leader>d"
+    let g:jedi#goto_assignments_command = "<leader>g"
+    let g:jedi#goto_stubs_command = "<leader>s"
+    let g:jedi#goto_definitions_command = "<leader>R"
+    " let g:jedi#documentation_command = "K"
+    let g:jedi#usages_command = "<leader>n"
+    let g:jedi#completions_command = "<C-Space>"
+    let g:jedi#rename_command = "<leader>r"
+endfunction
 
 " function that sets host prog from inherited shell
 function! s:python_from_virtualenv()
@@ -111,7 +140,6 @@ function! s:python_from_virtualenv()
     endif
 endfunction
 
-autocmd Filetype python silent! call deoplete#enable() 
 " for pyenv ...
 if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
     if exists('$PYENV_VIRTUAL_ENV')
@@ -159,8 +187,17 @@ else
 endif
 
 " let g:deoplete#auto_complete_delay = 10
-let g:deoplete#enable_at_startup = 0
+let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
+let g:deoplete#sources#jedi#show_docstring=1
+
+" let g:deoplete#sources#jedi#statement_length=linelen
+" call deoplete#custom#option({'auto_complete': v:false})
+"call deoplete#custom#source('_', 'sources', ['ale'])
+" call deoplete#custom#option(
+"            \'{auto_complete': { '_', v:false}, 
+"            \ 'sources': ['ale'],
+"            \})
 
 
 "----------------------------------------------
@@ -169,14 +206,29 @@ let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 if dein#load_state('~/.cache/dein')
     call dein#begin('~/.cache/dein')
 
-    call dein#add('wsdjeg/dein-ui.vim')
+    try
+        " For more info on TOML and moving plugins...
+        " https://github.com/Shougo/dein.vim/blob/aa1da8e43b74c109c49281998eab0e148dc042b2/doc/dein.txt
+        let s:toml = '~/.vim/plugins.toml'
+        call dein#load_toml(s:toml, {'lazy': 0})
+    catch /.*/
+        echoerr v:exception
+        echomsg 'Error loading ...'
+        echomsg 'Caught: ' v:exception
+        echoerr 'error ' . s:toml . 'config'
+    endtry
 
-    " === Plugins! ===
+    " :DeinUpgrade command using minimal SpaceVim ui
+    call dein#add('wsdjeg/dein-ui.vim')
+    " Dynamic resize quickfix window
+    call dein#add('blueyed/vim-qf_resize')
+
     " --- Sesnible defaults ---
     call dein#add('tpope/vim-sensible')
-    call dein#add('mhinz/vim-startify')
 
-    call dein#add('mtdl9/vim-log-highlighting')
+    " --- TMUX Integration ctrl-hjkl % copy/paste
+    call dein#add('tmux-plugins/vim-tmux-focus-events')
+    call dein#add('roxma/vim-tmux-clipboard')
 
     " --- Colorscheme ---
     call dein#add('flazz/vim-colorschemes')
@@ -210,7 +262,6 @@ if dein#load_state('~/.cache/dein')
         call dein#add('Shougo/unite.vim')
         call dein#add('Shougo/unite-outline.vim')
         call dein#add('Shougo/neomru.vim')
-        " --- Uncomment for vim
         call dein#add('Shougo/vimproc.vim', {
                     \ 'build' : {
                     \     'windows' : 'tools\\update-dll-mingw',
@@ -222,26 +273,39 @@ if dein#load_state('~/.cache/dein')
                     \ })
     endif
 
-    " Vim exploration Modifications
+    " manage fzf updates
     call dein#add('junegunn/fzf', { 'build': './install --all', 'merged': 0 })
+    " Use fzf preview 
+    " TODO: This doesnt work?
     call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release' })
 
+    " smarter searching (with ag)
     call dein#add('mileszs/ack.vim')
 
-    " Projects
-    call dein#add('amiorin/vim-project')
+    " TODO: Impletment Projects
+    " project based callbacks to 
+    "   Change dir, set gui title, 
+    "   add callbacks
+    " call dein#add('amiorin/vim-project')
+    " --- .projectionist.json --- 
+    "  also see ./ftdetect/heuristics.vim
     call dein#add('tpope/vim-projectionist')
 
+    " Smart runner Itegration with projectionist 
+    " run tests with alternates
     call dein#add('tpope/vim-dispatch')
+    " dispatch windows open in neovim
+    call dein#add('radenling/vim-dispatch-neovim')
+    " TestFile TestClosest...
     call dein#add('janko/vim-test')
 
-    " Track the engine.
+    " Snippet engine 
     call dein#add('SirVer/ultisnips',
                    \{ 'tag': '1.3'})
 
-    " Snippets are separated from the engine. Add this if you want them:
     call dein#add('honza/vim-snippets')
     call dein#add('srydell/vim-skeleton')
+
     " Navigation
     call dein#add('jistr/vim-nerdtree-tabs')
     call dein#add('scrooloose/nerdtree',
@@ -266,8 +330,8 @@ if dein#load_state('~/.cache/dein')
 
     " Git gutter
     call dein#add('mhinz/vim-signify')
+
     " Version Control
-    " git 
     call dein#add('tpope/vim-fugitive')
     " == mecurial client ==
     call dein#add('ludovicchabant/vim-lawrencium')
@@ -275,11 +339,17 @@ if dein#load_state('~/.cache/dein')
     " --- Tags (ctags, lsp)
     call dein#add('liuchengxu/vista.vim')
 
+    " Python virtuel env
+    if executable('pyenv')
+        call dein#add('lambdalisue/vim-pyenv')
+    else
+        call dein#add('plytophogy/vim-virtualenv')
+    endif
 
-    " --- languages
+    " --- Autocomplete
     if has('nvim')
+       call dein#add('ncm2/float-preview.nvim')
        call dein#add('neoclide/coc.nvim', {
-                   \ 'merged':0,
                    \ 'branch': 'release',
                    \ 'on_ft': 'vim',
                    \ })
@@ -295,50 +365,41 @@ if dein#load_state('~/.cache/dein')
                    \ {'on_ft': 'vim'})
        " call dein#add('tjdevries/coc-zsh')
        " call dein#add('neovim/nvim-lsp')
-    endif
-    call dein#add('leshill/vim-json',
-                \ {'on_ft': ['json']})
-
-    call dein#add('saltstack/salt-vim',
-                \ {'on_ft': ['salt']})
-    call dein#add('hashivim/vim-terraform')
-    call dein#add('juliosueiras/vim-terraform-completion',
-                \ {'on_ft': ['tf', 'tfvars']})
-
-
-    " Linting, syntax, autocomplete, semantic highlighting 
-    call dein#add('w0rp/ale')
-    call dein#add('Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins'})
-    call dein#add('davidhalter/jedi-vim', 
-                \{'on_ft': ['python', 'ipython'],
-                \'commad': 'UpdateRemotePlugins'})
-    if !has('nvim')
+    else
         call dein#add('roxma/nvim-yarp')
         call dein#add('roxma/vim-hug-neovim-rpc')
     endif
-    " Python virtuel env
-    if executable('pyenv')
-        call dein#add('lambdalisue/vim-pyenv')
-    else
-        call dein#add('plytophogy/vim-virtualenv')
-    endif
+
+    " Linting, syntax, autocomplete, semantic highlighting 
+    call dein#add('w0rp/ale')
+    call dein#add('davidhalter/jedi-vim', 
+                \{'on_ft': ['python', 'ipython'],
+                \'commad': 'UpdateRemotePlugins'})
 
     " === nvim feature ===
     " if !has('nvim')
     if has('nvim')
         call dein#add('Shougo/context_filetype.vim')
         call dein#add('Shougo/neoinclude.vim')
+        call dein#add('Shougo/deoplete.nvim',
+                    \{ 'do': ':UpdateRemotePlugins'})
         call dein#add('zchee/deoplete-jedi',
-                    \ {'on_ft':['python', 'ipython'],
-                    \ 'commad': 'UpdateRemotePlugins'
-                    \ })
+                    \{'on_ft':['python', 'ipython'],
+                    \'depends': ['deoplete.nvim', 'jedi-vim'], 
+                    \'commad': 'UpdateRemotePlugins',
+                    \'install': 'git submodule update --init'
+                    \})
+        " required for ZSH Autocomplete
+        call dein#add('mtikekar/nvim-send-to-term')
         call dein#add('deoplete-plugins/deoplete-zsh', {
-                    \ 'on_ft':['zsh']
+                    \ 'on_ft':['zsh'],
+                    \ 'depends': 'nvim-send-to-term'
                     \ })
         call dein#add('bfredl/nvim-ipy',
                     \{'on_ft':['python', 'ipython']})
         " Tools for repl
         call dein#add('Vigemus/impromptu.nvim')
+        " Lua python
         call dein#add('Vigemus/iron.nvim')
     endif
 
@@ -346,34 +407,43 @@ if dein#load_state('~/.cache/dein')
         call dein#add('rizzatti/dash.vim')
     endif
 
-
-    " for ZSH Autocomplete
-    call dein#add('mtikekar/nvim-send-to-term')
-
     " Simply Fold 
     call dein#add('tmhedberg/SimpylFold')
     call dein#add('itchyny/lightline.vim')
     call dein#add('maximbaz/lightline-ale')
 
-    call dein#add('jez/vim-superman')
+
+    call dein#add('gu-fan/riv.vim')
+    call dein#add('mtdl9/vim-log-highlighting')
+    call dein#add('jez/vim-superman') " Man pages
+    call dein#add('leshill/vim-json',
+                \ {'on_ft': ['json']})
+    "call dein#add('saltstack/salt-vim',
+    "            \ {'on_ft': ['salt']})
+    "call dein#add('hashivim/vim-terraform')
+    "call dein#add('juliosueiras/vim-terraform-completion',
+    "            \ {'on_ft': ['tf', 'tfvars']})
 
     call dein#add('vim-scripts/applescript.vim',
                 \ {'on_ft': ['applescript']})
     call dein#add('ekalinin/Dockerfile.vim',
                 \ {'on_ft': ['dockerfile']})
-    call dein#add('kevinhui/vim-docker-tools')
     call dein#add('towolf/vim-helm', {'on_ft': ['helm']})
-
-    call dein#add('tmux-plugins/vim-tmux-focus-events')
-    call dein#add('roxma/vim-tmux-clipboard')
     call dein#add('kchmck/vim-coffee-script')
+
     " --- management
     call dein#add('kevinhui/vim-docker-tools')
 
 
     " === end Plugins! ===
     call dein#end()
+    "if  ! s:is_sudo
     call dein#save_state()
+    "endif
+    if dein#check_install()
+        " Installation check.
+        call dein#install()
+    endif
 endif
 
 filetype plugin indent on
@@ -435,7 +505,6 @@ com! -nargs=0 ToggleColor
 map <F3> :ToggleColor<CR>
 
 " Set max line length.
-let linelen = 120
  execute 'set colorcolumn='.linelen
 "highlight OverLength ctermbg=red ctermfg=white ctermfg=231 guifg=#e88388
 "execute 'match OverLength /\%'.linelen.'v.\+/'
@@ -451,12 +520,13 @@ autocmd VimEnter,ColorScheme * hi PmenuSbar ctermbg=16 guibg=#282c34
 autocmd VimEnter,Colorscheme * hi PmenuSel ctermbg=cyan guibg=#abb2bf 
 autocmd VimEnter,Colorscheme * hi PmenuThumb  guibg=#353a44 guifg=#ebca8d
 autocmd VimEnter,Colorscheme * hi PmenuThumb  guibg=#353a44 guifg=#ebca8d
-autocmd VimEnter,Colorscheme * if exists(g:lightline) | call s:setLightlineColorscheme("one") | endif
+autocmd VimEnter,Colorscheme * silent! call s:setLightlineColorscheme("one")
 
 augroup END
 
 set cmdheight=2
 " To use a custom highlight for the float window,
+
 
 "----------------------------------------------
 " Plugin: 'mhinz/vim-startify'
@@ -466,6 +536,7 @@ set cmdheight=2
 "autocmd BufEnter python :CocDisable
 "autocmd BufLeave python :CocEnable
 " augroup END
+
 
 "----------------------------------------------
 " Plugin: 'nathanaelkane/vim-indent-guides'
@@ -561,13 +632,17 @@ let g:nvimgdb_config_override = {
             \ 'set_tkeymaps': 'NvimGdbNoTKeymaps',
             \ }
 
+
 "----------------------------------------------
 " Plugin: 'ack.vim'
 "----------------------------------------------
 if executable('ag')
+    " vimgrep not supported with dispatch
+    let g:ack_use_dispatch=0
     let g:ackprg = 'ag --vimgrep'
 endif
-let g:ack_use_dispatch=1
+
+
 "----------------------------------------------
 " Plugin: 'fzf.vim'
 "----------------------------------------------
@@ -582,6 +657,8 @@ if executable('bat')
     command! -bang -nargs=? -complete=dir Files
                 \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'bat -p --color always {}']}, <bang>0)
 endif
+
+
 "----------------------------------------------
 " Plugin: vimwiki/vimwiki
 "----------------------------------------------
@@ -590,6 +667,8 @@ let g:vimwiki_list = [{
             \ 'syntax': 'markdown',
             \ 'ext': '.md'
             \ }]
+
+
 "----------------------------------------------
 " Plugin: 'vimwiki/vimwiki'
 "----------------------------------------------
@@ -597,6 +676,7 @@ let g:vimwiki_ext2syntax = {
             \ '.md': 'markdown',
             \ '.mkd': 'markdown',
             \ '.wiki': 'media'}
+
 
 "---------------------------------------------
 " Plugin'tpope/vim-markdown'
@@ -622,10 +702,12 @@ let g:markdown_fenced_languages = [
             \ "yml=yaml",
             \ 'json'
             \ ]
+
+
 "----------------------------------------------
 " Plugin: 'SidOfc/mkdx'
 "----------------------------------------------
-"
+
 " fzf + mxdx
 fun! s:MkdxGoToHeader(header)
     " given a line: '  84: # Header'
@@ -664,10 +746,13 @@ nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
 
 let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 
+
+
 "----------------------------------------------
 " Plugin: 'Vigemus/iron.nvim'
 "----------------------------------------------
 "luafile $HOME/.config/nvim/iron.plugin.lua
+
 
 
 " use tab
@@ -677,7 +762,8 @@ function! s:check_back_space() abort "{{{
     call coc#refresh()
     endif
     return !col || getline('.')[col - 1]  =~# '\s'
-endfunction"}}}
+endfunction
+" refresh on backspace
 inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" :  deoplete#manual_complete()
 
 function! OmniPopup(action)
@@ -700,9 +786,9 @@ augroup deopleteExtra
     " autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
     " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
     autocmd!
-    autocmd FileType python,zsh call deoplete#enable()
     autocmd FileType * exe 'UltiSnipsAddFiletypes ' . &filetype
 augroup  END
+
 
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
@@ -816,13 +902,15 @@ let g:ale_python_auto_pipenv = 1
 
 augroup vim_blacklist_blacklist
     autocmd!
-    autocmd FileType * call s:ale_settings()
+    autocmd FileType * call s:ale_settings() | call s:SetupJedi()
     exec 'autocmd FileType '.join(g:lightline_blacklist,",") .'silent! ALEDisable'
 augroup END
 
 function! s:ale_settings()
     set omnifunc=ale#completion#OmniFunc
-    " set completeopt+=preview
+    set completeopt-=preview
+    set completeopt+=noselect
+    set completeopt+=noinsert
     nmap <silent> gd :ALEGoToDefinitionInTab<CR> " because I prefer tabs
     nmap <silent> gr :ALEFindReferences<CR>
     nmap ]v :ALENextWrap<CR>
@@ -834,13 +922,14 @@ function! s:ale_settings()
     nmap <silent> <C-k> <Plug>(ale_previous_wrap)
     nmap <silent> <C-j> <Plug>(ale_next_wrap)
 endfunction
-"
+
 inoremap <expr><ESC><ESC> pumvisible() ? "\<C-p>" : "\<C-h>"
 "inoremap <silent><expr> <TAB>
 "      \ pumvisible() ? coc#_select_confirm() :
 "      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
 "      \ <SID>check_back_space() ? "\<TAB>" :
 "      \ coc#refresh()
+
 
 "----------------------------------------------
 " Plugin 'ryanoasis/vim-devicons'
@@ -866,14 +955,22 @@ endfunction
 " Run lint on these file types.
 au FileType xml exe ":silent 1, $!xmllint --format --recover - 2> /dev/null"
 
+
 "----------------------------------------------
+"" refresh on backspace
 " Plugin: 'itchyny/lightline.vim'
 "----------------------------------------------
+
+
+let g:lightline#ale#indicator_checking = ''
+let g:lightline#ale#indicator_warnings = ''
+let g:lightline#ale#indicator_errors = ''
+let g:lightline#ale#indicator_ok = ''
 
 if has('macunix')
     let g:os=''
 elseif has('win32unix')
-    let g:os=''
+    let g:os='  '
 elseif has('win32')
     let g:os=''
 elseif has('unix')
@@ -1030,10 +1127,6 @@ function! LightlinePaste ()
     return ''
 endfunction
 
-function! Pad(s,amt)
-    return a:s . repeat(' ',a:amt - len(a:s))
-endfunction
-
 function! LightlineMode()
     let l:mode=lightline#mode()
     let l:newmode = (l:mode ==? 'INSERT' ? "" :
@@ -1117,7 +1210,7 @@ function! LightlineTabNumber(n) abort
     " expand('%:t:r')
     return ( WebDevIconsGetFileTypeSymbol(fname, isdirectory(fname)) . string(a:n) )
 endfunction
-" https://github.com/inkarkat/vim-StatusLineHighlight/blob/master/plugin/StatusLineHighlight.vim
+" ref: https://github.com/inkarkat/vim-StatusLineHighlight/blob/master/plugin/StatusLineHighlight.vim
 function! LightlineTabname(n) abort
     let buflist = tabpagebuflist(a:n)
     let winnr = tabpagewinnr(a:n)
@@ -1128,7 +1221,6 @@ function! LightlineTabname(n) abort
                 \ fname =~? 'NERD_tree' ? 'NERDTree' : 
                 \ ('' !=? fname ? fname : '﬒')
 endfunction
-"  
 fun! s:setLightlineColorscheme(name)
     let g:lightline.colorscheme = a:name
     call lightline#init()
@@ -1177,16 +1269,22 @@ com! -nargs=0 ToggleColor
 com! -nargs=0 LightLineRefresh
             \ call s:LightLineRefresh()
 
+" --------------------
+" Plugin: ncm2/float-preview.nvim
+" --------------------
+function! DisableExtras()
+  call nvim_win_set_option(g:float_preview#win, 'number', v:true)
+  call nvim_win_set_option(g:float_preview#win, 'relativenumber', v:true)
+  call nvim_win_set_option(g:float_preview#win, 'cursorline', v:true)
+endfunction
+let g:float_preview#auto_close = 0
 
-let g:lightline#ale#indicator_checking = ''
-let g:lightline#ale#indicator_warnings = ''
-let g:lightline#ale#indicator_errors = ''
-let g:lightline#ale#indicator_ok = ''
+autocmd User FloatPreviewWinOpen call DisableExtras()
+
 
 "----------------------------------------------
 " Plugin: bling/vim-go
 "----------------------------------------------
-"
 let g:go_auto_sameids = 1
 let g:go_fmt_command = 'goimports'
 
@@ -1205,6 +1303,7 @@ augroup GOHELPERS
     " Snake case or camel case
     let g:go_addtags_transform = 'snakecase'
 augroup END
+
 
 "----------------------------------------------
 " Plugin: christoomey/vim-tmux-navigator
@@ -1251,6 +1350,7 @@ else
         autocmd VimLeave * call system('tmux setw automatic-rename")
     augroup END
 endif
+
 
 "----------------------------------------------
 " Plugin: scrooloose/nerdtree
@@ -1320,6 +1420,8 @@ let g:webdevicons_enable_nerdtree = 1
 " Force extra padding in NERDTree so that the filetype icons line up vertically
 let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
 let g:webdevicons_conceal_nerdtree_brackets = 1
+
+
 " --------------------
 " Plug 'bfredl/nvim-ipy'
 " --------------------
@@ -1334,6 +1436,8 @@ imap <c-f> <Plug>(IPy-Complete)
 map <silent> <leader>? <Plug>(IPy-WordObjInfo)
 let g:ipy_celldef = '^##'
 let g:ipy_shortprompt=1
+
+
 " --------------------
 " Plugin 'janko/vim-test'
 " --------------------
@@ -1351,7 +1455,7 @@ function! s:vim_test_keymap()
 endfunction
 let g:test#python#runner = g:python3_host_prog
 let g:test#python#pyunit#executable =  g:python3_host_prog .  '-m pyunit'
-let test#strategy = "dispatch"
+let g:test#strategy = "dispatch"
 " make test commands execute using dispatch.vim
 
 function! TabMessage(cmd)
@@ -1371,7 +1475,7 @@ endfunction
 command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
 
 " When using `dd` in the quickfix list, remove the item from the quickfix list.
-function! s:removeQFItem()
+function! RemoveQuickFixItem()
     let curqfidx = line('.') - 1
     let qfall = getqflist()
     call remove(qfall, curqfidx)
@@ -1379,15 +1483,16 @@ function! s:removeQFItem()
     execute curqfidx + 1 . 'cfirst'
     :copen
 endfunction
-command! RemoveQFItem -nargs=0 s:removeQFItem
+command! RemoveQFItem -nargs=0 call RemoveQuickFixItem()
 autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
 
 let g:dash_map = {
             \ 'c' : ['cpp']
             \ }
 
+autocmd QuickFixCmdPost * if exists('*g:float_preview#reopen') | call float_preview#reopen() | endif
 " plugin neoclide/coc.nvim
-"
+
 " if hidden is not set, TextEdit might fail.
 set hidden
 
@@ -1434,24 +1539,32 @@ function! SetupCommandAbbrs(from, to)
                 \ .'? ("'.a:to.'") : ("'.a:from.'"))'
 endfunction
 
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
 " Use C to open coc config
 call SetupCommandAbbrs('C', 'CocConfig')
+
 
 " --------------------
 " Plugin: liuchengxu/vista.vim
 " --------------------
-"
 " By default vista.vim never run if you don't call it explicitly.
-"
-" If you want to show the nearest function in your statusline automatically,
-" you can add the following line to your vimrc 
+" show the nearest function in your statusline automatically,
 autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
+
+" --------------------
+" Plugin: blueyed/vim-qf_resize')
+" --------------------
+" defualt 1
+let g:qf_resize_min_height=5
+" default 10
+let g:qf_resize_max_height=20
+" default .15
+let g:qf_resize_max_ratio=0.25
+" default 1
+"g:qf_resize_on_win_close=1 
+set pumheight=15
+
+
+nnoremap <silent> <c-w>= :wincmd =<cr>:QfResizeWindows<cr>
 
 au FileType qf call AdjustWindowHeight(3, 10)
 function! AdjustWindowHeight(minheight, maxheight)
@@ -1468,16 +1581,15 @@ function! AdjustWindowHeight(minheight, maxheight)
     exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
 endfunction
 
+
 " --------------------
 " Plugin: 'SirVer/ultisnips'
 "    'honza/vim-snippets'
 " -------------------- 
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-" let g:UltiSnipsExpandTrigger="<tab>"
-" let g:UltiSnipsJumpForwardTrigger="<c-b>"
-" let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 let g:UltiSnipsExpandTrigger="<tab>"
+" let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
+" let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 "let g:UltiSnipsUsePythonVersion = 2
 
@@ -1502,13 +1614,14 @@ command! UltiSnipsList echo GetAllSnippets()
 
 function! GetFileAlternate()
 if exists('g:loaded_projectionist')
-    echo get(filter(projectionist#query_file('alternate'), 'filereadable(v:val)'), 0, '')
+    echo get(filter(g:projectionist#query_file('alternate'), 'filereadable(v:val)'), 0, '')
   endif
   echo "None"
 endfunction
 command! FileAlternate call GetFileAlternate()
 
-function! s:newtest_file(file) abort
+
+function! s:is_projectionist_testfile(file) abort
     if exists('g:loaded_projectionist')  && g:loaded_projectionist
         for [root, value] in g:projectionist#query('type', {'file': fnamemodify(a:file, ':p')})
             if value =~? '^\(test[:]\+\)\?pyunit$'
@@ -1518,8 +1631,24 @@ function! s:newtest_file(file) abort
             endif
         endfor
     endif
-  endif
 endfunction
-command! -nargs=0 ShowTestFile echo s:newtest_file(expand('%:p'))
+command! -nargs=0 ShowTestFile echo s:is_projectionist_testfile(expand('%:p'))
+" vmap <silent> <Leader>qs :call Quote("'")<CR>
+vmap <silent> <Leader>qd :call Quote('"')<CR>
+function! Quote(quote)
+  let save = @"
+  silent normal gvy
+  let @" = a:quote . @" . a:quote
+  silent normal gvp
+  let @" = save
+endfunction
+nnoremap <Leader>" ciw"<C-r>""<Esc>
+vnoremap <Leader>" c"<C-r>""<Esc>
 
+function! SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
 " { :set sw=2 ts=2 et }
