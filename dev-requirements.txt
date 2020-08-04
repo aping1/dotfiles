@@ -1,9 +1,7 @@
 flake8
 black
-pyre
 pyls
 pyls-black
 ipython
 jupyter
 jupyter_client
-

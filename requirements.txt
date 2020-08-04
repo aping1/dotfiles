@@ -1,4 +1,8 @@
 pynvim
 neovim
-mgspack>=1.0.0
+jedi
+msgpack
+flake8
+black
+
 

@@ -197,6 +197,8 @@ if __name__ == "__main__":
     setup(
         name=${1:name},
         description=find_meta("description"),
+        use_scm_version=True,
+        setup_requires=['setuptools_scm'],
         license=find_meta("license"),
         url=find_meta("uri"),
         version=find_meta("version"),
@@ -212,10 +214,10 @@ if __name__ == "__main__":
         zip_safe=False,
         classifiers=CLASSIFIERS,
         install_requires=INSTALL_REQUIRES,
-		entry_points='''
-			[console_scripts]
-			myhello=hello:cli
-		''',
+        entry_points='''
+            [console_scripts]
+            myhello=hello:cli
+        ''',
         options={"bdist_wheel": {"universal": "1"}},
     )
 endsnippet

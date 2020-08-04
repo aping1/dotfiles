@@ -9,7 +9,8 @@
 #                                  |        4 authority
 #                                  3 //…
 
-readonly URI_REGEX='^(([^:/?#]+):)?(//?((([^:/?#]+)@)?([^:/?#]+)(:([0-9]+))?))?(/([^?#]*))(\?([^#]*))?(#(.*))?'
+readonly URI_REGEX='^((?<schema>[^:/?#]+):)?([/]{2}?(?<fullpath>(([^:/?#]+)@)?(?<host>[^:/?#]+)(:(?<port>[0-9]+))?))?(\/(?<requestpath>[^?#]*))(\?(?<params>[^#]*))?(#(?<anchor>.*))?'
+# readonly URI_REGEX='^(([^:/?#]+):)?(/((([^:/?#]+)@)?([^:/?#]+)(:([0-9]+))?))?(/([^?#]*))(\?([^#]*))?(#(.*))?'
 #                    ↑↑            ↑  ↑↑↑            ↑         ↑ ↑            ↑ ↑        ↑  ↑        ↑ ↑
 #                    |2 scheme     |  ||6 userinfo   7 host    | 9 port       | 11 rpath |  13 query | 15 fragment 1 scheme:     |  |5 userinfo@             8 :…           10 path    12 ?…       14 #…
 #                                  |  4 authority
@@ -25,7 +26,7 @@ function uri2json() {
             # read -r _URI_MATCH <<< "${match[*]}"
             read -r _URI_SCHEMA _URI_ABS_URI_PATH _URI_AUTHORITY _URI_REMAINING "$([[ ${match[11]} =~ '@' ]] && echo -n _URI_USER)" _URI_HOST _URI_PORT _URI_PATH _URI_RPATH _URI_QUERY _URI_FRAGMENT <<< "${match[@]}"
             export _URI_SCHEMA _URI_ABS_URI_PATH _URI_AUTHORITY _URI_REMAINING _URI_USER _URI_HOST _URI_PORT _URI_PATH _URI_RPATH _URI_QUERY _URI_FRAGMENT
-            python3 -c 'import json, os;print(json.dumps({str(k[5:]): v for k, v in os.environ.items() if k.startswith("_URI_") or k == "match"}))'
+            python3 -c 'import json, os, sys;print(sys.stderr,json.dumps({str(k[5:]): v for k, v in os.environ.items() if k.startswith("_URI_") or k == "match"}))'
             return 0
         fi 
     fi

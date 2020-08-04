@@ -22,7 +22,7 @@
       "type": "doc"
     },
     "test_*.py": {
-      "type": "test:pyunit",
+      "type": "test",
       "alternate": "{}.py",
       "skeleton": "clickunittest"
     },

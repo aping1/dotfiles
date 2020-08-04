@@ -32,7 +32,6 @@ endtry
 set shiftround
 
 set smarttab
-set expandtab
 set linebreak
 set textwidth=0
 
@@ -130,71 +129,98 @@ function! s:SetupJedi()
 endfunction
 
 " function that sets host prog from inherited shell
-function! s:python_from_virtualenv()
+function! s:python_from_environment(py2_sel, py3_sel)
+    let g:jedi#force_py_version='3'
     if exists("$VIRTUAL_ENV")
-        let g:python_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
+        let g:python_host_prog=substitute(system('command -v python'), '\n', '', 'g')
         let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
     else
-        let g:python_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
-        let g:python3_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
+        let g:python_host_prog=substitute(system('type -a python | awk "NR=='. a:py2_sel .'{print \$NF}"'), '\n', '', 'g')
+        let g:python3_host_prog=substitute(system('type -a python3 | awk "NR=='. a:py3_sel .'{print \$NF}"'), '\n', '', 'g')
     endif
 endfunction
 
 " for pyenv ...
 if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
-    if exists('$PYENV_VIRTUAL_ENV')
+    function! s:python_prefixes() abort " {{{
+        if ! exists('*pyenv#pyenv#is_enabled()') || ! pyenv#pyenv#is_enabled()
+            return []
+        endif
+        let result = pyenv#utils#system(join([
+                \ g:pyenv#pyenv_exec,
+                \ 'prefix',
+                \]))
+        if result.status == 0
+            return split(result.stdout, '\v\r?\n')
+        endif
+        return []
+    endfunction " }}}
+        
+    command! -nargs=0 PythonPrefixes call setreg('+', s:python_prefixes()[0])
+    if exists('$PYENV_VIRTUAL_INIT')
         autocmd VimEnter python silent! command PyenvActivate 
     endif
     function! s:pyenv_init()
         " Active external version
+        "pyenv#info#format('%iv') A version of the internal python
+        "pyenv#info#format('%im') " A major version of the internal python
+        "pyenv#info#format('%ev') "A version of the external python
+        "pyenv#info#format('%em') "A major version of the external python
+        "pyenv#info#format('%sv') "A selected version name
+        "pyenv#info#format('%ss') "A selected version names
+        "pyenv#info#format('%av') "An activated version name
         if exists('*jedi#init_python') && jedi#init_python()
             let g:jedi#force_py_version='3'
         endif
-        if ! exists('*pyenv#pyenv#is_activated') || ! pyenv#pyenv#is_activated()
-            call s:python_from_virtualenv()
+        " if active, 
+        if exists('*pyenv#pyenv#is_activated') && pyenv#pyenv#is_activated() && pyenv#python#get_external_major_version()
+            "pyenv#info#format('%iv') A version of the internal /usr/bin/python
             if pyenv#python#get_internal_major_version() >= 2
                 let g:jedi#force_py_version=pyenv#python#get_internal_major_version()
             else 
                 let g:jedi#force_py_version=3
             endif 
-        else
             if pyenv#python#get_external_major_version() == 2 
+                " in the case it's 2. we just use the one from the environment
                 let g:python_host_prog=g:pyenv#python_exec
                 let g:python3_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
+                let g:jedi#force_py_version=2
+            elseif pyenv#python#get_external_major_version() > 0
                 let g:jedi#force_py_version=pyenv#python#get_external_major_version()
-            else
-                let g:jedi#force_py_version=3
                 if g:pyenv#python_exec =~ '[[:digit:].]\+$'
                     let g:python_host_prog=g:pyenv#python_exec
                     let g:python3_host_prog=g:pyenv#python_exec
-                else
-                    let g:python_host_prog=g:pyenv#python_exec . '3'
-                    let g:python3_host_prog=g:pyenv#python_exec . '3'
                 endif 
             endif
+        else
+            call s:python_from_environment("2", "2")
         endif
         " for vim-test
         let g:test#python#runner = g:python3_host_prog
-        let g:test#python#pyunit#executable =  g:python3_host_prog .  '-m unittest'
+        let g:test#python#pyunit#executable =  g:python3_host_prog .  '-m pyunit'
+        " set the virtual env python used to launch the debugger
+        let g:pudb_breakpoint_symbol='☠'
+        let g:pyenv_path = s:python_prefixes()[0]
     endfunction
     augroup vim-pyenv-custom-augroup
         autocmd User vim-pyenv-activate-post   call s:pyenv_init()
         autocmd User vim-pyenv-deactivate-post call s:pyenv_init()
     augroup END
-    call s:pyenv_init()
 else
-    call s:python_from_virtualenv()
+    call s:python_from_environment("1", "1")
 endif
 
 " let g:deoplete#auto_complete_delay = 10
+" Required for Semshi > 100
+"let g:deoplete#auto_complete_delay = 100
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
-let g:deoplete#sources#jedi#show_docstring=1
+"let g:deoplete#sources#jedi#show_docstring=1
 
 " let g:deoplete#sources#jedi#statement_length=linelen
 " call deoplete#custom#option({'auto_complete': v:false})
-"call deoplete#custom#source('_', 'sources', ['ale'])
-" call deoplete#custom#option(
+autocmd FileType Python call deoplete#custom#source('_', 'sources', ['ale','coc']) | call deoplete#custom#option({'auto_complete_delay': 100})
+"deoplete#custom#option(
 "            \'{auto_complete': { '_', v:false}, 
 "            \ 'sources': ['ale'],
 "            \})
@@ -220,6 +246,7 @@ if dein#load_state('~/.cache/dein')
 
     " :DeinUpgrade command using minimal SpaceVim ui
     call dein#add('wsdjeg/dein-ui.vim')
+    call dein#add('vim-vdebug/vdebug')
     " Dynamic resize quickfix window
     call dein#add('blueyed/vim-qf_resize')
 
@@ -258,6 +285,7 @@ if dein#load_state('~/.cache/dein')
         " Vim exploration Modifications
         call dein#add('Shougo/denite.nvim')
         " call dein#add('dunstontc/denite-mapping')
+        call dein#add('Shougo/echodoc.vim')
     else
         call dein#add('Shougo/unite.vim')
         call dein#add('Shougo/unite-outline.vim')
@@ -277,7 +305,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('junegunn/fzf', { 'build': './install --all', 'merged': 0 })
     " Use fzf preview 
     " TODO: This doesnt work?
-    call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release' })
+    " call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release' })
 
     " smarter searching (with ag)
     call dein#add('mileszs/ack.vim')
@@ -350,14 +378,16 @@ if dein#load_state('~/.cache/dein')
     if has('nvim')
        call dein#add('ncm2/float-preview.nvim')
        call dein#add('neoclide/coc.nvim', {
-                   \ 'branch': 'release',
-                   \ 'on_ft': 'vim',
+                   \ 'branch': 'release'
                    \ })
                    "\ 'on_cmd': 'command call coc#util#install()'
 
        "Deoplete framework"
        call dein#add('jsfaint/coc-neoinclude')
        call dein#add('neoclide/coc-snippets')
+       call dein#add('neoclide/coc-highlight')
+       call dein#add('neoclide/coc-python')
+
        "" 
        call dein#add('Shougo/neco-vim',
                    \ {'on_ft': 'vim'})
@@ -369,12 +399,13 @@ if dein#load_state('~/.cache/dein')
         call dein#add('roxma/nvim-yarp')
         call dein#add('roxma/vim-hug-neovim-rpc')
     endif
+    call dein#add('SkyLeach/pudb.vim', {'on_ft': ['python', 'ipython']})
 
     " Linting, syntax, autocomplete, semantic highlighting 
     call dein#add('w0rp/ale')
     call dein#add('davidhalter/jedi-vim', 
                 \{'on_ft': ['python', 'ipython'],
-                \'commad': 'UpdateRemotePlugins'})
+                \'command': 'UpdateRemotePlugins'})
 
     " === nvim feature ===
     " if !has('nvim')
@@ -386,7 +417,7 @@ if dein#load_state('~/.cache/dein')
         call dein#add('zchee/deoplete-jedi',
                     \{'on_ft':['python', 'ipython'],
                     \'depends': ['deoplete.nvim', 'jedi-vim'], 
-                    \'commad': 'UpdateRemotePlugins',
+                    \'do': ':UpdateRemotePlugins',
                     \'install': 'git submodule update --init'
                     \})
         " required for ZSH Autocomplete
@@ -407,20 +438,22 @@ if dein#load_state('~/.cache/dein')
         call dein#add('rizzatti/dash.vim')
     endif
 
-    " Simply Fold 
     call dein#add('tmhedberg/SimpylFold')
     call dein#add('itchyny/lightline.vim')
     call dein#add('maximbaz/lightline-ale')
 
+    call dein#add('numirias/semshi',
+                \{'do': ':UpdateRemotePlugins'})
 
     call dein#add('gu-fan/riv.vim')
     call dein#add('mtdl9/vim-log-highlighting')
     call dein#add('jez/vim-superman') " Man pages
-    call dein#add('leshill/vim-json',
+    " vim-json fork that has better highlighting and conceal quote
+    call dein#add('elzr/vim-json',
                 \ {'on_ft': ['json']})
     "call dein#add('saltstack/salt-vim',
     "            \ {'on_ft': ['salt']})
-    "call dein#add('hashivim/vim-terraform')
+    call dein#add('hashivim/vim-terraform')
     "call dein#add('juliosueiras/vim-terraform-completion',
     "            \ {'on_ft': ['tf', 'tfvars']})
 
@@ -463,6 +496,27 @@ syntax enable
 "hi one_terminal_color_fg7 ctermfg=231 guifg=#e3e5e9
 "hi one_terminal_color_fg8 ctermfg=231 guifg=#353a44
 "hi one_terminal_color_fg9 ctermfg=249 guifg=#abb2bf
+function! SemhiOneHighlights()
+    hi semshiParameterUnused ctermfg=209 guifg=#e88388
+    hi semshiGlobal          ctermfg=214 guifg=#abb2bf cterm=italic gui=italic
+    hi semshiImported        ctermfg=214 guifg=#61AFEF cterm=bold gui=bold
+    hi semshiParameter       ctermfg=75  guifg=#87BA66
+    hi semshiLocal           ctermfg=117 guifg=#ffafd7
+    hi semshiFree            ctermfg=218 guifg=#87BA66
+    hi semshiBuiltin         ctermfg=207 guifg=#56b6c2
+    hi semshiAttribute       ctermfg=49  guifg=#87BA66
+    hi semshiSelf            ctermfg=249 guifg=#353a44
+    hi semshiUnresolved      ctermfg=226 guifg=#e5c07b cterm=underline gui=underline
+    hi semshiSelected        ctermfg=231 guifg=#c678dd guibg=#353a44 
+
+    hi semshiErrorSign       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
+    hi semshiErrorChar       ctermfg=231 guifg=#353a44 ctermbg=160 guibg=#e88388
+    "sign define semshiError text="窱" texthl=semshiErrorSign
+endfunction
+
+autocmd FileType python call SemhiOneHighlights()
+
+let g:riv_python_rst_hl = 1
 
 "hi one_terminal_color_bg9 ctermfg=209 guibg=#e88388
 "hi one_terminal_color_bg10 guibg=#a7cc8c
@@ -537,6 +591,8 @@ set cmdheight=2
 "autocmd BufLeave python :CocEnable
 " augroup END
 
+let g:python_highlight_all = 1
+
 
 "----------------------------------------------
 " Plugin: 'nathanaelkane/vim-indent-guides'
@@ -549,8 +605,8 @@ let g:indent_guides_start_level = 2
 augroup IndentGuide
     " base 00
     autocmd!
-    autocmd VimEnter,Colorscheme * hi IndentGuidesOdd ctermbg=6 guibg=#353a44
-    autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guifg=#abb2bf
+    autocmd VimEnter,Colorscheme * hi IndentGuidesOdd ctermbg=6 guibg=#353a44 ctermfg=16 guifg=#353a44 
+    autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guifg=#abb2bf ctermfg=16 guifg=#353a44 
     "" Vim
 augroup END
 
@@ -754,47 +810,32 @@ let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 "luafile $HOME/.config/nvim/iron.plugin.lua
 
 
+"----------------------------------------------
+"        Plugin: Shougo/echodoc.vim
+"----------------------------------------------
+let g:echodoc#enable_at_startup=1
+let g:echodoc#type="floating"
 
-" use tab
-function! s:check_back_space() abort "{{{
-    let col = col('.') - 1
-    if exists('*coc#refresh')
-    call coc#refresh()
-    endif
-    return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-" refresh on backspace
-inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" :  deoplete#manual_complete()
-
-function! OmniPopup(action)
-    if pumvisible()
-        if a:action == 'j'
-            return "\<C-N>"
-        elseif a:action == 'k'
-            return "\<C-P>"
-        endif
-    endif
-    return a:action
-endfunction
-
-" Control-0
-inoremap <silent><c-j> <C-R>=OmniPopup('j')<CR>
-inoremap <silent><c-k> <C-R>=OmniPopup('k')<CR>
 
 
 augroup deopleteExtra
     " autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-    " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+    "autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
     autocmd!
     autocmd FileType * exe 'UltiSnipsAddFiletypes ' . &filetype
 augroup  END
 
-
+" --------------------
+" Plugin: SkyLeach/pudb.vim
+" --------------------
+if has('nvim')
+endif
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
 "----------------------------------------------
 " Gutter Error and warning signs.
 
+let g:ale_enabled=1
 let g:ale_virtualtext_prefix=' '
 " let g:ale_echo_delay=15
 let g:ale_hover_to_preview=0
@@ -811,7 +852,7 @@ let g:ale_cursor_detail=0
 let g:ale_lint_on_insert_leave = 1
 let g:ale_close_preview_on_insert=0
 let g:ale_lint_on_enter = 1
-let g:ale_completion_enabled = 1
+let g:ale_completion_enabled = 0
 let g:ale_sign_error = '窱'
 let g:ale_sign_warning = '碌'
 
@@ -892,6 +933,7 @@ let g:ale_completion_tsserver_autoimport = 1
 augroup FiletypeGroup
     autocmd!
     au BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+    autocmd Filetype css,json setlocal tabstop=1 shiftwidth=2 expandtab 
 augroup END
 " ['stylelint', 'eslint']
 
@@ -907,7 +949,7 @@ augroup vim_blacklist_blacklist
 augroup END
 
 function! s:ale_settings()
-    set omnifunc=ale#completion#OmniFunc
+    "set omnifunc=ale#completion#OmniFunc
     set completeopt-=preview
     set completeopt+=noselect
     set completeopt+=noinsert
@@ -923,12 +965,37 @@ function! s:ale_settings()
     nmap <silent> <C-j> <Plug>(ale_next_wrap)
 endfunction
 
+
+" use tab
+function! s:check_back_space() abort "{{{
+    let col = col('.') - 1
+    if exists('*coc#refresh')
+    call coc#refresh()
+    endif
+    return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
 inoremap <expr><ESC><ESC> pumvisible() ? "\<C-p>" : "\<C-h>"
-"inoremap <silent><expr> <TAB>
-"      \ pumvisible() ? coc#_select_confirm() :
-"      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-"      \ <SID>check_back_space() ? "\<TAB>" :
-"      \ coc#refresh()
+autocmd CursorHold * if exists('*CocActionAsync') | silent call CocActionAsync('highlight') | endif
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | silent! pclose | endif
+" refresh on backspace
+" inoremap <silent><expr> <TAB> pumvisible() ? : <SID>check_back_space() ? "\<TAB>" :  deoplete#manual_complete()
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+function! OmniPopup(action)
+    if pumvisible()
+        if a:action == 'j'
+            return "\<C-N>"
+        elseif a:action == 'k'
+            return "\<C-P>"
+        endif
+    endif
+    return a:action
+endfunction
+
+" Control-0
+inoremap <silent><c-j> <C-R>=OmniPopup('j')<CR>
+inoremap <silent><c-k> <C-R>=OmniPopup('k')<CR>
 
 
 "----------------------------------------------
@@ -1040,9 +1107,9 @@ let g:lightline = {
             \     'modified': '(!(&readonly)&&index(g:lightline_blacklist,&filetype)!=-1&&(modified||!&modifiable))',
             \     'fugitive': '(index(g:lightline_blacklist,&filetype)==-1&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline() && winwidth(0)>=getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'paste': '(index(g:lightline_blacklist,&filetype)==-1&&(&paste))',
-            \     'pyenv': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated()&&winwidth(0)>getbufvar("b:", "small_threshold", g:small_threshold))',
+            \     'pyenv': '(&filetype=="python"&&exists("pyenv#pyenv#is_enabled")&&1==pyenv#pyenv#is_enabled()&&winwidth(0)>getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'pyenv_active': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
-            \     'method': '(index(g:lightline_blacklist,&filetype)!=-1&&winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold)&&getbufvar("vista_nearest_method_or_function","")!==#"")',
+            \     'method': '(index(g:lightline_blacklist,&filetype)!=-1&&winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold))',
             \ },
             \ 'component_type': {
             \     'linter_checking': 'left',
@@ -1107,16 +1174,25 @@ endfunction
 
 function! LightlinePyEnv ()
     let l:small_threshold = getbufvar("small_threshold", g:small_threshold)
-    let l:medium_threshold = getbufvar("medium_threshold", g:medium_threshold)
-    let l:large_threshold = getbufvar("large_threshold", g:large_threshold)
-    return WebDevIconsGetFileTypeSymbol('__init__.py',0)
+    return winwidth(0) > l:small_threshold ? WebDevIconsGetFileTypeSymbol('__init__.py',0) : ""
 endfunction
 
 function! LightlinePyEnvName ()
+
+    "echo pyenv#info#format('ex: %ev ix: %iv Sel: %sv') 
     let l:env = pyenv#pyenv#get_activated_env()
+    let l:small_threshold = getbufvar("small_threshold", g:small_threshold)
     let l:medium_threshold = getbufvar("b:", " medium_threshold", g:medium_threshold)
-    return winwidth(0) < l:medium_threshold  ? "" : l:env
-endfunction
+    let l:large_threshold = getbufvar("b:", "large_threshold", g:large_threshold)
+    " Show selected env and version
+    if pyenv#info#format('%sv') !=# l:env && winwidth(0) > l:large_threshold
+        return l:env
+    elseif winwidth(0) < l:small_threshold
+        return ""
+    else
+        return winwidth(0) < l:medium_threshold  ? pyenv#info#preset('short'): pyenv#info#preset('long')
+    endif
+endfunction 
 
 
 function! LightlinePaste ()
@@ -1166,11 +1242,11 @@ function! LightlineFiletype()
     let l:wide = winwidth(0)
     let l:large_threshold = getbufvar("b:", "large_threshold", g:large_threshold)
     let l:medium_threshold = getbufvar("b:", "medium_threshold", g:medium_threshold)
-    if index(g:lightline_blacklist,&filetype)==-1 &&
+    if index(g:lightline_blacklist,&filetype)==-1 && exists('*WebDevIconsGetFileTypeSymbol') && 
                 \ &fenc!=#''
-        let symbol=WebDevIconsGetFileTypeSymbol()
-        let new_ft=(strlen(&filetype) ? symbol . ' ' . &filetype  : '')
-        return l:wide > l:large_threshold ? new_ft : symbol
+        let l:symbol=WebDevIconsGetFileTypeSymbol()
+        let new_ft=(strlen(&filetype) ? l:symbol . ' ' . &filetype  : '')
+        return l:wide > l:large_threshold ? new_ft : l:symbol
     endif
     return ''
 endfunction
@@ -1448,7 +1524,7 @@ augroup END
 
 function! s:vim_test_keymap()
     nmap <silent> t<C-n> :TestNearest<CR>
-    nmap <silent> t<C-f> :TestFile<CR>
+    nmap <silent> t<C-f> :TestFile -strategy=dispatch<CR>
     nmap <silent> t<C-s> :TestSuite<CR>
     nmap <silent> t<C-l> :TestLast<CR>
     nmap <silent> t<C-g> :TestVisit<CR>
@@ -1457,6 +1533,7 @@ let g:test#python#runner = g:python3_host_prog
 let g:test#python#pyunit#executable =  g:python3_host_prog .  '-m pyunit'
 let g:test#strategy = "dispatch"
 " make test commands execute using dispatch.vim
+let g:dispatch_handlers=["iterm", "tmux", "neovim", "job", "screen", "windows", "x11", 'headless']
 
 function! TabMessage(cmd)
     redir => message
@@ -1548,7 +1625,11 @@ call SetupCommandAbbrs('C', 'CocConfig')
 " --------------------
 " By default vista.vim never run if you don't call it explicitly.
 " show the nearest function in your statusline automatically,
+augroup VistaHooks
+autocmd!
 autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
+"autocmd Filetype python,json 'nmap <s-CR> :call vista#cursor#ShowTag()<cr>'
+augroup END
 
 " --------------------
 " Plugin: blueyed/vim-qf_resize')
@@ -1595,6 +1676,16 @@ let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
+
+augroup UltiSnips_AutoTrigger
+    au!
+    au InsertCharPre * silent! call UltiSnips#TrackChange()
+    au TextChangedI *  silent! call UltiSnips#TrackChange()
+    if exists('##TextChangedP')
+        au TextChangedP * silent! call UltiSnips#TrackChange()
+    endif
+augroup END
+
 
 function! GetAllSnippets()
   call UltiSnips#SnippetsInCurrentScope(1)
@@ -1651,4 +1742,5 @@ function! SynStack()
   endif
   echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
+
 " { :set sw=2 ts=2 et }

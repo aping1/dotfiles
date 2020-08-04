@@ -1,11 +1,12 @@
 {
+    "python.linting.enabled": false,
     "diagnostic.displayByAle": true,
-      "diagnostic.errorSign": "✘",
-  "diagnostic.warningSign": "⚠",
-  "diagnostic.infoSign": "i",
-  "diagnostic.hintSign": "➤",
+    "diagnostic.errorSign": "✘",
+    "diagnostic.warningSign": "⚠",
+    "diagnostic.infoSign": "i",
+    "diagnostic.hintSign": "➤",
     "coc.preferences.currentFunctionSymbolAutoUpdate": true,
     "suggest.keepCompleteopt" : true,
-    "suggest.noselect": true,
-    "suggest.autoTrigger": false
+    "suggest.autoTrigger": false,
+    "coc.preferences.colorSupport": true
 }

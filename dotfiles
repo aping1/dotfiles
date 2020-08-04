@@ -165,6 +165,36 @@ brew "wireshark"  #Networks
 brew "nmap" #Network
 brew "mosh" #Network
 
+pip path=/usr/bin/pip appdirs==1.4.4
+pip path=/usr/bin/pip attrs==19.3.0
+pip path=/usr/bin/pip black==19.10b0
+pip path=/usr/bin/pip bypy==1.6.6
+pip path=/usr/bin/pip certifi==2019.9.11
+pip path=/usr/bin/pip chardet==3.0.4
+pip path=/usr/bin/pip click==7.1.2
+pip path=/usr/bin/pip dill==0.3.1.1
+pip path=/usr/bin/pip flake8==3.8.3
+pip path=/usr/bin/pip greenlet==0.4.15
+pip path=/usr/bin/pip idna==2.8
+pip path=/usr/bin/pip importlib-metadata==1.7.0
+pip path=/usr/bin/pip jedi==0.17.2
+pip path=/usr/bin/pip mccabe==0.6.1
+pip path=/usr/bin/pip msgpack==1.0.0
+pip path=/usr/bin/pip multiprocess==0.70.9
+pip path=/usr/bin/pip neovim==0.3.1
+pip path=/usr/bin/pip parso==0.7.1
+pip path=/usr/bin/pip pathspec==0.8.0
+pip path=/usr/bin/pip pycodestyle==2.6.0
+pip path=/usr/bin/pip pyflakes==2.2.0
+pip path=/usr/bin/pip pynvim==0.4.0
+pip path=/usr/bin/pip regex==2020.7.14
+pip path=/usr/bin/pip requests==2.22.0
+pip path=/usr/bin/pip requests-toolbelt==0.9.1
+pip path=/usr/bin/pip six==1.12.0
+pip path=/usr/bin/pip toml==0.10.1
+pip path=/usr/bin/pip typed-ast==1.4.1
+pip path=/usr/bin/pip urllib3==1.25.7
+pip path=/usr/bin/pip zipp==3.1.0
 pip -r dev-requirements.txt
 pip -r requirements.txt
 pip pynvim
