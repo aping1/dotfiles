@@ -3,23 +3,50 @@ alias deploy_container='() {[[ "${1}" ]] || return 1; cd $(task_home)/deployment
 
 alias gwhoami='gcloud config list account --format "value(core.account)"'
 
-
-function cortex_prd() {
-export VAULT_TOKEN=$(cat ~/.vault-token.prd)
-export VAULT_ADDR="https://vault.gns-prod-shared-infra.gcp.pan.local";
-export SKIP_VERIFY=1
-( cortex_parse_and_export ${1} && \
-    cd $(get_projects_home  || echo -n '.')/deployment/ && \
-    python3 scripts/cdt  run --force --bundle --key-file $(get_projects_home || echo -n '..')/${ENVIRONMENT}.key.json )
+function  cortex_prd() {
+    cortex_env ${0##*_} $*
 }
 
-function cortex_dev() {
-export VAULT_ADDR="https://vault.gns-dev-shared-infra.gcp.pan.local"; 
-export VAULT_TOKEN=$(cat ~/.vault-token.dev)
-export SKIP_VERIFY=1
-( [[ $1 ]] && cortex_parse_and_export ${1}  
-    cd $(get_projects_home || echo -n '.')/deployment/ && \
-    python3 scripts/cdt  run --force --bundle --key-file $(get_projects_home || echo -n '..')/${ENVIRONMENT:-dev}.key.json )
+function  cortex_stg() {
+    cortex_env ${0##*_} $*
+}
+
+function  cortex_gov() {
+    cortex_env ${0##*_} $*
+}
+
+function  cortex_dev() {
+    cortex_env ${0##*_} $*
+}
+
+function cortex_env() {
+    local OLD_ENVIRONMENT="${ENVIRONMENT:-${1}}"
+    shift
+    case "${OLD_ENVIRONMENT}" in
+        'prd'|'stg'|'dev')
+            # export VAULT_ADDR="https://vault.gns-prod-shared-infra.gcp.pan.local";
+            export VAULT_ADDR='https://vault.code.pan.run'
+            export VAULT_TOKEN=$(cat ~/.vault-token)
+            ;;
+        'gov')
+            export VAULT_ADDR="https://vault.gov.cortex.pan.run"
+            export VAULT_TOKEN=$(cat ~/.vault-token.gov)
+            ;;
+        *)
+            exit 2
+            ;;
+    esac
+    (
+    setopt xtrace
+    if [[ $1 ]] && SKIP_VERIFY=1 cortex_parse_and_export ${1} ; then
+        # [[ ${OLD_ENVIRONMENT} == ${ENVIRONMENT} || ${OLD_ENVIRONMENT} == prd ]] || exit 255
+        cd $( ! (( $+TMUX )) && echo $(pwd -P)/.. || get_projects_home)/deployment/ || exit 1
+        tput setaf 1; pwd -P; tput sgr0
+        KEYFILE="${HOME}/projects/Apollo/${ENVIRONMENT:-dev}.key.json"
+        [[ ${KEYFILE} && -s ${KEYFILE} ]]  || { printf -- "Invalid Keyfile \"%s\"" "${KEYFILE}" ; exit 1 }
+        python3 scripts/cdt --debug --key-file "${KEYFILE}" run --force --bundle 
+    fi
+    )
 }
 
 function cortex_parse_and_export () {
@@ -42,6 +69,9 @@ function cortex_parse_and_export () {
         return 2
     fi
     export PROJECT="${proj}"
+    printf -- 'PROJECT=%s\nCOUNTRY=%s\nENVIRONMENT=%s\nPROJECT_BASE=%s\nPROJ_PREFIX=%s\n\n' \
+        "${PROJECT}" "${COUNTRY}" "${ENVIRONMENT}" "${PROJECT_BASE}" "${PROJ_PREFIX}" 
+
 }
 
 get_cert_out() {

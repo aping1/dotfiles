@@ -75,7 +75,7 @@ endif
 
 " function that sets host prog from inherited shell
 function! s:python_from_virtualenv()
-    if pyenv#pyenv#is_activated() && executable(g:pyenv#python_exec)
+    if exists('*pyenv#pyenv#is_activated') && pyenv#pyenv#is_activated() && executable(g:pyenv#python_exec)
         let g:python3_host_prog = g:pyenv#python_exec
         let g:python_host_prog = g:pyenv#python_exec
     else
@@ -86,6 +86,11 @@ function! s:python_from_virtualenv()
                 \ "*.py": {
                 \   "*.py": { "make": g:python3_host_prog . "{file}", "alternate": "{}_test.py" },
                 \   "*_test.py": {"dispatch": "pyunit {file}", "type": "test", "alternate": "{}.py" },
+                \ },
+                \ "*.tf": {
+                \   "main.tf": { "alternate": "variables.tf" },
+                \   "variables.tf": { "alternate": "outputs.tf" },
+                \   "outputs.tf": { "alternate": "main.tf" },
                 \   }
                 \ }
 endfunction
@@ -109,6 +114,7 @@ if dein#load_state('~/.cache/dein')
   " === Plugins! ===
   " --- Sesnible defaults ---
   call dein#add('tpope/vim-sensible')
+  " call dein#add('romainl/vim-qf')
   call dein#add('mhinz/vim-startify')
   if has('nvim')
     call dein#add('neoclide/coc.nvim', {'merged':0, 'rev': 'release'})
@@ -145,7 +151,7 @@ if dein#load_state('~/.cache/dein')
   if has('nvim')
       " Vim exploration Modifications
       call dein#add('Shougo/denite.nvim')
-      call dein#add('dunstontc/denite-mapping')
+      "call dein#add('dunstontc/denite-mapping')
   else
       call dein#add('Shougo/unite.vim')
       call dein#add('Shougo/unite-outline.vim')
@@ -176,8 +182,9 @@ if dein#load_state('~/.cache/dein')
               \ })
 
   " Projects
-  call dein#add('amiorin/vim-project')
   call dein#add('tpope/vim-projectionist')
+  " more powerful less sane thank projectioniskkt
+  "  call dein#add('amiorin/vim-project')
 
   " Navigation
   call dein#add('scrooloose/nerdtree',
@@ -203,6 +210,8 @@ if dein#load_state('~/.cache/dein')
   " == mecurial client ==
   call dein#add('ludovicchabant/vim-lawrencium')
   call dein#add('liuchengxu/vista.vim')
+  call dein#add('xolox/vim-easytags')
+  call dein#add('xolox/vim-misc')
 
   " Linting, syntax, autocomplete, semantic highlighting call dein#add('numirias/semshi', {'do': ':UpdateRemotePlugins')}
   call dein#add('w0rp/ale')
@@ -215,7 +224,10 @@ if dein#load_state('~/.cache/dein')
               \'commad': 'UpdateRemotePlugins'})
   " Python 
   " call dein#add('plytophogy/vim-virtualenv')
-  call dein#add('lambdalisue/vim-pyenv')
+  "
+  if executable('ag')
+    call dein#add('lambdalisue/vim-pyenv')
+  endif
   call dein#add('Shougo/neoinclude.vim')
 
   " === nvim feature ===
@@ -241,8 +253,7 @@ if dein#load_state('~/.cache/dein')
   call dein#add('Shougo/context_filetype.vim')
   call dein#add('janko/vim-test')
   call dein#add('tpope/vim-dispatch')
-    call dein#add('radenling/vim-dispatch-neovim')
-
+  call dein#add('radenling/vim-dispatch-neovim')
   " for ZSH Autocomplete
   call dein#add('mtikekar/nvim-send-to-term')
 
@@ -304,6 +315,7 @@ syntax enable
     "hi one_terminal_color_bg14 ctermbg=214 guibg=#65c2cd
     "hi one_terminal_color_bg15 guibg=#e3e5e9
 
+let g:ack_use_dispatch = 1
 if has('gui_running')
     silent! colorscheme one
 elseif (has('termguicolors'))
@@ -560,7 +572,9 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
     function! s:pyenv_init()
         " Active external version
         let major_version = pyenv#python#get_internal_major_version()
+        if exists('*jedi#force_py_version')
         call jedi#force_py_version(major_version)
+        endif
         let g:python3_host_prog = g:pyenv#python_exec
         let g:python_host_prog = g:pyenv#python_exec
         let g:projectionist_heuristics = {
@@ -587,7 +601,7 @@ endif
 
 let g:deoplete#auto_complete_delay = 10
 
-let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_at_startup = 0
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 " use tab
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
@@ -611,11 +625,34 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 augroup deopleteExtre
 autocmd InsertLeave * redrawstatus
 
-autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+" noautocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType python call deoplete#initialize()
+autocmd FileType zsh call deoplete#initialize()
 augroup  END
 
+"----------------------------------------------
+" Plugin: 'xolox/vim-easytags'
+"----------------------------------------------
+let g:easytags_async=1
+"let g:easytags_languages = {
+"\   'language': {
+"\     'cmd': g:easytags_cmd,
+"\	    'args': [],
+"\	    'fileoutput_opt': '-f',
+"\	    'stdout_opt': '-f-',
+"\	    'recurse_flag': '-R'
+"\   }
+"\}
+"
+"
+let g:easytags_dynamic_files = 1
+let g:easytags_events = ['BufWritePost']
+
+" let g:easytags_always_enabled = 1
+let g:easytags_auto_highlight = 0
+let g:easytags_include_members = 1
+"
 " call this again
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
@@ -765,95 +802,99 @@ let g:os_spec_string=' n' . g:os . (has("gui_running")?'': '').('')
 let g:lightline_blacklist=["help","nofile","nerdtree", "vista", "qf"]
 
 let g:lightline = {
-      \ 'inactive': {
-      \   'left': [ [  'pyenv_active', 'pyenv' ],
-      \             [ 'fugitive', 'filename'],
-      \           ],
-      \   'right': [ 
-      \             [ 'readonly', 'lineinfo', 'linecount'], 
-      \             [ 'filetype', 'fileformat'],
-      \            ]
-      \ },
-      \ 'active': {
-      \   'left': [ [  'mode', 'paste', ],  
-      \             [  'pyenv_active', 'pyenv', ],
-      \             [ 'fugitive', 'filename', 'method', ],
-      \           ],
-      \   'right': [ 
-      \             [ 'readonly', 'percentwin', 'lineinfo',  'linecount',  ],
-      \             [ 'filetype', 'fileformat', ], 
-      \             [ 'spell', ], [ 'linter_checking', 'linter_errors',
-      \                'linter_warnings', 'linter_ok' ],
-      \            ]
-      \ },
-      \ 'component_expand' : {
-      \  'linter_checking': 'g:lightline#ale#checking',
-      \  'linter_warnings': 'g:lightline#ale#warnings',
-      \  'linter_errors': 'g:lightline#ale#errors',
-      \  'linter_ok': 'g:lightline#ale#ok',
-      \  'gitbranch': 'fugitive#head',
-      \ },
-      \ 'component': {
-      \   'linecount': '%{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":line("$")}',
-      \   'lineinfo': '%4{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":(&fenc==#"")?"":winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"C".col("."):"C".col(".").":"."L".line(".")}',
-      \   'close': '%9999X%{g:os_spec_string}',
-      \   'spell': '%{winwidth(0) <= getbufvar("b:", "small_threshold", g:small_threshold)?"":&fenc==#""?"":&spell?"":winwidth(0)>getbufvar("b:", "large_threshold", g:large_threshold)?"暈".&spelllang:"暈"}',
-      \   'modified': '%{&modified?"﯂":&modifiable?"":""}',
-      \   'readonly': '%{index(g:lightline_blacklist,&filetype)==-1&&(&fenc==#"")?"":(&readonly)?"":""}',
-      \ },
-      \ 'component_visible_condition': {
-      \     'linecount': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
-      \     'lineinfo': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
-      \     'linter_checking': '(index(g:lightline_blacklist,&filetype)==-1)',
-      \     'fileformat' : '(winwidth(0) > getbufvar("b:", "medium_threshold", g:medium_threshold))',
-      \     'linter_warnings': '(index(g:lightline_blacklist,&filetype)==-1)',
-      \     'linter_errors': '(index(g:lightline_blacklist,&filetype)==-1)',
-      \     'linter_ok': '(index(g:lightline_blacklist,&filetype)==-1)',
-      \     'close': '(index(g:lightline_blacklist,&filetype)==-1)',
-      \     'spell': '(winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold)&&index(g:lightline_blacklist,&filetype)==-1)',
-      \     'readonly': '(index(g:lightline_blacklist,&filetype)==-1&&(&readonly))',
-      \     'modified': '(!(&readonly)&&index(g:lightline_blacklist,&filetype)!=-1&&(modified||!&modifiable))',
-      \     'fugitive': '(index(g:lightline_blacklist,&filetype)==-1&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline() && winwidth(0)>=getbufvar("b:", "small_threshold", g:small_threshold))',
-      \     'paste': '(index(g:lightline_blacklist,&filetype)==-1&&(&paste))',
-      \     'pyenv': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated()&&winwidth(0)>getbufvar("b:", "small_threshold", g:small_threshold))',
-      \     'pyenv_active': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
-      \     'method': '(index(g:lightline_blacklist,&filetype)!=-1&&winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold)&&getbufvar("vista_nearest_method_or_function","")!==#"")',
-      \ },
-      \ 'component_type': {
-      \     'linter_checking': 'left',
-      \     'linter_warnings': 'warning',
-      \     'linter_errors': 'error',
-      \     'linter_ok': 'left',
-      \     'banner': 'tabsel',
-      \ },
-      \ 'component_function': {
-      \     'mode': 'LightlineMode',
-      \     'filetype': 'LightlineFiletype',
-      \     'filename': 'LightlineFilename',
-      \     'fileformat': 'LightlineFileFormat',
-      \     'method': 'NearestMethodOrFunction',
-      \     'fugitive': 'LightlineFugitive',
-      \     'paste': 'LightlinePaste',
-      \     'pyenv_active': 'LightlinePyEnv',
-      \  'pyenv': 'LightlinePyEnvName',
-      \ },
-      \ 'tabline' : {
-      \   'separator': { 'left': '┋', },
-      \   'active': [ 
-      \       'tabnum', 'filename', 'modified', 'readonly',
-      \   ],
-      \ },
-      \ 'tab_component_function': {
-      \ 'filename': 'LightlineTabname',
-      \ 'modified': 'LightlineTabmodified',
-      \ 'readonly': 'LightlineTabReadonly',
-      \ 'tabnum': 'LightlineTabNumber',
-      \ 'banner': 'LightlineBanner',
-      \ },
-      \ 'colorscheme' : 'one',
-      \   'separator': { 'left': '', 'right':'' },
-      \   'subseparator': { 'left': '∶', 'right': '∷'},
-      \ }
+            \ 'inactive': {
+            \   'left': [ [ 'pyenv_active', 'pyenv' ],
+            \             [ 'fugitive', 'filename' ],
+            \           ],
+            \   'right': [ 
+            \             [ 'readonly', 'lineinfo', 'linecount' ],
+            \             [ 'filetype', 'fileformatl' ],
+            \            ]
+            \ },
+            \ 'active': {
+            \   'left': [ [ 'mode', 'paste', ],
+            \             [ 'pyenv_active', 'pyenv', ],
+            \             [ 'fugitive', 'filename', 'method', ],
+            \           ],
+            \   'right': [ 
+            \             [ 'readonly', 'percentwin', 'lineinfo',  'linecount', ],
+            \             [ 'filetype', 'fileformat', ], 
+            \             [ 'spell', ], [ 'linter_checking', 'linter_errors',
+            \                'linter_warnings', 'linter_ok' ], [ 'coc_diagnostic', 'coc_status' ],
+            \            ]
+            \ },
+            \ 'component_expand' : {
+            \  'linter_checking': 'g:lightline#ale#checking',
+            \  'linter_warnings': 'g:lightline#ale#warnings',
+            \  'linter_errors': 'g:lightline#ale#errors',
+            \  'linter_ok': 'g:lightline#ale#ok',
+            \  'gitbranch': 'fugitive#head',
+            \ },
+            \ 'component': {
+            \   'linecount': '%{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":line("$")}',
+            \   'lineinfo': '%4{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":(&fenc==#"")?"":(winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)||len(col("."))>1000)?"C".col("."):"C".col(".").":"."L".line(".")}',
+            \   'close': '%9999X%{g:os_spec_string}',
+            \   'coc_status': '%{exists("g:coc_status") ? coc#status() : "disabled"}',
+            \   'spell': '%{winwidth(0) <= getbufvar("b:", "small_threshold", g:small_threshold)?"":&fenc==#""?"":&spell?"":"暈"}%{winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"":&spelllang}',
+            \   'modified': '%{&modified?"﯂":&modifiable?"":""}',
+            \   'readonly': '%{index(g:lightline_blacklist,&filetype)==-1&&(&fenc==#"")?"":(&readonly)?"":""}',
+            \ },
+            \ 'component_visible_condition': {
+            \     'coc_diagnostic': 'exists("g:coc_status")&&g:coc_status!=#""',
+            \     'coc_status': 'exists("g:coc_status")&&g:coc_status!=#""',
+            \     'linecount': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
+            \     'lineinfo': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
+            \     'linter_checking': '(index(g:lightline_blacklist,&filetype)==-1)',
+            \     'fileformat' : '(winwidth(0) > getbufvar("b:", "medium_threshold", g:medium_threshold))',
+            \     'linter_warnings': '(index(g:lightline_blacklist,&filetype)==-1)',
+            \     'linter_errors': '(index(g:lightline_blacklist,&filetype)==-1)',
+            \     'linter_ok': '(index(g:lightline_blacklist,&filetype)==-1)',
+            \     'close': '(index(g:lightline_blacklist,&filetype)==-1)',
+            \     'spell': '(winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold)&&index(g:lightline_blacklist,&filetype)==-1)',
+            \     'readonly': '(index(g:lightline_blacklist,&filetype)==-1&&(&readonly))',
+            \     'modified': '(!(&readonly)&&index(g:lightline_blacklist,&filetype)!=-1&&(modified||!&modifiable))',
+            \     'fugitive': '(index(g:lightline_blacklist,&filetype)==-1&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline() && winwidth(0)>=getbufvar("b:", "small_threshold", g:small_threshold))',
+            \     'paste': '(index(g:lightline_blacklist,&filetype)==-1&&(&paste))',
+            \     'pyenv': '(&filetype=="python"&&exists("*pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated()&&winwidth(0)>getbufvar("b:", "small_threshold", g:small_threshold))',
+            \     'pyenv_active': '(&filetype=="python"&&exists("*pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
+            \     'method': '(index(g:lightline_blacklist,&filetype)!=-1&&winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold)&&getbufvar("vista_nearest_method_or_function","")!==#"")',
+            \ },
+            \ 'component_type': {
+            \     'linter_checking': 'left',
+            \     'linter_warnings': 'warning',
+            \     'linter_errors': 'error',
+            \     'linter_ok': 'left',
+            \     'banner': 'tabsel',
+            \ },
+            \ 'component_function': {
+            \     'mode': 'LightlineMode',
+            \     'filetype': 'LightlineFiletype',
+            \     'filename': 'LightlineFilename',
+            \     'fileformat': 'LightlineFileFormat',
+            \     'method': 'NearestMethodOrFunction',
+            \     'fugitive': 'LightlineFugitive',
+            \     'paste': 'LightlinePaste',
+            \     'pyenv_active': 'LightlinePyEnv',
+            \     'coc_diagnostic': 'StatusDiagnostic',
+            \     'pyenv': 'LightlinePyEnvName',
+            \ },
+            \ 'tabline' : {
+            \   'separator': { 'left': '┋', },
+            \   'active': [ 
+            \       'tabnum', 'filename', 'modified', 'readonly',
+            \   ],
+            \ },
+            \ 'tab_component_function': {
+            \ 'filename': 'LightlineTabname',
+            \ 'modified': 'LightlineTabmodified',
+            \ 'readonly': 'LightlineTabReadonly',
+            \ 'tabnum': 'LightlineTabNumber',
+            \ 'banner': 'LightlineBanner',
+            \ },
+            \ 'colorscheme' : 'one',
+            \   'separator': { 'left': '', 'right':'' },
+            \   'subseparator': { 'left': '∶', 'right': '∷'},
+            \ }
 
 let g:small_threshold=51
 let g:medium_threshold=96
@@ -888,7 +929,11 @@ function! LightlinePyEnv ()
 endfunction
 
 function! LightlinePyEnvName ()
-    let l:env = pyenv#pyenv#get_activated_env()
+    if exists("*pyenv#pyenv#is_activated")
+        let l:env = pyenv#pyenv#get_activated_env()
+    else
+        let l:env = "???"
+    endif
     let l:medium_threshold = getbufvar("b:", " medium_threshold", g:medium_threshold)
     return winwidth(0) < l:medium_threshold  ? "" : l:env
 endfunction
@@ -1373,6 +1418,7 @@ let g:vista#renderer#enable_icon = 1
 let g:vista#renderer#icons = {
             \   "function": "\uf794",
             \   "variable": "\uf71b",
+            \   "default": "",
             \  }
 
 function! SetupCommandAbbrs(from, to)
@@ -1410,4 +1456,18 @@ augroup VISTA
 autocmd FileType vista_kind set ambiwidth=single
 augroup END
 
+au FileType qf call AdjustWindowHeight(2, 10)
+function! AdjustWindowHeight(minheight, maxheight)
+    let l = 1
+    let n_lines = 0
+    let w_width = winwidth(0)
+    while l <= line('$')
+        " number to float for division
+        let l_len = strlen(getline(l)) + 0.0
+        let line_width = l_len/w_width
+        let n_lines += float2nr(ceil(line_width))
+        let l += 1
+    endw
+    exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
+endfunction
 " { :set sw=2 ts=2 et }

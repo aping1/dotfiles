@@ -167,3 +167,5 @@ brew "mosh" #Network
 pip pynvim
 pip psutil
 link "${HOME}/Library/Application Scripts/com.omnigroup.OmniFocus2.MacAppStore" .local/omnifocus-scripts
+
+manual github git@github.com:juliosueiras/terraform-lsp.git install ='''GO111MODULE=on go mod download # Download the modules for the project\nb make      # Build the project. Alternatively run "go build"\n make copy # Install the project

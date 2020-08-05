@@ -33,11 +33,11 @@ fi
 
 # dumb terminal can be a vim dump terminal in that case don't try to load plugins
 if [ ! $TERM = dumb ]; then
-    ZGEN_AUTOLOAD_COMPINIT=true
+    ZGEN_AUTOLOAD_COMPINIT=1
 
     # If user is root it can have some issues with access to competition files
     if [[ "${USER}" == "root" ]]; then
-        ZGEN_AUTOLOAD_COMPINIT=false
+        ZGEN_AUTOLOAD_COMPINIT=0
     fi
 
     # load zgen
@@ -102,6 +102,7 @@ if [ ! $TERM = dumb ]; then
 
         zgen save
     fi
+    zgen apply &>/dev/null
 
 fi
 
@@ -200,6 +201,10 @@ fi
 
 bindkey "${terminfo[kcbt]}" up-line-or-history
 # bindkey -M autosuggest-fetch '^[[Z' 
+#
+if [[ ${+commands[thefuck]} -eq 1 ]] ; then
+eval $(thefuck --alias)
+fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
