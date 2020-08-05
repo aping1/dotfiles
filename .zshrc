@@ -238,6 +238,13 @@ export FZF_DEFAULT_OPTS="--bind='esc:print-query,tab:toggle-preview,f1:execute(l
 #  *auto*, full, plain, changes, header, grid, numbers, snip.
 export BAT_STYLE=snip
 
+autoload -Uz compinit
+if [ $(date +'%j') != $(/usr/bin/stat -f '%Sm' -t '%j' ${ZDOTDIR:-$HOME}/.zcompdump) ]; then
+  compinit
+else
+  compinit -C
+fi
+
 # (EXPERIMENTAL) Advanced customization of fzf options via _fzf_comprun function
 # - The first argument to the function is the name of the command.
 # - You should make sure to pass the rest of the arguments to fzf.

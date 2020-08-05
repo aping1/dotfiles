@@ -1474,9 +1474,9 @@ augroup END
 let g:NERDTreeIndicatorMapCustom = {
             \ 'Modified'  : '✹',
             \ 'Staged'    : '✚',
-            \ 'Untracked' : '✭',
+            \ 'Untracked' : '﯏',
             \ 'Renamed'   : '➜',
-            \ 'Unmerged'  : '═',
+            \ 'Unmerged'  : '',
             \ 'Deleted'   : '✖',
             \ 'Dirty'     : '✗',
             \ 'Clean'     : '✔︎',
