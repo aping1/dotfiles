@@ -7,13 +7,13 @@ let s:base_dir = resolve(expand("<sfile>:p:h"))
 let g:projjsn = s:base_dir . "/projections.json"
 
 let g:projectionist_custom#verbose = 0
-
 function! s:LoadHeuristics()
     let l:projson = readfile(g:projjsn)
     let l:project = projectionist#json_parse(l:projson)
     let g:projectionist_heuristics = copy(l:project)
 endfunction
-call s:LoadHeuristics()
+
+autocmd Syntax * if exists('*projectionist#json_parse') | call s:LoadHeuristics() | endif
 
 " Function: lh#path#join(pathparts, {path_separator}) {{{3
 " Thanks: https://stackoverflow.com/questions/62458122/suggested-way-to-join-filepaths-in-vim
@@ -50,7 +50,6 @@ function! s:SetProjections()
 endfunction
 
 command! ReloadProjections if exists('b:projectionist_file') | call ProjectionistDetect(fnamemodify(b:projectionist_file, ':p:h')) | call s:SetProjections() | endif 
-call s:LoadHeuristics()
 
 augroup detect_project
     autocmd!
