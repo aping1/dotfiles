@@ -211,7 +211,7 @@
   typeset -g POWERLEVEL9K_VCS_MODIFIED_ICON='✹'
   typeset -g POWERLEVEL9K_VCS_CONFLICT_ICON=''
   typeset -g POWERLEVEL9K_VCS_COMMITS_BEHIND_ICON='⇠'
-  typeset -g POWERLEVEL9K_VCS_DIRTY_ICON='✗'
+  typeset -g POWERLEVEL9K_VCS_DIRTY_ICON=' '
   # typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=
   typeset -g POWERLEVEL9K_VCS_COMMIT_ICON='#' #<commit>
   typeset -g POWERLEVEL9K_VCS_UNMERGED_ICON='נּ '
@@ -382,7 +382,7 @@
     # +42 if have staged changes.
     (( VCS_STATUS_NUM_STAGED     )) && res+=" ${clean}${(g::)POWERLEVEL9K_VCS_MODIFIED_ICON}${VCS_STATUS_NUM_STAGED}${meta}"
     # !42 if have unstaged changes.
-    (( VCS_STATUS_NUM_UNSTAGED   )) && res+=" ${modified}${(g::)POWERLEVEL9K_VCS_DIRTY_ICON:-'*'}${VCS_STATUS_NUM_UNSTAGED}${meta}"
+    (( VCS_STATUS_NUM_UNSTAGED   )) && res+=" ${modified}${(g::)POWERLEVEL9K_VCS_DIRTY_ICON:-'x'}${VCS_STATUS_NUM_UNSTAGED}${meta}"
     # ?42 if have untracked files. It's really a question mark, your font isn't broken.
     # See POWERLEVEL9K_VCS_UNTRACKED_ICON above if you want to use a different icon.
     # Remove the next line if you don't want to see untracked files at all.
