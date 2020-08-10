@@ -45,6 +45,7 @@ if dein#load_state('~/.cache/dein')
     " Highlight colors
     call dein#add('ap/vim-css-color',
                 \{'on_ft': ['vim']})
+    call dein#add('tpope/vim-scriptease')
     " Auto color hex
     call dein#add('lilydjwg/Colorizer')
 

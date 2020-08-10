@@ -34,4 +34,26 @@ else
     echomsg "pyls is not available"
 endif
 
+" use tab
+function! s:check_back_space() abort "{{{
+    let col = col('.') - 1
+    if exists('*coc#refresh')
+    call coc#refresh()
+    endif
+    return !col || getline('.')[col - 1]  =~# '\s'
+endfunction"}}}
+inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" :  deoplete#manual_complete()
+
+
+augroup CocResources
+    autocmd!
+    autocmd CursorHold * if exists('*CocActionAsync') | silent call CocActionAsync('highlight') | endif
+    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | silent! pclose | endif
+    " refresh on backspace
+    " inoremap <silent><expr> <TAB> pumvisible() ? : <SID>check_back_space() ? "\<TAB>" :  deoplete#manual_complete()
+augroup END
+
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+inoremap <expr><ESC><ESC> pumvisible() ? "\<C-p>" : "\<C-h>"
+
 
