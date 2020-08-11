@@ -9,36 +9,38 @@ set -f; IFS=$'\n'
 FILES=($(git diff-tree --no-commit-id --name-only -r HEAD))
 set +f; unset IFS
 
-cd_git_root () {
+function cd_git_root () {
   if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) != 'true' ]]; then
-    cdgitroot_print_error "not in a git repository"
+    printf -- "not in a git repository\n"
     return 1
   fi
 
-  local relative_path="$1"
-  local root_path=$(git rev-parse --show-toplevel)
+  local relative_path="${1:-.}"
+  local root_path
+  root_path=$(git rev-parse --show-toplevel)
 
   if [ -n "$relative_path" ]; then
-    cd "$root_path/$relative_path"
+    cd "$root_path/$relative_path" || return
   else
-    cd "$root_path"
+    cd "$root_path" || return
   fi
 }
 
 DELETED=($(git status 2>&1 | awk '/deleted:/{print $2}' ))
 cd_git_root || { printf -- 'Git error'; exit 1; }
 if [[ ${#FILES[@]} -eq 1 ]]; then
-    git commit --amend -c "${SHA} ${FILES} ${MSG}"
+    git commit --amend -c "${SHA} ${FILES[*]} ${MSG}"
     exit 0
 elif [[ ${#FILES[@]} -gt 1 ]]; then
-    yes a | git reset -p HEAD~1 -- ${FILES[@]}
-    for f in ${FILES[@]}; do
+    git reset HEAD~1
+    sleep 2
+    for f in "${FILES[@]}"; do
         if [[ "$f" =~ ${DELETED[*]} ]]; then
-            git rm ${f}
+            git rm "${f}"
         else
             yes a | git add -p "$f"
         fi
-        git commit -m "$SHA $f $TOPMSG$LF$LF$MSG"
+        git commit -m "$SHA $f ${TOPMSG}${LF}${LF}${MSG}"
     done
     exit 0
 else
