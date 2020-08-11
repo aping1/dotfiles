@@ -1,13 +1,14 @@
 #!/usr/bin/env zsh
 #
-if command -v realpath &>/dev/null; then
-    alias _realpath='realpath'
-else
-    alias _realpath='() { while [[ $1 =~ ^- ]]; do shift; done;  echo "${1:A}"; } '
+if command -v _realpath &>/dev/null && [[ ! $(command -v _realpath) =~ ^alias ]]; then
+    if command -v realpath &>/dev/null; then
+        alias _realpath='realpath'
+    else
+        alias _realpath='() { while [[ $1 =~ ^- ]]; do shift; done;  echo "${1:A}"; } '
+    fi
 fi
 #
-#
-_fbtools_local_script="$( cd $(dirname "${0:A}") &>/dev/null; pwd -P;)"
+_fbtools_local_script="${0:A}"
 if [[ $0 == /bin/bash || ! ${_fbtools_local_script} =~ fbtools ]] ; then
     _fbtools_local_script=""
 fi
@@ -38,9 +39,8 @@ function update_iterm_title () {
     _iterm_hooks_rename_both "$(_fb_tmux_helper_get_session)"
 }
 # add-zsh-hook periodic update_iterm_title
-FB_TOOLS_MAIN=$(cd $(dirname $0) &>/dev/null; pwd -P;)
-for module in ${FB_TOOLS_MAIN}/*/init.zsh; do
- MODULE_NAME="${${module%.zsh}:h:t:u}"
- # printf -- 'export FB_TOOLS_%s="%s"\n' "${MODULE_NAME}" "${module:h}"
- source "${module}"
-done
+#for module in ${FB_TOOLS_MAIN}/*/init.zsh; do
+# MODULE_NAME="${${module%.zsh}:h:t:u}"
+# # printf -- 'export FB_TOOLS_%s="%s"\n' "${MODULE_NAME}" "${module:h}"
+# source "${module}"
+#done

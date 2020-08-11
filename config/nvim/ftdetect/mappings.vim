@@ -1,7 +1,7 @@
-if exists("g:loaded_mappings")
+if exists("g:loaded_custom_mappings")
     finish
 endif
-let g:loaded_mappings= 1
+let g:loaded_custom_mappings= 1
 
 " Semshi mapping
 nmap <silent> <leader>rr :Semshi rename<CR>
@@ -30,7 +30,6 @@ augroup vim_blacklist_blacklist
     autocmd!
     autocmd FileType python call s:SetupJedi()
     autocmd FileType * call s:ale_settings() 
-    exec 'autocmd FileType '.join(g:lightline_blacklist,",") .'silent! ALEDisable'
 augroup END
 
 function! s:ale_settings()
@@ -124,3 +123,8 @@ call SetupCommandAbbrs('C', 'CocConfig')
 " Shift Tab insterts '\t' c-I ^I 
 inoremap <S-Tab> <C-V><Tab>
 
+augroup vim_blacklist_blacklist
+    autocmd!
+    autocmd FileType python call s:SetupJedi()
+    autocmd FileType * call s:ale_settings() 
+augroup END

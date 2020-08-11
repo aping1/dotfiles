@@ -1,9 +1,7 @@
-if exists("g:loaded_commands")
+if exists("g:loaded_custom_commands")
     finish
 endif
-let g:loaded_commands= 1
-
-set guifont=
+let g:loaded_custom_commands= 1
 
 function! GetFileAlternate()
 if exists('g:loaded_projectionist')

@@ -244,8 +244,7 @@ if dein#load_state('~/.cache/dein')
     " --- management
     call dein#add('kevinhui/vim-docker-tools')
 
-    call dein#add('merlinrebrovic/focus.vim')
-
+    call dein#add('junegunn/goyo.vim')
 
     " === end Plugins! ===
     call dein#end()

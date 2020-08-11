@@ -35,6 +35,7 @@ let g:lightline_blacklist=[
             \"qf"
             \]
 
+exec 'autocmd FileType '.join(g:lightline_blacklist,",") .'silent! ALEDisable'
 
 let g:lightline#ale#indicator_checking = ''
 let g:lightline#ale#indicator_warnings = 'ﯜ '
@@ -117,8 +118,8 @@ function! s:LoadLightline()
             \   'right': [ 
             \             [ 'readonly', 'percentwin', 'lineinfo',  'linecount', ],
             \             [ 'filetype', 'fileformat', ], 
-            \             [ 'spell', ], [ 'linter_checking', 'linter_errors',
-            \                'linter_warnings', 'linter_ok', 'neomake_status' ],
+            \             [ 'spell', ], [ 'ale_count','linter_checking', 'linter_errors',
+            \                'linter_warnings', 'linter_ok',  'neomake_status' ],
             \            ]
             \ },
             \ 'component_expand' : {
@@ -135,7 +136,6 @@ function! s:LoadLightline()
             \   'spell': '%{winwidth(0) <= getbufvar("b:", "small_threshold", g:small_threshold)?"":&fenc==#""?"":&spell?"":"暈"}%{winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"":&spelllang}',
             \   'modified': '%{&modified?"﯂":&modifiable?"":""}',
             \   'readonly': '%{index(g:lightline_blacklist,&filetype)==-1&&(&fenc==#"")?"":(&readonly)?"":""}',
-            \   'neomake_status': '%{index(g:lightline_blacklist,&filetype)==-1&&getbufvar("b:","testing_status",0)}',
             \ },
             \ 'component_visible_condition': {
             \     'linecount': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
@@ -154,7 +154,7 @@ function! s:LoadLightline()
             \     'pyenv': '(&filetype=="python"&&exists("pyenv#pyenv#is_enabled")&&1==pyenv#pyenv#is_enabled()&&winwidth(0)>getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'pyenv_active': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
             \     'method': '(index(g:lightline_blacklist,&filetype)!=-1&&winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold))',
-            \     'neomake_status': '(index(g:lightline_blacklist,&filetype)==-1&&(getbufvar("b:","testing_status",0)!=0)'
+            \     'test_status': '(index(g:lightline_blacklist,&filetype)==-1&&(getbufvar("b:","testing_status",0)!=0)&&(getbufvar("b:","ale_linted",0)!=0))'
             \ },
             \ 'component_type': {
             \     'linter_checking': 'left',
@@ -173,6 +173,7 @@ function! s:LoadLightline()
             \     'paste': 'LightlinePaste',
             \     'pyenv_active': 'LightlinePyEnv',
             \     'pyenv': 'LightlinePyEnvName',
+            \     'test_status': 'LightlineTestStatus'
             \ },
             \ 'tabline' : {
             \   'separator': { 'left': '┋', },
@@ -219,6 +220,13 @@ function! LightlineFilename()
                 \ &filetype ==# 'vimfiler' ? 'VimFiler' :
                 \ &filetype ==# 'vimshell' ? 'VimShell' : 
                 \ l:shortname
+endfunction
+
+function! LightlineTestStatus()
+    if index(g:lightline_blacklist,&filetype)==-1
+        return getbufvar("b:","testing_status",0) . ' ' . getbufvar("b:","ale_linted", "None")
+    endif
+,
 endfunction
 
 function! LightlinePyEnv ()
@@ -368,7 +376,7 @@ endfunction
 
 " Start test
 function! TestStarted() abort
-  setbufvar("b:", "testing_status", '痢')
+  call setbufvar("b:", "testing_status", '痢')
 endfunction
 
 function! s:LightLineRefresh()

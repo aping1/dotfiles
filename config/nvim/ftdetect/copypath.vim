@@ -54,10 +54,10 @@
 
 
 " if plugin is already loaded then, not load plugin.
-if exists("g:loaded_copypath")
+if exists("g:loaded_custom_copypath")
     finish
 endif
-let g:loaded_copypath = 1
+let g:loaded_custom_copypath = 1
 
 " if option is set then use open.
 if !exists('g:copypath_copy_to_unnamed_register')
@@ -82,7 +82,5 @@ endfunction
 
 command! -nargs=0 CopyPath     call CopyPath()
 command! -nargs=0 CopyFileName call CopyFileName()
-
-finish
 
 " vim: set ts=4 sts=4 sw=4 et nowrap :

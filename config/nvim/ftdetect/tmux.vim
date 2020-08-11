@@ -1,8 +1,8 @@
 
-if exists("g:loaded_tmux")
+if exists("g:loaded_custom_tmux")
     finish
 endif
-let g:loaded_tmux= 1
+let g:loaded_custom_tmux= 1
 
 " -----
 " 24-bit colors

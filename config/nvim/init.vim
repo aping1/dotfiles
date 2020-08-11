@@ -118,7 +118,8 @@ set background=dark
 set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 
 " Contains dein snippet
-let g:dein_file=(expand('<sfile>:p:h') . '/autoload/00-dein.vim')
+let g:dein_file=(expand('<sfile>:p:h') . '/00-dein.vim')
+
 
 if filereadable(g:dein_file) || filereadable(glob(g:dein_file))
     exe 'source ' . glob(g:dein_file)
@@ -225,13 +226,13 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
             endif 
             if pyenv#python#get_external_major_version() == 2 
                 " in the case it's 2. we just use the one from the environment
-                let g:python_host_prog=g:pyenv#python_exec
+                let g:python_host_prog=g:pyenv#python_exec . '2'
                 let g:python3_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
                 let g:jedi#force_py_version=2
             elseif pyenv#python#get_external_major_version() > 0
                 let g:jedi#force_py_version=pyenv#python#get_external_major_version()
                 if g:pyenv#python_exec =~ '[[:digit:].]\+$'
-                    let g:python_host_prog=g:pyenv#python_exec
+                    let g:python_host_prog=g:pyenv#python_exec . '2'
                     let g:python3_host_prog=g:pyenv#python_exec
                 endif 
             endif
@@ -271,7 +272,6 @@ autocmd FileType Python call deoplete#custom#source('_', 'sources', ['ale','coc'
 filetype plugin indent on
 syntax enable
 autocmd VimResized * wincmd =
-
 
 set background=dark
 
@@ -719,5 +719,7 @@ augroup UltiSnips_AutoTrigger
         au TextChangedP * silent! call UltiSnips#TrackChange()
     endif
 augroup END
+
+nmap <leader>g :Goyo<CR>
 
 " { :set sw=2 ts=2 et }
