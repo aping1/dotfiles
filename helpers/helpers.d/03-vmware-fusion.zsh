@@ -8,3 +8,9 @@ sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start'
 path+=(
 "/Applications/VMware Fusion.app/Contents/Library"
 )
+
+function vmstart () {
+"/Library/Application Support/VMware Fusion/vmrun" -T fusion start $1 nogui
+
+}
+

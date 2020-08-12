@@ -30,7 +30,10 @@ git sumodule summary | grep -qE '^-' &>/dev/null && \
 [[ ${DOTFILES:="~/.dotfiles"} ]] || exit 2
 [[ ${DOTFILES_GIT_REV} ]] || ( cd "${DOTFILES}" &>/dev/null && git check-ref-format "${DOTFILES_GIT_REV}" && git reset --head "${DOTFILES_GIT_REV}"; )
 
-export DOTFILES_SOURCE=( ${DOTFILES}/dotfiles ${DOTFILES}/${DISTRO:-posix}/dotfiles )
+export DOTFILES_SOURCE=( ${DOTFILES}/dotfiles )
+if [[ -s "${DOTFILES}/${DISTRO:-posix}/dotfiles" ]]; then
+    DOTFILES+=("${DOTFILES}/${DISTRO:-posix}/dotfiles")
+fi
 
 function brew_from_dotfiles () 
 {
@@ -45,7 +48,7 @@ function bundle_install_dotfiles()
         [[ -s "${DOTFILES}/Brewfile" ]] && cat "${DOTFILES}/Brewfile" \
         || return 2
     fi
-    if [[ ${#DOTFILES_SOURCE[*]} -ge 1 ]]; then
+    if [[ "${SKIP_BREW}" =~ ^[Yy](\|es$)\$ || "${#DOTFILES_SOURCE[@]}" -ge 1 ]]; then
         # Parrallel fetch to speed it up
         brew_from_dotfiles | awk '/^brew/{print $2}' | xargs -I'{}' -P100 -n1 brew fetch '{}'
         brew bundle install --file=<(brew_from_dotfiles)
@@ -84,5 +87,6 @@ ln -sf ${DOTFILES}/deps/vim-plug/plug.vim .config/nvim/autoload .
 ln -sf ${DOTFILES}/ipython .config/ .
 ln -s "${DOTFILES}/.zshenv" .
 ) || echo "Failed to link"
+
 exec zsh -lx "${HOME}/.dotfiles/install.zsh"
 

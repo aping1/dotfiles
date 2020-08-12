@@ -1,0 +1,224 @@
+snippet _skel "python" b
+import os
+import sys
+
+def main():
+    $0
+
+if __name__=="__main__":
+    main()
+endsnippet
+
+snippet flaskunittest
+import os
+import tempfile
+
+import pytest
+
+from flask import flask
+
+
+@pytest.fixture
+def client():
+    db_fd, flaskr.app.config['$1'] = tempfile.mkstemp()
+    flaskr.app.config['$2'] = True
+
+    with flaskr.app.test_client() as client:
+        with flaskr.app.app_context():
+            flaskr.init_db()
+        yield client
+
+    os.close(db_fd)
+    os.unlink(flaskr.app.config['$1'])
+endsnippet
+
+snippet _unittest
+import ${0:VISUAL}
+import unittest
+
+class TestAdd(unittest.TestCase):
+    """
+    Test the add function from the $0 library
+    """
+
+    def test_$1(self):
+        """
+        Test $1
+        """
+		$2
+
+if __name__ == '__main__':
+    unittest.main()
+endsnippet
+
+snippet _clicksetuptools
+from setuptools import setup
+
+setup(
+    name="${2:name}",
+    version='0.1',
+    py_modules=['${1:module}'],
+    install_requires=[
+        'Click',
+    ],
+    entry_points='''
+        [console_scripts]
+        myhello=hello:cli
+    ''',
+)
+endsnippet
+
+snippet _clickcli "Click CLI template" b
+import click
+
+@click.command()
+@click.option('--verbose', is_flag=True, help="Will print verbose messages.")
+@click.option('--name', '-n', multiple=True, default='', help='Who are you?')
+@click.password_option()
+def cli(verbose,name, password):
+    """This is an example script to learn Click."""
+    if verbose:
+        click.echo("We are in the verbose mode.")
+    click.echo("Hello World")
+    for n in name:
+        click.echo('Bye {0}'.format(n))
+    click.echo('We received {0} as password.'.format(password))
+
+if __name__ == "__main__":
+	cli()
+endsnippet
+
+snippet  _clickunittest "Unittest for click cli" b
+import click
+from click.testing import CliRunner
+from prompt import prompt
+import unittest
+
+def test_anythin():
+  runner = CliRunner()
+  result = runner.invoke(cli, ['--debug', 'sync'])
+  assert result.exit_code == 0
+  assert 'Debug mode is on' in result.output
+  assert 'Syncing' in result.output
+
+def test_stdout():
+   runner = CliRunner()
+   with runner.isolated_filesystem():
+      with open('hello.txt', 'w') as f:
+          f.write('Hello World!')
+
+      result = runner.invoke(cat, ['hello.txt'])
+      assert result.exit_code == 0
+      assert result.output == 'Hello World!\n'
+
+def test_prompts():
+   """ Test input->output """ 
+   runner = CliRunner()
+   result = runner.invoke(prompt, input='wau wau\n')
+   assert not result.exception
+   assert result.output == 'Foo: wau wau\nfoo=wau wau\n'
+
+if __name__ == "__main__":
+    unittest.main()
+endsnippet
+
+snippet _setup "Setup.py minimal ish" b
+# #!/usr/bin/python
+# `!v expand("%:t:r")`
+# Template from
+# https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/
+# Click integration from https://click.palletsprojects.com/en/7.x/setuptools/ 
+import codecs
+import os
+import re
+
+from setuptools import setup, find_packages
+
+
+###################################################################
+
+NAME = "attrs"
+PACKAGES = find_packages(where="src")
+META_PATH = os.path.join("src", "attr", "__init__.py")
+KEYWORDS = ["class", "attribute", "boilerplate"]
+CLASSIFIERS = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.4",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+# TODO: Open requirements.txt..."
+INSTALL_REQUIRES = ['click']
+
+###################################################################
+
+HERE = os.path.abspath(os.path.dirname(__file__))
+
+
+def read(*parts):
+    """
+    Build an absolute path from *parts* and and return the contents of the
+    resulting file.  Assume UTF-8 encoding.
+    """
+    with codecs.open(os.path.join(HERE, *parts), "rb", "utf-8") as f:
+        return f.read()
+
+
+META_FILE = read(META_PATH)
+
+
+def find_meta(meta):
+    """
+    Extract __*meta*__ from META_FILE.
+    """
+    meta_match = re.search(
+        r"^__{meta}__ = ['\"]([^'\"]*)['\"]".format(meta=meta),
+        META_FILE, re.M
+    )
+    if meta_match:
+        return meta_match.group(1)
+    raise RuntimeError("Unable to find __{meta}__ string.".format(meta=meta))
+
+
+if __name__ == "__main__":
+    setup(
+        name=${1:name},
+        description=find_meta("description"),
+        use_scm_version=True,
+        setup_requires=['setuptools_scm'],
+        license=find_meta("license"),
+        url=find_meta("uri"),
+        version=find_meta("version"),
+        author=find_meta("author"),
+        author_email=find_meta("email"),
+        maintainer=find_meta("author"),
+        maintainer_email=find_meta("email"),
+        keywords=KEYWORDS,
+        long_description=read("README.rst"),
+        long_description_content_type="text/x-rst",
+        packages=PACKAGES,
+        package_dir={"": "src"},
+        zip_safe=False,
+        classifiers=CLASSIFIERS,
+        install_requires=INSTALL_REQUIRES,
+        entry_points='''
+            [console_scripts]
+            myhello=hello:cli
+        ''',
+        options={"bdist_wheel": {"universal": "1"}},
+    )
+endsnippet
+

@@ -1,0 +1,21 @@
+snippet _skel "" b
+
+if exists("g:loaded_${0:`!v expand("%:t:r")`}")
+    finish
+endif
+let g:loaded_$0= 1
+
+endsnippet
+
+snippet plugin_options "Option header for a plugin in init.vim" b
+" --------------------
+" Plugin: ${0:$VISUAL}
+" --------------------
+endsnippet
+
+snippet dein\#add "new dein entry"
+call dein#$add('${0:$VISUAL}')
+" --------------------
+" Plugin: ${1:$VISUAL}
+" --------------------
+endsnippet

@@ -23,14 +23,17 @@ fi
 
 function setup_brew_env () {
     # Add to start of path
-    brew_prefix=$(brew --prefix)
+    brew_prefix=/usr/local/ # $(brew --prefix)
+    # $(brew --prefix coreutils)
     path=(
-        $(brew --prefix coreutils)/libexec/gnubin
-        $(brew --prefix python)/libexec/bin
+        /usr/local/opt/libexec/gnubin
         ${brew_prefix}/bin/
         $path
     )
 	typeset -U path
+}
+
+function setup_man_path () {
     manpath=(
         ${brew_prefix}/share/man/man*
         $manpath

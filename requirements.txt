@@ -1,0 +1,8 @@
+pynvim
+neovim
+jedi
+msgpack
+flake8
+black
+
+

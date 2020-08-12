@@ -9,7 +9,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -31,7 +31,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -53,7 +53,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -75,7 +75,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -97,7 +97,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -120,7 +120,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -143,7 +143,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -166,7 +166,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -189,7 +189,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -212,7 +212,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -235,7 +235,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -258,7 +258,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -281,7 +281,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -304,7 +304,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -327,13 +327,13 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
                             ]
                         },
-                        "key_code": "up"
+                        "key_code": "up_arrow"
                     },
                     "to_if_alone": {
                         "shell_command": "/usr/local/bin/yabai -m window --grid 1:1:0:0:1:1"
@@ -350,13 +350,13 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
                             ]
                         },
-                        "key_code": "left"
+                        "key_code": "left_arrow"
                     },
                     "to_if_alone": {
                         "shell_command": "/usr/local/bin/yabai -m window --grid 1:2:0:0:1:1"
@@ -373,13 +373,13 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
                             ]
                         },
-                        "key_code": "right"
+                        "key_code": "right_arrow"
                     },
                     "to_if_alone": {
                         "shell_command": "/usr/local/bin/yabai -m window --grid 1:2:1:0:1:1"
@@ -396,7 +396,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -418,8 +418,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -441,8 +441,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -464,8 +464,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -487,8 +487,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -510,8 +510,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -533,8 +533,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -556,8 +556,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -579,8 +579,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -602,8 +602,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -625,8 +625,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -648,8 +648,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -671,8 +671,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -694,8 +694,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -717,8 +717,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -740,8 +740,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_cmd",
-                                "left_alt"
+                                "left_command",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -764,7 +764,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -787,7 +787,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -810,7 +810,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -833,7 +833,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -856,7 +856,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -879,7 +879,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -902,7 +902,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -925,7 +925,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -948,7 +948,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -971,7 +971,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -994,7 +994,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1017,7 +1017,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1040,7 +1040,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1062,8 +1062,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1085,8 +1085,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1108,8 +1108,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1131,8 +1131,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1154,8 +1154,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1177,8 +1177,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1200,8 +1200,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_cmd"
+                                "left_control",
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1223,8 +1223,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_cmd"
+                                "left_control",
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1246,8 +1246,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_cmd"
+                                "left_control",
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1269,8 +1269,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_cmd"
+                                "left_control",
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1292,8 +1292,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_cmd"
+                                "left_control",
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1315,8 +1315,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_cmd"
+                                "left_control",
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1339,7 +1339,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_ctrl"
+                                "left_control"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1362,7 +1362,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_ctrl"
+                                "left_control"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1385,7 +1385,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_ctrl"
+                                "left_control"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1408,7 +1408,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_ctrl"
+                                "left_control"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1431,7 +1431,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1454,7 +1454,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1477,7 +1477,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1500,7 +1500,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1523,7 +1523,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1546,7 +1546,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1569,7 +1569,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1592,7 +1592,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_cmd"
+                                "left_command"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1614,8 +1614,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1637,8 +1637,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1660,8 +1660,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1683,8 +1683,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1706,7 +1706,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1728,7 +1728,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1750,7 +1750,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1772,7 +1772,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1794,7 +1794,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1816,7 +1816,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1839,7 +1839,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1862,7 +1862,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1884,7 +1884,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1906,7 +1906,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1928,7 +1928,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1950,7 +1950,7 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_alt"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1972,8 +1972,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1995,8 +1995,8 @@
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_ctrl",
-                                "left_alt"
+                                "left_control",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -2006,6 +2006,30 @@
                     },
                     "to_if_alone": {
                         "shell_command": "/usr/local/bin/yabai -m space --layout float"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "ctrl + alt + cmd - r | launchctl kickstart -k \"gui/${UID}/homebrew.mxcl.yabai\"",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_control",
+                                "left_option",
+                                "left_command"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "r"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/launchctl kickstart -k \"gui/${UID}/homebrew.mxcl.yabai\""
                     }
                 }
             ]

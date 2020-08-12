@@ -7,9 +7,6 @@
 [submodule "deps/zplug"]
 	path = deps/zplug
 	url = https://github.com/zplug/zplug
-[submodule "zgen"]
-	path = deps/zgen
-	url = https://github.com/tarjoilija/deps/zgen.git
 [submodule "nerd-font-cheatsheets"]
 	path = nerd-font-cheatsheets
 	url = https://github.com/just3ws/nerd-font-cheatsheets

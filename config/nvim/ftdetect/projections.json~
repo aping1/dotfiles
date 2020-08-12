@@ -1,0 +1,25 @@
+{
+  "*": {
+    "Dockerfile": {
+      "dispatch:": "docker build",
+      "start": "docker run -f {}"
+    },
+    "docker-compose-*.{yaml|yml}": {
+      "alternate": "Dockerfile",
+      "make": "docker-compose -f {file} up",
+      "start": "docker-compose -f {file} up"
+    },
+    "README.{markdown|md}": {
+      "type": "doc"
+    },
+    "plugin/*.vim": {
+      "type": "plugin"
+    },
+    "autoload/*.vim": {
+      "type": "autoload"
+    },
+    ".projectionist.json": {
+      "skeleton": "projectionistjson"
+    }
+  }
+}

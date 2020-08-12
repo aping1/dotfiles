@@ -1,0 +1,27 @@
+snippet _skel
+{
+  ${0:${VISUAL}}
+}
+endsnippet
+
+snippet projectionistjson "Generic template" b
+{
+  "tests/*.py": {
+    "type": "test",
+    "skeleton": "unittest",
+    "alternate": "{}.py",
+    "dispatch": "pyunit -f"
+  },
+  "${0:VISUAL}*.py": {
+    "type": "src",
+    "alternate": "test/{}.py",
+    "dispatch": "pyunit"
+  },
+  "README.{markdown|md}": {
+    "type": "doc"
+  }
+  "docs/*"{
+    "type": "doc",
+  }
+}
+endsnippet

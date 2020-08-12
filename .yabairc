@@ -43,8 +43,10 @@ yabai -m config window_gap                   10
 
 yabai -m rule --add title='tmux Dashboard' manage=off
 yabai -m rule --add title='Karabiner Elements Preferences' manage=off
+yabai -m rule --add app='System Preferences' manage=off
+yabai -m rule --add app='Alfred' manage=off
+yabai -m rule --add app='Dash' manage=off
 yabai -m rule --add title='iStat Menus' manage=off
-yabai -m rule --add title='Alfred Preferences' manage=off
 
 echo "yabai configuration loaded.."
 
@@ -55,11 +57,13 @@ LEFTT_SCREEN="4:4:0:0:1:4"
 
 yabai -m rule --add title="Tabs Outliner" grid=${LEFTT_SCREEN} label="tab outliner" 
 yabai -m rule --add app="^Dash$" manage=off label="dash_floats" 
+yabai -m rule --add app="^DEVONthink 3" grid=${FULL_SCREEN} manage=off label="devonthink" 
 yabai -m rule --add title="Dash" grid=${FULL_SCREEN} manage=off label="dash_floats" 
 yabai -m rule --add app="System Preferences" grid=${CENTER_SCREEN} manage=off label="sys_pref_floats" 
 yabai -m rule --add app="iStat Menus" grid=${FULL_SCREEN} manage=off label="iStatMenus" 
 yabai -m rule --add app="Drobo Dashboard" grid=${CENTER_SCREEN} manage=off label="Drobo_no_manage" 
 yabai -m rule --add app="Accessibility Inspector" grid=${CORNER_SCREEN} manage=off label="no_mng_accessibility" 
+yabai -m rule --add app="App Store" grid=${CORNER_SCREEN} manage=off label="no_mng_appstore" 
 yabai -m rule --add app="Alfred" grid=${FULL_SCREEN} manage=off label="no_mng_alfred" 
 yabai -m rule --add title="[pP]reference[s]?" grid=${CENTER_SCREEN} manage=off label="prefs_float" 
 yabai -m rule --add title="[Ss]etting[s]?$" manage=off label="vmware_settings_float" 

@@ -1,0 +1,40 @@
+{
+  "*": {
+    "Dockerfile": {
+      "dispatch:": "docker build",
+      "start": "docker run -f {}",
+      "alternate": "docker-compose.{}"
+    },
+    "docker-compose.*": {
+      "make:": "docker-compose build",
+      "start": "docker-compose up -d -f docker-compose.{}"
+    },
+    "plugin/*.vim": {
+      "type": "plugin"
+    },
+    "ftdetect/*.vim": {
+      "type": "plugin"
+    },
+    "autoload/*.vim": {
+      "type": "autoload"
+    },
+    "docs/*.txt": {
+      "type": "doc"
+    },
+    "test_*.py": {
+      "type": "test",
+      "alternate": "{}.py",
+      "skeleton": "clickunittest"
+    },
+    "*.py": {
+      "type": "source",
+      "alternate": "test_{}.py",
+      "skeleton": "clickcli"
+    },
+    "setup.py": {
+      "type": "setuptools",
+      "make": "python setup.py sdist bdist_wheel",
+      "skeleton": "setup"
+    }
+  }
+}

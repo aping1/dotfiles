@@ -1,4 +1,14 @@
 {
+    "python.linting.enabled": false,
     "diagnostic.displayByAle": true,
-    "coc.preferences.currentFunctionSymbolAutoUpdate": true
+    "diagnostic.errorSign": "✘",
+    "diagnostic.warningSign": "⚠",
+    "diagnostic.infoSign": "i",
+    "diagnostic.hintSign": "➤",
+    "coc.preferences.currentFunctionSymbolAutoUpdate": true,
+    "suggest.keepCompleteopt" : true,
+    "suggest.autoTrigger": false,
+    "coc.preferences.colorSupport": true,
+    "tsserver.npm": "/usr/local/bin/npm"
+
 }

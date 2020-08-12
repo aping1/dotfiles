@@ -24,7 +24,7 @@ golang        # Go section
 # julia       # Julia section (Disabled)
 docker      # Docker section (Disabled)
 # aws           # Amazon Web Services section
-venv          # virtualenv section
+# venv          # virtualenv section
 # conda         # conda virtualenv section
 pyenv         # Pyenv section
 # dotnet        # .NET section
@@ -40,8 +40,8 @@ char          # Prompt character
 SPACESHIP_TIME_SHOW=true
 SPACESHIP_TIME_PREFIX="${SPACESHIP_TIME_PREFIX:-"at "}\uf017 "
 SPACESHIP_GIT_LAST_COMMIT_SHOW=true
-SPACESHIP_VI_MODE_NORMAL="NORMAL"
-SPACESHIP_VI_MODE_INSERT=INSERT
+SPACESHIP_VI_MODE_NORMAL="[NORMAL]"
+SPACESHIP_VI_MODE_INSERT="[insert]"
 SPACESHIP_VI_MODE_COLOR=green
 
 SPACESHIP_EXIT_CODE_SHOW=true
@@ -170,3 +170,6 @@ spaceship_git_last_commit() {
     "$SPACESHIP_GIT_LAST_COMMIT_SUFFIX"
 
 }
+autoload -Uz history-beginning-search-menu
+zle -N history-beginning-search-menu
+bindkey '^X^X' history-beginning-search-menu

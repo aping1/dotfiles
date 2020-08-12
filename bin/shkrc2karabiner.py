@@ -1,5 +1,7 @@
+#!python3
 import json
 import os
+import sys
 import click
 import logging
 
@@ -26,7 +28,7 @@ class Converter(object):
             global logger
             logging.getLogger("").setLevel(logging.DEBUG)
         self.skhdrc = os.path.abspath(
-            profile or os.path.join(os.environment["HOME"], ".skhdrc")
+            profile or os.path.join(os.environ["HOME"], ".skhdrc")
         )
 
     modifications = {
@@ -42,14 +44,28 @@ class Converter(object):
 
     def convert(self):
         def parse(line):
+            def keymap(k):
+                if k == 'ctrl':
+                    return "control"
+                if k == 'alt':
+                    return "option"
+                elif k == 'cmd':
+                    return "command"
+                elif k in ('up', 'down', 'left', 'right' ):
+                    return f"{k}_arrow"
+                elif k == 'cmd':
+                    return "command"
+                else:
+                    return k
             keylist = line.partition(":")
             lhs, _, keycode = keylist[0].rpartition("-")
             modifiers = [
-                f"left_{mod.strip()}"
+                f"left_{keymap(mod.strip())}"
                 for mod in lhs.split("+")
                 if mod.strip() in ["alt", "shift", "cmd", "ctrl"]
             ]
             modifiers = {"mandatory": modifiers}
+            keycode = keymap(keycode.strip())
             if self.allow_caps:
                 modifiers["optional"] = ["caps_lock"]
             if any('"' in cmd for cmd in keylist[2]):
@@ -91,7 +107,7 @@ class Converter(object):
 @click.option("--filename", default="/dev/stdout")
 @click.option("--title", default="skhdrc")
 @click.option("--debug/--no-debug", default=False, envvar="CONVERTER_DEBUG")
-@click.argument("profile", default=".skhdrc")
+@click.argument("profile", default=os.path.join(os.environ["HOME"], ".skhdrc"))
 @click.command()
 def cli(ctx=None, allow_caps=False, filename=None, title=None, debug=False, profile=None):
     ctx = Converter(allow_caps=allow_caps, debug=debug, profile=profile)

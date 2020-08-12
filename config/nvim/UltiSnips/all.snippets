@@ -1,0 +1,16 @@
+
+snippet date
+${2:${1:`date +%d`}.`date +%m`}.`date +%Y`
+endsnippet
+
+# Share snippet functions by putthing them in your pythonx folder:
+# $XDG_CONF_DIR/pythonx/snippet_helpers.py
+# make sure you import it 
+# from snippet_helpers.py import *
+global !p
+def some_f(a, b):
+    try:
+        return "%.1f" % (float(a)/float(b))
+    except (ValueError, ZeroDivisionError):
+        return "ERR"
+endglobal

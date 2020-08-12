@@ -1,18 +1,17 @@
 [user]
-	name = Allison Wampler
-	email = awampler@paloaltonetworks.com
+    name = Allison Wampler
+    email = aping1@apt-miss.com
 [merge]
     tool = vimdiff
     guitool = vimrdiff
 [core]
-	excludesfile = /Users/awampler/.gitignore_global
+	excludesfile = ~/.gitignore_global
 	editor = nvim
 	page = less
 [mergetool]
 	prompt = true
     conflictstyle = diff3
 	keepBackup = false
-    tool=nvimdiff
 [mergetool "fugitive"]
     # Ancestor :1 :2 HEAD :3 merge
     cmd = nvim -f "$MERGED" -c 'Gread :1:% | set scrollbind diff' -c 'Gvsplit :2:% | set scrollbind diff | ALEDisableBuffer'  -c 'Gvsplit :3:% | set scrollbind diff | ALEDisableBuffer' -c 'wincmd w' -c '2wincmd l' 
@@ -30,16 +29,14 @@
 [difftool]
     prompt = false
     conflictstyle = diff3
-[difftool "env"]
-    cmd = env | vim -
-[difftool "vimdiff"] 
-	cmd = vim -f -d $LOCAL $REMOTE $MERGED -c 'wincmd w' -c 'wincmd J' -c 'set scrollbind' -c 'wincmd w' -c 'wincmd l' -c 'set scrollbind'
+[difftool "vimdiff"]
+	cmd = vim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool "nvimdiff"]
-	cmd = nvim -f -d $LOCAL $REMOTE $MERGED -c 'wincmd w' -c 'wincmd J' -c 'set scrollbind' -c 'wincmd w' -c 'wincmd l' -c 'set scrollbind'
+	cmd = nvim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool "vimrdiff"]
-    cmd = vimr --wait --neovim -f -d $LOCAL $REMOTE $MERGED -c 'wincmd w' -c 'wincmd J' -c 'set scrollbind' -c 'wincmd w' -c 'wincmd l' -c 'set scrollbind'
+    cmd = vimr --wait --neovim -f -d $LOCAL $BASE $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 [difftool "diffconflicts"]
-	cmd = diffconflicts vim $LOCAL $REMOTE $MERGED
+	cmd = diffconflicts vim $BASE $LOCAL $REMOTE $MERGED
 [color]
 	pager = yes
 [filter "lfs"]
@@ -57,7 +54,5 @@
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
-[commit]
-	template = /Users/awampler/.stCommitMsg
 [push]
 	default = matching
