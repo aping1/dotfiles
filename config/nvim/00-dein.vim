@@ -52,8 +52,9 @@ if dein#load_state('~/.cache/dein')
     " Hide sum and such as unicode 
     call dein#add('ryanoasis/vim-devicons')
     " View unicode sets
-    call dein#add('chrisbra/unicode.vim', 
-                \{'on_ft': 'vim'})
+    call dein#add('chrisbra/unicode.vim', {
+                \'on_ft': 'vim'
+                \})
     " Use math symbols instead of keywords 
     " it is very very slow
     " call dein#add('ehamberg/vim-cute-python')
@@ -83,7 +84,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('junegunn/fzf', { 'build': './install --all', 'merged': 0 })
     " Use fzf preview 
     " TODO: This doesnt work?
-    call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release' })
+    call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release', 'on_cmd': 'CocInstall coc-fzf-preview' })
 
     " smarter searching (with ag)
     call dein#add('mileszs/ack.vim')
@@ -122,6 +123,8 @@ if dein#load_state('~/.cache/dein')
     call dein#add('scrooloose/nerdcommenter')
     call dein#add('mg979/vim-visual-multi')
 
+
+    call dein#add('dhruvasagar/vim-table-mode')
     " Markdown tools
     call dein#add('SidOfc/mkdx',
                 \{'on_ft': 'markdown'})
@@ -157,19 +160,27 @@ if dein#load_state('~/.cache/dein')
        call dein#add('neoclide/coc.nvim', {
                    \ 'branch': 'release'
                    \ })
-                   "\ 'on_cmd': 'command call coc#util#install()'
+                   "\ 'on_cmd': 'command call coc#util#install() '
 
        "Deoplete framework"
-       call dein#add('jsfaint/coc-neoinclude')
-       call dein#add('neoclide/coc-snippets')
-       call dein#add('neoclide/coc-highlight')
-       call dein#add('neoclide/coc-python')
+       call dein#add('jsfaint/coc-neoinclude', {
+                   \ 'on_cmd': 'CocInstall coc-fzf-preview'
+                   \})
 
+       call dein#add('neoclide/coc-snippets', {
+                   \'on_cmd': 'CocInstall coc-snippets'
+                   \})
+
+       call dein#add('neoclide/coc-highlight', { 
+                   \'on_cmd': 'CocInstall coc-highlight'
+                   \})
        "" 
        call dein#add('Shougo/neco-vim',
                    \ {'on_ft': 'vim'})
-       call dein#add('neoclide/coc-neco',
-                   \ {'on_ft': 'vim'})
+       call dein#add('neoclide/coc-neco', {
+                   \ 'on_ft': 'vim',
+                   \ 'on_cmd': 'CocInstall coc-neco'
+                   \})
        " call dein#add('tjdevries/coc-zsh')
        " call dein#add('neovim/nvim-lsp')
     else

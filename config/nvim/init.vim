@@ -122,6 +122,9 @@ let g:dein_file=(expand('<sfile>:p:h') . '/00-dein.vim')
 
 
 if filereadable(g:dein_file) || filereadable(glob(g:dein_file))
+    if exists('g:loaded_custom_dein_settings')
+        unlet g:loaded_custom_dein_settings
+    endif
     exe 'source ' . glob(g:dein_file)
 else
     echoerr 'Failed to source ' . g:dein_file
@@ -681,22 +684,6 @@ set pumheight=15
 
 nnoremap <silent> <c-w>= :wincmd =<cr>:QfResizeWindows<cr>
 
-au FileType qf call AdjustWindowHeight(3, 10)
-function! AdjustWindowHeight(minheight, maxheight)
-    let l = 1
-    let n_lines = 0
-    let w_width = winwidth(0)
-    while l <= line('$')
-        " number to float for division
-        let l_len = strlen(getline(l)) + 0.0
-        let line_width = l_len/w_width
-        let n_lines += float2nr(ceil(line_width))
-        let l += 1
-    endw
-    exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
-endfunction
-
-
 " --------------------
 " Plugin: 'SirVer/ultisnips'
 "    'honza/vim-snippets'
@@ -706,7 +693,7 @@ let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 " let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-"let g:UltiSnipsUsePythonVersion = 2
+let g:UltiSnipsUsePythonVersion = 3
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"

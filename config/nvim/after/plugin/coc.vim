@@ -2,7 +2,7 @@
 if exists("g:loaded_custom_coc")
     finish
 endif
-let g:loaded_coc= 1
+let g:loaded_custom_coc= 1
 
 
 if executable('javascript-typescript-server')
