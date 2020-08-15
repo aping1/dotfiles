@@ -251,7 +251,6 @@ function! LightlinePyEnvName ()
     endif
 endfunction 
 
-
 function! LightlinePaste ()
     let l:small_threshold = getbufvar("b:", "small_threshold", g:small_threshold)
     if index(g:lightline_blacklist,&filetype)==-1
@@ -276,14 +275,14 @@ function! LightlineFugitive()
     if index(g:lightline_blacklist,&filetype)!=-1 || winwidth(0) <  l:medium_threshold || !exists('*fugitive#head')
         return ""
     endif 
-    let l:branch = fugitive#head()
-    if branch ==#""
+    let l:branch = fugitive#statusline()
+    if l:branch ==#""
         return ""
-    elseif len(branch) < 36
-        return branch
+    elseif len(l:branch) < 36
+        return l:branch
     else
         "only show 16 characters if it's a hash
-        return branch[:15] . ' .. ' . branch[(len(branch)-15):]
+        return l:branch[:15] . ' .. ' . l:branch[(len(l:branch)-15):]
     endif 
 endfunction
 

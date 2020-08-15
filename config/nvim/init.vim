@@ -62,10 +62,10 @@ set hlsearch
 set number relativenumber
 
 augroup numbertoggle
-autocmd!
-autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-autocmd BufReadPost * set norelativenumber
+    autocmd!
+    autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+    autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+    autocmd BufReadPost * set norelativenumber
 augroup END
 
 let g:linelen=120
@@ -120,8 +120,10 @@ set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 " Contains dein snippet
 let g:dein_file=(expand('<sfile>:p:h') . '/00-dein.vim')
 
-
-if filereadable(g:dein_file) || filereadable(glob(g:dein_file))
+if filereadable(g:dein_file)
+    if exists('g:loaded_custom_dein_settings')
+        unlet g:loaded_custom_dein_settings
+    endif
     exe 'source ' . glob(g:dein_file)
 else
     echoerr 'Failed to source ' . g:dein_file
@@ -174,7 +176,7 @@ function! s:SetupJedcommands()
 endfunction
 
 " function that sets host prog from inherited shell
-function! s:python_from_environment(py2_sel, py3_sel)
+function! PythonFromEnvironment(py2_sel, py3_sel)
     let g:jedi#force_py_version='3'
     if exists("$VIRTUAL_ENV")
         let g:python_host_prog=substitute(system('command -v python'), '\n', '', 'g')
@@ -237,7 +239,7 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
                 endif 
             endif
         else
-            call s:python_from_environment("2", "2")
+            call PythonFromEnvironment("2", "2")
         endif
         " for vim-test
         let g:test#python#runner = g:python3_host_prog
@@ -251,7 +253,7 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
         autocmd User vim-pyenv-deactivate-post call s:pyenv_init()
     augroup END
 else
-    call s:python_from_environment("1", "1")
+    call PythonFromEnvironment("1", "1")
 endif
 
 " let g:deoplete#auto_complete_delay = 10
@@ -260,7 +262,6 @@ endif
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
 "let g:deoplete#sources#jedi#show_docstring=1
-
 " let g:deoplete#sources#jedi#statement_length=linelen
 " call deoplete#custom#option({'auto_complete': v:false})
 autocmd FileType Python call deoplete#custom#source('_', 'sources', ['ale','coc']) | call deoplete#custom#option({'auto_complete_delay': 100})
@@ -355,7 +356,7 @@ let g:nvimgdb_config_override = {
             \ }
 
 "----------------------------------------------
-" Plugin: 'fzf.vim'
+" Plugin: 'ack.vim'
 "----------------------------------------------
 if executable('ag')
     " NOTE: vimgrep not supported with dispatch
@@ -382,21 +383,15 @@ if executable('bat')
                 \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'bat -p --style snip --color always {}']}, <bang>0)
 endif
 
-"----------------------------------------------
-" Plugin: vimwiki/vimwiki
-"----------------------------------------------
-let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
-                     \ 'syntax': 'markdown', 
-                     \ 'ext': '.md'}]
-let g:vimwiki_ext2syntax = {'.md': 'markdown',
-                  \ '.mkd': 'markdown',
-                  \ '.wiki': 'media'}
-
 "---------------------------------------------
 " Plugin'tpope/vim-markdown'
 "----------------------------------------------
 " Plugin: 'vimwiki/vimwiki'
 "----------------------------------------------
+let g:vimwiki_list = [{'path': '~/projects/Apollo/wiki',
+                     \ 'syntax': 'markdown', 
+                     \ 'ext': '.md'}]
+
 let g:vimwiki_ext2syntax = {
             \ '.md': 'markdown',
             \ '.mkd': 'markdown',
@@ -411,6 +406,8 @@ let g:vimwiki_ext2syntax = {
 "----------------------------------------------
 "        Plugin: Shougo/echodoc.vim
 "----------------------------------------------
+let g:echodoc#enable_at_startup=1
+let g:echodoc#type="floating"
 
 augroup deopleteExtra
     " autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
@@ -550,7 +547,10 @@ function! DisableExtras()
   call nvim_win_set_option(g:float_preview#win, 'number', v:true)
   call nvim_win_set_option(g:float_preview#win, 'relativenumber', v:true)
   call nvim_win_set_option(g:float_preview#win, 'cursorline', v:true)
-  endfunction
+endfunction
+let g:float_preview#auto_close = 1
+
+autocmd User FloatPreviewWinOpen call DisableExtras()
 
 "----------------------------------------------
 " Plugin: bling/vim-go
@@ -689,22 +689,6 @@ set pumheight=15
 
 nnoremap <silent> <c-w>= :wincmd =<cr>:QfResizeWindows<cr>
 
-au FileType qf call AdjustWindowHeight(3, 10)
-function! AdjustWindowHeight(minheight, maxheight)
-    let l = 1
-    let n_lines = 0
-    let w_width = winwidth(0)
-    while l <= line('$')
-        " number to float for division
-        let l_len = strlen(getline(l)) + 0.0
-        let line_width = l_len/w_width
-        let n_lines += float2nr(ceil(line_width))
-        let l += 1
-    endw
-    exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
-endfunction
-
-
 " --------------------
 " Plugin: 'SirVer/ultisnips'
 "    'honza/vim-snippets'
@@ -715,6 +699,7 @@ let g:UltiSnipsJumpForwardTrigger="<tab>"
 " let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 "let g:UltiSnipsUsePythonVersion = 2
+let g:UltiSnipsUsePythonVersion = 3
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"

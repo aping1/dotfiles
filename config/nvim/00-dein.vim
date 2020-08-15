@@ -12,7 +12,7 @@ if dein#load_state('~/.cache/dein')
     try
         " For more info on TOML and moving plugins...
         " https://github.com/Shougo/dein.vim/blob/aa1da8e43b74c109c49281998eab0e148dc042b2/doc/dein.txt
-        let s:toml = '~/.vim/plugins.toml'
+        let s:toml = expand('<sfile>:p:h') . '/plugins.toml'
         call dein#load_toml(s:toml, {'lazy': 0})
     catch /.*/
         echoerr v:exception
@@ -52,8 +52,9 @@ if dein#load_state('~/.cache/dein')
     " Hide sum and such as unicode 
     call dein#add('ryanoasis/vim-devicons')
     " View unicode sets
-    call dein#add('chrisbra/unicode.vim', 
-                \{'on_ft': 'vim'})
+    call dein#add('chrisbra/unicode.vim', {
+                \'on_ft': 'vim'
+                \})
     " Use math symbols instead of keywords 
     " it is very very slow
     " call dein#add('ehamberg/vim-cute-python')
@@ -83,7 +84,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('junegunn/fzf', { 'build': './install --all', 'merged': 0 })
     " Use fzf preview 
     " TODO: This doesnt work?
-    call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release' })
+    call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release', 'on_cmd': 'CocInstall coc-fzf-preview' })
 
     " smarter searching (with ag)
     call dein#add('mileszs/ack.vim')
@@ -122,6 +123,8 @@ if dein#load_state('~/.cache/dein')
     call dein#add('scrooloose/nerdcommenter')
     call dein#add('mg979/vim-visual-multi')
 
+
+    call dein#add('dhruvasagar/vim-table-mode')
     " Markdown tools
     call dein#add('SidOfc/mkdx',
                 \{'on_ft': 'markdown'})
@@ -156,21 +159,29 @@ if dein#load_state('~/.cache/dein')
        call dein#add('ncm2/float-preview.nvim')
        call dein#add('mhartington/nvim-typescript', {'build': 'npm -g install typescript @types/jest && ./install.sh'})
        call dein#add('neoclide/coc.nvim', {
-                   \ 'branch': 'release',
-                   \ 'on_cmd': 'command call coc#util#install()'
+                   \ 'branch': 'release'
                    \ })
+                   "\ 'on_cmd': 'command call coc#util#install() '
 
        "Deoplete framework"
-       call dein#add('jsfaint/coc-neoinclude')
-       call dein#add('neoclide/coc-snippets')
-       call dein#add('neoclide/coc-highlight')
-       call dein#add('neoclide/coc-python')
+       call dein#add('jsfaint/coc-neoinclude', {
+                   \ 'on_cmd': 'CocInstall coc-fzf-preview'
+                   \})
 
+       call dein#add('neoclide/coc-snippets', {
+                   \'on_cmd': 'CocInstall coc-snippets'
+                   \})
+
+       call dein#add('neoclide/coc-highlight', { 
+                   \'on_cmd': 'CocInstall coc-highlight'
+                   \})
        "" 
        call dein#add('Shougo/neco-vim',
                    \ {'on_ft': 'vim'})
-       call dein#add('neoclide/coc-neco',
-                   \ {'on_ft': 'vim'})
+       call dein#add('neoclide/coc-neco', {
+                   \ 'on_ft': 'vim',
+                   \ 'on_cmd': 'CocInstall coc-neco'
+                   \})
        " call dein#add('tjdevries/coc-zsh')
        " call dein#add('neovim/nvim-lsp')
     else
@@ -180,7 +191,9 @@ if dein#load_state('~/.cache/dein')
     " call dein#add('SkyLeach/pudb.vim', {'on_ft': ['python', 'ipython']})
 
     " Linting, syntax, autocomplete, semantic highlighting 
-    call dein#add('w0rp/ale')
+    call dein#add('w0rp/ale', {
+                \'on_cmd': '!yarn global add vim-language-server'
+                \})
     call dein#add('davidhalter/jedi-vim', 
                 \{'on_ft': ['python', 'ipython'],
                 \'command': 'UpdateRemotePlugins'})

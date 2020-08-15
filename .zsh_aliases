@@ -1,5 +1,4 @@
 #!/usr/bin/env zsh
-
 export ZSH_ALIASES_LOADED
 
 if (( $+command[nvim] )); then

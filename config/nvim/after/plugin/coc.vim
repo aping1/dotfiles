@@ -11,8 +11,8 @@ if executable('javascript-typescript-server')
                 \ 'cmd': {server_info->['javascript-typescript-server']},
                 \ 'whitelist': ['javascript', 'javascriptjsx', 'jsx']
                 \ })
-else
-    echomsg "pyls is not available"
+elseif index(['javascript', 'javascriptjsx', 'jsx'], &filetype)>=0
+    echomsg "javascript-typescript-server' is not available"
 " \ 'whitelist': ['javascript', 'javascriptjsx']
 endif
 if executable('vim-language-server')
@@ -21,7 +21,7 @@ if executable('vim-language-server')
                 \ 'cmd': {server_info->['vim-language-server']},
                 \ 'whitelist': ['vim',]
                 \ })
-else
+elseif index(['vim'], &filetype)>=0
     echoerr "vim-language-server is not available"
 endif
 if executable('pyls')
@@ -30,7 +30,7 @@ if executable('pyls')
                 \ 'cmd': {server_info->['pyls']},
                 \ 'whitelist': ['python', 'ipython'],
                 \ })
-else
+elseif index(['python', 'ipython'], &filetype)>=0
     echomsg "pyls is not available"
 endif
 

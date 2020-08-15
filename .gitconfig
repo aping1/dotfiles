@@ -1,8 +1,8 @@
 [user]
     name = Allison Wampler
-    email = aping1@apt-miss.com
+    email = awampler@paloaltonetworks.com
 [merge]
-    tool = vimdiff
+    tool = nvimdiff
     guitool = vimrdiff
 [core]
 	excludesfile = ~/.gitignore_global
@@ -48,6 +48,7 @@
     sl = !git smartlog
     smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)%an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
     local-branches = !git branch -vv | cut -c 3- | awk '$3 !~/\\[/ { print $1 }'
+    deleted = log --diff-filter=D --summary
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 

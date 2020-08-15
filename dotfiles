@@ -155,7 +155,6 @@ brew "luarocks" #Language #lua
 brew "boost" #Libs
 brew "readline" #Libs
 cask "osxfuse" #Libs
-cask "lulu"  #firewall
 brew "libvorbis" #Libs
 brew "xz" #Libs
 brew "zlib" #Libs
@@ -202,3 +201,4 @@ pip psutil
 link "${HOME}/Library/Application Scripts/com.omnigroup.OmniFocus2.MacAppStore" .local/omnifocus-scripts
 link "${HOME}"/.config/karabiner/assets/complex_modifications ~/.dotfiles/config/karabiner/assets/complex_modifications/karabiner-shkrc.json
 manual github git@github.com:juliosueiras/terraform-lsp.git install ='''GO111MODULE=on go mod download # Download the modules for the project\nb make      # Build the project. Alternatively run "go build"\n make copy # Install the project
+link "${HOME}/Library/Application Scripts/com.omnigroup.OmniFocus2.MacAppStore" .local/omnifocus-scripts
