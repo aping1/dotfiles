@@ -41,12 +41,12 @@ if [ ! $TERM = dumb ]; then
         fi
     } &!
 
-    if [ ! -f ${ZINIT_DOTFILES}/bin/zinit.zsh ] && ((${+commands[git]})); then
-        __zinit_just_installed=1
-        [[ -d ${ZINIT_DOTFILES}/bin ]] && rmdir ${ZINIT_DOTFILES}/bin 
-        mkdir -p ${ZINIT_DOTFILES} &&  \
-            chmod g-rwX "${ZINIT_DOTFILES}" && git clone --depth=1 https://github.com/zdharma/zinit.git $ZINIT_DOTFILES/bin
-    fi
+if [ ! -f ${ZINIT_DOTFILES}/bin/zinit.zsh ] && ((${+commands[git]})); then
+    __zinit_just_installed=1
+    [[ -d ${ZINIT_DOTFILES}/bin ]] && rmdir ${ZINIT_DOTFILES}/bin 
+    mkdir -p ${ZINIT_DOTFILES} &&  \
+        chmod g-rwX "${ZINIT_DOTFILES}" && git clone --depth=1 https://github.com/zdharma/zinit.git $ZINIT_DOTFILES/bin
+fi
 
     # load zgen
     #source "${DOTFILESDEPS:-"${HOME}"}/zgen/zgen.zsh"
@@ -71,20 +71,13 @@ if [ ! $TERM = dumb ]; then
             MY_ZINIT_USE_TURBO=true
     fi
 
-###########
-# Plugins #
-###########
-_zsh_dotfiles_plugins=(
-    ${DOTFILES}/plugins/fbtools
-    ${DOTFILES}/plugins/helpers
-    ${DOTFILES}/plugins/navigation
-    ${DOTFILES}/plugins/autocomplete-extra
-    ${DOTFILES}/plugins/images
-)
+    ###########
+    # Plugins #
+    ###########
 
-_zsh_dotfiles_themes=(
-    ${DOTFILES}/themes
-)
+    _zsh_dotfiles_themes=(
+        ${DOTFILES}/themes
+    )
 
 
     function __zinit_plugin_loaded_callback() {
@@ -109,83 +102,83 @@ _zsh_dotfiles_themes=(
         fi
     }
 
-    ### Added by Zinit's installer
-    if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
-        print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
-        command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
-        command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
-            print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
-            print -P "%F{160}▓▒░ The clone has failed.%f%b"
+        ### Added by Zinit's installer
+        if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
+            print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+            command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
+            command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
+                print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+                print -P "%F{160}▓▒░ The clone has failed.%f%b"
+        fi
+
+
+    # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+    # Initialization code that may require console input (password prompts, [y/n]
+    # confirmations, etc.) must go above this block; everything else may go below.
+    if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+        source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
     fi
 
+    ZINIT_HOME="${ZINIT_HOME:-${ZPLG_HOME:-${ZDOTDIR:-"${HOME}/.zinit"}}}"
+    ZINIT_BIN_DIR_NAME="${${ZINIT_BIN_DIR_NAME:-$ZPLG_BIN_DIR_NAME}:-bin}"
+    ### Added by Zinit's installer
+    if [[ ! -f $ZINIT_HOME/$ZINIT_BIN_DIR_NAME/zinit.zsh ]]; then
+        print -P "%F{33}▓▒░ %F{220}Installing DHARMA Initiative Plugin Manager (zdharma/zinit)…%f"
+        command mkdir -p "$ZINIT_HOME" && command chmod g-rwX "$ZINIT_HOME"
+        command git clone https://github.com/zdharma/zinit "$ZINIT_HOME/$ZINIT_BIN_DIR_NAME" && \
+            print -P "%F{33}▓▒░ %F{34}Installation successful.%f" || \
+            print -P "%F{160}▓▒░ The clone has failed.%f"
+    fi
+    source "$ZINIT_HOME/$ZINIT_BIN_DIR_NAME/zinit.zsh"
+    autoload -Uz _zinit
+    (( ${+_comps} )) && _comps[zinit]=_zinit
+    #multisrc## End of Zinit installer's chunk
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+    #module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
+    #zmodload zdharma/zplugin &>/dev/null
 
-ZINIT_HOME="${ZINIT_HOME:-${ZPLG_HOME:-${ZDOTDIR:-"${HOME}/.zinit"}}}"
-ZINIT_BIN_DIR_NAME="${${ZINIT_BIN_DIR_NAME:-$ZPLG_BIN_DIR_NAME}:-bin}"
-### Added by Zinit's installer
-if [[ ! -f $ZINIT_HOME/$ZINIT_BIN_DIR_NAME/zinit.zsh ]]; then
-    print -P "%F{33}▓▒░ %F{220}Installing DHARMA Initiative Plugin Manager (zdharma/zinit)…%f"
-    command mkdir -p "$ZINIT_HOME" && command chmod g-rwX "$ZINIT_HOME"
-    command git clone https://github.com/zdharma/zinit "$ZINIT_HOME/$ZINIT_BIN_DIR_NAME" && \
-        print -P "%F{33}▓▒░ %F{34}Installation successful.%f" || \
-        print -P "%F{160}▓▒░ The clone has failed.%f"
-fi
-source "$ZINIT_HOME/$ZINIT_BIN_DIR_NAME/zinit.zsh"
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
-### End of Zinit installer's chunk
+    # Functions to make configuration less verbose
+    # zt() : First argument is a wait time and suffix, ie "0a". Anything that doesn't match will be passed as if it were an ice mod. Default ices depth'3' and lucid
+    # zct(): First argument provides $MYPROMPT value used in load'' and unload'' ices. Sources a config file with tracking for easy unloading using $MYPROMPT value. Small hack to function in for-syntax
+    function zt()  { zinit depth'3' lucid ${1/#[0-9][a-c]/wait"$1"} "${@:2}"; }
 
-#module_path+=( "${HOME}/.zinit/bin/zmodules/Src" )
-#zmodload zdharma/zplugin &>/dev/null
+    #  function za() {
+    #      # wrapper for https://github.com/zinit-zsh/z-a-meta-plugins
+    #      zinit-zsh/z-a-meta-plugins
+    #      setopt xtrace
+    #      zt ${1/#[0-9][a-c]/wait"$1"} \
+    #          for annexes \
+    #              "${@:2}"
+    #      unsetopt xtrace
+    #  }
 
-# Functions to make configuration less verbose
-# zt() : First argument is a wait time and suffix, ie "0a". Anything that doesn't match will be passed as if it were an ice mod. Default ices depth'3' and lucid
-# zct(): First argument provides $MYPROMPT value used in load'' and unload'' ices. Sources a config file with tracking for easy unloading using $MYPROMPT value. Small hack to function in for-syntax
-function zt()  { zinit depth'3' lucid ${1/#[0-9][a-c]/wait"$1"} "${@:2}"; }
-
-#  function za() {
-#      # wrapper for https://github.com/zinit-zsh/z-a-meta-plugins
-#      zinit-zsh/z-a-meta-plugins
-#      setopt xtrace
-#      zt ${1/#[0-9][a-c]/wait"$1"} \
-#          for annexes \
-#              "${@:2}"
-#      unsetopt xtrace
-#  }
-
-function zct() {
-    thmf="${DOTFILES:-${HOME}/.dotfiles}/config/zsh/themes"
-    [[ ${1} != ${MYPROMPT:-p10k} ]] && { ___turbo=1
-    .zinit-ice load"[[ \${MYPROMPT} = ${1} ]]" unload"[[ \${MYPROMPT} != ${1} ]]" 
+    function zct() {
+        thmf="${DOTFILES:-${HOME}/.dotfiles}/config/zsh/themes"
+        [[ ${1} != ${MYPROMPT:-p10k} ]] && { ___turbo=1
+        .zinit-ice load"[[ \${MYPROMPT} = ${1} ]]" unload"[[ \${MYPROMPT} != ${1} ]]" 
     }
 
     .zinit-ice atload'! [[ -f "${thmf}/${MYPROMPT}-post.zsh" ]] && source "${thmf}/${MYPROMPT}-post.zsh"' \
         nocd id-as"${1}-theme";
-    ICE+=("${(kv)ZINIT_ICES[@]}"); ZINIT_ICES=();
-}
-zt wait'!' light-mode compile'*handler' for \
-    zinit-zsh/z-a-patch-dl \
-    zinit-zsh/z-a-submods \
-    atload='__required_sbin' \
-    zinit-zsh/z-a-bin-gem-node
+        ICE+=("${(kv)ZINIT_ICES[@]}"); ZINIT_ICES=();
+    }
+    zt wait'!' light-mode compile'*handler' for \
+        zinit-zsh/z-a-patch-dl \
+        zinit-zsh/z-a-submods \
+        load='__required_sbin' \
+        zinit-zsh/z-a-bin-gem-node
 
-##################
-# Initial Prompt #
-#    Annexes     #
-# Config source  #
-##################
+    ##################
+    # Initial Prompt #
+    #    Annexes     #
+    # Config source  #
+    ##################
 
-zt light-mode for \
-    pick'async.zsh' \
-    mafredri/zsh-async \
-    if'zct p10k' \
-        romkatv/powerlevel10k
+    zt light-mode for \
+        pick'async.zsh' \
+        mafredri/zsh-async \
+        if'zct p10k' \
+            romkatv/powerlevel10k
 
 
     # Taken from [here](https://github.com/zdharma/zinit-configs/tree/28bc8ff51f632c603f5ad80d83f4273acdc12606/NICHOLAS85/.zinit/plugins/_local---config-files)
@@ -200,9 +193,24 @@ zt light-mode for \
     if [[ ! -d "${ZINIT[PLUGINS_DIR]}/_local---config-files" && -d "${DOTFILES}/config/zsh" ]]; then
         ln -s "${DOTFILES}/config/zsh" "${ZINIT[PLUGINS_DIR]}/_local---config-files"
     fi
+
+    _zsh_dotfiles_plugins=(
+        _local/fbtools
+        _local/helpers
+        _local/navigation
+        _local/images
+    )
+    for plugin_dir in ${_zsh_dotfiles_plugins[@]};  do
+        plugin_name="${plugin_dir:t}"
+        if [[ $plugin_name && $plugin_dir && ! -e "${ZINIT[PLUGINS_DIR]}/_local---${plugin_name}" && -d "${DOTFILES}/plugins/${plugin_name}" ]]; then
+            ln -s "${DOTFILES}/plugins/${plugin_name}" "${ZINIT[PLUGINS_DIR]}/_local---${plugin_name}"
+        fi
+    done
     # Loads "${DOTFILES}/config/zsh/config-files.plugin.zsh" 
     zt light-mode blockf pick='config-files.plugin.zsh' for \
-        _local/config-files
+        _local/config-files \
+        pick='init.zsh' multisrc='*/init.zsh' \
+        ${_zsh_dotfiles_plugins[@]}
 
     ###########
     # Plugins #
@@ -219,11 +227,11 @@ zt light-mode for \
         OMZP::helm \
         OMZP::pip \
         OMZP::python 
-# zgen will load oh-my-zsh and download it if required
-zt  for \
-    OMZL::history.zsh \
-    atload='bindkey -v' \
-    OMZP::vi-mode
+            # zgen will load oh-my-zsh and download it if required
+            zt  for \
+                OMZL::history.zsh \
+                atload='bindkey -v' \
+                OMZP::vi-mode
 
 ######################
 # Trigger-load block #
@@ -247,52 +255,49 @@ zt light-mode for \
 ##################
 
     ### End of Zinit's installer chunk
-    zinit wait lucid depth=1  \
+    zinit wait lucid depth=2  \
         atload='__zinit_plugin_loaded_callback' \
-        src='*/*.zsh' \
-        for "${_zsh_dotfiles_plugins[@]}"
+        pick='init.zsh' \
+        __go_history_multi()
+            {
+                typeset -gA FAST_BLIST_PATTERNS
+                FAST_BLIST_PATTERNS[/Volumes/Drobo5N2/*]=1
+                zstyle ":history-search-multi-word" page-size "8"                      # Number of entries to show (default is $LINES/3)
+                zstyle ":plugin:history-search-multi-word" reset-prompt-protect 1
+                # zstyle ":history-search-multi-word" highlight-color "bg=yellow,fg=black,bold"   # Color in which to highlight matched, searched text (default bg=17 on 256-color terminals)
+                # zstyle ":plugin:history-search-multi-word" synhl "no"                 # Whether to perform syntax highlighting (default true)
+                zstyle ":plugin:history-search-multi-word" active "standout"          # Effect on active history entry. Try: standout, bold, bg=blue (default underline)
+                zstyle ":plugin:history-search-multi-word" check-paths "yes"           # Whether to check paths for existence and mark with magenta (default true)
+                zstyle ":plugin:history-search-multi-word" clear-on-cancel "no"        # Whether pressing Ctrl-C or ESC should clear entered query
+            }
+        case $TERM_PROGRAM in 
+            'iTerm.app')
+                zt 0a light-mode for \
+                    bpick='*darwin*' \
+                    OMZP::iterm2 \
+                    OMZP::xcode
 
-__go_history_multi()
-{
-    typeset -gA FAST_BLIST_PATTERNS
-    FAST_BLIST_PATTERNS[/Volumes/Drobo5N2/*]=1
-    zstyle ":history-search-multi-word" page-size "8"                      # Number of entries to show (default is $LINES/3)
-    zstyle ":plugin:history-search-multi-word" reset-prompt-protect 1
-    # zstyle ":history-search-multi-word" highlight-color "bg=yellow,fg=black,bold"   # Color in which to highlight matched, searched text (default bg=17 on 256-color terminals)
-    # zstyle ":plugin:history-search-multi-word" synhl "no"                 # Whether to perform syntax highlighting (default true)
-    zstyle ":plugin:history-search-multi-word" active "standout"          # Effect on active history entry. Try: standout, bold, bg=blue (default underline)
-    zstyle ":plugin:history-search-multi-word" check-paths "yes"           # Whether to check paths for existence and mark with magenta (default true)
-    zstyle ":plugin:history-search-multi-word" clear-on-cancel "no"        # Whether pressing Ctrl-C or ESC should clear entered query
-}
-case $TERM_PROGRAM in 
-    'iTerm.app') 
+                ;;
+        esac
+
+
         zt 0a light-mode for \
-        bpick='*darwin*' \
-        OMZP::iterm2 \
-        OMZP::xcode
-        ;;
-esac
-
-
-zt 0a light-mode for \
-    OMZL::completion.zsh \
-    if'((1))' ver'dev' \
-        zinit-zsh/z-a-man \
-        marlonrichert/zsh-autocomplete \
-        has'brew' \
-        OMZP::brew \
-        has'systemctl' \
-        OMZP::systemd/systemd.plugin.zsh \
-        OMZP::sudo/sudo.plugin.zsh \
-        blockf \
-        zsh-users/zsh-completions \
-        compile'{src/*.zsh,src/strategies/*}' pick'zsh-autosuggestions.zsh' \
-        atload'_zsh_autosuggest_start' \
-        zsh-users/zsh-autosuggestions \
-        atload='__go_history_multi' \
-        zdharma/history-search-multi-word 
-        # pick'fz.sh' atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert __fz_zsh_completion)' \
-        #     changyuheng/fz
+            OMZL::completion.zsh \
+            if'((1))' ver'dev' \
+                zinit-zsh/z-a-man \
+                marlonrichert/zsh-autocomplete \
+                has'brew' \
+                OMZP::brew \
+                has'systemctl' \
+                OMZP::systemd/systemd.plugin.zsh \
+                OMZP::sudo/sudo.plugin.zsh \
+                blockf \
+                zsh-users/zsh-completions \
+                compile'{src/*.zsh,src/strategies/*}' pick'zsh-autosuggestions.zsh' \
+                atload'_zsh_autosuggest_start' \
+                zsh-users/zsh-autosuggestions \
+                atload='__go_history_multi' \
+                zdharma/history-search-multi-word 
 
 ##################
 # Wait'0b' block #
@@ -309,41 +314,29 @@ zt 0b light-mode for \
 ##################
 # Wait'0c' block #
 ##################
-zcommand from"gh-r";         zload junegunn/fzf-bin
-zcommand pick"bin/fzf-tmux"; zload junegunn/fzf
 # Create and bind multiple widgets using fzf
 # for fzf ^R use    multisrc"shell/{completion,key-bindings}.zsh" \
 zt 0c light-mode for \
     multisrc"shell/completion.zsh" \
     id-as"junegunn/fzf_completions" pick"/dev/null" \
-    junegunn/fzf \
-    sbin from'gh-r' pick'plugin/*.zsh' \
-    sei40kr/fast-alias-tips-bin
+    junegunn/fzf_completions
 
 function __required_sbin()  {
-zt 0c light-mode binary for \
-    sbin"bin/git-ignore" atload'export GI_TEMPLATE="$PWD/.git-ignore"; alias gi="git-ignore"' \
-    laggardkernel/git-ignore \
-    sbin \
-    kazhala/dotbare \
-    id-as'Cleanup' nocd atinit'unset -f zct zt  __required_sbin; SPACESHIP_PROMPT_ADD_NEWLINE=true; _zsh_autosuggest_bind_widgets' \
-    zdharma/null
-}
+    typeset -g -a fbtools
+    zt 0c light-mode binary for \
+        sbin"bin/git-ignore" atload'export GI_TEMPLATE="$PWD/.git-ignore"; alias gi="git-ignore"' \
+        laggardkernel/git-ignore \
+        sbin \
+        kazhala/dotbare \
+        sbin from'gh-r' pick'plugin/*.zsh' \
+        sei40kr/fast-alias-tips-bin \
+        id-as'Cleanup' nocd atinit'unset -f zct zt  __required_sbin; SPACESHIP_PROMPT_ADD_NEWLINE=true; _zsh_autosuggest_bind_widgets' \
+        zdharma/null
+    }
 
 
-# === Completion ===
-# Bindkey ... autosuggest-*
-#   autosuggest-accept: Accepts the current suggestion.
-#   autosuggest-execute: Accepts and executes the current suggestion.
-#   autosuggest-clear: Clears the current suggestion.
-#   autosuggest-fetch: Fetches a suggestion (works even when suggestions are disabled).
-#   autosuggest-disable: Disables suggestions.
-#   autosuggest-enable: Re-enables suggestions.
-#   autosuggest-toggle: Toggles between enabled/disabled suggestions.
-
-
-fi
-
+####################################
+            fi
 
 # Tear Down profiling
 if (( $+PROFILING )); then
@@ -352,6 +345,7 @@ if (( $+PROFILING )); then
     zprof
 fi
 
+# pip for python fails
 export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
