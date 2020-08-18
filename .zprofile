@@ -54,5 +54,7 @@ else
     setup_brew_env &>/dev/null
 fi
 
+export PYENV_ROOT=${home}/.pyenv
+
 # this is needed for p10k status Pipe return codes
 set +o PIPEFAIL

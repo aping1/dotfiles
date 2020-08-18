@@ -209,7 +209,7 @@ fi
     # Loads "${DOTFILES}/config/zsh/config-files.plugin.zsh" 
     zt light-mode blockf pick='config-files.plugin.zsh' for \
         _local/config-files \
-        pick='init.zsh' multisrc='*/init.zsh' \
+        multisrc='{utils.zsh,init.zsh,*/init.zsh}' \
         ${_zsh_dotfiles_plugins[@]}
 
     ###########
@@ -237,18 +237,18 @@ fi
 # Trigger-load block #
 ######################
 
-zt light-mode for \
+zt light-mode blockf for \
     trigger-load'!x' \
     OMZ::plugins/extract/extract.plugin.zsh \
     trigger-load'!man' \
     ael-code/zsh-colored-man-pages  \
     trigger-load'!ga;!gcf;!gclean;!gd;!glo;!grh;!gss' \
-    wfxr/forgit
+    wfxr/forgit \
+    trigger-load'!gencomp' pick'zsh-completion-generator.plugin.zsh' 
+    atload'alias gencomp="zinit silent nocd as\"null\" wait\"2\" atload\"zinit creinstall -q _local/config-files; zicompinit\" for /dev/null; gencomp"' \
+    RobSis/zsh-completion-generator
     # trigger-load'!zshz' blockf \
     # agkozak/zsh-z \
-    # trigger-load'!gencomp' pick'zsh-completion-generator.plugin.zsh' blockf \
-    # atload'alias gencomp="zinit silent nocd as\"null\" wait\"2\" atload\"zinit creinstall -q _local/config-files; zicompinit\" for /dev/null; gencomp"' \
-    # RobSis/zsh-completion-generator
 
 ##################
 # Wait'0a' block #

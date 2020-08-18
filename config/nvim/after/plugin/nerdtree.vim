@@ -97,3 +97,10 @@ let NERDTreeShowBookmarks=1
 let NERDTreeChDirMode=2
 let NERDTreeQuitOnOpen=0
 
+
+if exists('g:webdevicons_enable_nerdtree')
+    let g:webdevicons_enable_nerdtree = 1
+    " Force extra padding in NERDTree so that the filetype icons line up vertically
+    let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
+    let g:webdevicons_conceal_nerdtree_brackets = 1
+endif
