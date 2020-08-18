@@ -33,6 +33,7 @@ endtry
 set shiftround
 
 set smarttab
+set expandtab
 set linebreak
 set textwidth=0
 
@@ -40,6 +41,7 @@ set textwidth=0
 set noignorecase
 set nosmartcase
 
+set foldcolumn=2
 set laststatus=2
 set number
 
@@ -52,6 +54,7 @@ set tabstop=4
 "       :h retab
 " shiftwidth: change the number of space characters inserted for indentation
 set shiftwidth=4
+set autoindent 
 " Expand tab to spaces whenever the tab key is pressed
 set expandtab
 "Highlight Search results
@@ -323,10 +326,6 @@ imap OB <ESC>ji
 imap OC <ESC>li
 imap OD <ESC>hi
 
-" Adds for IronRepl: PickRepl PickVirtualEnv PickIPython
-"if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
-"    silent! luafile $HOME/.config/nvim/iron.plugin.lua
-"endif
 
 " === fold settings ==
 set foldenable          " enable folding
@@ -383,8 +382,6 @@ if executable('bat')
                 \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'bat -p --style snip --color always {}']}, <bang>0)
 endif
 
-"---------------------------------------------
-" Plugin'tpope/vim-markdown'
 "----------------------------------------------
 " Plugin: 'vimwiki/vimwiki'
 "----------------------------------------------
@@ -400,7 +397,11 @@ let g:vimwiki_ext2syntax = {
 "----------------------------------------------
 " Plugin: 'Vigemus/iron.nvim'
 "----------------------------------------------
-"luafile $HOME/.config/nvim/iron.plugin.lua
+" Adds for IronRepl: PickRepl PickVirtualEnv PickIPython
+"if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
+"    silent! luafile $HOME/.config/nvim/iron.plugin.lua
+"endif
+" luafile $HOME/.config/nvim/iron.plugin.lua
 
 
 "----------------------------------------------
@@ -477,8 +478,8 @@ let g:ale_python_flake8_options = '--max-line-length=' . linelen
 let g:ale_fix_on_save = 0
 " Us quickfix with 'qq' delete
 " quickfix can be set with 'nvim -d FILENAME' so use loclist
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
 " Set this if you want to.
 " This can be useful if you are combining ALE with
@@ -580,17 +581,19 @@ augroup END
 " Tmux vim integration
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
+" tmux will send xterm-style keys when its xterm-keys option is on
+if &term =~# '^screen'
+    execute "set <xUp>=\e[1;*A"
+    execute "set <xDown>=\e[1;*B"
+    execute "set <xRight>=\e[1;*C"
+    execute "set <xLeft>=\e[1;*D"
+endif
 
 "----------------------------------------------
 " Plugin: scrooloose/nerdtree
 "----------------------------------------------
 "nnoremap <leader>d :NERDTreeToggle<cr>
 nnoremap <F2> :NERDTreeToggleVCS<cr>
-
-let g:webdevicons_enable_nerdtree = 1
-" Force extra padding in NERDTree so that the filetype icons line up vertically
-let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
-let g:webdevicons_conceal_nerdtree_brackets = 1
 
 
 " --------------------
@@ -633,6 +636,10 @@ let test#python#patterns = {
 
 " When reading a buffer (after 1s), and when writing (no delay).
 " call neomake#configure#automake('rw', 1000)
+call neomake#configure#automake('nrw', 500)
+let g:neomake_open_list = 2
+"let g:neomake_enabled_makers = { 'python': [] }
+"let b:neomake_python_enabled_makers = []
 
 function! s:vim_test_keymap()
     nmap <silent> t<C-n> :TestNearest<CR>

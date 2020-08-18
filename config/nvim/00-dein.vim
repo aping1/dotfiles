@@ -260,6 +260,24 @@ if dein#load_state('~/.cache/dein')
 
     call dein#add('junegunn/goyo.vim')
 
+    " Here are some more plugins i've used and removed in the past 
+    " Session 
+"Plug 'tpope/vim-obsession'
+"Plugin 'vim-scripts/vim-misc'
+"Plugin 'vim-scripts/gitdiff.vim'
+"Plugin 'vim-scripts/pdbvim'
+"Plugin 'solarnz/thrift.vim'
+
+" Local Shortccuts
+" uses pygtk
+" A simple color picker for VIM, based on GTK color chooser dialog.
+" Plugin 'vim-scripts/VIM-Color-Picker'
+" Plugin 'vim-scripts/ColorX'
+"Plug 'jeetsukumaran/vim-pythonsense', { 'for' : 'python' }
+" Plug 'ShPlug 'povilasb/neovim-ascii-diagram'
+" plug sougo/context_filetype.vim'
+" Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh \| UpdateRemotePlugins' }
+
     " === end Plugins! ===
     call dein#end()
     "if  ! s:is_sudo
