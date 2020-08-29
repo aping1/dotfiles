@@ -17,6 +17,10 @@ elif [[ ${DISTRO} == "darwin" ]]; then
     alias vim='vimr'
 fi
 
+if (( $+command[thefuck] )); then
+    eval $(thefuck --alias)
+fi
+
 function ls () {
     if [[ $TERM =~ ^xterm ]]; then
         if (( $+command[lsd] )) ; then
