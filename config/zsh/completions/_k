@@ -1,0 +1,26 @@
+#compdef k
+
+# zsh completions for 'k'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-a,--all}'[list entries starting with .]'
+  {-A,--almost-all}'[list all except . and ..]'
+  '-c[sort by ctime (inode change time)]'
+  {-d,--directory}'[list only directories]'
+  {-n,--no-directory}'[do not list directories]'
+  {-h,--human}'[show filesizes in human-readable format]'
+  '--si[with -h, use powers of 1000 not 1024]'
+  {-r,--reverse}'[reverse sort order]'
+  '-S[sort by size]'
+  '-t[sort by time (modification time)]'
+  '-u[sort by atime (use or access time)]'
+  '-U[unsorted]'
+  '--sort[sort by WORD: none (U), size (S)]'
+  '--no-vcs[do not get VCS status (much faster)]'
+  '--help[show this help]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

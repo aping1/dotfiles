@@ -30,6 +30,7 @@ if dein#load_state('~/.cache/dein')
     " --- Sesnible defaults ---
     call dein#add('tpope/vim-sensible')
 
+    call dein#add('stefandtw/quickfix-reflector.vim')
     " --- TMUX Integration ctrl-hjkl % copy/paste
     call dein#add('tmux-plugins/vim-tmux-focus-events')
     call dein#add('roxma/vim-tmux-clipboard')
@@ -124,6 +125,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('mg979/vim-visual-multi')
 
 
+    call dein#add('junegunn/fzf.vim')
     call dein#add('dhruvasagar/vim-table-mode')
     " Markdown tools
     call dein#add('SidOfc/mkdx',

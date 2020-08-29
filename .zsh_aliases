@@ -2,6 +2,7 @@
 export ZSH_ALIASES_LOADED
 
 if (( $+command[nvim] )); then
+    export MANPAGER="nvim -c 'set ft=man' -"
     alias vim=nvim
     alias vi=nvim
 elif (( $+command[vim] )); then
@@ -18,16 +19,15 @@ fi
 
 function ls () {
     if [[ $TERM =~ ^xterm ]]; then
-        if command -v lsd &>/dev/null; then
-            alias ls=lsd
-        elif command -v ls &>/dev/null; then
+        if (( $+command[lsd] )) ; then
+            alias ls='lsd --group-dirs=first'
+        elif (( $+command[ls] )) ; then
             alias ls='ls --color=always'
         fi
     fi
     unset -f ls
     ls
 }
-
 
 function ipython_bootstrap () {
     python -c 'import IPython; IPython.embed(colors="Linux")'
@@ -36,7 +36,42 @@ function ipython3_bootstrap () {
     python3 -c 'import IPython; IPython.embed(colors="Linux")'
 }
 
-alias clear='/usr/bin/yes "$(printf '\''-\n\n\n'\'')" | /usr/bin/head -n $(( $(tput lines) * 31 / 16 ))'
+alias system_fillscreen='/usr/bin/yes "$(printf '\''-\n\n\n'\'')" | /usr/bin/head -n $(( $(tput lines) * 31 / 16 ))'
 (( $+command[python] )) && alias ipy="python -c 'import IPython; IPython.terminal.ipapp.launch_new_instance()'"
 (( $+command[python3] )) && alias ipy3="python3 -c 'import IPython; IPython.terminal.ipapp.launch_new_instance()'"
+
 alias shutup='stty tostop'
+#########################
+#       Aliases         #
+#########################
+# Access zsh config files
+alias zshconf="(){ setopt extendedglob local_options; nvim ${HOME}/.zshrc ${0:h}/config-files.plugin.zsh ${0:h}/themes/\${MYPROMPT}-*~*.zwc }"
+
+alias follow='tail -f'
+alias g='git'
+# Linkux only
+alias ..='cd .. 2>/dev/null || cd "$(dirname $PWD)"' # Allows leaving from deleted directories
+
+function _darwin_aliases () {
+    # Show/hide hidden files in Finder
+    alias system_show_hidden="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+    alias system_hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+    # Hide/show all desktop icons (useful when presenting)
+    alias xsystem_hide_desktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+    alias system_show_desktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+    # Flush Directory Service cache
+    alias flushdns="dscacheutil -flushcache && killall -HUP mDNSResponder"
+    alias system_mute="osascript -e 'set volume output muted true'"
+    alias system_lock="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
+    alias flushdns='sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder'
+
+    alias vmware-dhcp-restart='sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --configure && \
+    sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop && \
+    sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start'
+}
+
+alias ztimes='zinit times'
+alias zstatus='zinit zstatus'
+alias zreportall='zinit zreport --all'
+alias zreport='zinit zreport'
+

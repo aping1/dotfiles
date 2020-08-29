@@ -1,0 +1,17 @@
+
+HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND='underline'
+HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND=''
+zle -N history-substring-search-up
+zle -N history-substring-search-down
+bindkey '^[OA' history-substring-search-up
+bindkey '^[OB' history-substring-search-down
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
+typeset -g HISTORY_SUBSTRING_SEARCH_FUZZY=set
+zstyle ":history-search-multi-word" page-size "8"                      # Number of entries to show (default is $LINES/3)
+zstyle ":history-search-multi-word" highlight-color "fg=yellow,bold"   # Color in which to highlight matched, searched text (default bg=17 on 256-color terminals)
+zstyle ":plugin:history-search-multi-word" synhl "yes"                 # Whether to perform syntax highlighting (default true)
+zstyle ":plugin:history-search-multi-word" active "underline"          # Effect on active history entry. Try: standout, bold, bg=blue (default underline)
+zstyle ":plugin:history-search-multi-word" check-paths "yes"           # Whether to check paths for existence and mark with magenta (default true)
+zstyle ":plugin:history-search-multi-word" clear-on-cancel "no"        # Whether pressing Ctrl-C or ESC should clear entered query
+

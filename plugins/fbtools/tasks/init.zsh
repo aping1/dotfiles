@@ -1,4 +1,5 @@
-# /usr/local/bin/zsh || /usr/bin/zsh
+# /usr/bin/env zsh
+emulate -LR zsh
 
 if [[ $0 == /bin/bash ]] ; then
     _fbtools_tasks_local_script=${HOME}/.dotfiles/plugins/fbtools/tasks
@@ -14,13 +15,12 @@ _tmux_scripts="${_tmux_scripts:A}"
 # dep ${_tmux_scripts}/new_session.sh "${_NEW_TASK}"
 
 TASK_REGEX='([A-Z]{0,3})(-?)([0-9][0-9]*)$'
-[[ ${_FB_TMUX_HELPER_H} ]] || source ${_tmux_scripts}/../init.zsh
 
 : ${TASK_ROOT_DIR:="${HOME}/tasks"}
 export TASK_ROOT_DIR
 : ${TASK_LINK:=${TASK_ROOT_DIR}/current}
 
-_proj_scripts="{_fbtools_tasks_local_script%/}/../projects/init.zsh"
+_proj_scripts="${_fbtools_tasks_local_script%/}/../projects/init.zsh"
 _proj_scripts=${_proj_scripts:A}
 
 ### START FUNCTIONS =====
@@ -131,10 +131,14 @@ function task_from_tmux() {
 }
 
 
+function task_home() 
+{ 
+    print -l "${TASK_ROOT_DIR:-"${HOME}/tasks"}/$(task_from_tmux)"
+}
+
 alias task_list='_fb_tasks_helper_list_tasks'
 alias cur_task='_fb_tasks_helper_get_current_task'
-alias task_home='printf "%s\n" "${TASK_ROOT_DIR:="${HOME}/tasks"}/$(task_from_tmux)"'
-alias cd_task_home='cd "${TASK_ROOT_DIR:="${HOME}/tasks"}/$(task_from_tmux)"'
+alias cd_task_home='cd $(task_home)'
 alias cdtask='cd_task_home'
 
 alias set_task_from_session='_fb_tasks_helper_set_task_from_session_name'

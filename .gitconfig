@@ -13,7 +13,8 @@
     conflictstyle = diff3
 	keepBackup = false
 [mergetool "fugitive"]
-    cmd = vim -f "$MERGED" -c "Gdiff $LOCAL" -c "Gdiff $REMOTE" -c 'wincmd w' -c 'wincmd L' 
+    # Ancestor :1 :2 HEAD :3 merge
+    cmd = nvim -f "$MERGED" -c 'Gread :1:% | set scrollbind diff' -c 'Gvsplit :2:% | set scrollbind diff | ALEDisableBuffer'  -c 'Gvsplit :3:% | set scrollbind diff | ALEDisableBuffer' -c 'wincmd w' -c '2wincmd l' 
 [mergetool "vimdiff"]
 	cmd = vim -f -d $LOCAL $REMOTE $BASE $MERGED -c '$wincmd w' -c 'wincmd J'
 [mergetool "nvimdiff"]
@@ -47,3 +48,6 @@
     deleted = log --diff-filter=D --summary
 	sl = !git smartlog
 	smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)%an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
+    local-branches = !git branch -vv | cut -c 3- | awk '$3 !~/\\[/ { print $1 }'
+[push]
+	default = matching

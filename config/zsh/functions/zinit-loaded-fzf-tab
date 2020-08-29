@@ -1,0 +1,77 @@
+
+# fzf-tab needs these
+zstyle ':completion:*:default' force-list=always
+zstyle ':completion:*' menu select=0
+
+#typeset -g FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude .git 2>/dev/null"
+typeset -g FZF_TAB_COMMAND=(
+    fzf
+    --ansi   # Enable ANSI color support, necessary for showing groups
+    --expect='$continuous_trigger,$print_query' # For continuous completion and print query
+    '--color=hl:$(( $#headers == 0 ? 108 : 255 ))'
+    --nth=2,3 --delimiter='\x00'  # Don't search prefix
+    --layout=reverse --height='${FZF_TMUX_HEIGHT:=75%}'
+    --tiebreak=begin -m --bind=ctrl-j:down,ctrl-k:up,change:top,tab:toggle --cycle
+    '--query=$query'   # $query will be expanded to query string at runtime.
+    '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
+    --print-query
+)
+
+
+FZF_TAB_GROUP_COLORS=(
+    $'\033[94m' $'\033[32m' $'\033[33m' $'\033[35m' $'\033[31m' $'\033[38;5;27m' $'\033[36m' \
+    $'\033[38;5;100m' $'\033[38;5;98m' $'\033[91m' $'\033[38;5;80m' $'\033[92m' \
+    $'\033[38;5;214m' $'\033[38;5;165m' $'\033[38;5;124m' $'\033[38;5;120m'
+)
+
+#   If this style is set for the default tag, completion lists that don't fit on the screen can be scrolled (see  the  description  of
+#      the  zsh/complist  module  in zshmodules(1)).  The value, if not the empty string, will be displayed after every screenful and the
+#      shell will prompt for a key press; if the style is set to the empty string, a default prompt will be used.
+#
+#      The value may contain the escape sequences: `%l' or `%L', which will be replaced by the number of the last line displayed and  the
+#      total number of lines; `%m' or `%M', the number of the  last match shown and the total number of matches; and `%p' and `%P', `Top'
+#      when at the beginning of the list, `Bottom' when at the end and the position shown as a percentage of the total length  otherwise.
+#      In  each  case  the  form with the uppercase letter will be replaced by a string of fixed width, padded to the  right with spaces,
+#       while the lowercase form will be replaced by a variable width string.  As in other prompt  strings,  the  escape  sequences  `%S',
+#      `%s',  `%B',  `%b', `%U', `%u' for entering and leaving the display modes standout, bold and underline, and `%F', `%f', `%K', `%k'
+#      for changing the foreground background colour, are also available, as is the form `%{...%}' for enclosing escape  sequences  which
+#      display with zero (or, with a numeric argument, some other) width.
+#
+#      After deleting this prompt the variable LISTPROMPT should be unset for the removal t
+zstyle ':completion:*' format ' %d'
+# empty means use tag
+zstyle ':completion:*' group-name ''
+
+zstyle ':fzf-tab:*' group-colors "${FZF_TAB_GROUP_COLORS[@]}"
+zstyle ':fzf-tab:*' continuous-trigger '/'
+# Trick completion somewho
+zstyle ':fzf-tab:*' fake-compadd fakeadd
+zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
+# disable sort when completing options of any command
+zstyle ':completion:complete:*:options' sort false
+
+# use input as query string when completing zlua
+zstyle ':fzf-tab:complete:_zlua:*' query-string input
+
+# (experimental, may change in the future)
+# some boilerplate code to define the variable `extract` which will be used later
+# please remember to copy them
+local extract="
+# trim input(what you select)
+local in=\${\${\"\$(<{f})\"%\$'\0'*}#*\$'\0'}
+# get ctxt for current completion(some thing before or after the current word)
+local -A ctxt=(\"\${(@ps:\2:)CTXT}\")
+# real path
+local realpath=\${ctxt[IPREFIX]}\${ctxt[hpre]}\$in
+realpath=\${(Qe)~realpath}
+"
+
+# give a preview of commandline arguments when completing `kill`
+zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps --pid=$in[(w)1] -o cmd --no-headers -w -w' --preview-window=down:3:wrap
+
+# give a preview of directory by exa when completing cd
+# zstyle ':fzf-tab:complete:*:file' extra-opts --preview=$extract'lsd -la --color=always $realpath'
+
+zstyle ':fzf-tab:*' print-query alt-enter
+
+# { vim: filetype=zsh

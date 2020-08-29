@@ -1,0 +1,25 @@
+# di= Directory: di
+# fi= File:
+# ln= Symbolic Link: ln
+# pi= Named Pipe (FIFO): pi
+# so= Socket: so
+# bd= Block Device: bd
+# cd= Character Device: cd
+# or= Orphan Symbolic Link (points to a file that no longer exists): or
+# mi= Missing File (a missing file that an orphan symbolic link points to)
+# ex= Executable File (has the “x” permission): 
+# *.extension=
+# Normal Text       : 0
+# Bold or Light Text: 1 (It depends on the terminal emulator.)
+# Dim Text          : 2
+# Underlined Text   : 4
+# Blinking Text     : 5 (This does not work in most terminal emulators.)
+# "Italics"         : 7
+# Hidden Text       : 8
+# [fg]
+# Black:  30 Red:    31 Green:   32  Yellow:  33
+# Blue:   34 Purple: 35 Cyan:    36 White:    37
+# [bg]
+# Black: 40 Red   : 41 Green: 42 Yellow: 43
+# Blue : 44 Purple: 45 Cyan : 46 White : 47
+for j in {0,1,2,4,5,7,8}; do for i in {30..47}; do ; printf -- 'LSCOLORS=di=%s;%s ' "${i}" "${j}" && LS_COLORS='di='"$j"';'"$i" noglob ls -G1 ${HOME} ; done; done

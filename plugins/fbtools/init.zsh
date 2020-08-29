@@ -1,12 +1,5 @@
 #!/usr/bin/env zsh
 #
-if command -v _realpath &>/dev/null && [[ ! $(command -v _realpath) =~ ^alias ]]; then
-    if command -v realpath &>/dev/null; then
-        alias _realpath='realpath'
-    else
-        alias _realpath='() { while [[ $1 =~ ^- ]]; do shift; done;  echo "${1:A}"; } '
-    fi
-fi
 #
 _fbtools_local_script="${0:A}"
 if [[ $0 == /bin/bash || ! ${_fbtools_local_script} =~ fbtools ]] ; then

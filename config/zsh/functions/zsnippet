@@ -1,0 +1,11 @@
+    emulate -L zsh
+    # wrap-track trackbinds bindmap
+    # clone opts proto from  ver bpick depth cloneopts  pullopts
+    (( ${#@}  >  1 )) &&  [[ ${1} =~ ((^wait)\*([0-9][a-c]|#.\+)\*) ]] && { 
+           local zinitwait="${match[1]}"
+           shift
+       }
+    [[ ${zinitwait} ]] ||  (( ${#@} >  0 )) && zinit ice ${zinitwait} lucid $( (( ${#@}  >  1 )) && print -- ${@[1,-2]} )
+    # (( $+DEBUG )) &&
+    echo " Installing snippet 'zinit ice ${zinitwait} lucid $( (( ${#@}  >  1 )) && print -- ${@[1,-2]} )' for '${@[-1]}'" >&2
+    zinit snippet "${@[-1]}"

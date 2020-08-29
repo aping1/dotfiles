@@ -52,6 +52,7 @@ set tabstop=4
 "       :h retab
 " shiftwidth: change the number of space characters inserted for indentation
 set shiftwidth=4
+set autoindent 
 " Expand tab to spaces whenever the tab key is pressed
 set expandtab
 "Highlight Search results
@@ -120,8 +121,7 @@ set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 " Contains dein snippet
 let g:dein_file=(expand('<sfile>:p:h') . '/00-dein.vim')
 
-
-if filereadable(g:dein_file) || filereadable(glob(g:dein_file))
+if filereadable(g:dein_file)
     if exists('g:loaded_custom_dein_settings')
         unlet g:loaded_custom_dein_settings
     endif
@@ -177,7 +177,7 @@ function! s:SetupJedcommands()
 endfunction
 
 " function that sets host prog from inherited shell
-function! s:python_from_environment(py2_sel, py3_sel)
+function! PythonFromEnvironment(py2_sel, py3_sel)
     let g:jedi#force_py_version='3'
     if exists("$VIRTUAL_ENV")
         let g:python_host_prog=substitute(system('command -v python'), '\n', '', 'g')
@@ -240,7 +240,7 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
                 endif 
             endif
         else
-            call s:python_from_environment("2", "2")
+            call PythonFromEnvironment("2", "2")
         endif
         " for vim-test
         let g:test#python#runner = g:python3_host_prog
@@ -254,7 +254,7 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
         autocmd User vim-pyenv-deactivate-post call s:pyenv_init()
     augroup END
 else
-    call s:python_from_environment("1", "1")
+    call PythonFromEnvironment("1", "1")
 endif
 
 " let g:deoplete#auto_complete_delay = 10
@@ -483,8 +483,8 @@ let g:ale_python_flake8_options = '--max-line-length=' . linelen
 let g:ale_fix_on_save = 0
 " Us quickfix with 'qq' delete
 " quickfix can be set with 'nvim -d FILENAME' so use loclist
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
 " Set this if you want to.
 " This can be useful if you are combining ALE with
@@ -586,6 +586,13 @@ augroup END
 " Tmux vim integration
 let g:tmux_navigator_no_mappings = 1
 let g:tmux_navigator_save_on_switch = 1
+" tmux will send xterm-style keys when its xterm-keys option is on
+if &term =~# '^screen'
+    execute "set <xUp>=\e[1;*A"
+    execute "set <xDown>=\e[1;*B"
+    execute "set <xRight>=\e[1;*C"
+    execute "set <xLeft>=\e[1;*D"
+endif
 
 "----------------------------------------------
 " Plugin: scrooloose/nerdtree
@@ -620,6 +627,29 @@ augroup VIMTEST_KEYMAP
     autocmd!
     autocmd FileType * call s:vim_test_keymap()
 augroup END
+
+autocmd BufReadPost python setlocal makeprg=python3\ -m\ unittest\ discover
+"autocmd BufReadPost python compiler pyunit
+let test#strategy = {
+  \ 'nearest': 'neovim',
+  \ 'file':    'dispatch',
+  \ 'suite':   'dispatch',
+\}
+let test#python#runner = 'pyunit'
+let test#python#pyunit#file_pattern="_test\.py"
+let test#python#patterns = {
+  \ 'test':      ['\v^\s*%(async )?def (test_\w+)'],
+  \ 'namespace': ['\v^\s*class (\w+)'],
+\}
+
+
+
+" When reading a buffer (after 1s), and when writing (no delay).
+" call neomake#configure#automake('rw', 1000)
+call neomake#configure#automake('nrw', 500)
+let g:neomake_open_list = 2
+"let g:neomake_enabled_makers = { 'python': [] }
+"let b:neomake_python_enabled_makers = []
 
 function! s:vim_test_keymap()
     nmap <silent> t<C-n> :TestNearest<CR>
@@ -657,16 +687,8 @@ set shortmess+=c
 " always show signcolumns
 set signcolumn=yes
 
-" --------------------
-" Plugin: liuchengxu/vista.vim
-" --------------------
-" By default vista.vim never run if you don't call it explicitly.
-" show the nearest function in your statusline automatically,
-augroup VistaHooks
-autocmd!
-autocmd VimEnter * if exists("*vista#RunForNearestMethodOrFunction") | call vista#RunForNearestMethodOrFunction() | endif
-"autocmd Filetype python,json 'nmap <s-CR> :call vista#cursor#ShowTag()<cr>'
-augroup END
+highlight lspReference ctermfg=red guifg=red ctermbg=green guibg=green
+let g:lsp_highlight_references_enabled = 1
 
 " --------------------
 " Plugin: blueyed/vim-qf_resize')
@@ -708,5 +730,18 @@ augroup UltiSnips_AutoTrigger
 augroup END
 
 nmap <leader>g :Goyo<CR>
+
+function! FollowFile(myfile)
+    let l:old_name = expand(a:myfile)
+    let l:new_name = resolve(expand(a:myfile))
+    if l:new_name != '' && l:new_name != l:old_name
+        silent! exec ':0f | f' . l:new_name 
+        if exists('*fugitive#detect')
+            call FugitiveDetect(l:new_name)
+        endif
+        redraw!
+    endif
+endfunction
+map <leader>n :call FollowFile("%")<cr>
 
 " { :set sw=2 ts=2 et }

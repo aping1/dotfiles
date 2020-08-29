@@ -1,0 +1,29 @@
+emulate -L zsh
+typeset -g ZSH_AUTOSUGGEST_USE_ASYNC=true
+# special syntax to ignore longer than 100 chars
+typeset -g ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c100,)"
+typeset -g ZSH_AUTOSUGGEST_MANUAL_REBIND=set
+
+typeset -g ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
+(( $+ZSH_HIGHLIGHT_STYLES )) && \
+        typeset -g ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
+
+typeset -g ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
+# ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+# Red
+typeset -g ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
+typeset -g ZSH_AUTOSUGGEST_USE_ASYNC="y"
+
+typeset -ga ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=("${ZSH_AUTOSUGGEST_ACCEPT_WIDGETS[@]/forward-char}")
+ZSH_AUTOSUGGEST_ACCEPT_WIDGETS+=vi-cmd-mode
+ZSH_AUTOSUGGEST_ACCEPT_WIDGETS+=sudo-command-line
+typeset -ga ZSH_AUTOSUGGEST_PARTIAL_CLEAR_WIDGETS=("${(@)ZSH_AUTOSUGGEST_PARTIAL_CLEAR_WIDGETS}")
+ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS+=forward-char
+ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS+=vi-forward-word
+#export ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
+typeset -ga ZSH_AUTOSUGGEST_CLEAR_WIDGETS=("${(@)ZSH_AUTOSUGGEST_CLEAR_WIDGETS:#(up|down)-line-or-history}")
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(up-line-or-local-history down-line-or-local-history)
+
+
+
+# vim: filetype=zsh

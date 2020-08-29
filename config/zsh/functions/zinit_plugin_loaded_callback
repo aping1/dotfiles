@@ -1,0 +1,25 @@
+emulate -L zsh
+if (( ! $+ZINIT[CUR_PLUGIN] )) then
+    return 1
+fi
+
+typeset -g _zinit_plug_function=zinit-loaded-${ZINIT[CUR_PLUGIN]}
+
+(( $+DEBUG )) && print -l "Plugin: ${ZINIT[CUR_PLUGIN]} from ${_zinit_plug_function}" >&2
+if (( ${+functions[${_zinit_plug_function}]} )); then
+    $_zinit_plug_function
+elif [[ "$ZINIT[CUR_PLUGIN]" == fz ]]; then
+    export FZ_HISTORY_CD_CMD=zshz
+    export FZ_SUBDIR_HISTORY_CD_CMD='zshz -c'
+    export ZSHZ_CMD="" 
+
+    export ZSHZ_UNCOMMON=1
+elif [[ "$ZINIT[CUR_PLUGIN]" == fzf ]]; then
+    # dot file management
+    # This awk script si required for FZF_DEFAULT_OPTS because escaping
+    AWKREMOVELEADINGSPACES='{if(NR==1 && $1~/^ *[[:digit:]]+[*]? */){$1=""};gsub(/\\n/,RS);print}'
+    typeset -g FZF_DEFAULT_OPTS="--bind='esc:print-query,tab:toggle-preview,f1:execute(less -f {}),ctrl-y:yank+abort' --preview='printf -- %s {} | awk "${(q)AWKREMOVELEADINGSPACES}" | bat --decorations=always --pager=never --line-range :300 --number --terminal-width=\$(( FZF_PREVIEW_COLUMNS - 20 )) --color=always --language zsh /dev/stdin' --preview-window=right:40%:hidden:wrap"
+    unset AWKREMOVELEADINGSPACES
+    alias dots='DOTBARE_DIR="$HOME/.dots}" DOTBARE_TREE="${DOTFILES:-${HOME}}" DOTBARE_BACKUP="${ZPFX:-${XDG_DATA_HOME:-$HOME/.local/share}}/dotbare" dotbare'
+    typeset -g DOTBARE_FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"
+fi
