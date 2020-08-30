@@ -3,12 +3,7 @@ if (( ! $+ZINIT[CUR_PLUGIN] )) then
     return 1
 fi
 
-typeset -g _zinit_plug_function=zinit-loaded-${ZINIT[CUR_PLUGIN]}
-
-(( $+DEBUG )) && print -l "Plugin: ${ZINIT[CUR_PLUGIN]} from ${_zinit_plug_function}" >&2
-if (( ${+functions[${_zinit_plug_function}]} )); then
-    $_zinit_plug_function
-elif [[ "$ZINIT[CUR_PLUGIN]" == fz ]]; then
+if [[ "$ZINIT[CUR_PLUGIN]" == fz ]]; then
     export FZ_HISTORY_CD_CMD=zshz
     export FZ_SUBDIR_HISTORY_CD_CMD='zshz -c'
     export ZSHZ_CMD="" 

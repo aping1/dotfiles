@@ -137,13 +137,17 @@ if [ ! $TERM = dumb ]; then
             print -P "%F{160}▓▒░ The clone has failed.%f%b"
     fi
 
+    ##################
+    # Zinit Setup    #
+    #                #
+    #                #
+    ##################
     typeset -gA ZINIT
     (( $+DEBUG )) && ZINIT[DTRACE]=0
     ZINIT[HOME_DIR]="${ZINIT_DOTFILES}"
     unset ZINIT_DOTFILES # Use ZINIT[HOME_DIR] from now on
     # Source zinit
     source "${ZINIT_HOME}/${ZINIT_BIN_DIR_NAME}/zinit.zsh"
-
 
     if [ -z "$skip_global_compinit" ]; then
         autoload -Uz _zinit
@@ -189,7 +193,10 @@ if [ ! $TERM = dumb ]; then
     done # end for plugin_path in ...
 
 
-    # Main interface
+    ######################
+    # Main Theme         #
+    # Config & quickstart#
+    ######################
     zadd wait light-mode for \
         pick'async.zsh'\
             mafredri/zsh-async \
@@ -217,11 +224,19 @@ if [ ! $TERM = dumb ]; then
         atload'alias gencomp="zinit silent nocd as\"null\" wait\"2\" atload\"zinit creinstall -q _local/config-files; zicompinit_fast\" for /dev/null; gencomp"' \
         RobSis/zsh-completion-generator
 
+    function zinit_plugin_loaded_callback() { 
+        emulate -L zsh
+        local _zinit_plug_function="zinit-loaded-${ZINIT[CUR_PLUGIN]}"
+        (( $+functions[${_zinit_plug_function}] )) && \
+            $_zinit_plug_function || \
+            zinit-loaded-plugin-callback
+        }
+
+
     ##################
     # Wait'0a' block #
     # completions
     # autosuggest
-    # fzf
     ##################
     zadd 0a light-mode for \
         zsh-users/zsh-completions \
@@ -296,8 +311,10 @@ if [ ! $TERM = dumb ]; then
             atload'__required_sbin' compile'*handler'\
             zinit-zsh/z-a-bin-gem-node
 
+        # Async Highligting & Compinit
         zadd 0c light-mode for \
-            atinit'ZINIT[COMPINIT_OPTS]=-C;(( $+funtions[zicompinit_fast] )) && zicompinit_fast || ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zicdreplay' \
+            atinit'ZINIT[COMPINIT_OPTS]=-C;(( $+funtions[zicompinit_fast] )) && \
+            zicompinit_fast || ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zicdreplay' \
             atload'FAST_HIGHLIGHT[use_async]=1' \
             zdharma/fast-syntax-highlighting \
             compile'{src/*.zsh,src/strategies/*}' pick'zsh-autosuggestions.zsh' \
@@ -317,7 +334,6 @@ if [ ! $TERM = dumb ]; then
         zsnippet OMZ::plugins/pip
         zsnippet OMZ::plugins/python
         zsnippet OMZ::plugins/jsontools
-        zsnippet OMZ::plugins/docker-machine
         zinit ice wait"0b" lucid as'completion' has'terraform'
         zsnippet OMZ::plugins/terraform
         zinit ice wait"0b" lucid as'completion' has'helm'
