@@ -1,0 +1,42 @@
+
+emulate -L zsh
+
+
+copy_backend_remote_tunnel_port=$(tmux show-option -gvq "@copy_backend_remote_tunnel_port")
+copy_no_use_osc52_fallback=$(tmux show-option -gvq "@copy_no_use_osc52_fallback")
+
+# Resolve copy backend: pbcopy (OSX), reattach-to-user-namespace (OSX), xclip/xsel (Linux)
+copy_backend=""
+if (( $+commands[pbcopy] )); then
+  if (( $+commands[reattach-to-user-namespace] )); then
+        copy_backend="reattach-to-user-namespace pbcopy"
+    else;
+        copy_backend="pbcopy"
+    fi
+elif (( "${+DISPLAY}" )); then
+    if (( $+commands[xsel] )); then
+        copy_backend="xsel -i --clipboard"
+    elif  (( $+commands[xclip] )); ; then
+        copy_backend="xclip -i -f -selection primary | xclip -i -selection clipboard"
+    fi
+fi
+
+if [ ! ${copy_backend} ] && [ ${copy_backend_remote_tunnel_port} ];then
+    # Port is listening
+    if (( $+command[ss] )) && "$(ss -n -4 state listening "( sport = $copy_backend_remote_tunnel_port )" | tail -n +2 | wc -l)" -ne 1 ]]; then
+    copy_backend="nc localhost $copy_backend_remote_tunnel_port"
+    fi
+fi
+
+# if copy backend is resolved, copy and exit
+[ "$copy_backend" ] && { 
+  eval "$copy_backend < /dev/stdin"
+  return;
+}
+
+# If no copy backends were eligible, decide to fallback to OSC 52 escape sequences
+# Note, most terminals do not handle OSC
+if ! [ "$copy_no_use_osc52_fallback" == "on" ]; then
+    ocs52_copy - < /dev/stdin
+fi
+
