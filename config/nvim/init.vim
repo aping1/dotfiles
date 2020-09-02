@@ -205,7 +205,10 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
     endfunction " }}}
     command! -nargs=0 PythonPrefixes call setreg('+', s:python_prefixes()[0])
     if exists('$PYENV_VIRTUAL_INIT')
+        augroup pyvirtualenv
+        autocmd!
         autocmd VimEnter python silent! command PyenvActivate 
+        augroup end
     endif
     function! s:pyenv_init()
         " Active external version

@@ -220,6 +220,8 @@ if [ ! $TERM = dumb ]; then
         ael-code/zsh-colored-man-pages  \
         trigger-load'!ga;!gcf;!gclean;!gd;!glo;!grh;!gss' \
         wfxr/forgit \
+        trigger-load'!dotbare;!fadd;!fedit;!finit;!fstat;!flog;fcheckout' \
+        kazhala/dotbare \
         trigger-load'!gencomp' pick'zsh-completion-generator.plugin.zsh'  \
         atload'alias gencomp="zinit silent nocd as\"null\" wait\"2\" atload\"zinit creinstall -q _local/config-files; zicompinit_fast\" for /dev/null; gencomp"' \
         RobSis/zsh-completion-generator
@@ -320,6 +322,7 @@ if [ ! $TERM = dumb ]; then
             compile'{src/*.zsh,src/strategies/*}' pick'zsh-autosuggestions.zsh' \
             atload'_zsh_autosuggest_start && zinit_plugin_loaded_callback' \
             zsh-users/zsh-autosuggestions \
+            atload'zinit_plugin_loaded_callback' \
             sei40kr/zsh-fast-alias-tips \
             as"null" id-as'Cleanup0c' nocd nocompile \
             atload'unset -f __required_sbin;' \

@@ -17,13 +17,9 @@ typeset -g ZSH_AUTOSUGGEST_USE_ASYNC="y"
 typeset -ga ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=("${ZSH_AUTOSUGGEST_ACCEPT_WIDGETS[@]/forward-char}")
 ZSH_AUTOSUGGEST_ACCEPT_WIDGETS+=vi-cmd-mode
 ZSH_AUTOSUGGEST_ACCEPT_WIDGETS+=sudo-command-line
-typeset -ga ZSH_AUTOSUGGEST_PARTIAL_CLEAR_WIDGETS=("${(@)ZSH_AUTOSUGGEST_PARTIAL_CLEAR_WIDGETS}")
-ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS+=forward-char
-ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS+=vi-forward-word
 #export ZSH_HIGHLIGHT_STYLES[comment]='fg=yellow'
 typeset -ga ZSH_AUTOSUGGEST_CLEAR_WIDGETS=("${(@)ZSH_AUTOSUGGEST_CLEAR_WIDGETS:#(up|down)-line-or-history}")
-ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(up-line-or-local-history down-line-or-local-history)
-
-
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=up-line-or-local-history 
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=down-line-or-local-history
 
 # vim: filetype=zsh

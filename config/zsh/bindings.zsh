@@ -51,11 +51,10 @@ zle -N down-line-or-local-history
     #autoload -U history-search-end
     #zle -N history-beginning-search-backward-end history-search-end
     #bindkey "^[[A" history-beginning-search-backward-end
-
     bindkey '^[[1;5C' vi-forward-word   # [Ctrl-RightArrow] - move forward one word
     bindkey '^[[1;5D' vi-backward-word  # [Ctrl-LeftArrow]  - move backward one word
-    bindkey -s '^[[5~' '' #disable Pgup
-    bindkey -s '^[[6~' '' # disable pgdown
+    bindkey '^[[5~' up-history
+    bindkey '^[[6~' down-history
     bindkey '^[[3;5~' kill-whole-line # ctrl+del   delete next word
 
     bindkey -M main '^K' history-beginning-search-backward

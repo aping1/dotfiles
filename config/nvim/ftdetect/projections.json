@@ -1,8 +1,8 @@
 {
-  "*": {
-    "Dockerfile": {
-      "dispatch:": "docker build",
-      "start": "docker run -f {}",
+  "*/*": {
+    "Dockerfile*": {
+      "make:": "docker build {}",
+      "console": "docker run -f {} -- /bin/bash",
       "alternate": "docker-compose.{}"
     },
     "docker-compose.*": {

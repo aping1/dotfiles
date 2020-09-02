@@ -4,6 +4,7 @@ endif
 let g:loaded_custom_mappings= 1
 
 " Semshi mapping
+function s:semshi_enable()
 nmap <silent> <leader>rr :Semshi rename<CR>
 
 nmap <silent> <Tab> :Semshi goto name next<CR>
@@ -17,6 +18,8 @@ nmap <silent> <leader>F :Semshi goto function prev<CR>
 
 nmap <silent> <leader>ee :Semshi error<CR>
 nmap <silent> <leader>ge :Semshi goto error<CR>
+endfunction " end enable_semshi
+
 
 " Control-0
 inoremap <silent><c-j> <C-R>=OmniPopup('j')<CR>
@@ -28,6 +31,7 @@ nmap ,cl :let @*=expand("%:p")<CR>
 
 augroup vim_blacklist_blacklist
     autocmd!
+    autocmd FileType Python call s:semsi_enable()
     autocmd FileType python call s:SetupJedi()
     autocmd FileType * call s:ale_settings() 
 augroup END
@@ -122,9 +126,3 @@ call SetupCommandAbbrs('C', 'CocConfig')
 
 " Shift Tab insterts '\t' c-I ^I 
 inoremap <S-Tab> <C-V><Tab>
-
-augroup vim_blacklist_blacklist
-    autocmd!
-    autocmd FileType python call s:SetupJedi()
-    autocmd FileType * call s:ale_settings() 
-augroup END
