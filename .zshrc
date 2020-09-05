@@ -104,6 +104,9 @@ function __required_sbin()  {
         as"null" sbin"vims" MilesCranmer/vim-stream \
         sbin"bin/git-ignore" atload'export GI_TEMPLATE="$PWD/.git-ignore"; alias gi="git-ignore"' \
         laggardkernel/git-ignore \
+        binary from"gh-r" as"program" \
+        jesseduffield/lazygit \
+        jesseduffield/lazydocker \
         sbin \
         ssei40kr/fast-alias-tips-bin \
         compile'{*.zsh,tmux/*.zsh,task/*.zsh,project/*}' \
@@ -303,6 +306,7 @@ if [ ! $TERM = dumb ]; then
         as"program" pick"bin/git-dsf" \
             zdharma/zsh-diff-so-fancy \
         atclone"gencomp k; ZINIT[COMPINIT_OPTS]='-i' zpcompinit" atpull'%atclone' \
+        atinit'(( $+aliases[ls] )) && unalias ls; (( $+functions[ls])) && unset -f ls; alias ls=k' \
             supercrabtree/k \
         from'gh' pick'zsh-z.plugin.zsh' \
         agkozak/zsh-z \

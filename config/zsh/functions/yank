@@ -1,6 +1,4 @@
-
 emulate -L zsh
-
 
 copy_backend_remote_tunnel_port=$(tmux show-option -gvq "@copy_backend_remote_tunnel_port")
 copy_no_use_osc52_fallback=$(tmux show-option -gvq "@copy_no_use_osc52_fallback")
@@ -40,3 +38,4 @@ if ! [ "$copy_no_use_osc52_fallback" == "on" ]; then
     ocs52_copy - < /dev/stdin
 fi
 
+# vim: filetype=zsh

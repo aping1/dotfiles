@@ -42,3 +42,11 @@ function setup_man_path () {
 }
 
 export DOTFILES="$HOME/.dotfiles"
+
+if (( $+command[ccls] )); then
+    LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"
+	path=("/usr/local/opt/llvm/bin" "${path[@]}")
+    export LDFLAGS="-L/usr/local/opt/llvm/lib"
+    export CPPFLAGS="-I/usr/local/opt/llvm/include"
+fi
+

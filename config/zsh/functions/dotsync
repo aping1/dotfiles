@@ -1,0 +1,33 @@
+
+emulate -L zsh
+
+local CACHES=( ${ZSH_CACHE_DIR:A} ~/.cache/dein )
+#local SYNCOPTIONS='--verbose --archive --delete --progress -n -z'
+local SYNCOPTIONS='--archive --delete -n -z'
+local HOST="$1"
+[[ ${HOST} ]]  || { print -- '%F{red}usage: dotsync HOST %f'; return}
+local CONTROLPATH=$(mktemp remote_home_master.XXXX)
+[[ ! -s ${CONTROLPATH} ]] && rm "${CONTROLPATH}"
+echo "${CONTROLPATH} ${MOUNTPOINT}" >&2
+if (( $+command[sshfs] )); then
+    local MOUNTPOINT=$(mktemp -d remote_home.XXXX)
+    ssh -Nn -o'ControlMaster auto' -o"ControlPath ${CONTROLPATH}" -oPermitLocalCommand=yes -oLocalCommand="sshfs ${HOST}: ${MOUNTPOINT} &" ${HOST} &
+    trap 'kill '$!' && ssh -o"ControlMaster auto" -o"ControlPath ${CONTROLPATH}"; rmdir ${MOUNTPOINT}; rm ${CONTROLPATH}' EXIT
+    ls ${CACHES[@]} ${MOUNTPOINT}
+else
+    ssh -Nn -o'ControlMaster auto' -o"ControlPath ${CONTROLPATH}" "${HOST}" &
+trap 'kill '$!' && ssh -Nn -o"ControlMaster auto" -o"ControlPath '"${CONTROLPATH}"'" -O exit _; rm "'"${CONTROLPATH}"'"' EXIT
+    ls ${CONTROLPATH}
+    (
+    setopt xtrace
+    trap 'unsetopt xtrace' EXIT KILL
+    for l in ${CACHES[@]}; do
+        DEST=${l:a}
+        /usr/bin/rsync ${SYNCOPTIONS} -e'ssh -o"ControlMaster auto" -o"ControlPath '${CONTROLPATH}'" ' --exclude .git/ ${l:a} ${HOST}:$(rel_path ${DEST} ${HOME})
+    done
+    wait
+    )
+fi
+
+
+# vim: filetype=zsh

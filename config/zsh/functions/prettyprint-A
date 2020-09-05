@@ -1,0 +1,9 @@
+emulate -L zsh
+autoload -Uz colors && colors # See Note 3.
+local array_name=$1
+
+local array_length=${#${(P)${array_name}}}
+for key val in ${(kvP)${array_name}}; do
+print -P %{${fg[red]}%}$key%{$reset_color             %}%{${fg[yellow]}%}${(q)val}%{$reset_color%}
+done
+# { vim: filetype=zsh

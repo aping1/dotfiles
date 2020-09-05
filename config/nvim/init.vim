@@ -92,22 +92,20 @@ set fillchars+=eob:@
 set clipboard=unnamedplus
 
 
-if has("autoread")
+if has('autoread')
     " Reload .vimrc immediately when edited
     set autoread
 else
-augroup AUTOUPDATE
-    autocmd! 
-    autocmd bufwritepost $MYVIMRC source $MYVIMRC
-augroup END
+    augroup AUTOUPDATE
+        autocmd! 
+        autocmd bufwritepost $MYVIMRC source $MYVIMRC
+        autocmd VimResized * wincmd =
+        autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+                    \| exe "normal! g'\"" | endif
+    augroup END
 endif
+
 " Reload .vimrc immediately when edited
-
-if &compatible
-    set nocompatible
-endif
-
-autocmd VimResized * wincmd =
 
 " You will have bad experience for diagnostic messages when it's default 4000.
 " Write diag to disk every 2.5 seconds
@@ -136,9 +134,15 @@ if has('gui_running')
     silent! colorscheme one
 elseif (has('termguicolors'))
     set termguicolors
+    "nessecary for tmux termgui colors?
+    "something about enabling full color with
+    " the followin escape sequenceys since .3"
+    " https://github.com/neovim/neovim/issues/6096""
+    "let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    "let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
     silent! colorscheme one  
     if exists(':LightlineColorschem')
-    silent! LightlineColorscheme one
+        silent! LightlineColorscheme one
     endif 
 elseif &term =~? '256color'
     " Disable Background Color Erase (BCE) so that color schemes
@@ -163,18 +167,6 @@ let g:jedi#completions_enabled=0
 let g:jedi#show_call_signatures = 1
 " open the go-to function in split, not another buffer
 let g:jedi#use_splits_not_buffers = 'right'
-" <leader>n: show the usage of a name in current file
-" <leader>r: rename a nameexists('pyenv#python*') 
-function! s:SetupJedcommands()
-    let g:jedi#goto_command = "<leader>d"
-    let g:jedi#goto_assignments_command = "<leader>g"
-    let g:jedi#goto_stubs_command = "<leader>s"
-    let g:jedi#goto_definitions_command = "<leader>R"
-    " let g:jedi#documentation_command = "K"
-    let g:jedi#usages_command = "<leader>n"
-    let g:jedi#completions_command = "<C-Space>"
-    let g:jedi#rename_command = "<leader>r"
-endfunction
 
 " function that sets host prog from inherited shell
 function! PythonFromEnvironment(py2_sel, py3_sel)
@@ -195,9 +187,9 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
             return []
         endif
         let result = pyenv#utils#system(join([
-                \ g:pyenv#pyenv_exec,
-                \ 'prefix',
-                \]))
+                    \ g:pyenv#pyenv_exec,
+                    \ 'prefix',
+                    \]))
         if result.status == 0
             return split(result.stdout, '\v\r?\n')
         endif
@@ -206,8 +198,8 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
     command! -nargs=0 PythonPrefixes call setreg('+', s:python_prefixes()[0])
     if exists('$PYENV_VIRTUAL_INIT')
         augroup pyvirtualenv
-        autocmd!
-        autocmd VimEnter python silent! command PyenvActivate 
+            autocmd!
+            autocmd VimEnter python silent! command PyenvActivate 
         augroup end
     endif
     function! s:pyenv_init()
@@ -372,23 +364,6 @@ if executable('ag')
 endif
 
 "----------------------------------------------
-" Plugin: 'fzf.vim'
-"----------------------------------------------
-" Syntax highlight preview
-if executable('highlight')
-    let g:fzf_preview_highlighter = 'highlight -O xterm256 --line-number --style rdark --force'
-endif
-
-let g:fzf_preview_use_dev_icons = 1
-let g:fzf_preview_directory_files_command = 'fd -l --hidden --follow --no-messages' 
-let g:fzf_preview_grep_cmd = g:ackprg
-" Files with bat previewer
-if executable('bat')
-    command! -bang -nargs=? -complete=dir Files
-                \ call fzf#vim#files(<q-args>, {'options': ['--preview', 'bat -p --style snip --color always {}']}, <bang>0)
-endif
-
-"----------------------------------------------
 " Plugin: vimwiki/vimwiki
 "----------------------------------------------
 let g:vimwiki_list = [{
@@ -480,8 +455,9 @@ let g:ale_fixers = { 'python' : ['black' ],
 
 let g:ale_python_mypy_options = '--ignore-missing-imports'
 
-let g:ale_python_flake8_args = '--max-line-length=' . linelen
-let g:ale_python_flake8_options = '--max-line-length=' . linelen
+let g:ale_python_flake8_executable = 'python3'
+let g:ale_python_flake8_args = '-m flake8 --max-line-length=' . linelen
+let g:ale_python_flake8_options = '-m flake8 --max-line-length=' . linelen
 
 let g:ale_fix_on_save = 0
 " Us quickfix with 'qq' delete
@@ -553,9 +529,9 @@ let g:os_spec_string=' n ' . g:os . ' '. (has("gui_running")?'': '')
 " Plugin: ncm2/float-preview.nvim
 " --------------------
 function! DisableExtras()
-  call nvim_win_set_option(g:float_preview#win, 'number', v:true)
-  call nvim_win_set_option(g:float_preview#win, 'relativenumber', v:true)
-  call nvim_win_set_option(g:float_preview#win, 'cursorline', v:true)
+    call nvim_win_set_option(g:float_preview#win, 'number', v:true)
+    call nvim_win_set_option(g:float_preview#win, 'relativenumber', v:true)
+    call nvim_win_set_option(g:float_preview#win, 'cursorline', v:true)
 endfunction
 let g:float_preview#auto_close = 1
 
@@ -619,9 +595,9 @@ let g:ipy_shortprompt=1
 
 
 augroup VIMTEST_KEYMAP
-  au!
-  autocmd User NeomakeJobFinished call TestFinished()
-  autocmd User NeomakeJobStarted call TestStarted()
+    au!
+    autocmd User NeomakeJobFinished call TestFinished()
+    autocmd User NeomakeJobStarted call TestStarted()
 augroup END
 " --------------------
 " Plugin 'janko/vim-test'
@@ -634,22 +610,33 @@ augroup END
 autocmd BufReadPost python setlocal makeprg=python3\ -m\ unittest\ discover
 "autocmd BufReadPost python compiler pyunit
 let test#strategy = {
-  \ 'nearest': 'neovim',
-  \ 'file':    'dispatch',
-  \ 'suite':   'dispatch',
-\}
+            \ 'nearest': 'neovim',
+            \ 'file':    'dispatch',
+            \ 'suite':   'dispatch',
+            \}
 let test#python#runner = 'pyunit'
 let test#python#pyunit#file_pattern="_test\.py"
 let test#python#patterns = {
-  \ 'test':      ['\v^\s*%(async )?def (test_\w+)'],
-  \ 'namespace': ['\v^\s*class (\w+)'],
-\}
+            \ 'test':      ['\v^\s*%(async )?def (test_\w+)'],
+            \ 'namespace': ['\v^\s*class (\w+)'],
+            \}
 
 
+let g:neomake_python_enabled_makers = []
+"let g:neomake_python_flake8_maker = {
+"  \ 'exe': 'python3',
+"  \ 'args': ['--format=default'],
+"  \ 'errorformat':
+"      \ '%E%f:%l: could not compile,%-Z%p^,' .
+"      \ '%A%f:%l:%c: %t%n %m,' .
+"      \ '%A%f:%l: %t%n %m,' .
+"      \ '%-G%.%#',
+"  \ 'postprocess': function('neomake#makers#ft#python#Flake8EntryProcess')
+"  \ }
 
 " When reading a buffer (after 1s), and when writing (no delay).
 " call neomake#configure#automake('rw', 1000)
-call neomake#configure#automake('nrw', 500)
+" call neomake#configure#automake('nrw', 500)
 let g:neomake_open_list = 2
 "let g:neomake_enabled_makers = { 'python': [] }
 "let b:neomake_python_enabled_makers = []
@@ -713,11 +700,11 @@ nnoremap <silent> <c-w>= :wincmd =<cr>:QfResizeWindows<cr>
 " Plugin: 'SirVer/ultisnips'
 "    'honza/vim-snippets'
 " -------------------- 
-let g:UltiSnipsExpandTrigger="<tab>"
+"let g:UltiSnipsExpandTrigger="<tab>"
 " let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
+"et g:UltiSnipsJumpForwardTrigger="<tab>"
 " let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+"et g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 let g:UltiSnipsUsePythonVersion = 3
 
 " If you want :UltiSnipsEdit to split your window.
@@ -742,9 +729,39 @@ function! FollowFile(myfile)
         if exists('*fugitive#detect')
             call FugitiveDetect(l:new_name)
         endif
-        redraw!
+        redraw! | e!
     endif
 endfunction
 map <leader>n :call FollowFile("%")<cr>
 
+
+" plugin: Vista.vim
+" Ensure you have installed some decent font to show these pretty symbols, then you can enable icon for the kind.
+" let g:vista_fzf_preview = ['right:50%']
+let g:vista_executive_for = {
+            \ 'vim': 'coc',
+            \ }
+" Executive used when opening vista sidebar without specifying it.
+" See all the avaliable executives via `:echo g:vista#executives`.
+"let g:vista_default_executive = 'ctags'
+let g:vista#renderer#enable_icon = 1
+let g:vista#renderer#icons = {
+            \   "function": "\uf794",
+            \   "variable": "\uf71b",
+            \   "default": "",
+            \  }
+
+function! SetupCommandAbbrs(from, to)
+    exec 'cnoreabbrev <expr> '.a:from
+                \ .' ((getcmdtype() ==# ":" && getcmdline() ==# "'.a:from.'")'
+                \ .'? ("'.a:to.'") : ("'.a:from.'"))'
+endfunction
+
+" Use C to open coc config
+call SetupCommandAbbrs('C', 'CocConfig')
+
+au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+            \| exe "normal! g'\"" | endif
+
 " { :set sw=2 ts=2 et }
+"

@@ -26,6 +26,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('vim-vdebug/vdebug')
     " Dynamic resize quickfix window
     call dein#add('blueyed/vim-qf_resize')
+    call dein#add('sheerun/vim-polyglot')
 
     " --- Sesnible defaults ---
     call dein#add('tpope/vim-sensible')
@@ -85,7 +86,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('junegunn/fzf', { 'build': './install --all', 'merged': 0 })
     " Use fzf preview 
     " TODO: This doesnt work?
-    call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release', 'on_cmd': 'CocInstall coc-fzf-preview' })
+    call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release', 'do': ':CocInstall coc-fzf-preview' })
 
     " smarter searching (with ag)
     call dein#add('mileszs/ack.vim')
@@ -122,8 +123,10 @@ if dein#load_state('~/.cache/dein')
     call dein#add('Xuyuanp/nerdtree-git-plugin')
 
     call dein#add('scrooloose/nerdcommenter')
-    call dein#add('mg979/vim-visual-multi')
 
+    call dein#add('tiagofumo/vim-nerdtree-syntax-highlight')
+    call dein#add('mg979/vim-visual-multi')
+    call dein#add('yuttie/comfortable-motion.vim')
 
     call dein#add('junegunn/fzf.vim')
     call dein#add('dhruvasagar/vim-table-mode')
@@ -160,31 +163,29 @@ if dein#load_state('~/.cache/dein')
     if has('nvim')
        call dein#add('ncm2/float-preview.nvim')
        call dein#add('neoclide/coc.nvim', {
-                   \ 'branch': 'release'
+                   \ 'branch': 'release',
+                   \ 'do': 'call coc#util#install()'
                    \ })
-                   "\ 'on_cmd': 'command call coc#util#install() '
 
        "Deoplete framework"
        call dein#add('jsfaint/coc-neoinclude', {
-                   \ 'on_cmd': 'CocInstall coc-fzf-preview'
+                   \ 'do': ':CocInstall coc-neoinclude',
                    \})
 
        call dein#add('neoclide/coc-snippets', {
-                   \'on_cmd': 'CocInstall coc-snippets'
+                   \'do': ':CocInstall coc-snippets'
                    \})
 
        call dein#add('neoclide/coc-highlight', { 
-                   \'on_cmd': 'CocInstall coc-highlight'
+                   \'do': ':CocInstall coc-highlight'
                    \})
        "" 
        call dein#add('Shougo/neco-vim',
                    \ {'on_ft': 'vim'})
        call dein#add('neoclide/coc-neco', {
                    \ 'on_ft': 'vim',
-                   \ 'on_cmd': 'CocInstall coc-neco'
+                   \ 'do': ':CocInstall coc-neco'
                    \})
-       " call dein#add('tjdevries/coc-zsh')
-       " call dein#add('neovim/nvim-lsp')
     else
         call dein#add('roxma/nvim-yarp')
         call dein#add('roxma/vim-hug-neovim-rpc')

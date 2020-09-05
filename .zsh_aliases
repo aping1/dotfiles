@@ -22,15 +22,18 @@ if (( $+command[thefuck] )); then
 fi
 
 function ls () {
+    emulate -L zsh
     if [[ $TERM =~ ^xterm ]]; then
-        if (( $+command[lsd] )) ; then
+        if (( $+functions[k] )) ; then
+            alias ls='k'
+        elif (( $+command[lsd] )) ; then
             alias ls='lsd --group-dirs=first'
         elif (( $+command[ls] )) ; then
             alias ls='ls --color=always'
         fi
     fi
     unset -f ls
-    ls
+    (( $+aliases[ls] )) && $aliases[ls] || ls
 }
 
 function ipython_bootstrap () {
@@ -41,8 +44,8 @@ function ipython3_bootstrap () {
 }
 
 alias system_fillscreen='/usr/bin/yes "$(printf '\''-\n\n\n'\'')" | /usr/bin/head -n $(( $(tput lines) * 31 / 16 ))'
-(( $+command[python] )) && alias ipy="python -c 'import IPython; IPython.terminal.ipapp.launch_new_instance()'"
-(( $+command[python3] )) && alias ipy3="python3 -c 'import IPython; IPython.terminal.ipapp.launch_new_instance()'"
+alias ipy="python -c 'import IPython; IPython.terminal.ipapp.launch_new_instance()'"
+alias ipy3="python3 -c 'import IPython; IPython.terminal.ipapp.launch_new_instance()'"
 
 alias shutup='stty tostop'
 #########################
@@ -79,3 +82,9 @@ alias zstatus='zinit zstatus'
 alias zreportall='zinit zreport --all'
 alias zreport='zinit zreport'
 
+if (( $+command[jq] )); then
+    alias lines-to-json='jq --slurp --raw-input '\''split("\n")[:-1]'\'
+    alias tslines-to-json='jq --slurp --raw-input '\''split("\n")[:-1] | map({
+	date: (. | strptime("%a, %d %b %Y %H:%M:%S") | todate[0:10]),
+	time: (. | strptime("%a, %d %b %Y %H:%M:%S") | todate[11:19]) })'\'
+fi

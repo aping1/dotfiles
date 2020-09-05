@@ -12,7 +12,7 @@ if executable('javascript-typescript-server')
                 \ 'whitelist': ['javascript', 'javascriptjsx', 'jsx']
                 \ })
 else
-    echomsg "pyls is not available"
+    echomsg "javascript-typescript-server is not available"
 " \ 'whitelist': ['javascript', 'javascriptjsx']
 endif
 if executable('vim-language-server')
@@ -34,26 +34,67 @@ else
     echomsg "pyls is not available"
 endif
 
-" use tab
-function! s:check_back_space() abort "{{{
-    let col = col('.') - 1
-    if exists('*coc#refresh')
-    call coc#refresh()
-    endif
-    return !col || getline('.')[col - 1]  =~# '\s'
-endfunction"}}}
-inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : <SID>check_back_space() ? "\<TAB>" :  deoplete#manual_complete()
+" Extensions. Some need configuration. 
+" coc-java needs a valid JVM filepath defined in coc-settings
+" coc-ccls needs ccls (available on aur)
+" coc-eslint needs eslint npm package installed globally
+let g:coc_global_extensions = [
+      \'coc-html', 
+      \'coc-xml', 
+      \'coc-java', 
+      \'coc-ccls', 
+      \'coc-powershell', 
+      \'coc-r-lsp', 
+      \'coc-vimlsp', 
+      \'coc-lua', 
+      \'coc-sql', 
+      \'coc-go', 
+      \'coc-css', 
+      \'coc-sh', 
+      \'coc-snippets',
+      \'coc-prettier',
+      \'coc-eslint',
+      \'coc-emmet',
+      \'coc-tsserver',
+      \'coc-translator',
+      \'coc-fish',
+      \'coc-docker',
+      \'coc-pairs',
+      \'coc-json',
+      \'coc-python',
+      \'coc-imselect',
+      \'coc-highlight',
+      \'coc-git',
+      \'coc-github',
+      \'coc-gitignore',
+      \'coc-emoji',
+      \'coc-lists',
+      \'coc-post',
+      \'coc-stylelint',
+      \'coc-yaml',
+      \'coc-template',
+      \'coc-utils'
+      \]
+
+augroup MyAutoCmd
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
 
 
-augroup CocResources
-    autocmd!
-    autocmd CursorHold * if exists('*CocActionAsync') | silent call CocActionAsync('highlight') | endif
-    autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | silent! pclose | endif
-    " refresh on backspace
-    " inoremap <silent><expr> <TAB> pumvisible() ? : <SID>check_back_space() ? "\<TAB>" :  deoplete#manual_complete()
-augroup END
-
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-inoremap <expr><ESC><ESC> pumvisible() ? "\<C-p>" : "\<C-h>"
-
+"""""""""""""""""
+"Nerd Commenter "
+"""""""""""""""""
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+" Use compact syntax for prettified multi-line comments
+let g:NERDCompactSexyComs = 1
+" Allow commenting and inverting empty lines (useful when commenting a region)
+"
 
