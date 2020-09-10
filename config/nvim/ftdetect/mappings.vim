@@ -65,7 +65,7 @@ function! s:ale_settings()
     nmap <silent> <C-k> <Plug>(ale_previous_wrap)
     nmap <silent> <C-j> <Plug>(ale_next_wrap)
 endfunction
-if executable('ipython')
+
 augroup IPRunMaps
     autocmd!
     autocmd FileType python nmap <silent> <c-s> <Plug>(IPy-Run)
@@ -76,7 +76,6 @@ augroup IPRunMaps
     autocmd FileType python imap <c-f> <Plug>(IPy-Complete)
     autocmd FileType python map <silent> <leader>? <Plug>(IPy-WordObjInfo)
 augroup END
-endif
 
 function! OmniPopup(action)
     if pumvisible()
@@ -145,6 +144,8 @@ inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<
 
 " Shift Tab insterts '\t' c-I ^I 
 inoremap <S-Tab> <C-V><Tab>
+inoremap  \\
+noremap  \\
 
 " Vista
 " Floating tag finder
@@ -152,7 +153,8 @@ nnoremap  <Leader>ft  :Vista finder coc<cr>
 " Opens tagbar on right side of screen
 nmap <F8> :Vista!!<CR>
 
-inoremap <Leader> <space> <ESC>
+" This gets in the way of literal '\'
+" inoremap <Leader> <space> <ESC>
 
 " Lazydocker
 nnoremap <silent> <Leader>ld :call ToggleLazyDocker()<CR>
@@ -250,5 +252,3 @@ nnoremap <Leader>co  :<C-u>CocList outline<cr>
 noremap <silent> <ScrollWheelDown> :call comfortable_motion#flick(40)<CR>
 noremap <silent> <ScrollWheelUp>   :call comfortable_motion#flick(-40)<CR>
 
-let g:comfortable_motion_friction = 90.0
-let g:comfortable_motion_air_drag = 2.0

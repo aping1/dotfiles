@@ -70,7 +70,9 @@ augroup numbertoggle
 augroup END
 
 let g:linelen=120
+augroup autlinelen
 autocmd Syntax * let g:focusmode_width = getbufvar("b", "linelen", g:linelen)
+augroup end
 
 set listchars+=nbsp:
 set listchars+=precedes:﬌
@@ -79,7 +81,7 @@ set listchars+=space:
 set fillchars+=fold:─
 set fillchars+=stlnc:─
 set fillchars+=vert:
-set fillchars+=eob:@
+set fillchars+=eob:›
 " :h 'fillchars'
 "	  stl:c		' ' or '^'	statusline of the current window
 "	  stlnc:c	' ' or '='	statusline of the non-current windows
@@ -271,10 +273,8 @@ filetype plugin indent on
 syntax enable
 autocmd VimResized * wincmd =
 
-set background=dark
 
 set cmdheight=2
-" To use a custom highlight for the float window,
 
 "----------------------------------------------
 " Plugin: 'mhinz/vim-startify'
@@ -368,6 +368,13 @@ endif
 "----------------------------------------------
 let g:vimwiki_list = [{
             \ 'path': '~/Dropbox/wiki',
+            \ 'nested_syntaxes': {'python': 'python', 'c++': 'cpp'},
+            \ 'syntax': 'markdown',
+            \ 'ext': '.md'
+            \ },{
+            \ 'path': '~/code,',
+            \ 'nested_syntaxes': {'python': 'python', 'c++': 'cpp'},
+            \ 'index': 'readme',
             \ 'syntax': 'markdown',
             \ 'ext': '.md'
             \ }]
@@ -588,7 +595,8 @@ let g:webdevicons_conceal_nerdtree_brackets = 1
 " --------------------
 " Plug 'bfredl/nvim-ipy'
 " --------------------
-let g:ipy_perform_mappings=0
+"  This overwites F5
+let g:nvim_ipy_perform_mappings=0
 "set titlestring=%t%(\ %M%)%(\ (%{expand(\"%:p:h\")})%)%(\ %a%)%(\ -\ %{g:ipy_status}%)
 let g:ipy_celldef = '^##'
 let g:ipy_shortprompt=1
@@ -763,5 +771,9 @@ call SetupCommandAbbrs('C', 'CocConfig')
 au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
             \| exe "normal! g'\"" | endif
 
+let g:vimspector_install_gadgets = [ 'debugpy', 'vscode-cpptools', 'CodeLLDB' ]
+let g:vimspector_enable_mappings = 'HUMAN'
+let g:comfortable_motion_friction = 92.0
+let g:comfortable_motion_air_drag = 2.6 
 " { :set sw=2 ts=2 et }
 "

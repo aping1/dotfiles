@@ -9,9 +9,9 @@ do
         LS_COLORS="${tt}=38;5;${i}$([[ $j ]] && printf -- ';%s' $j)" noglob /usr/local/bin/gls \
             -G1 \
             --color=always \
-            $( case $tt in
+            $( case "$tt" in
                     di)
-                        print -- '-da' \
+                        print -- '-da'
                     ;;
                     *)
                         print -- '-A'

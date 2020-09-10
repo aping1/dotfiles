@@ -5,6 +5,7 @@ endif
 let g:loaded_custom_coc= 1
 
 
+let g:ale_disable_lsp = 1
 if executable('javascript-typescript-server')
     au User lsp_setup call lsp#register_server({
                 \ 'name': 'javascript-typescript-server',
@@ -15,20 +16,11 @@ else
     echomsg "javascript-typescript-server is not available"
 " \ 'whitelist': ['javascript', 'javascriptjsx']
 endif
-if executable('vim-language-server')
+if executable('ccls')
     au User lsp_setup call lsp#register_server({
-                \ 'name': 'vim-language-server',
-                \ 'cmd': {server_info->['vim-language-server']},
-                \ 'whitelist': ['vim',]
-                \ })
-else
-    echoerr "vim-language-server is not available"
-endif
-if executable('pyls')
-    au User lsp_setup call lsp#register_server({
-                \ 'name': 'pyls',
-                \ 'cmd': {server_info->['pyls']},
-                \ 'whitelist': ['python', 'ipython'],
+                \ 'name': 'ccls',
+                \ 'cmd': {server_info->['ccsl']},
+                \ 'whitelist': ["c", "cpp", "objc", "objcpp"],
                 \ })
 else
     echomsg "pyls is not available"
@@ -82,10 +74,10 @@ augroup MyAutoCmd
   autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
   " Update signature help on jump placeholder
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * if exists(':CocActionAsync') | silent call CocActionAsync('highlight') | endif
 augroup end
 
-" Highlight symbol under cursor on CursorHold
-autocmd CursorHold * silent call CocActionAsync('highlight')
 
 
 """""""""""""""""

@@ -13,7 +13,15 @@ function! NERDTreeLivePreview()
     exe 'pedit '.current_file.path.str()
   endif
 endfunction
-autocmd FileType nerdtree nnoremap <buffer> <up> :call NERDTreeLivePreview()<cr>
+
+augroup nerdtree_extra
+	autocmd!
+    autocmd FileType nerdtree nnoremap <buffer> <space> :call NERDTreeLivePreview()<cr>
+    " Close vim if NERDTree is the only opened window.
+    autocmd bufenter * if (winnr('$') == 1 &&
+                \ (( exists('b:NERDTreeType') && b:NERDTreeType == 'primary') || 
+                \ (&buftype ==# 'quickfix'))) | q | endif
+augroup END
 
 
 
@@ -68,13 +76,6 @@ let NERDTreeIgnore = [
             \ '^__pycache__$'
             \]
 
-augroup nerdtree_extra
-    " Close vim if NERDTree is the only opened window.
-    autocmd!
-    autocmd bufenter * if (winnr('$') == 1 &&
-                \ (( exists('b:NERDTreeType') && b:NERDTreeType == 'primary') || 
-                \ (&buftype ==# 'quickfix'))) | q | endif
-augroup END
 
 let g:NERDTreeIndicatorMapCustom = {
             \ 'Modified'  : '✹',
@@ -96,4 +97,6 @@ let NERDTreeShowBookmarks=1
 " Allow NERDTree to change session root.
 let NERDTreeChDirMode=2
 let NERDTreeQuitOnOpen=0
+  " This maes rendering vim-nerdtree-highlight faster"
+let NERDTreeHighlightCursorline = 0
 

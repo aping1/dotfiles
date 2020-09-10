@@ -23,7 +23,9 @@ if dein#load_state('~/.cache/dein')
 
     " :DeinUpgrade command using minimal SpaceVim ui
     call dein#add('wsdjeg/dein-ui.vim')
-    call dein#add('vim-vdebug/vdebug')
+    call dein#add('puremourning/vimspector',
+                 \ {'do': 'VimspectorInstall --enable-python'}
+                 \ )
     " Dynamic resize quickfix window
     call dein#add('blueyed/vim-qf_resize')
     call dein#add('sheerun/vim-polyglot')

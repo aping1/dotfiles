@@ -236,9 +236,6 @@ zstyle ':completion:*:complete:ls:*:*' verbose yes
 # Don't complete uninteresting stuff unless we really want to.
 zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec)|TRAP*)'
 
-if (( $+LS_COLORS )) ; then 
-    zstyle ':completion:*:default' list-colors "$~{(s.:.)LS_COLORS}"
-fi
 
 # IF EXECTUABLE Bat
 export BAT_THEME=TwoDark
