@@ -1,0 +1,24 @@
+emulate -L zsh
+local tt="${1:-no}"
+shift
+for i in {0..256}
+do
+    for j in {,1,2,3,4,5,6,7}
+    do
+        printf -- '%s=..;%s%s' "${tt}" "${(l:3::0:)i}" "$([[ $j ]] && print ";${(l:2::0:)j} " || print ' ')"
+        LS_COLORS="${tt}=38;5;${i}$([[ $j ]] && printf -- ';%s' $j)" noglob /usr/local/bin/gls \
+            -G1 \
+            --color=always \
+            $( case $tt in
+                    di)
+                        print -- '-da' \
+                    ;;
+                    *)
+                        print -- '-A'
+                    ;;
+    esac) "${@}" | head -n1
+        echo -n ' '
+    done | tr -d '\n'
+    echo
+done
+# vim: filetype=zsh

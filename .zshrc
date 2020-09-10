@@ -95,11 +95,10 @@ function __p10k_quickprompt()
 }
 
 function __required_sbin()  {
-    # MilesCranmer/vim-stream 
-    # 
     zadd 0a light-mode binary from"gh-r" for \
         junegunn/fzf-bin
 
+    # MilesCranmer/vim-stream
     zadd 0c light-mode binary for \
         as"null" sbin"vims" MilesCranmer/vim-stream \
         sbin"bin/git-ignore" atload'export GI_TEMPLATE="$PWD/.git-ignore"; alias gi="git-ignore"' \
@@ -107,8 +106,6 @@ function __required_sbin()  {
         binary from"gh-r" as"program" \
         jesseduffield/lazygit \
         jesseduffield/lazydocker \
-        sbin \
-        ssei40kr/fast-alias-tips-bin \
         compile'{*.zsh,tmux/*.zsh,task/*.zsh,project/*}' \
         multisrc'{init.zsh,*/init.zsh}' from'null' \
         _local/fbtools \
@@ -162,7 +159,7 @@ if [ ! $TERM = dumb ]; then
 
     [[ "${ZINIT[PLUGINS_DIR]}"  && -d "${ZINIT[PLUGINS_DIR]}" ]] || return 254
 
-    autoload -Uz is-at-least 
+    autoload -Uz is-at-least
 
     if is-at-least 5.2 ; then
         typeset -g MY_ZINIT_USE_TURBO=true
@@ -180,7 +177,7 @@ if [ ! $TERM = dumb ]; then
 
     # create main local config from "${ZINIT[PLUGINS_DIR]}/_local---config-files"
     [[ -d "${DOTFILES}/config/zsh" ]] && (
-        cd "${ZINIT[PLUGINS_DIR]}" 
+        cd "${ZINIT[PLUGINS_DIR]}"
         [[ ! -h _local---config-files ]] && rm _local---confif-files >&2
         [[ ! -e _local---config-files ]] && ln -s "${DOTFILES}/config/zsh" _local---config-files;
     )
@@ -229,7 +226,7 @@ if [ ! $TERM = dumb ]; then
         atload'alias gencomp="zinit silent nocd as\"null\" wait\"2\" atload\"zinit creinstall -q _local/config-files; zicompinit_fast\" for /dev/null; gencomp"' \
         RobSis/zsh-completion-generator
 
-    function zinit_plugin_loaded_callback() { 
+    function zinit_plugin_loaded_callback() {
         emulate -L zsh
         local _zinit_plug_function="zinit-loaded-${ZINIT[CUR_PLUGIN]}"
         (( $+functions[${_zinit_plug_function}] )) && \
@@ -327,14 +324,16 @@ if [ ! $TERM = dumb ]; then
             atload'_zsh_autosuggest_start && zinit_plugin_loaded_callback' \
             zsh-users/zsh-autosuggestions \
             atload'zinit_plugin_loaded_callback' \
+            as"program" from"gh-r" \
             sei40kr/zsh-fast-alias-tips \
+            sei40kr/fast-alias-tips-bin \
             as"null" id-as'Cleanup0c' nocd nocompile \
             atload'unset -f __required_sbin;' \
                 zdharma/null
 
         zinit ice wait"!" svn multisrc'{completion.zsh,git.zsh,history.zsh,functions.zsh}' notify
-        zsnippet OMZ::lib 
-        zinit ice as'completion'; 
+        zsnippet OMZ::lib
+        zinit ice as'completion';
         zinit snippet OMZ::plugins/pip/_pip
         zinit ice wait"0b" lucid
         zsnippet OMZ::plugins/web-search
