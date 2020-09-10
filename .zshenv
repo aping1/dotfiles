@@ -42,6 +42,7 @@ function setup_man_path () {
 }
 
 export DOTFILES="$HOME/.dotfiles"
+export PYENV_ROOT="${HOME}/.pyenv"
 
 if (( $+command[ccls] )); then
     LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"
