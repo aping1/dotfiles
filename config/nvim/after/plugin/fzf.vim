@@ -13,11 +13,11 @@ endif
 " Fuzzy Finding "
 """""""""""""""""
 let g:fzf_colors =
-\ { 'fg':      ['bg', 'Normal'],
+\ { 'fg':      ['fg', 'Pmenu'],
 \ 'bg':      ['bg', 'Normal'],
-\ 'hl':      ['fg', 'Comment'],
-\ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-\ 'bg+':     ['fg', 'CursorLine', 'CursorColumn'],
+\ 'hl':      ['Comment'],
+\ 'fg+':     ['fg', 'PmenuSel'],
+\ 'bg+':     ['bg', 'PmenuSel'],
 \ 'hl+':     ['fg', 'Statement'],
 \ 'info':    ['fg', 'PreProc'],
 \ 'border':  ['fg', 'Ignore'],

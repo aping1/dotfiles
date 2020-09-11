@@ -2,8 +2,9 @@ if exists("g:loaded_custom_functions")
     finish
 endif
 let g:loaded_custom_functions=1
+"autocmd VimEnter * command! -nargs=* Ag call fzf#vim#ag(<q-args>, '--color-path 400 --color-line-number 400', fzf#vim#default_layout)
 
-" REQUIRED FOR LAZYGIT
+" REQUIRED FOR LAZYG
 " Creates a floating window with a most recent buffer to be used
 function! CreateCenteredFloatingWindow()
     let width = float2nr(&columns * 0.6)
@@ -11,7 +12,6 @@ function! CreateCenteredFloatingWindow()
     let top = ((&lines - height) / 2) - 1
     let left = (&columns - width) / 2
     let opts = {'relative': 'editor', 'row': top, 'col': left, 'width': width, 'height': height, 'style': 'minimal'}
-
     let top = "╭" . repeat("─", width - 2) . "╮"
     let mid = "│" . repeat(" ", width - 2) . "│"
     let bot = "╰" . repeat("─", width - 2) . "╯"
@@ -19,7 +19,7 @@ function! CreateCenteredFloatingWindow()
     let s:buf = nvim_create_buf(v:false, v:true)
     call nvim_buf_set_lines(s:buf, 0, -1, v:true, lines)
     call nvim_open_win(s:buf, v:true, opts)
-    set winhl=Normal:Floating
+    "set winhl=Normal:MarkdownError,Visual:MarkdownError,CursorLine:MarkdownError
     let opts.row += 1
     let opts.height -= 2
     let opts.col += 2

@@ -52,7 +52,7 @@ let g:riv_python_rst_hl = 1
 
 " highlight lspReference ctermfg=red guifg=red ctermbg=green guibg=green
 " let g:lsp_highlight_references_enabled = 1
-let g:float_preview#winhl='Normal:Floaiing'
+let g:float_preview#winhl='Normal:PmenuSel,NormalNC:PMenu'
 
 augroup LintingHighlights
     autocmd!
