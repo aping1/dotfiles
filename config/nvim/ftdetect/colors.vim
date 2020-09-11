@@ -52,6 +52,7 @@ let g:riv_python_rst_hl = 1
 
 " highlight lspReference ctermfg=red guifg=red ctermbg=green guibg=green
 " let g:lsp_highlight_references_enabled = 1
+let g:float_preview#winhl='Normal:Floaiing'
 
 augroup LintingHighlights
     autocmd!
@@ -59,9 +60,9 @@ augroup LintingHighlights
     autocmd VimEnter,Colorscheme * hi ALEWarning ctermbg=0 guibg=#282c34 guifg=#ebca8d ctermfg=227
     autocmd VimEnter,Colorscheme * hi ALEError ctermbg=0 guibg=#282c34 guifg=#e88388 ctermfg=209
     autocmd VimEnter,Colorscheme * hi Pmenu ctermbg=black ctermfg=grey guifg=#abb2bf guibg=#353a44 
-    autocmd VimEnter,ColorScheme * hi PmenuSbar ctermbg=16 guibg=#282c34
-    autocmd VimEnter,Colorscheme * hi PmenuSel guifg=#d291e4 guibg=NONE ctermbg=NONE ctermfg=13 cterm=standout gui=standout
-    autocmd VimEnter,Colorscheme * hi PmenuThumb  guibg=#353a44 guifg=#ebca8d ctermbg=NONE ctermfg=227
+    autocmd VimEnter,ColorScheme * hi PmenuSbar ctermbg=black guibg=#282c34
+    autocmd VimEnter,Colorscheme * hi PmenuSel guifg=#d291e4 guibg=NONE ctermbg=NONE ctermfg=magenta cterm=standout gui=standout
+    autocmd VimEnter,Colorscheme * hi PmenuThumb  guibg=#353a44 guifg=#ebca8d ctermbg=NONE ctermfg=yellow
     autocmd VimEnter,Colorscheme * silent! call s:setLightlineColorscheme("one")
 augroup END
 augroup IndentGuide

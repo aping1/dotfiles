@@ -30,9 +30,9 @@ nmap ,cl :let @*=expand("%:p")<CR>
 
 augroup vim_blacklist_blacklist
     autocmd!
-    autocmd FileType Python call s:semshi_enable()
-    autocmd FileType * call s:ale_settings() 
-    autocmd FileType * call s:SetupJedicommands()
+    autocmd FileType Python call <SID>semshi_enable()
+    autocmd FileType * call <SID>ale_settings() 
+    autocmd FileType * call <SID>SetupJedicommands()
 augroup END
 
 
@@ -51,6 +51,7 @@ endfunction
 
 function! s:ale_settings()
     "set omnifunc=ale#completion#OmniFunc
+    " preview will open a horz split
     set completeopt-=preview
     set completeopt+=noselect
     set completeopt+=noinsert
@@ -59,8 +60,8 @@ function! s:ale_settings()
     nmap ]v :ALENextWrap<CR>
     nmap [v :ALEPreviousWrap<CR>
     nmap ]V :ALELast
-    
-    nmap K :ALEHover<CR>
+    nmap [V :ALEFirst
+    nmap <leader> V :ALEHover<CR>
     nmap <F8> <Plug>(ale_fix)
     nmap <silent> <C-k> <Plug>(ale_previous_wrap)
     nmap <silent> <C-j> <Plug>(ale_next_wrap)
@@ -147,11 +148,14 @@ inoremap <S-Tab> <C-V><Tab>
 inoremap  \\
 noremap  \\
 
+" vmap <silent> <Leader>qs :call Quote("'")<CR>
+vmap <silent> <Leader>qd :call Quote('"')<CR>
+
 " Vista
 " Floating tag finder
-nnoremap  <Leader>ft  :Vista finder coc<cr>
+nnoremap  <Leader>f  :Vista finder coc<cr>
 " Opens tagbar on right side of screen
-nmap <F8> :Vista!!<CR>
+nmap <F4> :Vista!!<CR>
 
 " This gets in the way of literal '\'
 " inoremap <Leader> <space> <ESC>
@@ -176,8 +180,9 @@ vnoremap <leader>nu :call NERDComment(1,"uncomment")<cr>
 nnoremap <leader>ni :call NERDComment(0,"invert")<cr>
 vnoremap <leader>ni :call NERDComment(1,"invert")<cr>
 " comment section
-nnoremap <leader>n :call NERDComment(0,"comment")<cr>
-vnoremap <leader>n :call NERDComment(1,"comment")<cr>
+nnoremap <leader>nn :call NERDComment(0,"comment")<cr>
+vnoremap <leader>nn :call NERDComment(1,"comment")<cr>
+"
 "
 
 " Git keybinds

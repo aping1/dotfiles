@@ -1,7 +1,7 @@
 if exists("g:loaded_custom_functions")
     finish
 endif
-let g:loaded_custom_functions= 1
+let g:loaded_custom_functions=1
 
 " REQUIRED FOR LAZYGIT
 " Creates a floating window with a most recent buffer to be used
@@ -28,43 +28,147 @@ function! CreateCenteredFloatingWindow()
     autocmd BufWipeout <buffer> exe 'bwipeout '.s:buf
 endfunction
 
-" When term starts, auto go into insert mode
-autocmd TermOpen * startinsert
+function! GetFileAlternate()
+if exists('g:loaded_projectionist')
+    echo get(filter(g:projectionist#query_file('alternate'), 'filereadable(v:val)'), 0, '')
+  endif
+  echo "None"
+endfunction
 
-" Turn off line numbers etc
-autocmd TermOpen * setlocal listchars= nonumber norelativenumber
+function! UltiSnipsGetAllSnippets()
+  call UltiSnips#SnippetsInCurrentScope(1)
+  let list = []
+  for [key, info] in items(g:current_ulti_dict_info)
+    let parts = split(info.location, ':')
+    call add(list, {
+      \"key": key,
+      \"path": parts[0],
+      \"linenr": parts[1],
+      \"description": info.description,
+      \})
+  endfor
+  return list
+endfunction
 
-function! ToggleTerm(cmd)
-    if empty(bufname(a:cmd))
-        call CreateCenteredFloatingWindow()
-        call termopen(a:cmd, { 'on_exit': function('OnTermExit') })
+function! Quote(quote)
+  let save = @"
+  silent normal gvy
+  let @" = a:quote . @" . a:quote
+  silent normal gvp
+  let @" = save
+endfunction
+
+function! FzfAgFromSearch()
+    " translate vim regular expression to perl regular expression.
+    let l:search = substitute(getreg('/'), '\(\\<\|\\>\)', '\\b', 'g')
+    call fzf#vim#ag(l:search)
+endfunction
+
+function! SynStack()
+  if !exists("*synstack")
+    return
+  endif
+  echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+endfunc
+
+function! s:newtest_file(file) abort
+    if exists('g:loaded_projectionist')  && g:loaded_projectionist
+        for [root, value] in g:projectionist#query('type', {'file': fnamemodify(a:file, ':p')})
+            if value =~? '^\(test[:]\+\)\?pyunit$'
+                return root . ':' . value
+            else
+                echoerr 'Value(' . value . ') in file(' . a:file . ') is not [test:]pyunit'
+            endif
+        endfor
+    endif
+endfunction
+
+function! AdjustWindowHeight(minheight, maxheight)
+    let l = 1
+    let n_lines = 0
+    let w_width = winwidth(0)
+    while l <= line('$')
+        " number to float for division
+        let l_len = strlen(getline(l)) + 0.0
+        let line_width = l_len/w_width
+        let n_lines += float2nr(ceil(line_width))
+        let l += 1
+    endw
+    exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
+endfunction
+
+function! TabMessage(cmd)
+    redir => message
+    silent execute a:cmd
+    redir END
+    if empty(message)
+        echoerr 'no output'
     else
-        bwipeout!
+        " use "new" instead of "tabnew" below if you prefer split windows instead of tabs
+        tabnew
+        setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nomodified
+        silent put=message
+
     endif
 endfunction
 
-" Open Project
-" https://github.com/tmuxinator/tmuxinator"
-" https://github.com/camspiers/tmuxinator-fzf-start
-function! ToggleProject()
-    call ToggleTerm('tmuxinator-fzf-start.sh')
-endfunction
+function! TabMessage(cmd)
+    redir => message
+    silent execute a:cmd
+    redir END
+    if empty(message)
+        echoerr 'no output'
+    else
+        " use "new" instead of "tabnew" below if you prefer split windows instead of tabs
+        tabnew
+        setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted nomodified
+        silent put=message
 
-function! ToggleScratchTerm()
-    call ToggleTerm('bash')
-endfunction
-
-function! ToggleLazyGit()
-    call ToggleTerm('lazygit')
-endfunction
-
-function! ToggleLazyDocker()
-    call ToggleTerm('lazydocker')
-endfunction
-
-
-function! OnTermExit(job_id, code, event) dict
-    if a:code == 0
-        bwipeout!
     endif
 endfunction
+
+" When using `dd` in the quickfix list, remove the item from the quickfix list.
+function! RemoveQuickFixItem()
+    let curqfidx = line('.') - 1
+    let qfall = getqflist()
+    call remove(qfall, curqfidx)
+    call setqflist(qfall, 'r')
+    execute curqfidx + 1 . 'cfirst'
+    :copen
+endfunction
+
+function! ProjectionistTestFile(file) abort
+    if exists('g:loaded_projectionist')  && g:loaded_projectionist
+        for [root, value] in g:projectionist#query('type', {'file': fnamemodify(a:file, ':p')})
+            if value =~? '^\(test[:]\+\)\?pyunit$'
+                return root . ':' . value
+            else
+                echoerr 'Value(' . value . ') in file(' . a:file . ') is not [test:]pyunit'
+            endif
+        endfor
+    endif
+endfunction
+
+function! Pad(s,amt)
+    return a:s . repeat(' ',a:amt - len(a:s))
+endfunction
+
+" Commands
+com! -nargs=0 ShowTestFile echo s:newtest_file(expand('%:p'))
+com! FileAlternate call GetFileAlternate()
+com! UltiSnipsList echo UltiSnipsGetAllSnippets()
+
+"com! -nargs=+ -complete=file Ag call FzfAgFromSearch(<q-args>)
+
+com! -nargs=0 ShowTestFile echo ProjectionistTestFile(expand('%:p'))
+com! RemoveQFItem -nargs=0 call RemoveQuickFixItem()
+com! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+com! -nargs=0 ToggleColor
+            \ call s:normalToggleColor()
+
+augroup QUICKFIX
+autocmd!
+autocmd FileType qf call AdjustWindowHeight(3, 10)
+autocmd FileType qf map <buffer> dd :RemoveQFItem<cr>
+augroup END

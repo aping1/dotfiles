@@ -136,8 +136,8 @@ if has('gui_running')
     silent! colorscheme one
 elseif (has('termguicolors'))
     set termguicolors
-    "nessecary for tmux termgui colors?
-    "something about enabling full color with
+    " nessecary for tmux termgui colors?
+    " something about enabling full color with
     " the followin escape sequenceys since .3"
     " https://github.com/neovim/neovim/issues/6096""
     "let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
@@ -162,10 +162,11 @@ endif
 "----------------------------------------------
 " Plugin: 'davidhalter/jedi-vim'
 "----------------------------------------------
-"
+" dont set completopt to menuone,longest,preview
 let g:jedi#auto_vim_configuration = 0
+" deoplete provides completions
 let g:jedi#completions_enabled=0
-" disable autocompletion, this vimrc uses ale for completion
+"  show virtualtest for completion
 let g:jedi#show_call_signatures = 1
 " open the go-to function in split, not another buffer
 let g:jedi#use_splits_not_buffers = 'right'
@@ -205,14 +206,6 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
         augroup end
     endif
     function! s:pyenv_init()
-        " Active external version
-        "pyenv#info#format('%iv') A version of the internal python
-        "pyenv#info#format('%im') " A major version of the internal python
-        "pyenv#info#format('%ev') "A version of the external python
-        "pyenv#info#format('%em') "A major version of the external python
-        "pyenv#info#format('%sv') "A selected version name
-        "pyenv#info#format('%ss') "A selected version names
-        "pyenv#info#format('%av') "An activated version name
         if exists('*jedi#init_python') && jedi#init_python()
             let g:jedi#force_py_version='3'
         endif
