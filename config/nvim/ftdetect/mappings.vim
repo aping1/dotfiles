@@ -31,6 +31,7 @@ nmap ,cl :let @*=expand("%:p")<CR>
 augroup vim_blacklist_blacklist
     autocmd!
     autocmd FileType Python call <SID>semshi_enable()
+    autocmd FileType Python set sw=4 
     autocmd FileType * call <SID>ale_settings() 
     autocmd FileType * call <SID>SetupJedicommands()
 augroup END
