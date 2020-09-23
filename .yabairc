@@ -43,6 +43,8 @@ CENTER_SCREEN="4:4:1:0:2:2"
 CORNER_SCREEN="4:4:0:0:2:2"
 FULL_SCREEN="4:4:0:0:4:4"
 
+yabai -m rule --add app="^FlashPrint" grid=${FULL_SCREEN} manage=off label="flashprint_floats" 
+yabai -m rule --add title="^Print$" grid=${CENTER_SCREEN} manage=off label="print_floats" 
 yabai -m rule --add app="^Dash$" manage=off label="dash_floats" 
 yabai -m rule --add app="^DEVONthink 3" grid=${FULL_SCREEN} manage=off label="devonthink" 
 yabai -m rule --add title="Dash" grid=${FULL_SCREEN} manage=off label="dash_floats" 
