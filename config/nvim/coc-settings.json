@@ -1,12 +1,12 @@
 {
-    "python.linting.enabled": false,
-    "diagnostic.displayByAle": true,
-    "coc.preferences.currentFunctionSymbolAutoUpdate": true,
-    "suggest.keepCompleteopt" : true,
-    "suggest.autoTrigger": "trigger",
-    "coc.preferences.colorSupport": true,
-    "diagnostic.refreshOnInsertMode": true,
-    "diagnostic.hintSign": "➤",
+  "python.linting.enabled": false,
+  "diagnostic.displayByAle": true,
+  "coc.preferences.currentFunctionSymbolAutoUpdate": true,
+  "suggest.keepCompleteopt" : true,
+  "suggest.autoTrigger": "trigger",
+  "coc.preferences.colorSupport": true,
+  "diagnostic.refreshOnInsertMode": true,
+  "diagnostic.hintSign": "➤",
   "diagnostic.infoSign": "ʘ",
   "diagnostic.errorSign": "",
   "diagnostic.warningSign": "",
@@ -61,18 +61,18 @@
     "default": "\uf29c"
   },
 
- "java.home": "/usr/lib/jvm/java-13-openjdk/",
- "eslint.trace.server": "verbose",
-   "languageserver": {
+  "java.home": "/usr/lib/jvm/java-13-openjdk/",
+  "eslint.trace.server": "verbose",
+  "languageserver": {
     "ccls": {
       "command": "ccls",
       "filetypes": ["c", "cpp", "objc", "objcpp"],
       "rootPatterns": [".ccls", "compile_commands.json", ".vim/", ".git/", ".hg/"],
       "initializationOptions": {
-         "cache": {
-           "directory": "/tmp/ccls"
-         },
-         "clang": {
+        "cache": {
+          "directory": "/tmp/ccls"
+        },
+        "clang": {
           "resourceDir": "/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0",
           "extraArgs": [
             "-isystem",
@@ -81,7 +81,7 @@
             "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"        
           ]
         }
-       }
+      }
     }
   },
   "java.errors.incompleteClasspath.severity": "ignore"

@@ -207,7 +207,9 @@ if [ ! $TERM = dumb ]; then
                 reset-prompt romkatv/powerlevel10k \
         from'null' pick'config-files.plugin.zsh' \
         src'bindings.zsh' \
-            _local/config-files
+            _local/config-files \
+        from'gh' as"null" \
+            Shougo/dein.vim
 
     ######################
     # Trigger-load block #
@@ -247,7 +249,7 @@ if [ ! $TERM = dumb ]; then
         as"completions" \
         bindmap'^T -> ^F; ^R -> ^T' \
         multisrc"shell/key-bindings.zsh" \
-        id-as"junegunn/fzf_completions" pick"shell/completion.zsh" \
+        id-as"junegunn/fzf_master" pick"shell/completion.zsh" \
         atload'zinit_plugin_loaded_callback' \
         junegunn/fzf \
         has'zshz' \
@@ -358,3 +360,5 @@ if (( $+PROFILING )); then
 fi
 
 export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
