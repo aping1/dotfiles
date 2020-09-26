@@ -3,7 +3,8 @@
 " Credit: https://www.johnhawthorn.com/2012/09/vi-escape-delays/
 " also cjeckout  /Users/aping1/.dotfiles/config/nvim/autoload/mappings.vim
 set timeoutlen=600 ttimeoutlen=0
-
+" Lower update time for snappier coc
+set updatetime=300
 
 set ruler
 set ignorecase
@@ -116,7 +117,7 @@ set updatetime=2500
 set background=dark
 
 " Add the dein installation directory into runtimepath
-set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
+set runtimepath+=~/.zsh/zinit/plugins/Shougo---dein.vim
 
 " Contains dein snippet
 let g:dein_file=(expand('<sfile>:p:h') . '/00-dein.vim')
@@ -312,7 +313,6 @@ imap OA <ESC>ki
 imap OB <ESC>ji
 imap OC <ESC>li
 imap OD <ESC>hi
-
 " Adds for IronRepl: PickRepl PickVirtualEnv PickIPython
 "if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
 "    silent! luafile $HOME/.config/nvim/iron.plugin.lua
@@ -435,9 +435,14 @@ let g:ale_linter_aliases = {
             \ 'jsx': ['css', 'javascript'],
             \ }
 let g:ale_linters_explicit = 1
-let g:ale_linters = { 'python' : ['flake8'], 
+augroup LinterTypes
+autocmd!
+autocmd filetype python let b:ale_linters=['flake8']
+autocmd filetype vim let b:ale_linters = ['vimls', 'coc']
+augroup END
+
+let g:ale_linters = { 
             \ 'c' : ['cppcheck'],
-            \ 'vim' : ['vimls', 'coc'],
             \ 'sh' : ['shellcheck'],
             \ 'zsh' : ['deoplete-zsh'],
             \ 'terraform' : ['tflint'],
@@ -672,6 +677,7 @@ set nowritebackup
 " Better display for messages
 set cmdheight=2
 
+
 " don't give |ins-completion-menu| messages.
 set shortmess+=c
 
@@ -740,7 +746,8 @@ map <leader>n :call FollowFile("%")<cr>
 " Ensure you have installed some decent font to show these pretty symbols, then you can enable icon for the kind.
 " let g:vista_fzf_preview = ['right:50%']
 let g:vista_executive_for = {
-            \ 'vim': 'coc',
+            \ 'vim': 'ale',
+            \ 'python': 'ale',
             \ }
 " Executive used when opening vista sidebar without specifying it.
 " See all the avaliable executives via `:echo g:vista#executives`.
@@ -764,9 +771,12 @@ call SetupCommandAbbrs('C', 'CocConfig')
 au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
             \| exe "normal! g'\"" | endif
 
-let g:vimspector_install_gadgets = [ 'debugpy', 'vscode-cpptools', 'CodeLLDB' ]
+"let g:vimspector_install_gadgets = [ 'debugpy', 'vscode-cpptools', 'CodeLLDB' ]
+let g:vimspector_install_gadgets = [ 'debugpy' ]
 let g:vimspector_enable_mappings = 'HUMAN'
-let g:comfortable_motion_friction = 92.0
-let g:comfortable_motion_air_drag = 2.6 
+let g:comfortable_motion_friction = 1.9
+
+let g:slime_target = "neovim"
+
 " { :set sw=2 ts=2 et }
 "

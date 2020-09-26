@@ -231,7 +231,7 @@ endfunction
 
 function! LightlinePyEnv ()
     let l:small_threshold = getbufvar("small_threshold", g:small_threshold)
-    return winwidth(0) > l:small_threshold ? WebDevIconsGetFileTypeSymbol('__init__.py',0) : ""
+    return winwidth(0) > l:small_threshold && exists('*WebDevIconsGetFileTypeSymbol') ? WebDevIconsGetFileTypeSymbol('__init__.py',0) : ""
 endfunction
 
 function! LightlinePyEnvName ()
@@ -301,7 +301,7 @@ function! LightlineFiletype()
     let l:medium_threshold = getbufvar("b:", "medium_threshold", g:medium_threshold)
     if index(g:lightline_blacklist,&filetype)==-1 && exists('*WebDevIconsGetFileTypeSymbol') && 
                 \ &fenc!=#''
-        let l:symbol=WebDevIconsGetFileTypeSymbol()
+        let l:symbol=exists('*WebDevIconsGetFileFormatSymbol') ? WebDevIconsGetFileFormatSymbol() : ""
         let new_ft=(strlen(&filetype) ? l:symbol . ' ' . &filetype  : '')
         return l:wide > l:large_threshold ? new_ft : l:symbol
     endif
@@ -313,7 +313,7 @@ function! LightlineFileFormat()
         let l:small_threshold = getbufvar("b:", "small_threshold", g:small_threshold)
         let l:medium_threshold = getbufvar("b:", "medium_threshold", g:medium_threshold)
         let l:large_threshold = getbufvar("b:", "large_threshold", g:large_threshold)
-        let l:symbol=WebDevIconsGetFileFormatSymbol()
+        let l:symbol=exists('*WebDevIconsGetFileFormatSymbol') ? WebDevIconsGetFileFormatSymbol() : ""
         let l:wide = winwidth(0)
         return l:wide <= l:small_threshold ? "" : 
                     \ l:wide <= l:large_threshold ? symbol : symbol . ' ' . &fileformat

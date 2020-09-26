@@ -95,6 +95,7 @@ function __p10k_quickprompt()
 
 function __required_sbin()  {
     zadd 0a light-mode binary from"gh-r" for \
+        as"program" \
         junegunn/fzf-bin
 
     # MilesCranmer/vim-stream
@@ -248,8 +249,8 @@ if [ ! $TERM = dumb ]; then
         zdharma/history-search-multi-word \
         as"completions" \
         bindmap'^T -> ^F; ^R -> ^T' \
-        multisrc"shell/key-bindings.zsh" \
-        id-as"junegunn/fzf_master" pick"shell/completion.zsh" \
+        pick"shell/key-bindings.zsh" \
+        id-as"junegunn/fzf_master" src"shell/completion.zsh" \
         atload'zinit_plugin_loaded_callback' \
         junegunn/fzf \
         has'zshz' \
@@ -360,5 +361,3 @@ if (( $+PROFILING )); then
 fi
 
 export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

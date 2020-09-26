@@ -1,3 +1,13 @@
+
+
+snippet click.o "click.option decorator" b
+@click.option(${1:opt},(`!p
+if snip.indent:
+	snip.rv = 'self' + (", " if len(t[2]) else "")`${2:arg1}):
+	${5:${VISUAL:pass}}
+endsnippet
+
+
 snippet flaskunittest
 import os
 import tempfile

@@ -1,8 +1,3 @@
-if exists("g:loaded_custom_dein_settings")
-    finish
-endif
-let g:loaded_custom_dein_settings=1
-
 "----------------------------------------------
 " Dein
 "----------------------------------------------
@@ -19,6 +14,7 @@ if dein#load_state('~/.cache/dein')
         echomsg 'Error loading ...'
         echomsg 'Caught: ' v:exception
         echoerr 'error ' . s:toml . 'config'
+        call dein#add('mhinz/vim-startify')
     endtry
 
     " :DeinUpgrade command using minimal SpaceVim ui
@@ -84,11 +80,8 @@ if dein#load_state('~/.cache/dein')
                     \ })
     endif
 
-    " manage fzf updates
-    call dein#add('junegunn/fzf', { 'build': './install --all', 'merged': 0 })
-    " Use fzf preview 
-    " TODO: This doesnt work?
-    call dein#add('yuki-ycino/fzf-preview.vim', { 'rev': 'release', 'do': ':CocInstall coc-fzf-preview' })
+    " zinit manage fzf updates
+    set runtimepath+=~/.zsh/zinit/plugins/junegunn---fzf_master
 
     " smarter searching (with ag)
     call dein#add('mileszs/ack.vim')
@@ -101,7 +94,6 @@ if dein#load_state('~/.cache/dein')
     " --- .projectionist.json --- 
     "  also see ./ftdetect/heuristics.vim
     call dein#add('tpope/vim-projectionist')
-
     " Smart runner Itegration with projectionist 
     " run tests with alternates
     call dein#add('tpope/vim-dispatch')
@@ -111,9 +103,18 @@ if dein#load_state('~/.cache/dein')
     call dein#add('janko/vim-test')
     call dein#add('neomake/neomake')
 
+    " -- REPLs
+    call dein#add('bfredl/nvim-ipy',
+                    \{'on_ft':['python', 'ipython']})
+    " Tools for repl
+    call dein#add('Vigemus/impromptu.nvim')
+    " Lua python
+    call dein#add('Vigemus/iron.nvim')
+    call dein#add('jpalardy/vim-slime',
+                    \{'on_ft':['python', 'ipython']})
     " Snippet engine 
     call dein#add('SirVer/ultisnips',
-                   \{ 'tag': '1.3'})
+                \{ 'tag': '1.3'})
 
     call dein#add('honza/vim-snippets')
     call dein#add('srydell/vim-skeleton')
@@ -163,31 +164,6 @@ if dein#load_state('~/.cache/dein')
 
     " --- Autocomplete
     if has('nvim')
-       call dein#add('ncm2/float-preview.nvim')
-       call dein#add('neoclide/coc.nvim', {
-                   \ 'branch': 'release',
-                   \ 'do': 'call coc#util#install()'
-                   \ })
-
-       "Deoplete framework"
-       call dein#add('jsfaint/coc-neoinclude', {
-                   \ 'do': ':CocInstall coc-neoinclude',
-                   \})
-
-       call dein#add('neoclide/coc-snippets', {
-                   \'do': ':CocInstall coc-snippets'
-                   \})
-
-       call dein#add('neoclide/coc-highlight', { 
-                   \'do': ':CocInstall coc-highlight'
-                   \})
-       "" 
-       call dein#add('Shougo/neco-vim',
-                   \ {'on_ft': 'vim'})
-       call dein#add('neoclide/coc-neco', {
-                   \ 'on_ft': 'vim',
-                   \ 'do': ':CocInstall coc-neco'
-                   \})
     else
         call dein#add('roxma/nvim-yarp')
         call dein#add('roxma/vim-hug-neovim-rpc')
@@ -205,6 +181,12 @@ if dein#load_state('~/.cache/dein')
     if has('nvim')
         call dein#add('Shougo/context_filetype.vim')
         call dein#add('Shougo/neoinclude.vim')
+        call dein#add('ncm2/float-preview.nvim')
+        call dein#add('neoclide/coc.nvim', {
+                   \ 'branch': 'release',
+                   \ 'build':  'yarn install --frozen-lockfile',
+                   \ 'hook_post_update': 'call dein#build("coc.nvim") | call coc#util#install()'
+                   \ })
         call dein#add('Shougo/deoplete.nvim',
                     \{ 'do': ':UpdateRemotePlugins'})
         call dein#add('zchee/deoplete-jedi',
@@ -219,12 +201,6 @@ if dein#load_state('~/.cache/dein')
                     \ 'on_ft':['zsh'],
                     \ 'depends': 'nvim-send-to-term'
                     \ })
-        call dein#add('bfredl/nvim-ipy',
-                    \{'on_ft':['python', 'ipython']})
-        " Tools for repl
-        call dein#add('Vigemus/impromptu.nvim')
-        " Lua python
-        call dein#add('Vigemus/iron.nvim')
     endif
 
     if has('macunix')

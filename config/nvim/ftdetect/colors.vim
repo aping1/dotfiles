@@ -1,4 +1,3 @@
-
 if exists("g:loaded_custom_ft_colors")
     finish
 endif
@@ -71,10 +70,22 @@ augroup IndentGuide
     autocmd VimEnter,Colorscheme * hi IndentGuidesOdd ctermbg=6 guibg=#353a44 ctermfg=16 guifg=#353a44
     autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guifg=#abb2bf ctermfg=16 guifg=#353a44
     "" Vim
+    autocmd BufEnter,Colorscheme * call g:colors#set_colo_hi() |
+                \execute 'set colorcolumn='.b:linelen
 augroup END
 
-" Set max line length.
- execute 'set colorcolumn='.g:linelen
+function g:colors#set_colo_hi()
+    " Set max line length.
+    if a:0 > 0 && !empty(a:1)
+        let b:linelen=a:1
+    else
+        if !exists('g:linelen') || empty(g:linelen)
+            let g:linelen = 120
+        endif
+        let b:linelen = g:linelen
+    endif
+ endfunction
+
 "highlight OverLength ctermbg=red ctermfg=white ctermfg=231 guifg=#e88388
 "execute 'match OverLength /\%'.linelen.'v.\+/'
 " Change the Pmenu colors so they're more readable.
