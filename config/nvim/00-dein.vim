@@ -4,6 +4,10 @@
 if dein#load_state('~/.cache/dein')
     call dein#begin('~/.cache/dein')
 
+    " :DeinUpgrade command using minimal SpaceVim ui
+    " relys on spaceship logging functions
+    call dein#add('wsdjeg/dein-ui.vim')
+
     try
         " For more info on TOML and moving plugins...
         " https://github.com/Shougo/dein.vim/blob/aa1da8e43b74c109c49281998eab0e148dc042b2/doc/dein.txt
@@ -17,11 +21,9 @@ if dein#load_state('~/.cache/dein')
         call dein#add('mhinz/vim-startify')
     endtry
 
-    " :DeinUpgrade command using minimal SpaceVim ui
-    call dein#add('wsdjeg/dein-ui.vim')
     call dein#add('puremourning/vimspector',
-                 \ {'do': 'VimspectorInstall --enable-python'}
-                 \ )
+                \ {'hook_post_update': 'VimspectorInstall --enable-python'}
+                \ )
     " Dynamic resize quickfix window
     call dein#add('blueyed/vim-qf_resize')
     call dein#add('sheerun/vim-polyglot')
@@ -44,14 +46,14 @@ if dein#load_state('~/.cache/dein')
     call dein#add('nathanaelkane/vim-indent-guides')
     " Highlight colors
     call dein#add('ap/vim-css-color',
-                \{'on_ft': ['vim']})
+                \ {'on_ft': ['vim']})
     call dein#add('tpope/vim-scriptease')
     " Auto color hex
     call dein#add('lilydjwg/Colorizer')
 
     " Hide sum and such as unicode 
     call dein#add('ryanoasis/vim-devicons')
-    " View unicode sets
+    " View unicode sets (not async)
     call dein#add('chrisbra/unicode.vim', {
                 \'on_ft': 'vim'
                 \})
@@ -104,14 +106,18 @@ if dein#load_state('~/.cache/dein')
     call dein#add('neomake/neomake')
 
     " -- REPLs
-    call dein#add('bfredl/nvim-ipy',
+    if has('nvim')
+        call dein#add('bfredl/nvim-ipy',
                     \{'on_ft':['python', 'ipython']})
+    else
+        call dein#add('jupyter-vim/jupyter-vim')
+    endif
     " Tools for repl
     call dein#add('Vigemus/impromptu.nvim')
     " Lua python
     call dein#add('Vigemus/iron.nvim')
     call dein#add('jpalardy/vim-slime',
-                    \{'on_ft':['python', 'ipython']})
+                \{'on_ft':['python', 'ipython']})
     " Snippet engine 
     call dein#add('SirVer/ultisnips',
                 \{ 'tag': '1.3'})
@@ -183,16 +189,49 @@ if dein#load_state('~/.cache/dein')
         call dein#add('Shougo/neoinclude.vim')
         call dein#add('ncm2/float-preview.nvim')
         call dein#add('neoclide/coc.nvim', {
-                   \ 'branch': 'release',
-                   \ 'build':  'yarn install --frozen-lockfile',
-                   \ 'hook_post_update': 'call dein#build("coc.nvim") | call coc#util#install()'
-                   \ })
+                    \ 'branch': 'release',
+                    \ 'build':  'yarn install --frozen-lockfile',
+                    \ 'hook_post_source': 'let g:coc_global_extensions = [
+                    \"coc-neco",
+                    \"coc-neoinclude",
+                    \"coc-html",
+                    \"coc-xml",
+                    \"coc-java",
+                    \"coc-ccls",
+                    \"coc-lua",
+                    \"coc-sql",
+                    \"coc-go",
+                    \"coc-css",
+                    \"coc-sh",
+                    \"coc-snippets",
+                    \"coc-prettier",
+                    \"coc-eslint",
+                    \"coc-tsserver",
+                    \"coc-docker",
+                    \"coc-pairs",
+                    \"coc-json",
+                    \"coc-python",
+                    \"coc-imselect",
+                    \"coc-highlight",
+                    \"coc-git",
+                    \"coc-github",
+                    \"coc-gitignore",
+                    \"coc-emoji",
+                    \"coc-lists",
+                    \"coc-post",
+                    \"coc-stylelint",
+                    \"coc-yaml",
+                    \"coc-template",
+                    \"coc-utils"
+                    \ ]',
+                    \ 'hook_post_update': 'call dein#build("coc.nvim") | call coc#util#install()'
+                    \ })
         call dein#add('Shougo/deoplete.nvim',
-                    \{ 'do': ':UpdateRemotePlugins'})
+                    \{ 'hook_post_update': ':UpdateRemotePlugins'})
         call dein#add('zchee/deoplete-jedi',
                     \{'on_ft':['python', 'ipython'],
                     \'depends': ['deoplete.nvim', 'jedi-vim'], 
-                    \'do': ':UpdateRemotePlugins',
+                    \'hook_post_update': ':UpdateRemotePlugins',
                     \'install': 'git submodule update --init'
                     \})
         " required for ZSH Autocomplete
@@ -212,7 +251,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('maximbaz/lightline-ale')
 
     call dein#add('numirias/semshi',
-                \{'do': ':UpdateRemotePlugins'})
+                \{'hook_post_update': ':UpdateRemotePlugins'})
 
     call dein#add('gu-fan/riv.vim')
     call dein#add('mtdl9/vim-log-highlighting')

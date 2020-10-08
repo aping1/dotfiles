@@ -23,47 +23,23 @@ CocInstall coc-fzf-preview | FzfPreviewInstall
 [[plugins]]
 repo='jsfaint/coc-neoinclude'
 depends='coc.nvim'
-hook_post_source = '''
-CocInstall coc-neoinclude
-'''
 
 [[plugins]]
 repo= 'neoclide/coc-snippets'
 depends='coc.nvim'
-hook_post_source = '''
-CocInstall coc-snippets
-'''
 
 [[plugins]]
-depends='coc.nvim'
 repo= 'neoclide/coc-highlight'
-hook_post_source = '''
-CocInstall coc-highlight
-'''
+depends='coc.nvim'
 
 [[plugins]]
 repo = 'neoclide/coc-neco'
 depends = ['coc.nvim','neco-vim']
 on_ft = 'vim'
-hook_post_source = '''
-CocInstall coc-neco
-'''
-
-[[plugins]]
-repo= 'yuki-ycino/fzf-preview.vim'
-depends='coc.nvim'
-rev = 'release'
-hook_post_update = '''
-CocInstall coc-fzf-preview | FzfPreviewInstall
-'''
-
 
 [[plugins]]
 repo='Maxattax97/coc-ccls'
 build='yarn install --frozen-lockfile'
-hook_post_source = '''
-CocInstall coc-ccls
-'''
 
 [[plugins]]
 repo = 'Shougo/neco-vim'

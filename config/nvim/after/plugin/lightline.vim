@@ -231,7 +231,9 @@ endfunction
 
 function! LightlinePyEnv ()
     let l:small_threshold = getbufvar("small_threshold", g:small_threshold)
-    return winwidth(0) > l:small_threshold && exists('*WebDevIconsGetFileTypeSymbol') ? WebDevIconsGetFileTypeSymbol('__init__.py',0) : ""
+    let l:pyenv = exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated() ? "" : ""
+    let l:pycon = l:small_threshold && exists('*WebDevIconsGetFileTypeSymbol') ? WebDevIconsGetFileTypeSymbol('__init__.py',0) : ""
+    return l:pyenv . l:pycon
 endfunction
 
 function! LightlinePyEnvName ()
@@ -276,7 +278,7 @@ function! LightlineFugitive()
     if index(g:lightline_blacklist,&filetype)!=-1 || winwidth(0) <  l:medium_threshold || !exists('*fugitive#head')
         return ""
     endif 
-    let l:branch = fugitive#head()
+    let l:branch = fugitive#statusline()
     if branch ==#""
         return ""
     elseif len(branch) < 36
@@ -427,3 +429,23 @@ endfun
 com! -nargs=1 -complete=customlist,s:ipython_kernels FileType python 
             \ call s:ipython_kernels
 
+command! -nargs=+ -complete=command Vcs call Vcs(<q-args>)
+function! Vcs(cmd) abort
+    let saved = getcwd()
+    exe 'cd ' . GetVcsRoot()
+    try
+        exe a:cmd
+    catch
+        echohl ErrorMsg | echo v:exception | echohl None
+    endtry
+    exe 'cd ' . saved
+endfunction
+function! GetVcsRoot() abort
+    let cph = expand('%:p:h', 1)
+    if cph =~# '^.\+://' | retu | en
+    for mkr in ['.git/', '.hg/', '.svn/', '.bzr/', '_darcs/', '.vimprojects']
+        let wd = call('find' . (mkr =~# '/$' ? 'dir' : 'file'), [mkr, cph . ';'])
+        if !empty(wd) | let &acd = 0 | brea | en
+    endfo
+    return fnameescape(empty(wd) ? cph : substitute(wd, mkr . '$', '.', ''))
+endfunction

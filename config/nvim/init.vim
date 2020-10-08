@@ -1,10 +1,12 @@
 " FileType js UltiSnipsAddFiletypes javascript-jasmine time to wait for new mapping seq
 " ttimeoutlen is used for key code delays
 " Credit: https://www.johnhawthorn.com/2012/09/vi-escape-delays/
-" also cjeckout  /Users/aping1/.dotfiles/config/nvim/autoload/mappings.vim
+" also checkout  /Users/aping1/.dotfiles/config/nvim/autoload/mappings.vim
 set timeoutlen=600 ttimeoutlen=0
 " Lower update time for snappier coc
-set updatetime=300
+" You will have bad experience for diagnostic messages when it's default 4000.
+" Write diag to disk every 2.5 seconds
+set updatetime=600
 
 set ruler
 set ignorecase
@@ -95,6 +97,7 @@ set fillchars+=eob:›
 set clipboard=unnamedplus
 
 
+" Reload .vimrc immediately when edited
 if has('autoread')
     " Reload .vimrc immediately when edited
     set autoread
@@ -107,12 +110,6 @@ else
                     \| exe "normal! g'\"" | endif
     augroup END
 endif
-
-" Reload .vimrc immediately when edited
-
-" You will have bad experience for diagnostic messages when it's default 4000.
-" Write diag to disk every 2.5 seconds
-set updatetime=2500
 
 set background=dark
 
@@ -165,10 +162,13 @@ endif
 "----------------------------------------------
 " dont set completopt to menuone,longest,preview
 let g:jedi#auto_vim_configuration = 0
-" deoplete provides completions
+" ale provides completions
 let g:jedi#completions_enabled=0
-"  show virtualtest for completion
-let g:jedi#show_call_signatures = 1
+"  show virtualtext for completion
+"  dont make jedit do this?
+let g:jedi#show_call_signatures = 0
+let g:jedi#show_function_definition = 0
+let g:jedi#popup_on_dot = 0
 " open the go-to function in split, not another buffer
 let g:jedi#use_splits_not_buffers = 'right'
 
@@ -185,7 +185,7 @@ function! PythonFromEnvironment(py2_sel, py3_sel)
 endfunction
 
 " for pyenv ...
-if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
+if exists('*pyenv#pyenv#is_enabled') 
     function! s:python_prefixes() abort " {{{
         if ! exists('*pyenv#pyenv#is_enabled()') || ! pyenv#pyenv#is_enabled()
             return []
@@ -199,7 +199,7 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
         endif
         return []
     endfunction " }}}
-    command! -nargs=0 PythonPrefixes call setreg('+', s:python_prefixes()[0])
+    command! -nargs=0 CopyPythonPrefixes call setreg('+', s:python_prefixes()[0])
     if exists('$PYENV_VIRTUAL_INIT')
         augroup pyvirtualenv
             autocmd!
@@ -210,9 +210,11 @@ if exists('*pyenv#pyenv#is_enabled') && pyenv#pyenv#is_enabled()
         if exists('*jedi#init_python') && jedi#init_python()
             let g:jedi#force_py_version='3'
         endif
-        " if active, 
-        if exists('*pyenv#pyenv#is_activated') && pyenv#pyenv#is_activated() && pyenv#python#get_external_major_version()
-            "pyenv#info#format('%iv') A version of the internal /usr/bin/python
+        " if active
+        if exists('*pyenv#pyenv#is_activated')
+                    \ && pyenv#pyenv#is_activated() 
+                    \ && pyenv#python#get_external_major_version()
+            " pyenv#info#format('%iv') A version of the internal /usr/bin/python
             if pyenv#python#get_internal_major_version() >= 2
                 let g:jedi#force_py_version=pyenv#python#get_internal_major_version()
             else 
@@ -253,7 +255,7 @@ endif
 "let g:deoplete#auto_complete_delay = 100
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
-"let g:deoplete#sources#jedi#show_docstring=1
+let g:deoplete#sources#jedi#show_docstring=1
 
 " let g:deoplete#sources#jedi#statement_length=linelen
 " call deoplete#custom#option({'auto_complete': v:false})
@@ -406,23 +408,26 @@ augroup  END
 " Gutter Error and warning signs.
 
 let g:ale_enabled=1
+" coc.nvim for lsp. 
+" "make sure :CocConfig diagnostic.displayByAle : true
+let g:ale_disable_lsp = 1
 let g:ale_virtualtext_prefix=' '
 " let g:ale_echo_delay=15
 let g:ale_hover_to_preview=0
 " preview window
-" let g:ale_virtualtext_delay=15
+let g:ale_virtualtext_delay=5
 let g:ale_sign_column_always=1
 let g:ale_set_balloons=1
 let g:ale_virtualtext_cursor=1
-" errors at cursor (in preview window)
+" curso errors in preview window
 let g:ale_echo_cursor=1
-" shows details for err i cure
+" shows details for err 
 let g:ale_cursor_detail=0
 
-let g:ale_lint_on_insert_leave = 1
+let g:ale_lint_on_insert_leave = 0
 let g:ale_close_preview_on_insert=0
 let g:ale_lint_on_enter = 1
-let g:ale_completion_enabled = 0
+let g:ale_completion_enabled = 1
 let g:ale_sign_error = '窱'
 let g:ale_sign_warning = '碌'
 
@@ -439,6 +444,7 @@ augroup LinterTypes
 autocmd!
 autocmd filetype python let b:ale_linters=['flake8']
 autocmd filetype vim let b:ale_linters = ['vimls', 'coc']
+autocmd filetype python let b:ale_fixers = {'python': ['black']}
 augroup END
 
 let g:ale_linters = { 
@@ -452,7 +458,7 @@ let g:ale_linters = {
             \ }
 
 " " Fix Python files with autopep8 and yapf.
-let g:ale_fixers = { 'python' : ['black' ],
+let g:ale_fixers = { 
             \ 'c' : ['clang-format', 'remove_trailing_lines'],
             \ 'lua' : ['trimwhitespace', 'remove_trailing_lines'],
             \ 'terraform' : ['terraform'],
@@ -779,4 +785,3 @@ let g:comfortable_motion_friction = 1.9
 let g:slime_target = "neovim"
 
 " { :set sw=2 ts=2 et }
-"

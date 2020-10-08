@@ -1,5 +1,5 @@
 {
-  "*/*": {
+  "*": {
     "Dockerfile*": {
       "make:": "docker build {}",
       "console": "docker run -f {} -- /bin/bash",
@@ -21,12 +21,15 @@
     "docs/*.txt": {
       "type": "doc"
     },
+    "README.md": {
+      "type": "readme"
+    },
     "test_*.py": {
       "type": "test",
       "alternate": "{}.py",
       "skeleton": "clickunittest"
     },
-    "*.py": {
+    "click_*.py": {
       "type": "source",
       "alternate": "test_{}.py",
       "skeleton": "clickcli"

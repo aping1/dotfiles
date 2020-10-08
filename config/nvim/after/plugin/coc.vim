@@ -27,21 +27,23 @@ if exists('*lsp#register_server')
     else
         echomsg "pyls is not available"
     endif
-    if executable('ccls')
-        au User lsp_setup call lsp#register_server({
-                    \ 'name': 'ccls',
-                    \ 'cmd': {server_info->['ccsl']},
-                    \ 'whitelist': ["c", "cpp", "objc", "objcpp"],
-                    \ })
-    else
-        echomsg "pyls is not available"
-    endif
+    "if executable('ccls')
+    "    au User lsp_setup call lsp#register_server({
+    "                \ 'name': 'ccls',
+    "                \ 'cmd': {server_info->['ccsl']},
+    "                \ 'whitelist': ["c", "cpp", "objc", "objcpp"],
+    "                \ })
+    "else
+    "    echomsg "pyls is not available"
+    "endif
 endif
 
 " Extensions. Some need configuration. 
 " coc-java needs a valid JVM filepath defined in coc-settings
 " coc-ccls needs ccls (available on aur)
 " coc-eslint needs eslint npm package installed globally
+" Note: 
+"   Moved /Users/aping1/.dotfiles/config/nvim/after/plugin/coc.vim|| 169
 " let g:coc_global_extensions = [
       " \'coc-html', 
       " \'coc-xml', 
@@ -80,47 +82,13 @@ endif
       " \'coc-utils'
       " \]
 
-let g:coc_global_extensions = [
-      \'coc-html', 
-      \'coc-xml', 
-      \'coc-java', 
-      \'coc-ccls', 
-      \'coc-vimlsp', 
-      \'coc-lua', 
-      \'coc-sql', 
-      \'coc-go', 
-      \'coc-css', 
-      \'coc-sh', 
-      \'coc-snippets',
-      \'coc-prettier',
-      \'coc-eslint',
-      \'coc-tsserver',
-      \'coc-docker',
-      \'coc-pairs',
-      \'coc-json',
-      \'coc-python',
-      \'coc-imselect',
-      \'coc-highlight',
-      \'coc-git',
-      \'coc-github',
-      \'coc-gitignore',
-      \'coc-emoji',
-      \'coc-lists',
-      \'coc-post',
-      \'coc-stylelint',
-      \'coc-yaml',
-      \'coc-template',
-      \'coc-utils'
-      \]
 
-augroup MyAutoCmd
+augroup after_coc
   autocmd!
   " Setup formatexpr specified filetype(s).
   autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
   " Update signature help on jump placeholder
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-" Highlight symbol under cursor on CursorHold
-autocmd CursorHold * if exists(':CocActionAsync') | silent call CocActionAsync('highlight') | endif
 augroup end
 
 """""""""""""""""
