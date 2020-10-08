@@ -7,7 +7,7 @@ let g:loaded_custom_functions=1
 " REQUIRED FOR LAZYG
 " Creates a floating window with a most recent buffer to be used
 function! CreateCenteredFloatingWindow()
-    let width = float2nr(&columns * 0.6)
+    let width = float2nr(&columns * 0.8)
     let height = float2nr(&lines * 0.6)
     let top = ((&lines - height) / 2) - 1
     let left = (&columns - width) / 2
