@@ -253,17 +253,14 @@ endif
 " let g:deoplete#auto_complete_delay = 10
 " Required for Semshi > 100
 "let g:deoplete#auto_complete_delay = 100
+" you need to enable deoplete for ale integration to work
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#go#gocode_binary=$GOPATH.'/bin/gocode'
-let g:deoplete#sources#jedi#show_docstring=1
+let g:deoplete#sources#jedi#show_docstring=0
 
 " let g:deoplete#sources#jedi#statement_length=linelen
-" call deoplete#custom#option({'auto_complete': v:false})
-autocmd FileType Python call deoplete#custom#source('_', 'sources', ['ale','coc']) | call deoplete#custom#option({'auto_complete_delay': 100})
-"deoplete#custom#option(
-"            \'{auto_complete': { '_', v:false}, 
-"            \ 'sources': ['ale'],
-"            \})
+"call deoplete#custom#option({'auto_complete': v:false})
+autocmd FileType Python call deoplete#custom#source('_', 'sources', ['ale']) | call deoplete#custom#option({'auto_complete_delay': 10})
 
 filetype plugin indent on
 syntax enable
@@ -286,7 +283,7 @@ set cmdheight=2
 "----------------------------------------------
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_auto_colors=0
-let g:indent_guides_guide_size = 2
+let g:indent_guides_guide_size = 4
 let g:indent_guides_start_level = 2
 
 
@@ -408,17 +405,21 @@ augroup  END
 " Gutter Error and warning signs.
 
 let g:ale_enabled=1
+let g:ale_completion_enabled=1
+let g:ale_completion_delay=0
 " coc.nvim for lsp. 
 " "make sure :CocConfig diagnostic.displayByAle : true
-let g:ale_disable_lsp = 1
+let g:ale_disable_lsp = -1
 let g:ale_virtualtext_prefix=' '
 " let g:ale_echo_delay=15
+" Preview will open a new split
 let g:ale_hover_to_preview=0
 " preview window
-let g:ale_virtualtext_delay=5
+"let g:ale_virtualtext_delay=0
 let g:ale_sign_column_always=1
 let g:ale_set_balloons=1
 let g:ale_virtualtext_cursor=1
+let g:ale_lint_on_text_changed="never"
 " curso errors in preview window
 let g:ale_echo_cursor=1
 " shows details for err 
@@ -445,6 +446,8 @@ autocmd!
 autocmd filetype python let b:ale_linters=['flake8']
 autocmd filetype vim let b:ale_linters = ['vimls', 'coc']
 autocmd filetype python let b:ale_fixers = {'python': ['black']}
+autocmd filetype python let b:ale_linters = ['flake8', 'vimls']
+autocmd filetype coffee let b:ale_linters = ['coffee']
 augroup END
 
 let g:ale_linters = { 

@@ -4,7 +4,10 @@ endif
 let g:loaded_custom_coc= 1
 
 " We'll use coc lsp
-let g:ale_disable_lsp = 1
+augroup PYONLY
+au FileType python let g:ale_disable_lsp = 1
+set complete-=t
+augroup END
 
 " for nvim lsp, for coc, we will use the install list
 if exists('*lsp#register_server')

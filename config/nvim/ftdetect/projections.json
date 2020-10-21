@@ -27,17 +27,17 @@
     "test_*.py": {
       "type": "test",
       "alternate": "{}.py",
-      "skeleton": "clickunittest"
+      "skeleton": "click_unittest"
     },
     "click_*.py": {
       "type": "source",
       "alternate": "test_{}.py",
-      "skeleton": "clickcli"
+      "skeleton": "click_command"
     },
     "setup.py": {
       "type": "setuptools",
-      "make": "python setup.py sdist bdist_wheel",
-      "skeleton": "setup"
+      "make": "python3 setup.py sdist bdist_wheel",
+      "skeleton": "python_setup"
     }
   }
 }

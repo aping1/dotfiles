@@ -192,6 +192,7 @@ if dein#load_state('~/.cache/dein')
                     \ 'branch': 'release',
                     \ 'build':  'yarn install --frozen-lockfile',
                     \ 'hook_post_source': 'let g:coc_global_extensions = [
+                    \"coc-python",
                     \"coc-neco",
                     \"coc-neoinclude",
                     \"coc-html",
@@ -210,7 +211,6 @@ if dein#load_state('~/.cache/dein')
                     \"coc-docker",
                     \"coc-pairs",
                     \"coc-json",
-                    \"coc-python",
                     \"coc-imselect",
                     \"coc-highlight",
                     \"coc-git",

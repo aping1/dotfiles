@@ -67,8 +67,8 @@ augroup END
 augroup IndentGuide
     " base 00
     autocmd!
-    autocmd VimEnter,Colorscheme * hi IndentGuidesOdd ctermbg=6 guibg=#353a44 ctermfg=16 guifg=#353a44
-    autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=4 guifg=#abb2bf ctermfg=16 guifg=#353a44
+    autocmd VimEnter,Colorscheme * hi IndentGuidesEven ctermbg=277 guibg=#282c34 ctermfg=16 guifg=#353a44
+    autocmd VimEnter,Colorscheme * hi IndentGuidesOdd ctermbg=grey guifg=#abb2bf ctermfg=16 guifg=#353a44
     "" Vim
     autocmd BufEnter,Colorscheme * call g:colors#set_colo_hi() |
                 \execute 'set colorcolumn='.b:linelen
