@@ -22,12 +22,12 @@ ZSHZ_DATA="${ZPFX}/z"
 pchf="${0:a:h}/patches"
 thmf="${0:a:h}/themes"
 GENCOMPL_FPATH="${0:a:h}/completions"
+# This colorizes alias that are available for your command
 FAST_ALIAS_TIPS_PREFIX="» $(tput setaf 6)"
 FAST_ALIAS_TIPS_SUFFIX="$(tput sgr0) «"
 
-
+ZSHZ_DEBUG=0
 # In FreeBSD, /home is /usr/home
-ZSHZ_DEBUG=1
 [[ $OSTYPE == freebsd* ]] && typeset -g ZSHZ_NO_RESOLVE_SYMLINKS=1
 
 # export CUSTOMIZEPKG_CONFIG="${HOME}/.config/customizepkg"
@@ -200,7 +200,14 @@ zstyle -e ':completion:*' hosts 'reply=()'
 
 zstyle ':completion:complete:*:options' sort false
 
-# change completion menu select Scroll distance
+# NOTE: zstyle ... menu= ...
+#  'yes' or 'true' or '1' or 'no' (negate) etc
+#    yes=# and/or yes=list|long-list # menu if larget than #, 
+#    and/or long if larget than scrte   
+#    select=# and/or select=list|long-list # menu with select optionif larget than #, 
+#    and/or long if larget than scrte   
+#
+# Change completion menu select Scroll distance
 # zstyle ':completion:*:default'  select-scroll=$(($(tput lines) / 2 + 1))
 
 # Ignore these functions when autocompleting
@@ -208,19 +215,24 @@ zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
 zstyle ':completion:*:manuals' separate-sections true
 zstyle ':completion:*:manuals.(^1*)' insert-sections true
 
-#https://github.com/ThiefMaster/zsh-config/blob/master/zshrc.d/completion.zsh
+# Reference: https://github.com/ThiefMaster/zsh-config/blob/master/zshrc.d/completion.zsh
 zstyle ':completion:*:*:cd:*:directory-stack' force-list always
 zstyle ':completion:*:*:cd:*:directory-stack' menu yes=interactive yes=16 select=long-list
 
 zstyle ':completion:*:*:git:*:option' menu select=interactive yes=interactive
 zstyle ':completion:*:*:ag:*:*' menu select=interactive yes=interactive
 
-# zstyle ... menu= ...
-#  'yes' or 'true' or '1' or 'no' (negate) etc
-#    yes=# and/or yes=list|long-list # menu if larget than #, 
-#    and/or long if larget than scrte   
-#    select=# and/or select=list|long-list # menu with select optionif larget than #, 
-#    and/or long if larget than scrte   
+# Better SSH/Rsync/SCP Autocomplete
+# from https://www.codyhiar.com/blog/zsh-autocomplete-with-ssh-config-file/
+zstyle ':completion:*:(scp|rsync):*' tag-order ' hosts:-ipaddr:ip\ address hosts:-host:host files'
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-host' ignored-patterns '*(.|:)*' loopback ip6-loopback localhost ip6-localhost broadcasthost
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-ipaddr' ignored-patterns '^(<->.<->.<->.<->|(|::)([[:xdigit:].]##:(#c,2))##(|%*))' '127.0.0.<->' '255.255.255.255' '::1' 'fe80::*'
+
+# Allow for autocomplete to be case insensitive
+# from https://www.codyhiar.com/blog/zsh-autocomplete-with-ssh-config-file/
+zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
+  '+l:|?=** r:|?=**'
+
 #
 zstyle ':completion:*:*:*:*:file' menu select=interactive yes=long-list
 # Prettier completion for processes

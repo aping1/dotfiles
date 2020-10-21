@@ -11,7 +11,7 @@ typeset -g ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
 typeset -g ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 # ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Red
-typeset -g ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=1,underline"
+typeset -g ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#4f3f3f,underline"
 typeset -g ZSH_AUTOSUGGEST_USE_ASYNC="y"
 
 typeset -ga ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=("${ZSH_AUTOSUGGEST_ACCEPT_WIDGETS[@]/forward-char}")
