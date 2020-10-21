@@ -110,7 +110,7 @@ function __required_sbin()  {
         multisrc'{init.zsh,*/init.zsh}' from'null' \
         _local/fbtools \
         as'null' id-as'Osxalias' bpick'*Darwin*' nocd nocompile \
-        atload'(( $+command[_darwin_aliases] )) && _darwin_aliases' \
+        atload'(( $+functions[_darwin_aliases] )) && _darwin_aliases' \
         zdharma/null
 }
 
@@ -291,6 +291,8 @@ if [ ! $TERM = dumb ]; then
         has'systemctl' \
         OMZP::systemd/systemd.plugin.zsh \
         bpick'*linux*' atinit'alias open='\''xdg-open'\' \
+        zdharma/null \
+        bpick'*darwin*' atinit'unalias open' \
         zdharma/null \
         bpick'*darwin*' \
         load'[[ $TERM_PROGRAM == iTerm.app ]]' \

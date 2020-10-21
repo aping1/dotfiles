@@ -37,9 +37,11 @@ function ls () {
 }
 
 function ipython_bootstrap () {
+    print -- "This does not load ipython default_profile you can use ipy" >&2
     python -c 'import IPython; IPython.embed(colors="Linux")'
 }
 function ipython3_bootstrap () {
+    print -- "This does not load ipython default_profile. you can use ipy3" >&2
     python3 -c 'import IPython; IPython.embed(colors="Linux")'
 }
 
@@ -72,9 +74,12 @@ function _darwin_aliases () {
     alias system_lock="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
     alias flushdns='sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder'
 
+    alias ql='qlmanage -p'
     alias vmware-dhcp-restart='sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --configure && \
     sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop && \
     sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start'
+    typeset -g _DARWIN_ALIASES
+    unset -f _darwin_aliases
 }
 
 alias ztimes='zinit times'
