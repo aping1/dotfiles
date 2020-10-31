@@ -1,46 +1,46 @@
-[[plugins]]
-repo = 'mhinz/vim-startify'
-on_cmd = 'Startify'
-depends = 'vim-devicons'
-hook_source='''
-function! s:filter_header(lines) abort
-let longest_line   = max(map(copy(a:lines), 'strwidth(v:val)'))
-let centered_lines = map(copy(a:lines),
-    \ 'repeat(" ", (&columns / 2) - (longest_line / 2)) . v:val')
-return centered_lines
-endfunction
-let g:startify_custom_header = s:filter_header(startify#fortune#cowsay())
-'''
 
 [[plugins]]
 repo= 'yuki-ycino/fzf-preview.vim'
 depends='coc.nvim'
 rev = 'release'
 hook_post_update = '''
-CocInstall coc-fzf-preview | FzfPreviewInstall
+FzfPreviewInstall
 '''
 
 [[plugins]]
 repo='jsfaint/coc-neoinclude'
-depends='coc.nvim'
+depends=['coc.nvim','Shougo/neoinclude.vim']
+
+[[plugins]]
+depends=['coc.nvim', 'neco-vim']
+repo='neoclide/coc-neco'
+on_ft='vim'
+hook_post_update = '''
+try
+  coc#util#install()
+catch /.*/
+echomsg "coc-neco failed"
+endtry
+'''
 
 [[plugins]]
 repo= 'neoclide/coc-snippets'
 depends='coc.nvim'
+hook_post_source = '''
+try
+    CocInstall coc-snippets
+catch /.*/
+  echomsg "coc-snippets failed"
+endtry
+'''
 
 [[plugins]]
 repo= 'neoclide/coc-highlight'
 depends='coc.nvim'
-
-[[plugins]]
-repo = 'neoclide/coc-neco'
-depends = ['coc.nvim','neco-vim']
-on_ft = 'vim'
-
-[[plugins]]
-repo='Maxattax97/coc-ccls'
-build='yarn install --frozen-lockfile'
-
-[[plugins]]
-repo = 'Shougo/neco-vim'
-on_ft = 'vim'
+hook_post_source = '''
+try
+    CocInstall coc-highlight
+catch /.*/
+    echomsg "CocInstall coc-highlight failed"
+endtry
+'''

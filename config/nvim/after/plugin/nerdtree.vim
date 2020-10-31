@@ -28,6 +28,7 @@ augroup END
 function! NERDTreeYankCurrentNode()
     let n = g:NERDTreeFileNode.GetSelected()
     if n != {}
+        " see h:registers"
         call setreg('=', n.path.str())
         call setreg('+', n.path.str())
     endif

@@ -1,12 +1,7 @@
 
-
-snippet click.o "click.option decorator" b
-@click.option(${1:opt},(`!p
-if snip.indent:
-	snip.rv = 'self' + (", " if len(t[2]) else "")`${2:arg1}):
-	${5:${VISUAL:pass}}
+snippet clicko "click.option decorator" b
+@click.option("-$2")
 endsnippet
-
 
 snippet flaskunittest
 import os
@@ -19,16 +14,16 @@ from flask import flask
 
 @pytest.fixture
 def client():
-    db_fd, flaskr.app.config['$1'] = tempfile.mkstemp()
-    flaskr.app.config['$2'] = True
+    db_fd, flask.app.config['$1'] = tempfile.mkstemp()
+    flask.app.config['$2'] = True
 
-    with flaskr.app.test_client() as client:
-        with flaskr.app.app_context():
-            flaskr.init_db()
+    with flask.app.test_client() as client:
+        with flask.app.app_context():
+            flask.init_db()
         yield client
 
     os.close(db_fd)
-    os.unlink(flaskr.app.config['$1'])
+    os.unlink(flask.app.config['$1'])
 endsnippet
 
 snippet _unittest
@@ -50,38 +45,120 @@ if __name__ == '__main__':
     unittest.main()
 endsnippet
 
-snippet _clicksetuptools
+
+snippet simple_clicksetuptools
 from setuptools import setup
 
+# NOTE: you can use the _python_setup snippet for a more robust example
 setup(
-    name="${2:name}",
+    name="${1:name}",
     version='0.1',
-    py_modules=['${1:module}'],
+    py_modules=['${3:${1/\w+/\L$1\E/}}'],
     install_requires=[
         'Click',
     ],
     entry_points='''
         [console_scripts]
-        myhello=hello:cli
+        ${2/[[:graph:]]+/\L$1\E/}=${4/\w+/\u$3/}:cli
     ''',
 )
 endsnippet
 
-snippet _clickcli "Click CLI template" b
-import click
+snippet clickgroup "Click CLI template" b
+import click_completion
+import click_completion.core
+click_completion.init()
+
+
+def completions(ctx, args, incomplete):
+    pass
+
+
+@click.group(
+    name="${3:`!v expand("%:t:r")`}",
+    subcommand_metavar="COMMAND <args>",
+    options_metavar="<options>",
+    context_settings=dict(max_content_width=85, help_option_names=["-h", "--help"]),
+)
+@click.version_option(
+    version=__version__,
+    prog_name="$3",
+    message="[%(prog)s] Version %(version)s",
+    help=f"Usage: v{__version__}.",
+)
+@click.option(
+    "--filename",
+    "-f",
+    type=click.STRING,
+	default='-',
+    autocompletion=completions(),
+    help="Filename you would like to load"
+)
+@click.option("--verbose", "-v", is_flag=True, help="Print verbose messages.")
+@click.pass_context
+def cli(ctx, filename, verbose):
+    ctx.obj.filename = filename
+    ctx.obj.verbose = verbose
 
 @click.command()
-@click.option('--verbose', is_flag=True, help="Will print verbose messages.")
-@click.option('--name', '-n', multiple=True, default='', help='Who are you?')
-@click.password_option()
-def cli(verbose,name, password):
-    """This is an example script to learn Click."""
-    if verbose:
+${2:clicko
+}@click.option('--verbose', is_flag=True, help="Will print verbose messages.")
+def cli(ctx, ${1:${VISUAL}} verbose):
+    """cli for $3"""
+    ${5:pass
+    }
+
+if __name__ == "__main__":
+    class ${6:ConfigContext}:
+        def __init__(self):
+            """things you want to inherit"""
+            self.filename = None
+            self.verbose = None
+
+    cli(obj=${6}())
+endsnippet
+
+global !p
+def create_row_placeholders(snip):
+    # retrieving single line from current string and treat it like tabstops
+    # count
+    placeholders_amount = int(snip.buffer[snip.line].strip())
+
+    # erase current line
+    snip.buffer[snip.line] = ''
+
+    # create anonymous snippet with expected content and number of tabstops
+    anon_snippet_body =  '& '.join(['$' + str(i+1)
+                                    for i in range(placeholders_amount)])
+
+    # expand anonymous snippet
+    snip.expand_anon(anon_snippet_body)
+endglobal
+
+post_jump "create_row_placeholders(snip)"
+snippet "tr(\d+)" "latex table row variable" br
+`!p snip.rv = match.group(1)`
+
+endsnippet
+
+snippet _click_command "Single command Click CLI template" b
+import click
+${4:
+}
+__version__ = "0.1"
+@click.command()
+${2:
+}@click.option('--verbose', is_flag=True, help="Will print verbose messages.")
+def cli(ctx, 
+	${5:${VISUAL:pass}}
+
+
+${1:${VISUAL}} verbose):
+    """Click cli for ${3:myprogram}"""
+    ${5:if verbose:
         click.echo("We are in the verbose mode.")
-    click.echo("Hello World")
-    for n in name:
-        click.echo('Bye {0}'.format(n))
-    click.echo('We received {0} as password.'.format(password))
+    click.echo("Hello World")}
+
 
 if __name__ == "__main__":
 	cli()
@@ -121,7 +198,7 @@ if __name__ == "__main__":
     unittest.main()
 endsnippet
 
-snippet _setup "Setup.py minimal ish" b
+snippet _python_setup "Setup.py minimal ish" b
 # #!/usr/bin/python
 # `!v expand("%:t:r")`
 # Template from
@@ -194,7 +271,7 @@ def find_meta(meta):
 
 if __name__ == "__main__":
     setup(
-        name=${1:name},
+        name="${1:MyApp}",
         description=find_meta("description"),
         use_scm_version=True,
         setup_requires=['setuptools_scm'],
@@ -215,7 +292,7 @@ if __name__ == "__main__":
         install_requires=INSTALL_REQUIRES,
         entry_points='''
             [console_scripts]
-            myhello=hello:cli
+            ${2:$1}=$3:cli
         ''',
         options={"bdist_wheel": {"universal": "1"}},
     )

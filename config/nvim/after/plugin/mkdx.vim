@@ -50,9 +50,9 @@ let g:mkdx#settings = { 'checkbox': { 'toggles': [' ', '-', 'x'] } }
 " Plugin'tpope/vim-markdown'
 "----------------------------------------------
 let g:markdown_fenced_languages = [
-            \ 'vim',
             \ 'help',
             \ 'html',
+            \ 'cpp',
             \ 'css',
             \ 'coffee',
             \ 'scss',

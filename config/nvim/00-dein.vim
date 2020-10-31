@@ -21,15 +21,31 @@ if dein#load_state('~/.cache/dein')
         call dein#add('mhinz/vim-startify')
     endtry
 
+    try
+        " For more info on TOML and moving plugins...
+        " https://github.com/Shougo/dein.vim/blob/aa1da8e43b74c109c49281998eab0e148dc042b2/doc/dein.txt
+        let s:toml = '~/.config/nvim/plugins.toml'
+        call dein#load_toml(s:toml, {'lazy': 0})
+    catch /.*/
+        echoerr v:exception
+        echomsg 'Error loading ...'
+        echomsg 'Caught: ' v:exception
+        echoerr 'error ' . s:toml . 'config'
+    endtry
+
     call dein#add('puremourning/vimspector',
                 \ {'hook_post_update': 'VimspectorInstall --enable-python'}
                 \ )
+
     " Dynamic resize quickfix window
     call dein#add('blueyed/vim-qf_resize')
     call dein#add('sheerun/vim-polyglot')
 
     " --- Sesnible defaults ---
     call dein#add('tpope/vim-sensible')
+    " ds, cs, and yss
+    call dein#add('tpope/vim-surround')
+    call dein#add('tpope/vim-repeat')
 
     call dein#add('stefandtw/quickfix-reflector.vim')
     " --- TMUX Integration ctrl-hjkl % copy/paste
@@ -114,7 +130,7 @@ if dein#load_state('~/.cache/dein')
     endif
     " Tools for repl
     call dein#add('Vigemus/impromptu.nvim')
-    " Lua python
+    " Lua framework for quick menus
     call dein#add('Vigemus/iron.nvim')
     call dein#add('jpalardy/vim-slime',
                 \{'on_ft':['python', 'ipython']})
@@ -186,7 +202,6 @@ if dein#load_state('~/.cache/dein')
     " if !has('nvim')
     if has('nvim')
         call dein#add('Shougo/context_filetype.vim')
-        call dein#add('Shougo/neoinclude.vim')
         call dein#add('ncm2/float-preview.nvim')
         call dein#add('neoclide/coc.nvim', {
                     \ 'branch': 'release',
@@ -205,8 +220,8 @@ if dein#load_state('~/.cache/dein')
                     \"coc-css",
                     \"coc-sh",
                     \"coc-snippets",
+                    \"coc-neoinclude",
                     \"coc-prettier",
-                    \"coc-eslint",
                     \"coc-tsserver",
                     \"coc-docker",
                     \"coc-pairs",
@@ -226,12 +241,16 @@ if dein#load_state('~/.cache/dein')
                     \ ]',
                     \ 'hook_post_update': 'call dein#build("coc.nvim") | call coc#util#install()'
                     \ })
+        call dein#add('Maxattax97/coc-ccls', {
+                    \ 'branch': 'release',
+                    \ 'build':  '''existing=~/.config/coc/extensions/node_modules/coc-ccls/node_modules/ws/lib/extension.js; missing=~/.config/coc/extensions/node_modules/coc-ccls/lib/extension.js; command -v gln && LN=gln; [[ -e "$existing" && ! -e "$missing" ]] && mkdir -p "$(dirname "$missing")" && { ${LN:-ln} -rs "$existing" "$missing" 2>/dev/null || ${LN} -s "$existing" "$missing";}''',
+                    \ 'hook_post_update': 'call dein#build("coc-ccls") coc#util#install()'})
         call dein#add('Shougo/deoplete.nvim',
-                    \{ 'hook_post_update': ':UpdateRemotePlugins'})
+                    \{ 'hook_post_update': 'UpdateRemotePlugins'})
         call dein#add('zchee/deoplete-jedi',
                     \{'on_ft':['python', 'ipython'],
                     \'depends': ['deoplete.nvim', 'jedi-vim'], 
-                    \'hook_post_update': ':UpdateRemotePlugins',
+                    \'hook_post_update': 'UpdateRemotePlugins',
                     \'install': 'git submodule update --init'
                     \})
         " required for ZSH Autocomplete
@@ -251,9 +270,9 @@ if dein#load_state('~/.cache/dein')
     call dein#add('maximbaz/lightline-ale')
 
     call dein#add('numirias/semshi',
-                \{'hook_post_update': ':UpdateRemotePlugins'})
+                \{'hook_post_update': 'UpdateRemotePlugins'})
 
-    call dein#add('gu-fan/riv.vim')
+    call dein#add('gu-fan/riv.vim', {'on_ft': ['rst']})
     call dein#add('mtdl9/vim-log-highlighting')
     call dein#add('jez/vim-superman') " Man pages
     " vim-json fork that has better highlighting and conceal quote
@@ -270,7 +289,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('ekalinin/Dockerfile.vim',
                 \ {'on_ft': ['dockerfile']})
     call dein#add('towolf/vim-helm', {'on_ft': ['helm']})
-    call dein#add('kchmck/vim-coffee-script')
+    call dein#add('kchmck/vim-coffee-script', {'on_ft': ['coffee']})
 
     " --- management
     call dein#add('kevinhui/vim-docker-tools')

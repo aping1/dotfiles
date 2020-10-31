@@ -65,6 +65,14 @@ if !exists('g:copypath_copy_to_unnamed_register')
 endif
 
 function CopyPath()
+    if match(expand('%'), '^NERD_tree_') == 0 && exists("*g:NERDTreeFileNode.GetSelected")
+        let l:name = g:NERDTreeFileNode.GetSelected()
+        if l:name != {}
+            let @*=l:name.path.str()
+            return
+        endif
+    endif
+ 
     let @*=expand('%:p')
     " copy unnamed register.
     if g:copypath_copy_to_unnamed_register

@@ -115,6 +115,7 @@ set background=dark
 
 " Add the dein installation directory into runtimepath
 set runtimepath+=~/.zsh/zinit/plugins/Shougo---dein.vim
+source ~/.zsh/zinit/plugins/junegunn---fzf_master/plugin/fzf.vim
 
 " Contains dein snippet
 let g:dein_file=(expand('<sfile>:p:h') . '/00-dein.vim')
@@ -360,12 +361,10 @@ endif
 "----------------------------------------------
 let g:vimwiki_list = [{
             \ 'path': '~/Dropbox/wiki',
-            \ 'nested_syntaxes': {'python': 'python', 'c++': 'cpp'},
             \ 'syntax': 'markdown',
-            \ 'ext': '.md'
+            \ 'ext': '.wiki'
             \ },{
-            \ 'path': '~/code,',
-            \ 'nested_syntaxes': {'python': 'python', 'c++': 'cpp'},
+            \ 'path': '~/code/github,',
             \ 'index': 'readme',
             \ 'syntax': 'markdown',
             \ 'ext': '.md'
@@ -432,6 +431,7 @@ let g:ale_completion_enabled = 1
 let g:ale_sign_error = '窱'
 let g:ale_sign_warning = '碌'
 
+set completeopt-=preview
 " Auto import with typescript`
 let g:ale_completion_tsserver_autoimport = 1
 let g:ale_python_pyls_use_global=1
@@ -636,8 +636,12 @@ let test#python#patterns = {
             \ 'namespace': ['\v^\s*class (\w+)'],
             \}
 
+" When writing a buffer (no delay), and on normal mode changes (after 750ms).
+call neomake#configure#automake('nw', 750)
 
 let g:neomake_python_enabled_makers = []
+let g:neomake_jsx_enabled_makers= []
+let g:neomake_javascript_enabled_makers= []
 "let g:neomake_python_flake8_maker = {
 "  \ 'exe': 'python3',
 "  \ 'args': ['--format=default'],
@@ -651,7 +655,10 @@ let g:neomake_python_enabled_makers = []
 
 " When reading a buffer (after 1s), and when writing (no delay).
 " call neomake#configure#automake('rw', 1000)
-" call neomake#configure#automake('nrw', 500)
+augroup THISTIS
+autocmd!
+autocmd filetype applescript call neomake#configure#automake('w', 500) 
+augroup END
 let g:neomake_open_list = 2
 "let g:neomake_enabled_makers = { 'python': [] }
 "let b:neomake_python_enabled_makers = []

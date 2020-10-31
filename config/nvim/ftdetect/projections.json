@@ -1,4 +1,16 @@
 {
+  "/Users/aping1/Library/Application Support/Übersicht/widgets/*": {
+    "*index.jsx" : {
+      "type": "source",
+      "skeleton": "ubersicht_widget",
+      "alternate": "/U{}some_script.applescript"
+    },
+    "*some_script.applescript" : {
+      "type": "source",
+      "skeleton": "json_applescript",
+      "alternate": "/U{}index.jsx"
+    }
+  },
   "*": {
     "Dockerfile*": {
       "make:": "docker build {}",
@@ -18,11 +30,13 @@
     "autoload/*.vim": {
       "type": "autoload"
     },
-    "docs/*.txt": {
-      "type": "doc"
-    },
     "README.md": {
-      "type": "readme"
+      "type": "readme",
+      "skeleton" : "readme"
+    },
+    "*.applescript": {
+      "make": "osacompile -o {}.scpt {}.applescript",
+      "start":"osascript {}.applescript"
     },
     "test_*.py": {
       "type": "test",

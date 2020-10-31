@@ -2,29 +2,52 @@
     "title": "skhdrc",
     "rules": [
         {
-            "description": "cmd - return | /Applications/Kitty.app/Contents/MacOS/kitty --single-instance -d ~ #open terminal",
+            "description": "shift + alt - r | HUP | launchctl kickstart -k \"gui/${UID}/homebrew.mxcl.yabai\"",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command"
+                                "left_shift",
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
                             ]
                         },
-                        "key_code": "return"
+                        "key_code": "r"
                     },
                     "to_if_alone": {
-                        "shell_command": "/usr/local/bin//Applications/Kitty.app/Contents/MacOS/kitty --single-instance -d ~"
+                        "shell_command": "/usr/local/bin/launchctl kickstart -k \"gui/${UID}/homebrew.mxcl.yabai\""
                     }
                 }
             ]
         },
         {
-            "description": "alt - h | MOVE WINDOW | -m window --focus west #focus window",
+            "description": "alt - r | rotate windows ",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "r"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m space --rotate 90"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "FOCUS WINDOW | alt - h |  -m window --focus west #focus window",
             "manipulators": [
                 {
                     "type": "basic",
@@ -46,7 +69,7 @@
             ]
         },
         {
-            "description": "alt - j | MOVE WINDOW | -m window --focus south",
+            "description": "FOCUS WINDOW | alt - j | -m window --focus south",
             "manipulators": [
                 {
                     "type": "basic",
@@ -68,7 +91,7 @@
             ]
         },
         {
-            "description": "alt - k | MOVE WINDOW | -m window --focus north",
+            "description": "FOCUS WINDOW | alt - k | -m window --focus north",
             "manipulators": [
                 {
                     "type": "basic",
@@ -90,7 +113,7 @@
             ]
         },
         {
-            "description": "alt - l | MOVE WINDOWS | -m window --focus east",
+            "description": "FOCUS WINDOWS | alt - l | -m window --focus east",
             "manipulators": [
                 {
                     "type": "basic",
@@ -107,6 +130,166 @@
                     },
                     "to_if_alone": {
                         "shell_command": "/usr/local/bin/yabai -m window --focus east"
+                    }
+                }
+            ]
+        },
+        {
+           "description": "MOVE WINDOWS disp | alt - n | move window to next display and follow",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "n"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --display next; yabai -m display --focus next"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "MOVE WINDOW SPACES | shift + alt - n |  # create desktop, move window and follow focus",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_shift",
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "n"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m space --create && id=$(yabai -m query --displays --display | jq '.spaces | max') &&  yabai -m window --space ${id:-1} &&  yabai -m space --focus ${id:-1}"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "MOVE WINDOW space | shift + alt - p |  Move window to prev space",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_shift",
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "p"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --space prev"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "MOVE WINDOW disp | shift + alt - x |  # send window to recent display and follow focus",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_option",
+                                "left_shift"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "x"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --display recent; yabai -m display --focus recent"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "MOVE WINDOWS space| alt - x |  # send window to recent space",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_shift",
+                                "left_command"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "x"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --space recent"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "MOVE WINDOW space | cmd + alt - n |  Move window to next space and follow ",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_command",
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "n"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --space next"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "shift + alt - x |  MOVE WIN -> DISP | follow window recent monitor",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_option",
+                                "left_shift"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "x"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --display recent; yabai -m display --focus recent"
                     }
                 }
             ]
@@ -300,54 +483,7 @@
             ]
         },
         {
-            "description": "cmd + alt - n |  # create desktop, move window and follow focus",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_option",
-                                "left_command"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "n"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --create && id=$(yabai -m query --displays --display | jq '.spaces | max') &&  yabai -m window --space ${id:-1} &&  yabai -m space --focus ${id:-1}"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + opt + shift - n | move window to next display and follow",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option",
-                                "left_shift"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "n"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --display next; yabai -m display --focus next"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - p | SIP |  yabai -m space --focus prev",
+            "description": "cmd + alt - n | SIP |  yabai -m space --focus next",
             "manipulators": [
                 {
                     "type": "basic",
@@ -370,14 +506,13 @@
             ]
         },
         {
-            "description": "cmd + alt - 1 | -m space --focus 1",
+            "description": "alt - 1 | -m space --focus 1",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
                                 "left_option"
                             ],
                             "optional": [
@@ -393,14 +528,13 @@
             ]
         },
         {
-            "description": "cmd + alt - 2 | -m space --focus 2",
+            "description": "alt - 2 | -m space --focus 2",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
                                 "left_option"
                             ],
                             "optional": [
@@ -416,14 +550,13 @@
             ]
         },
         {
-            "description": "cmd + alt - 3 | -m space --focus 3",
+            "description": "alt - 3 | -m space --focus 3",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
                                 "left_option"
                             ],
                             "optional": [
@@ -439,14 +572,13 @@
             ]
         },
         {
-            "description": "cmd + alt - 4 | -m space --focus 4",
+            "description": "alt - 4 | -m space --focus 4",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
                                 "left_option"
                             ],
                             "optional": [
@@ -462,14 +594,13 @@
             ]
         },
         {
-            "description": "cmd + alt - 5 | -m space --focus 5",
+            "description": "alt - 5 | -m space --focus 5",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
                                 "left_option"
                             ],
                             "optional": [
@@ -485,14 +616,13 @@
             ]
         },
         {
-            "description": "cmd + alt - 6 | -m space --focus 6",
+            "description": "alt - 6 | -m space --focus 6",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
                                 "left_option"
                             ],
                             "optional": [
@@ -508,14 +638,13 @@
             ]
         },
         {
-            "description": "cmd + alt - 7 | -m space --focus 7",
+            "description": "alt - 7 | -m space --focus 7",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
                                 "left_option"
                             ],
                             "optional": [
@@ -531,14 +660,13 @@
             ]
         },
         {
-            "description": "cmd + alt - 8 | -m space --focus 8",
+            "description": "alt - 8 | -m space --focus 8",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
                                 "left_option"
                             ],
                             "optional": [
@@ -554,14 +682,13 @@
             ]
         },
         {
-            "description": "cmd + alt - 9 | -m space --focus 9",
+            "description": "alt - 9 | -m space --focus 9",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
                                 "left_option"
                             ],
                             "optional": [
@@ -577,214 +704,7 @@
             ]
         },
         {
-            "description": "cmd + alt - 1 | -m space --focus 1",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "1"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --focus 1"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - 2 | -m space --focus 2",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "2"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --focus 2"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - 3 | REQ SIP | -m space --focus 3",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "3"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --focus 3"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - 4 | REQ SIP | -m space --focus 4",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "4"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --focus 4"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - 5 | REQ SIP | -m space --focus 5",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "5"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --focus 5"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - 6 | REQ SIP | -m space --focus 6",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "6"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --focus 6"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - 7 | REQ SIP | -m space --focus 7",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "7"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --focus 7"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - 8 | REQ SIP | -m space --focus 8",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "8"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --focus 8"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - 9 | REQ SIP | -m space --focus 9",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "9"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --focus 9"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - x |  # send window to recent space",
+            "description": "shift + alt - 1 |  # Send window to space 1",
             "manipulators": [
                 {
                     "type": "basic",
@@ -792,30 +712,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_command"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "x"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --space recent"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "shift + cmd - 1 |  # Send window to space 1",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_command"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -830,7 +727,7 @@
             ]
         },
         {
-            "description": "shift + cmd - 2 |  # Send window to space 2",
+            "description": "shift + alt - 2 |  # Send window to space 2",
             "manipulators": [
                 {
                     "type": "basic",
@@ -838,7 +735,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_command"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -853,7 +750,7 @@
             ]
         },
         {
-            "description": "shift + cmd - 3 |  # Send window to space 3",
+            "description": "shift + alt - 3 |  # Send window to space 3",
             "manipulators": [
                 {
                     "type": "basic",
@@ -861,7 +758,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_command"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -876,7 +773,7 @@
             ]
         },
         {
-            "description": "shift + cmd - 4 |  # Send window to space 4",
+            "description": "shift + alt - 4 |  # Send window to space 4",
             "manipulators": [
                 {
                     "type": "basic",
@@ -884,7 +781,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_command"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -899,7 +796,7 @@
             ]
         },
         {
-            "description": "shift + cmd - 5 |  # Send window to space 5",
+            "description": "shift + alt - 5 |  # Send window to space 5",
             "manipulators": [
                 {
                     "type": "basic",
@@ -907,7 +804,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_command"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -922,7 +819,7 @@
             ]
         },
         {
-            "description": "shift + cmd - 6 | # Send window to space 6 ",
+            "description": "shift + alt - 6 | # Send window to space 6 ",
             "manipulators": [
                 {
                     "type": "basic",
@@ -930,7 +827,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_command"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -945,7 +842,7 @@
             ]
         },
         {
-            "description": "shift + cmd - 7 | # Send window to space 7 ",
+            "description": "shift + alt - 7 | # Send window to space 7 ",
             "manipulators": [
                 {
                     "type": "basic",
@@ -953,7 +850,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_command"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -968,7 +865,7 @@
             ]
         },
         {
-            "description": "shift + cmd - 8 |  # Send window to space 8",
+            "description": "shift + alt - 8 |  # Send window to space 8",
             "manipulators": [
                 {
                     "type": "basic",
@@ -976,7 +873,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_command"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -991,7 +888,7 @@
             ]
         },
         {
-            "description": "shift + cmd - 9 |  # Send window to space 9",
+            "description": "shift + alt - 9 |  # Send window to space 9",
             "manipulators": [
                 {
                     "type": "basic",
@@ -999,7 +896,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_command"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1014,31 +911,7 @@
             ]
         },
         {
-            "description": "shift + alt + cmd - 0 |  # Send window to space 10",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_option",
-                                "left_command"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "0"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --space 10"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt - down | RECENT DISPLAY | -m display --focus recent #focus monitor",
+            "description": "ctrl + alt - n | -m display --focus next",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1052,30 +925,7 @@
                                 "caps_lock"
                             ]
                         },
-                        "key_code": "down_arrow"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m display --focus recent"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt - right | -m display --focus prev",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "right_arrow"
+                        "key_code": "n"
                     },
                     "to_if_alone": {
                         "shell_command": "/usr/local/bin/yabai -m display --focus prev"
@@ -1107,148 +957,7 @@
             ]
         },
         {
-            "description": "ctrl + alt - 2 | -m display --focus 2",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "2"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m display --focus 2"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt - 3 | -m display --focus 3",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "3"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m display --focus 3"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt + shift - x |  # send window to recent display and follow focus",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_option",
-                                "left_shift",
-                                "left_command"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "x"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --display recent; yabai -m display --focus recent"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt + shift - n |  Move window to prev space and follow ",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "n"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --space prev"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt - n |  Move window to prev space and follow ",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "n"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --space next"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt + shift - . |  MOVE WIN -> DISP | follow window previous monitor",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_option",
-                                "left_command",
-                                "left_shift"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "."
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --display prev; yabai -m display --focus prev"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + cmd + shift - 1 | MOVE WIN -> DISP ",
+            "description": "ctrl + cmd + shift - 1 | MOVE WIN -> DISP 1",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1272,7 +981,30 @@
             ]
         },
         {
-            "description": "ctrl + cmd + shift - 2 |  MOVE WIN -> DISP 2",
+            "description": "ctrl + alt - 2 | -m display --focus 2",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_control",
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "2"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m display --focus 1"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "ctrl + alt + shift - 2 |  MOVE WIN -> DISP 2",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1281,7 +1013,7 @@
                             "mandatory": [
                                 "left_control",
                                 "left_shift",
-                                "left_command"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1319,7 +1051,7 @@
             ]
         },
         {
-            "description": "shift + ctrl - a | -m window --move rel:-20:0 #move window",
+            "description": "shift + alt - a | -m window --move rel:-20:0 #move window",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1327,7 +1059,7 @@
                         "modifiers": {
                             "mandatory": [
                                 "left_shift",
-                                "left_control"
+                                "left_option"
                             ],
                             "optional": [
                                 "caps_lock"
@@ -1342,7 +1074,7 @@
             ]
         },
         {
-            "description": "shift + ctrl - s | -m window --move rel:0:20",
+            "description": "shift + alt - s | -m window --move rel:0:20",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1365,7 +1097,7 @@
             ]
         },
         {
-            "description": "shift + ctrl - w | -m window --move rel:0:-20",
+            "description": "shift + alt - w | -m window --move rel:0:-20",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1388,7 +1120,7 @@
             ]
         },
         {
-            "description": "shift + ctrl - d | -m window --move rel:20:0",
+            "description": "shift + alt - d | -m window --move rel:20:0",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1411,290 +1143,13 @@
             ]
         },
         {
-            "description": "shift + alt - a | -m window --resize left:-20:0 #increase window size",
+            "description": "cmd + alt - v | -m space --mirror y-axis #mirror tree y-axis",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_shift",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "a"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --resize left:-20:0"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "shift + alt - s | -m window --resize bottom:0:20",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "s"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --resize bottom:0:20"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "shift + alt - w | -m window --resize top:0:-20",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "w"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --resize top:0:-20"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "shift + alt - d | -m window --resize right:20:0",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "d"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --resize right:20:0"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "shift + cmd - a | -m window --resize left:20:0 #decrease window size",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_command"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "a"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --resize left:20:0"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "shift + cmd - s | -m window --resize bottom:0:-20",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_command"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "s"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --resize bottom:0:-20"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "shift + cmd - w | -m window --resize top:0:20",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_command"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "w"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --resize top:0:20"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "shift + cmd - d | -m window --resize right:-20:0",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_command"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "d"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --resize right:-20:0"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt - h | -m window --insert west #set insertion point in focused container",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "h"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --insert west"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt - j | -m window --insert south",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "j"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --insert south"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt - k | -m window --insert north",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "k"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --insert north"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt - l | -m window --insert east",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "l"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --insert east"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt + shift - 0 | -m space --balance #balance size of windows",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
                                 "left_command",
                                 "left_option"
                             ],
@@ -1702,16 +1157,197 @@
                                 "caps_lock"
                             ]
                         },
-                        "key_code": "0"
+                        "key_code": "v"
                     },
                     "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --balance"
+                        "shell_command": "/usr/local/bin/yabai -m space --mirror y-axis"
                     }
                 }
             ]
         },
         {
-            "description": "alt - r | -m space --rotate 90 #rotate tree",
+            "description": "alt - z | WINDOW TOGGLE | -m window --toggle zoom-fullscreen",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "z"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --toggle zoom-fullscreen"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "shift + alt - z | -m space --toggle {padding,gap} | # Zoom all (toggle desktop offset)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_shift",
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "z"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m space --toggle padding; yabai -m space --toggle gap"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "shift + alt - . | WINDOW | picture-in-picture this window",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_option",
+                                "left_shift"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "period"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --toggle sticky && yabai -m window --grid 5:5:4:0:1:1"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "alt - .| WINDOW | -m window --toggle zoom-parent #toggle window parent zoom",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "period"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --toggle zoom-parent"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "alt - t | WINDOW TOGGLE | float / unfloat window and center on screen",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "t"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --toggle float; yabai -m window --grid 4:4:1:1:2:2"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "alt + s | WINDOW TOGGLE | -m window --toggle sticky #toggle sticky",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "s"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --toggle sticky"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "alt - f | LAYOUT | -m space --layout float",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_option"
+                            ],
+                            "optional": [
+                                "left_shift",
+                                "left_command",
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "f"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m space --layout float"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "alt + cmd - f | WINDOW TOGGLE | -m window --toggle native-fullscreen",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_shift",
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "f"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --toggle native-fullscreen"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "alt - r | rotate windows",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1733,7 +1369,7 @@
             ]
         },
         {
-            "description": "cmd + alt - y | -m space --mirror y-axis #mirror tree y-axis",
+            "description": "alt + cmd - r | WINDOW TOGGLE | split horz|vert",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1744,109 +1380,20 @@
                                 "left_option"
                             ],
                             "optional": [
+                                "left_shift",
                                 "caps_lock"
                             ]
                         },
-                        "key_code": "y"
+                        "key_code": "r"
                     },
                     "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --mirror y-axis"
+                        "shell_command": "/usr/local/bin/yabai -m window --toggle split"
                     }
                 }
             ]
         },
         {
-            "description": "cmd + alt - x | -m space --mirror x-axis #mirror tree x-axis",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "x"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --mirror x-axis"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "alt - d | WINDOW | -m window --toggle zoom-parent #toggle window parent zoom",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "d"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --toggle zoom-parent"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "alt - / | WINDOW | picture-in-picture this window",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "/"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --toggle sticky && yabai -m window --grid 5:5:4:0:1:1"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "alt - [cmd] - f | WINDOW TOGGLE | -m window --toggle zoom-fullscreen",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_option"
-                            ],
-                            "optional": [
-                                "left_comand",
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "f"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --toggle zoom-fullscreen"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt - b | WINDOW TOGGLE | -m window --toggle border ",
+            "description": "alt + ctrl - b | WINDOW TOGGLE | -m window --toggle border ",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1869,56 +1416,7 @@
             ]
         },
         {
-            "description": "alt + [cmd] + shift - f | WINDOW TOGGLE | -m window --toggle native-fullscreen",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_shift",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "left_command",
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "f"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --toggle native-fullscreen"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt + cmd + [shift] - r | WINDOW TOGGLE | split horz|vert",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "left_shift",
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "r"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --toggle split"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "[ctrl] + alt + [cmd] + [shift] - t | WINDOW TOGGLE | float / unfloat window and center on screen",
+            "description": "alt - b | LAYOUT | -m space --layout bsp",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1928,59 +1426,6 @@
                                 "left_option"
                             ],
                             "optional": [
-                                "left_shift",
-                                "left_control",
-                                "left_command",
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "t"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --toggle float; yabai -m window --grid 4:4:1:1:2:2"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt + [cmd] + [shift] - s | WINDOW TOGGLE | -m window --toggle sticky #toggle sticky",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "left_shift",
-                                "left_command",
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "s"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m window --toggle sticky"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt + [cmd] + [shift] - b | LAYOUT | -m space --layout bsp",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "left_shift",
-                                "left_command",
                                 "caps_lock"
                             ]
                         },
@@ -1993,88 +1438,15 @@
             ]
         },
         {
-            "description": "ctrl + alt + [cmd] + [shift] - f | LAYOUT | -m space --layout float",
+            "description": "ctrl + shift + alt - up | -m window --grid 1:1:0:0:1:1 #make floating window fill screen",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
                                 "left_shift",
-                                "left_command",
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "f"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --layout float"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt + [cmd] + [shift] - r | HUP | launchctl kickstart -k \"gui/${UID}/homebrew.mxcl.yabai\"",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
                                 "left_control",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "left_shift",
-                                "left_command",
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "r"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/launchctl kickstart -k \"gui/${UID}/homebrew.mxcl.yabai\""
-                    }
-                }
-            ]
-        },
-        {
-            "description": "ctrl + alt + cmd - z | -m space --toggle {padding,gap} | # Zoom all (toggle desktop offset)",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_control",
-                                "left_command",
-                                "left_option"
-                            ],
-                            "optional": [
-                                "caps_lock"
-                            ]
-                        },
-                        "key_code": "z"
-                    },
-                    "to_if_alone": {
-                        "shell_command": "/usr/local/bin/yabai -m space --toggle padding; yabai -m space --toggle gap"
-                    }
-                }
-            ]
-        },
-        {
-            "description": "cmd + alt + shift - up | -m window --grid 1:1:0:0:1:1 #make floating window fill screen",
-            "manipulators": [
-                {
-                    "type": "basic",
-                    "from": {
-                        "modifiers": {
-                            "mandatory": [
-                                "left_command",
                                 "left_option"
                             ],
                             "optional": [
@@ -2090,14 +1462,39 @@
             ]
         },
         {
-            "description": "cmd + alt + shift - left | -m window --grid 1:2:0:0:1:1 #make floating window fill left-half of screen",
+            "description": "ctrl + shift + alt - down | -m window --grid 1:1:0:0:1:1 #make floating window fill screen",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
+                                "left_shift",
+                                "left_control",
+                                "left_option"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "down_arrow"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin/yabai -m window --grid 1:1:0:0:1:1"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "ctrl + shift + alt - left | -m window --grid 1:2:0:0:1:1 #make floating window fill left-half of screen",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_shift",
+                                "left_control",
                                 "left_option"
                             ],
                             "optional": [
@@ -2113,14 +1510,15 @@
             ]
         },
         {
-            "description": "cmd + alt + shift - right | -m window --grid 1:2:1:0:1:1 #make floating window fill right-half of screen",
+            "description": "ctrl + shift + alt - right | -m window --grid 1:2:1:0:1:1 #make floating window fill right-half of screen",
             "manipulators": [
                 {
                     "type": "basic",
                     "from": {
                         "modifiers": {
                             "mandatory": [
-                                "left_command",
+                                "left_shift",
+                                "left_control",
                                 "left_option"
                             ],
                             "optional": [
@@ -2131,6 +1529,28 @@
                     },
                     "to_if_alone": {
                         "shell_command": "/usr/local/bin/yabai -m window --grid 1:2:1:0:1:1"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "cmd - return | /Applications/Kitty.app/Contents/MacOS/kitty --single-instance -d ~ #open terminal",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "modifiers": {
+                            "mandatory": [
+                                "left_command"
+                            ],
+                            "optional": [
+                                "caps_lock"
+                            ]
+                        },
+                        "key_code": "return"
+                    },
+                    "to_if_alone": {
+                        "shell_command": "/usr/local/bin//Applications/Kitty.app/Contents/MacOS/kitty --single-instance -d ~"
                     }
                 }
             ]

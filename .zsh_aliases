@@ -60,6 +60,13 @@ alias follow='tail -f'
 alias g='git'
 # Linkux only
 alias ..='cd .. 2>/dev/null || cd "$(dirname $PWD)"' # Allows leaving from deleted directories
+function _diff_aliases () {
+    if (( $+functions[$1] )); then
+        diff -du <(alias) <($1 && alias) | sed -En 's/^[+-](.*)=.*/\1\n/gp' 2>/dev/null || return 0
+    else
+        return 1
+    fi
+}
 
 function _darwin_aliases () {
     # Show/hide hidden files in Finder
@@ -78,7 +85,7 @@ function _darwin_aliases () {
     alias vmware-dhcp-restart='sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --configure && \
     sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --stop && \
     sudo /Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli --start'
-    typeset -g _DARWIN_ALIASES
+    typeset -g _DARWIN_ALIASES=$(_diff_aliases _darwin_aliases)
     unset -f _darwin_aliases
 }
 
@@ -93,3 +100,5 @@ if (( $+command[jq] )); then
 	date: (. | strptime("%a, %d %b %Y %H:%M:%S") | todate[0:10]),
 	time: (. | strptime("%a, %d %b %Y %H:%M:%S") | todate[11:19]) })'\'
 fi
+
+# vim: filetype=zsh
