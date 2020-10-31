@@ -1,0 +1,137 @@
+
+snippet _ubersicht_widget
+import { css, run } from "uebersicht"
+var path = require('path');
+
+export const refreshFrequency = ${1:0}
+
+// debugging prints
+export const mydump = (arr,level) => {
+    var dumped_text = "";
+    if(!level) level = 0;
+
+    var level_padding = "";
+    for(var j=0;j<level+1;j++) level_padding += "    ";
+
+    if(typeof(arr) == 'object') {  
+        for(var item in arr) {
+            var value = arr[item];
+
+            if(typeof(value) == 'object') { 
+                dumped_text += level_padding + "'" + item + "' ...\n";
+                dumped_text += mydump(value,level+1);
+            } else {
+                dumped_text += level_padding + "'" + item + "' => \"" + value + "\"\n";
+            }
+        }
+    } else { 
+        dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
+    }
+    return dumped_text;
+}
+
+const profileContaienr = css\`
+display: flex;
+padding: 100px;
+align-items: top;
+justify-content: center;
+width: 30vw;
+height: 30vh;
+\`
+
+const innerDiv= css\`
+  color: #fff;
+  width: 233px;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.8);
+  background-size: cover;
+\`
+
+const pictureObjects= css\`
+  color: #fff;
+  width: 128px;
+  height: 128px;
+  display: block;
+  border-radius: 0;
+  margin: auto;
+  border: 5px solid #fff;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08), 0 3px 6px rgba(0,0,0,0.12);
+\`
+
+const textobjects= css\`
+    padding: 0px;
+    font-family: Futura;
+    font-size: 12px;
+    font-weight: 100;
+    text-shadow: 0 3px 6px rgba(0,0,0,0.8), 0 3pts 6pts rgba(0,0,0,0.8);
+    text-align: center;
+\`
+
+
+const WIDGET="${2:myapp}"
+
+var g_show = ${3:true} // show by default
+var g_${4:url}= ''
+
+// NOTE: use dot as a base instead of pwd -P
+// node.js will transform Uebersicht directory into "Ubersicht" by node.js..
+const some_script = path.join(".", WIDGET, "${5:some_script.applescript}")
+
+export const command = (dispatch) => {
+  run(some_script.replace(/\ /g, "\\\ "), (out, err) => {
+        if(typeof(err) != 'undefined' && err!=null) { console.warn(\`Error in command: ${err} ${out}\`); }
+        if(typeof(out) != 'undefined' && out.length > 0) {
+          // assuming json comes out of some_script
+          var payload=JSON.parse(out)
+          if (payload.${4} != g_${4}
+            // dispatch to update the state
+            dispatch(payload)
+          }
+        }
+        else { console.warn(\`output missing from ${some_script}: ${out}\`) }
+      }
+    } else {
+      // reset to nothing
+    dispatch({${4}: '', status: ${3}})
+    }
+  })
+}
+
+export const updateState = (event, previousState) => {
+    if (typeof(event) == "undefined") {
+        console.warn("Failed to update status with failed event")
+    }
+    if('status' in event){
+      g_show = event.status
+    }
+    if('${4}' in event){
+          g_${4}= event.${4}
+    }
+    if(event){
+      console.log(\`Received update: ${mydump(event)}\`)
+    }
+}
+
+export const render = (state, error) => {
+  if (g_show == false){
+      return (<div className={profileContaienr}></div>)
+  } else  { 
+    return (<div className={profileContaienr}>
+      <div className={innerDiv}>
+        {g_url.length > 0 ? <img className={pictureObjects} src={g_url}/>: \`No art found\`}
+        <div className={textobjects}> ${0:
+		}
+        </div>
+      </div>
+    </div>)
+  }
+return ( <div className={profileContaienr}>
+  <div className={wordObjects}>
+    I'm not sure waht to tell you about \`${g_show}\`
+  </div>
+</div>)
+}
+endsnippet

@@ -1,0 +1,22 @@
+snippet _json_applescript
+#!/usr/bin/osascript
+
+set jsonpath to POSIX file "/Users/aping1/code/github/applescript-json/json.scpt"
+set json to load script (jsonpath as alias)
+-- tell application id "com..."
+tell application 'Finder'
+	set theList to {" "}
+	set today to (current date)
+	repeat eachlItem in theList
+		try
+			set myThis to json's createDictWith(Â
+				{{"id", id of eachItem as text}, Â
+				{"name", name of eachItem as text}, Â
+				})
+			copy myThis to end of theList
+		on error errMsg number errNum
+			log errMsg & " " & errNum
+		end try
+	end repeat
+end tell
+endsnippet
