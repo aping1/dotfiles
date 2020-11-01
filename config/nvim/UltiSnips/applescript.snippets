@@ -7,16 +7,14 @@ set json to load script (jsonpath as alias)
 tell application 'Finder'
 	set theList to {" "}
 	set today to (current date)
-	repeat eachlItem in theList
+	repeat with eachItem in theList
 		try
-			set myThis to json's createDictWith(Â
-				{{"id", id of eachItem as text}, Â
-				{"name", name of eachItem as text}, Â
-				})
+			set myThis to json's createDictWith( {{"id", id of eachItem as text}, {"name", name of eachItem as text} })
 			copy myThis to end of theList
 		on error errMsg number errNum
 			log errMsg & " " & errNum
 		end try
 	end repeat
+	return json's encodeList(theList)
 end tell
 endsnippet
