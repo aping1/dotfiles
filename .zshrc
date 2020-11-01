@@ -231,6 +231,7 @@ if [ ! $TERM = dumb ]; then
     function zinit_plugin_loaded_callback() {
         emulate -L zsh
         local _zinit_plug_function="zinit-loaded-${ZINIT[CUR_PLUGIN]}"
+        print -- ${_zinit_plug_function} >&2
         (( $+functions[${_zinit_plug_function}] )) && \
             $_zinit_plug_function || \
             zinit-loaded-plugin-callback

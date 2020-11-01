@@ -46,13 +46,15 @@ if [[ -n $SSH_CONNECTION ]]; then
 fi
 
 # 'cd -' completes with recent dirs from temp files. (this is a smaller list that z and uses menu complete)
+zmodload zsh/mapfile
 autoload -Uz chpwd_recent_dirs add-zsh-hook
 add-zsh-hook chpwd chpwd_recent_dirs
 zstyle ':chpwd:*' recent-dirs-file "$TMPDIR/chpwd-recent-dirs"
 (){
+    emulate -L zsh
     local chpwdrdf
     zstyle -g chpwdrdf ':chpwd:*' recent-dirs-file
-    dirstack=($(awk -F"'" '{print $2}' "$chpwdrdf" 2>/dev/null))
+    dirstack=("${(%):-${(AQf)mapfile[$chpwdrdf]}}")
     [[ $PWD = ~ ]] && { cd ${dirstack[1]} 2>/dev/null || true }
     dirstack=("${dirstack[@]:1}")
 }
@@ -133,7 +135,7 @@ setopt promptsubst          # enable parameter expansion, command substitution, 
 setopt extendedglob 
 
 setopt AUTO_PARAM_SLASH # adds a slash to parameters that are directories
-setopt RM_STAR_WAIT # ignore input for 10 seconds when rm uses a * based glob to prevent reflexive deleteing
+setopt NO_RM_STAR_WAIT # ignore input for 10 seconds when rm uses a * based glob to prevent reflexive deleteing
 setopt no_glob_dots   # (NO_ do require) dont require leading . in filname matches
 setopt braceccl # Expand char clasess like zsh's [...] file expn. {abc0-9} -> a b c 0 1 2 etc...
 # --  Try  to  make  the  completion  occupying less lines by printing the matches in columns with different widths.
