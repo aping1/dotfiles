@@ -1,4 +1,11 @@
 #!/usr/bin/env zsh
+# This files does the followiwng
+# * checkouts this dotfiles repo
+# * update git submodules
+# * links pyenv to brew
+# * (disabled) reads dotfiles for BREW entries 4 uses `brew bundle`
+# * (disabled) pip magix to bootstrap REQUIREMENTS for all pyenvs (neovim stuff mostly)
+# * disabled  vim AND nvim first run
 [[ "${_REALPWD="$(realpath ${PWD})"}" == "$(realpath ${HOME})" ]] || printf 'ERROR: pwd should be \${HOME} not \"%s\"' "${_REALPWD}"
 
 # Sourcing files makes $0 the filename
@@ -6,8 +13,7 @@ unsetopt function_argzero
 
 # Requerys formst
 setopt PROMPT_SUBST
-export DOTFILES=${(%):-"${${(%):-%x}:A}"}
-export DOTFILES=${DOTFILES:h}
+export DOTFILES=${(%):-"${${(%):-%x}:A:h}"}
 export DOTFILES_SCRIPTPATH="$(dirname "$SCRIPT")"
 
 : "${DOTFILES:="$HOME/.dotfiles"}"
@@ -75,7 +81,7 @@ function rel_path () {
     print $2${1:+/$1}
 }
 
-# === Python Setup ===
+# === Pyenv Setup ===
 [[ ${PYENV_ROOT:="${HOME}/.pyenv"} ]] && command -v brew \
     && cd ${PYENV_ROOT} \
     && ln -s $(brew --cellar python)/* "${PYENV_ROOT}/versions/"
@@ -84,6 +90,7 @@ function pip_from_dotfiles ()
 {
     [[ -d ${DOTFILES} ]] || return 1
     [[ ${DOTFILES_SOURCE} ]] || export DOTFILES_SOURCE=( ${DOTFILES}/dotfiles ${DOTFILES}/${DISTRO:-posix}/dotfiles )
+    # Grab all things starting with pip
     cat ${DOTFILES_SOURCE[*]} | awk '/^pip/{ gsub(/\#.*$/, "",$0); $1=""; print; }' |  tr '"' "'" 
 }
 
@@ -96,6 +103,7 @@ function pip_install_dotfiles()
     fi
     # Dont warn if your DISTRO doesnt exist
     setopt nullglob 
+    # List of dotfile source
     [[ ${DOTFILES_SOURCE} ]] || export DOTFILES_SOURCE=( ${DOTFILES}/dotfiles ${DOTFILES}/${DISTRO:-posix}/dotfiles )
     # If there are dotfiles
     if [[ ${#DOTFILES_SOURCE[@]} -ge 1 ]] ; then
@@ -151,6 +159,7 @@ function pip_from_dotfiles ()
 
 function pip_install_dotfiles() 
 {
+    # What is this monstrosity? it goes throug all the pyenv versions and installs dotfiles
     if [[ ${DEBUG:-} =~ ^[Yy][e][s] ]]; then
         pip_from_dotfiles "${DOTFILES}/requirements.txt"
         [[ -s "${DOTFILES}/requirments.txt" ]] && cat "${DOTFILES}/requirements.txt" \
@@ -198,29 +207,19 @@ function pip_install_dotfiles()
     fi
 }
 
-# Install the pip
-pip_install_dotfiles
+# call dein update and coc install
+# nvim  -u \
+#    ~/.config/nvim/init.vim \
+#        -c "try | call dein#update() |  call coc#util#install() | finally | qall! | endtry" -V1 -es
 
+# Install the pip
 # === vim setup ===
 # Init vim and nvim even if aliased
 if command -v vim &>/dev/null ; then
     NEXT_VIM=$(type -a vim | head -n2 | grep -A2 'alias' | tail -n1 | awk '{print $NF}')
     while !  [[ -x ${NEXT_VIM} ]] && ${NEXT_VIM} +'silent! PlugInstall --sync' +qall
 fi
+
 command -v nvim && nvim +'silent! PlugInstall --sync' +qall && \
     ln -sf ${DOTFILES}/config/nvim/iron.plugin.lua .config/nvim/
 
-[[ ${PYENV_HOME} ]] && command -v brew \
-    && cd ${PYENV_HOME} \
-    && ln -s $(brew --cellar python)/* "${PYENV_HOME}/versions/"
-
-
-# Install the pip
-pip_install_dotfiles
-
-# === vim setup ===
-# Init vim and nvim even if aliased
-if command -v vim &>/dev/null ; then
-    NEXT_VIM=$(type -a vim | head -n2 | grep -A2 'alias' | tail -n1 | awk '{print $NF}')
-    while !  [[ -x ${NEXT_VIM} ]] && ${NEXT_VIM} +'silent! PlugInstall --sync' +qall
-fi
