@@ -66,8 +66,16 @@ endsnippet
 
 snippet clickgroup "Click CLI template" b
 import click_completion
+import click
+from pprint import pprint
 import click_completion.core
 click_completion.init()
+
+
+try:
+    __version__
+except NameError:
+    __version__ = "0.1"
 
 
 def completions(ctx, args, incomplete):
@@ -100,10 +108,6 @@ def cli(ctx, filename, verbose):
     ctx.obj.filename = filename
     ctx.obj.verbose = verbose
 
-@click.command()
-${2:clicko
-}@click.option('--verbose', is_flag=True, help="Will print verbose messages.")
-def cli(ctx, ${1:${VISUAL}} verbose):
     """cli for $3"""
     ${5:pass
     }
@@ -115,7 +119,7 @@ if __name__ == "__main__":
             self.filename = None
             self.verbose = None
 
-    cli(obj=${6}())
+    cli(obj=${6:ConfigContext}())
 endsnippet
 
 global !p

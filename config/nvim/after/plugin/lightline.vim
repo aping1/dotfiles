@@ -118,11 +118,12 @@ function! s:LoadLightline()
             \   'right': [ 
             \             [ 'readonly', 'percentwin', 'lineinfo',  'linecount', ],
             \             [ 'filetype', 'fileformat', ], 
-            \             [ 'spell', ], [ 'ale_count','linter_checking', 'linter_errors',
+            \             [ 'spell', ], [ 'linter_checkcount','linter_checking', 'linter_errors',
             \                'linter_warnings', 'linter_ok',  'neomake_status' ],
             \            ]
             \ },
             \ 'component_expand' : {
+            \  'linter_checkcount': 'b:ale_linted',
             \  'linter_checking': 'g:lightline#ale#checking',
             \  'linter_warnings': 'g:lightline#ale#warnings',
             \  'linter_errors': 'g:lightline#ale#errors',
@@ -140,8 +141,9 @@ function! s:LoadLightline()
             \ 'component_visible_condition': {
             \     'linecount': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'lineinfo': '(winwidth(0) > getbufvar("b:", "small_threshold", g:small_threshold))',
-            \     'linter_checking': '(index(g:lightline_blacklist,&filetype)==-1)',
+            \     'linter_checkcount': '(index(g:lightline_blacklist,&filetype)==-1)',
             \     'fileformat' : '(winwidth(0) > getbufvar("b:", "medium_threshold", g:medium_threshold))',
+            \     'linter_counter': '(index(g:lightline_blacklist,&filetype)==-1&&exists("b:ale_linted")&&b:ale_linted>0)',
             \     'linter_warnings': '(index(g:lightline_blacklist,&filetype)==-1)',
             \     'linter_errors': '(index(g:lightline_blacklist,&filetype)==-1)',
             \     'linter_ok': '(index(g:lightline_blacklist,&filetype)==-1)',

@@ -1,0 +1,45 @@
+# vim: filetype=zsh
+(){
+emulate -L zsh
+trap 'unsetopt xtrace' EXIT
+local B64ENCODED
+local fn="$1"
+if [[ "$fn" == '-' ]]; then
+    fn='/dev/stdin'
+fi
+if [[ -n "$fn" && -f "$fn" ]] ; then
+    B64ENCODED="$(openssl base64 < "${fn}" | tr -d '\n\r')"
+fi
+
+[[ ${B64ENCODED} ]] || { print -- "File Missing or empty"; exit 1;}
+# Encoded fiel
+if [[ "${TMUX}" ]] ; then
+    print -n -- "\033Ptmux;\033\033]"
+else
+    print -n -- "\033]"
+fi
+local h=3 w=3
+[[ ${2:-"0"} > 0 && ${2} -le $(tput cols) ]] && w=${2}
+[[ ${3:-"0"} > 0 && ${3} -le $(tput lines) ]] && h=${3}
+
+cat << EOF
+1337;File=name=$(openssl base64 <<< "${fn}");size=${#B64ENCODED};inline=1;height=${h};width=${w};preserveAspectRatio=true;size=$(wc -c -- "$fn"):${B64ENCODED}
+EOF
+
+if [[ "$TERM" == "screen*" && "${TMUX}" ]] ; then
+    print -n "\a\033\\"
+else
+    print -n "\a"
+fi
+if [[ "$TERM" =~ "screen" ]] ; then
+    # This works in plain-old tmux but does the wrong thing in iTerm2's tmux integration mode. tmux doesn't know that the cursor moves wen the image code is sent, while iTerm2 does. I had to pick one, since integration mode is undetectable, so I picked the failure mode that at least produces useful output (there is just too much whitespace in integration mode). This could be fixed by not moving the cursor while in integration mode. A better fix would be for tmux to interpret the image sequence, though.  tl;dr: If you use tmux in integration mode, replace this with the printf from the else clause.
+    print -n -- '\033[4C\033[Bx\n'
+else
+    print -n -- '\033[A\n'
+fi
+
+cat << _EOF
+1337;File=name=$(openssl base64 <<< "${fn}");size=${#B64ENCODED};inline=1;height=${h};width=${w};preserveAspectRatio=true;$(wc -c -- "$fn" | awk '{printf "size=%d",$1}'):${#B64ENCODED}
+_EOF
+
+} "${@}"

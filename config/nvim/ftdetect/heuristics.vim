@@ -59,9 +59,11 @@ command! ProjectionistRoots echo <SID>projectionist_roots()
 augroup detect_project
     autocmd!
     autocmd Syntax * if g:loaded_projectionist == 1 | call LoadHeuristics() |
-          \ else | exe 'autocmd WinNew * call LoadHeuristics() | call ProjectionistDetect(expand(%))' | endi
+          \ else | exe 'autocmd WinNew * call LoadHeuristics() | call ProjectionistDetect(expand("%"))' | endif
     autocmd User ProjectionistDetect call <SID>SetProjections()
 augroup end
+
+
 
 "augroup detect_project
 "  autocmd!

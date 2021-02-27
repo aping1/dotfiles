@@ -261,7 +261,22 @@ let g:deoplete#sources#jedi#show_docstring=0
 
 " let g:deoplete#sources#jedi#statement_length=linelen
 "call deoplete#custom#option({'auto_complete': v:false})
-autocmd FileType Python call deoplete#custom#source('_', 'sources', ['ale']) | call deoplete#custom#option({'auto_complete_delay': 10})
+augroup LinterTypes
+autocmd!
+autocmd Syntax coffee let b:ale_linters = ['coffee']
+autocmd Syntax vim let b:ale_linters = ['vimls', 'coc']
+autocmd Syntax Python call deoplete#custom#source('_', 'sources', ['ale']) | call deoplete#custom#option({'auto_complete_delay': 10})
+autocmd Syntax python let b:ale_fixers = {'python': ['black']}
+autocmd Syntax python let b:ale_linters = ['flake8', 'vimls']
+autocmd Syntax javascript call deoplete#disable() | ALEEnable
+" autocmd Syntax javascript let b:ale_linters = ['eslint', 'stylelint', 'coc']
+autocmd Syntax javascript let b:ale_linters = ['coc', 'eslint']
+autocmd BufRead,BufNewFile *.omnijs set filetype=omnijs | set syntax=javascript
+augroup END
+
+"autocmd BufEnter python :CocDisable
+"autocmd BufLeave python :CocEnable
+
 
 filetype plugin indent on
 syntax enable
@@ -274,9 +289,7 @@ set cmdheight=2
 " Plugin: 'mhinz/vim-startify'
 "----------------------------------------------
 " augroup numbertoggle
-" autocmd BufEnter * if !exists('t:startified') | Startify | let t:startified = 1 | endif
-"autocmd BufEnter python :CocDisable
-"autocmd BufLeave python :CocEnable
+"  autocmd BufEnter * if !exists('t:startified') | Startify | let t:startified = 1 | endif
 " augroup END
 
 "----------------------------------------------
@@ -362,9 +375,10 @@ endif
 let g:vimwiki_list = [{
             \ 'path': '~/Dropbox/wiki',
             \ 'syntax': 'markdown',
-            \ 'ext': '.wiki'
+            \ 'index': 'index',
+            \ 'ext': '.md',
             \ },{
-            \ 'path': '~/code/github,',
+            \ 'path': '~/code/github',
             \ 'index': 'readme',
             \ 'syntax': 'markdown',
             \ 'ext': '.md'
@@ -439,23 +453,16 @@ let g:ale_python_pyls_use_autoenv=1
 
 let g:ale_linter_aliases = {
             \ 'jsx': ['css', 'javascript'],
+            \ 'omnijs': [ 'javascript'],
             \ }
 let g:ale_linters_explicit = 1
-augroup LinterTypes
-autocmd!
-autocmd filetype python let b:ale_linters=['flake8']
-autocmd filetype vim let b:ale_linters = ['vimls', 'coc']
-autocmd filetype python let b:ale_fixers = {'python': ['black']}
-autocmd filetype python let b:ale_linters = ['flake8', 'vimls']
-autocmd filetype coffee let b:ale_linters = ['coffee']
-augroup END
 
 let g:ale_linters = { 
             \ 'c' : ['cppcheck'],
             \ 'sh' : ['shellcheck'],
             \ 'zsh' : ['deoplete-zsh'],
             \ 'terraform' : ['tflint'],
-            \ 'jsx' : ['stylelint', 'eslint'],
+            \ 'javascript' : ['stylelint', 'eslint'],
             \ 'json' : ['jsonlint'],
             \ 'dockerfile' : ['hadolint'],
             \ }
@@ -491,7 +498,6 @@ augroup FiletypeGroup
     au BufNewFile,BufRead *.jsx set filetype=javascript.jsx
     autocmd Filetype css,json setlocal tabstop=1 shiftwidth=2 expandtab 
 augroup END
-" ['stylelint', 'eslint']
 
 " user environment
 let g:ale_virtualenv_dir_names = []
