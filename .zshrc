@@ -122,7 +122,7 @@ if [ ! $TERM = dumb ]; then
     (( $+DEBUG )) && {  trap 'unsetopt xtrace' EXIT; setopt xtrace; }
 
     ZINIT_DOTFILES="${HOME}/.zsh/zinit"
-    ZINIT_HOME="${ZINIT_HOME:-${ZPLG_HOME:-${ZDOTDIR:-"${HOME}/.zinit"}}}"
+    ZINIT_HOME="${ZINIT_HOME:-${ZPLG_HOME:-${ZDOTDIR:-"${HOME}/.zsh/zinit"}}}"
     ZINIT_BIN_DIR_NAME="${${ZINIT_BIN_DIR_NAME:-$ZPLG_BIN_DIR_NAME}:-bin}"
 
     # Auto install zinit
@@ -301,9 +301,9 @@ if [ ! $TERM = dumb ]; then
         pick'autopair.zsh' \
         atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' \
             hlissner/zsh-autopair \
-        mv'git-completion.zsh -> _git' \
-        !bash pick'git-completion.bash' \
-            felipec/git-completion \
+        mv'contrib/completion/git-completion.zsh -> _git' \
+        !bash pick'contrib/completion/git-completion.bash' \
+            git/git \
         as"program" pick"bin/git-dsf" \
             zdharma/zsh-diff-so-fancy \
         atclone"gencomp k; ZINIT[COMPINIT_OPTS]='-i' zpcompinit" atpull'%atclone' \
