@@ -5,7 +5,7 @@
     tool = vimdiff
     guitool = vimrdiff
 [core]
-	excludesfile = ~/.gitignore_global
+	excludesfile = ~/.gitignore
 	editor = vim
 	page = less
 [mergetool]
