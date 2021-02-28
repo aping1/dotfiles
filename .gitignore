@@ -1,5 +1,7 @@
 
 .python_version
+config/karabiner/automatic_backups/**
+Brewfile.lock.json
 .env
 config/nvim/.netrwhist
 config/nvim/plugged/**

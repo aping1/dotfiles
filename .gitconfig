@@ -6,7 +6,7 @@
     guitool = vimrdiff
 [core]
 	excludesfile = ~/.gitignore_global
-	editor = nvim
+	editor = vim
 	page = less
 [mergetool]
 	prompt = true

@@ -222,7 +222,6 @@ if dein#load_state('~/.cache/dein')
                     \"coc-go",
                     \"coc-css",
                     \"coc-sh",
-                    \"coc-snippets",
                     \"coc-neoinclude",
                     \"coc-prettier",
                     \"coc-tsserver",
@@ -239,7 +238,7 @@ if dein#load_state('~/.cache/dein')
                     \"coc-post",
                     \"coc-stylelint",
                     \"coc-yaml",
-                    \"coc-template",
+                    \"coc-snippets",
                     \"coc-utils"
                     \ ]',
                     \ 'hook_post_update': 'call dein#build("coc.nvim") | call coc#util#install()'
