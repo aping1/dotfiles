@@ -1,0 +1,217 @@
+tap "crisidev/chunkwm"
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/cask-fonts"
+tap "homebrew/core"
+tap "homebrew/services"
+tap "koekeishiya/formulae"
+tap "mistertea/et"
+tap "universal-ctags/universal-ctags"
+cask "osxfuse"
+# Cryptography and SSL/TLS Toolkit
+brew "openssl@1.1"
+# Library for command-line editing
+brew "readline"
+# General-purpose data compression with high compression ratio
+brew "xz"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.8"
+# Configuration editing tool and API
+brew "augeas"
+# Programmable completion for Bash 3.2
+brew "bash-completion"
+# Clone of cat(1) with syntax highlighting and Git integration
+brew "bat"
+# Collection of portable C++ source libraries
+brew "boost"
+# Insanely fast image printing in your terminal
+brew "catimg"
+# Control Google Chrome from the command-line
+brew "chrome-cli"
+# The command-line interactive controller for Kubernetes
+brew "click"
+# Cross-platform make
+brew "cmake"
+# GNU File, Shell, and Text utilities
+brew "coreutils"
+# Static analysis of C and C++ code
+brew "cppcheck"
+# Reimplementation of ctags(1)
+brew "ctags", link: false
+# Pack, ship and run any application as a lightweight container
+brew "docker", link: false
+# Bash, Zsh and Fish completion for Docker
+brew "docker-completion"
+# Isolated development environments using Docker
+brew "docker-compose", link: false
+# Text processing system for reStructuredText
+brew "docutils"
+# Modern replacement for 'ls'
+brew "exa"
+# Perl lib for reading and writing EXIF metadata
+brew "exiftool"
+# Read-only implementation of ext4 for FUSE
+brew "ext4fuse"
+# Simple, fast and user-friendly alternative to find
+brew "fd"
+# Lint your Python code for style and logical errors
+brew "flake8"
+# Command-line fuzzy finder written in Go
+brew "fzf"
+# Fast, simple fuzzy text selector with an advanced scoring algorithm
+brew "fzy"
+# GNU debugger
+brew "gdb"
+# OpenGL Extension Wrangler Library
+brew "glew"
+# Core application library for C
+brew "glib"
+# Asynchronous event library
+brew "libevent"
+# GSettings schemas for desktop components
+brew "gsettings-desktop-schemas"
+# Network related modules for glib
+brew "glib-networking"
+# GNU implementation of the famous stream editor
+brew "gnu-sed"
+# Open source programming language to build simple/reliable/efficient software
+brew "go"
+# Smarter Dockerfile linter to validate best practices
+brew "hadolint"
+# Lightweight and flexible command-line JSON processor
+brew "jq"
+# Platform built on V8 to build network applications
+brew "node"
+# JSON parser and validator with a CLI
+brew "jsonlint"
+# Library for support of the Expert Witness Compression Format
+brew "libewf"
+# Ogg Bitstream Library
+brew "libogg"
+# Postgres C API library
+brew "libpq"
+# The Apache Kafka C/C++ library
+brew "librdkafka"
+# C library SSHv1/SSHv2 client and server protocols
+brew "libssh"
+# Vorbis General Audio Compression Codec
+brew "libvorbis"
+# Implementation of IEEE 802.1ab (LLDP)
+brew "lldpd"
+# Clone of ls with colorful output, file type icons, and more
+brew "lsd"
+# Package manager for the Lua programming language
+brew "luarocks"
+# Powerful, clean, object-oriented scripting language
+brew "ruby"
+# GUI for vim, made for macOS
+brew "macvim"
+# The mandoc UNIX manpage compiler toolset
+brew "mandoc"
+# Tools to facilitate the use of Microsoft Access databases
+brew "mdbtools"
+# Command-line client for Mega.co.nz
+brew "megatools"
+# Menu-driven communications program
+brew "minicom"
+# Remote terminal application
+brew "mosh"
+# Experimental optional static type checker for Python
+brew "mypy"
+# Ambitious Vim-fork focused on extensibility and agility
+brew "neovim"
+# HTTP/2 C Library
+brew "nghttp2"
+# Port scanning utility for large networks
+brew "nmap"
+# Implementation of the OpenAL 3D audio API
+brew "openal-soft"
+# Forensic toolkit
+brew "sleuthkit"
+# SQL powered operating system instrumentation and analytics
+brew "osquery"
+# Cross-platform library for real-time MIDI I/O
+brew "portmidi"
+# Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
+brew "prettier"
+# Monitor data's progress through a pipe
+brew "pv"
+# Python version management
+brew "pyenv"
+# Pyenv plugin to manage virtualenv
+brew "pyenv-virtualenv"
+# Interpreted, interactive, object-oriented programming language
+brew "python@2"
+# Search tool like grep and The Silver Searcher
+brew "ripgrep"
+# Tools for manipulating next-generation sequencing data
+brew "samtools"
+# Low-level access to audio, keyboard, mouse, joystick and graphics
+brew "sdl"
+# Low-level access to audio, keyboard, mouse, joystick, and graphics
+brew "sdl2"
+# SDL2 graphics drawing primitives and other support functions
+brew "sdl2_gfx"
+# Library for loading images as SDL surfaces and textures
+brew "sdl2_image"
+# Sample multi-channel audio mixer library
+brew "sdl2_mixer"
+# Library for using TrueType fonts in SDL applications
+brew "sdl2_ttf"
+# Image file loading library
+brew "sdl_image"
+# Sample multi-channel audio mixer library
+brew "sdl_mixer"
+# Library for using TrueType fonts in SDL applications
+brew "sdl_ttf"
+# Static analysis and lint tool, for (ba)sh scripts
+brew "shellcheck"
+# SDL MPEG Player Library
+brew "smpeg"
+# Generate scripting interfaces to C/C++ code
+brew "swig"
+# Code-search similar to ack
+brew "the_silver_searcher"
+# Programatically correct mistyped console commands
+brew "thefuck"
+# Text interface for Git repositories
+brew "tig"
+# Terminal multiplexer
+brew "tmux"
+# File-based build system
+brew "tup"
+# Secures, stores, and tightly controls access to secrets
+brew "vault"
+# Use ViM as PAGER
+brew "vimpager"
+# Executes a program periodically, showing output fullscreen
+brew "watch"
+# William's miscellaneous git tools
+brew "willgit"
+# Graphical network analyzer and capture tool
+brew "wireshark", link: false
+# JavaScript package manager
+brew "yarn"
+# General-purpose lossless data-compression library
+brew "zlib"
+# UNIX shell (command interpreter)
+brew "zsh"
+# A tiling window manager for macOS based on binary space partitioning.
+brew "koekeishiya/formulae/yabai"
+# Remote terminal with IP roaming
+brew "mistertea/et/et"
+# Maintained ctags implementation
+brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD", "with-jansson"]
+cask "adoptopenjdk"
+cask "calibre"
+cask "corelocationcli"
+cask "docker"
+cask "font-hack-nerd-font"
+cask "font-hasklig-nerd-font"
+cask "godot"
+cask "mono-mdk"
+cask "openra"
+cask "phoenix"
+cask "wireshark"
+cask "xquartz"
+cask "zenmap"
