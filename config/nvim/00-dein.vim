@@ -33,9 +33,11 @@ if dein#load_state('~/.cache/dein')
         echoerr 'error ' . s:toml . 'config'
     endtry
 
-    call dein#add('puremourning/vimspector',
+    if has('python3')
+        call dein#add('puremourning/vimspector',
                 \ {'hook_post_update': 'VimspectorInstall --enable-python'}
                 \ )
+    endif
 
     " Dynamic resize quickfix window
     call dein#add('blueyed/vim-qf_resize')
@@ -57,6 +59,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('iCyMind/NeoSolarized')
     call dein#add('jacoborus/tender.vim')
     call dein#add('rakr/vim-one')
+    call dein#add('joshdick/onedark.vim')
 
     " === Indent lines ===
     call dein#add('nathanaelkane/vim-indent-guides')
@@ -85,7 +88,7 @@ if dein#load_state('~/.cache/dein')
         call dein#add('Shougo/echodoc.vim')
     else
         call dein#add('Shougo/unite.vim')
-        call dein#add('Shougo/unite-outline.vim')
+        call dein#add('Shougo/unite-outline')
         call dein#add('Shougo/neomru.vim')
         call dein#add('Shougo/vimproc.vim', {
                     \ 'build' : {
@@ -269,8 +272,10 @@ if dein#load_state('~/.cache/dein')
     call dein#add('itchyny/lightline.vim')
     call dein#add('maximbaz/lightline-ale')
 
+    if has('nvim')
     call dein#add('numirias/semshi',
                 \{'hook_post_update': 'UpdateRemotePlugins'})
+    endif
 
     call dein#add('gu-fan/riv.vim', {'on_ft': ['rst']})
     call dein#add('mtdl9/vim-log-highlighting')

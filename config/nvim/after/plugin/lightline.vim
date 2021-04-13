@@ -99,7 +99,7 @@ function! s:LoadLightline()
         let l:lightlinejson = readfile(g:lighting_jsn)
         let l:lightline = projectionist#json_parse(l:lightlinejson)
         let g:lightline = copy(l:lightline)
-    else
+    elseif has('nvim')
         let g:lightline = {
             \ 'inactive': {
             \   'left': [ [ 'pyenv_active', 'pyenv' ],
@@ -194,10 +194,94 @@ function! s:LoadLightline()
             \   'separator': { 'left': '', 'right':'' },
             \   'subseparator': { 'left': '∶', 'right': '∷'},
             \ }
+    else
+        let g:lightline = {
+                    \ 'inactive': {
+                    \   'left': [ [  'pyenv', 'pyenv_active', ],
+                    \             [ 'fugitive', 'filename', 'tagbar' ],
+                    \             [ 'readonly', 'lineinfo', 'linecount'], 
+                    \           ],
+                    \   'right': [ 
+                    \             [ 'filetype', 'fileformat'],
+                    \             [ 'linter_errors', 'linter_warnings', 'linter_ok' ],
+                    \            ]
+                    \ },
+                    \ 'active': {
+                    \   'left': [ [  'mode', 'paste', 'spell',
+                    \                'pyenv', 'pyenv_active', ],
+                    \             [ 'fugitive', 'filename', 'tagbar', ],
+                    \           ],
+                    \   'right': [ 
+                    \             [ 'readonly', 'percent', 'lineinfo',  'linecount',  ], 
+                    \             [ 'readonly', 'filetype', 'fileformat', ],
+                    \             [ 'linter_checking', 'linter_errors',
+                    \                'linter_warnings', 'linter_ok' ],
+                    \            ]
+                    \ },
+                    \ 'component_expand' : {
+                    \  'linter_checking': 'g:lightline#ale#checking',
+                    \  'linter_warnings': 'g:lightline#ale#warnings',
+                    \  'linter_errors': 'g:lightline#ale#errors',
+                    \  'linter_ok': 'g:lightline#ale#ok',
+                    \  'pyenv': 'pyenv#pyenv#get_activated_env',
+                    \  'gitbranch': 'fugitive#head',
+                    \ },
+                    \ 'component': {
+                    \   'lineinfo': '%{line(".")}',
+                    \   'linecount': '%{line("$")}',
+                    \   'close': '%9999X%{g:os_spec_string}', 
+                    \   'tagbar': '%{exists("tagbar#currenttag")?tagbar#currenttag("%s", ""):""}',
+                    \   'spell': '%{&spell?&spelllang:""}',
+                    \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
+                    \   'fugitive': '%{&filetype=="help"?"":exists("*LightlineFugitive")?LightlineFugitive():""}',
+                    \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?WebDevIconsGetFileTypeSymbol("main.py", 1):""}',
+                    \ },
+                    \ 'component_visible_condition': {
+                    \   'readonly': '(index(["help","nofile"],&filetype)!=-1&& &readonly)',
+                    \   'modified': '(index(["help","nofile"],&filetype)!=-1&&(&modified||!&modifiable))',
+                    \   'fugitive': '(index(["help","nofile"],&filetype)!=-1&&(winwidth(0) <80)&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
+                    \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
+                    \   'tagbar': '(exists("tagbar#currenttag"))',
+                    \ },
+                    \ 'component_type': {
+                    \     'linter_checking': 'left',
+                    \     'linter_warnings': 'warning',
+                    \     'linter_errors': 'error',
+                    \     'linter_ok': 'left',
+                    \     'pyenv_active': 'ok',
+                    \     'banner': 'tabsel',
+                    \ },
+                    \ 'component_function': {
+                    \     'mode': 'LightlineMode',
+                    \     'filetype': 'MyFiletype',
+                    \     'fileformat': 'MyFileformat',
+                    \    'method': 'NearestMethodOrFunction'
+                    \ },
+                    \ 'tabline' : {
+                    \   'separator': { 'left': '┋', },
+                    \   'active': [ 
+                    \       'tabnum', 'filename', 'modified', 'readonly',
+                    \   ],
+                    \ },
+                    \ 'tab_component_function': {
+                    \ 'filename': 'LightlineTabname',
+                    \ 'modified': 'LightlineTabmodified',
+                    \ 'readonly': 'LightlineTabReadonly',
+                    \ 'tabnum': 'LightlineTabNumber',
+                    \ 'banner': 'LightlineBanner',
+                    \ },
+                    \ 'colorscheme' : 'onedark',
+                    \   'separator': { 'left': '', 'right':'' },
+                    \   'subseparator': { 'left': '∶', 'right': '∷'},
+                    \ }
     endif
 endfunction
 
 call s:LoadLightline()
+if !has('nvim')
+    call s:LightLineRefresh()
+endif
+
 
 let g:small_threshold=51
 let g:medium_threshold=75

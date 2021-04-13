@@ -1,9 +1,12 @@
+if has('nvim')
 
+augroup TERMINAL
 " When term starts, auto go into insert mode
 autocmd TermOpen * startinsert
 
 " Turn off line numbers etc
 autocmd TermOpen * setlocal listchars= nonumber norelativenumber
+augroup END
 
 function! ToggleTerm(cmd)
     if empty(bufname(a:cmd))
@@ -38,3 +41,5 @@ endfunction
 function! ToggleLazyDocker()
     call ToggleTerm('lazydocker')
 endfunction
+
+endif

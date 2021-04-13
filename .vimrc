@@ -44,15 +44,6 @@ set showmode
 set wildmenu
 set history=1000
 
-try
-    set undodir=~/.vim_runtime/undodir
-    set undofile
-catch
-endtry
-
-" When shifting always round to the correct indentation.
-set shiftround
-
 set smarttab
 set expandtab
 set linebreak
@@ -113,12 +104,22 @@ augroup AUTOUPDATE
 autocmd! bufwritepost $MYVIMRC source $MYVIMRC
 augroup END
 
-if isdirectory('~/.config/nvim/plugged')
-    call plug#begin('~/.config/nvim/plugged')
-else
-    call plug#begin('~/.vim/plugged')
-endif
+set runtimepath+=~/.zsh/zinit/plugins/Shougo---dein.vim
+source ~/.zsh/zinit/plugins/junegunn---fzf_master/plugin/fzf.vim
 
+" Contains dein snippet
+let g:dein_file=($HOME . '/.config/nvim/00-dein.vim')
+
+if filereadable(g:dein_file)
+    if exists('g:loaded_custom_dein_settings')
+        unlet g:loaded_custom_dein_settings
+    endif
+    exe 'source ' . glob(g:dein_file)
+else
+    echoerr 'Failed to source ' . g:dein_file
+    silent! colorscheme default
+    finish
+endif
 " --------------------------------------------
 " Colorscheme 
 " --------------------------------------------
@@ -127,9 +128,9 @@ endif
 if (has('gui_running'))
     silent! colorscheme tender
     silent! LightlineColorScheme tenderplus
-elseif (has('termguicolors'))
+elseif (has('termguicolors')) || !has('nvim')
     set termguicolors
-    silent! colorscheme one
+    silent! colorscheme onedark
     silent! LightlineColorScheme one
 elseif &term =~? '256color'
     " Disable Background Color Erase (BCE) so that color schemes
@@ -327,85 +328,6 @@ endif
 
 let g:os_spec_string=' ' . g:os . (has('gui_running')?'': '').('')
 
-let g:lightline = {
-      \ 'inactive': {
-      \   'left': [ [  'pyenv', 'pyenv_active', ],
-      \             [ 'fugitive', 'filename', 'tagbar' ],
-      \             [ 'readonly', 'lineinfo', 'linecount'], 
-      \           ],
-      \   'right': [ 
-      \             [ 'filetype', 'fileformat'],
-      \             [ 'linter_errors', 'linter_warnings', 'linter_ok' ],
-      \            ]
-      \ },
-      \ 'active': {
-      \   'left': [ [  'mode', 'paste', 'spell',
-      \                'pyenv', 'pyenv_active', ],
-      \             [ 'fugitive', 'filename', 'tagbar', ],
-      \           ],
-      \   'right': [ 
-      \             [ 'readonly', 'percent', 'lineinfo',  'linecount',  ], 
-      \             [ 'readonly', 'filetype', 'fileformat', ],
-      \             [ 'linter_checking', 'linter_errors',
-      \                'linter_warnings', 'linter_ok' ],
-      \            ]
-      \ },
-      \ 'component_expand' : {
-      \  'linter_checking': 'g:lightline#ale#checking',
-      \  'linter_warnings': 'g:lightline#ale#warnings',
-      \  'linter_errors': 'g:lightline#ale#errors',
-      \  'linter_ok': 'g:lightline#ale#ok',
-      \  'pyenv': 'pyenv#pyenv#get_activated_env',
-      \  'gitbranch': 'fugitive#head',
-      \ },
-      \ 'component': {
-      \   'lineinfo': '%{line(".")}',
-      \   'linecount': '%{line("$")}',
-      \   'close': '%9999X%{g:os_spec_string}', 
-      \   'tagbar': '%{tagbar#currenttag("%s", "")}',
-      \   'spell': '%{&spell?&spelllang:""}',
-      \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{&filetype=="help"?"":exists("*LightlineFugitive")?LightlineFugitive():""}',
-      \   'pyenv_active': '%{&filetype!="python"?"":exists("pyenv#pyenv#is_activated")&&pyenv#pyenv#is_activated()?WebDevIconsGetFileTypeSymbol("main.py", 1):""}',
-      \ },
-      \ 'component_visible_condition': {
-      \   'readonly': '(index(["help","nofile"],&filetype)!=-1&& &readonly)',
-      \   'modified': '(index(["help","nofile"],&filetype)!=-1&&(&modified||!&modifiable))',
-      \   'fugitive': '(index(["help","nofile"],&filetype)!=-1&&(winwidth(0) <80)&&exists("*FugitiveStatusline") && ""!=FugitiveStatusline())',
-      \   'pyenv_active': '(&filetype!="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
-      \   'tagbar': '(exists("tagbar#currenttag"))',
-      \ },
-      \ 'component_type': {
-      \     'linter_checking': 'left',
-      \     'linter_warnings': 'warning',
-      \     'linter_errors': 'error',
-      \     'linter_ok': 'left',
-      \     'pyenv_active': 'ok',
-      \     'banner': 'tabsel',
-      \ },
-      \ 'component_function': {
-      \     'mode': 'LightlineMode',
-      \     'filetype': 'MyFiletype',
-      \     'fileformat': 'MyFileformat',
-      \    'method': 'NearestMethodOrFunction'
-      \ },
-      \ 'tabline' : {
-      \   'separator': { 'left': '┋', },
-      \   'active': [ 
-      \       'tabnum', 'filename', 'modified', 'readonly',
-      \   ],
-      \ },
-      \ 'tab_component_function': {
-      \ 'filename': 'LightlineTabname',
-      \ 'modified': 'LightlineTabmodified',
-      \ 'readonly': 'LightlineTabReadonly',
-      \ 'tabnum': 'LightlineTabNumber',
-      \ 'banner': 'LightlineBanner',
-      \ },
-      \ 'colorscheme' : 'PaperColor_' . &background,
-      \   'separator': { 'left': '', 'right':'' },
-      \   'subseparator': { 'left': '∶', 'right': '∷'},
-      \ }
 
 function! LightlineMode()
   let l:tabname=expand('%:t')
@@ -581,84 +503,6 @@ else
         autocmd VimLeave * call system('tmux setw automatic-rename")
     augroup END
 endif
-
-"----------------------------------------------
-" Plugin: scrooloose/nerdtree
-"----------------------------------------------
-nnoremap <leader>d :NERDTreeToggle<cr>
-nnoremap <F2> :NERDTreeToggle<cr>
-
-let NERDTreeShowBookmarks=1
-" Allow NERDTree to change session root.
-let NERDTreeChDirMode=2
-let NERDTreeQuitOnOpen=0
-
-" Show hidden files by default.
-let NERDTreeShowHidden=1
-let NERDTreeKeepTreeInNewTab=1
-
-" Files to ignore
-let NERDTreeIgnore = [
-    \ '\~$',
-    \ '\.pyc$',
-    \ '^\.DS_Store$',
-    \ '^node_modules$',
-    \ '^.ropeproject$',
-    \ '^__pycache__$'
-\]
-
-augroup nerdtree_extra
-" Close vim if NERDTree is the only opened window.
-autocmd bufenter * if (winnr('$') == 1 && exists('b:NERDTreeType') && b:NERDTreeType == 'primary') | q | endif
-augroup END
-
-let g:NERDTreeIndicatorMapCustom = {
-    \ 'Modified'  : '✹',
-    \ 'Staged'    : '✚',
-    \ 'Untracked' : '✭',
-    \ 'Renamed'   : '➜',
-    \ 'Unmerged'  : '═',
-    \ 'Deleted'   : '✖',
-    \ 'Dirty'     : '✗',
-    \ 'Clean'     : '✔︎',
-    \ 'Ignored'   : '☒',
-    \ 'Unknown'   : '?'
-    \ }
-
-function! NERDTreeYankCurrentNode()
-    let n = g:NERDTreeFileNode.GetSelected()
-    if n != {}
-        call setreg('=', n.path.str())
-        call setreg('+', n.path.str())
-    endif
-endfunction
-
-if exists('NERDTreeAddKeyMap')
-call NERDTreeAddKeyMap({
-        \ 'key': 'yy',
-        \ 'callback': 'NERDTreeYankCurrentNode',
-        \ 'quickhelpText': 'put full path of current node into the default register' })
-endif
-
-" Show hidden files by default.
-let NERDTreeShowHidden = 1
-
-" Allow NERDTree to change session root.
-let g:NERDTreeChDirMode = 2
-
-let NERDTreeShowBookmarks=1
-let NERDTreeChDirMode=2
-let NERDTreeQuitOnOpen=0
-
-let g:webdevicons_enable_nerdtree = 1
-" Force extra padding in NERDTree so that the filetype icons line up vertically
-let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
-let g:webdevicons_conceal_nerdtree_brackets = 1
-let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
-" --------------------
-" Plug 'bfredl/nvim-ipy'
-" --------------------
-let g:ipy_perform_mappings=1
 
 " --------------------
 " Plugin 'janko/vim-test'

@@ -104,6 +104,16 @@ command -v zsh || return 1
 vim_deps_install ~/.cache/dein
 
 (
+mkdir $HOME/.vim
+cd $HOME/.vim
+ln -s ${DOTFILES}/config/nvim/after .
+ln -s ${DOTFILES}/config/nvim/autoload .
+ln -s ${DOTFILES}/config/nvim/ftdetect .
+ln -s ${DOTFILES}/config/nvim/colors .
+ln -s ${DOTFILES}/config/nvim/UltiSnips .
+ln -s ${DOTFILES}/config/nvim/coc-settings.json .
+) 
+(
 cd
 ln -sf "${DOTFILES}/.profile"
 ln -sf "${DOTFILES}/.zprofile"

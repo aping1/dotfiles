@@ -34,7 +34,11 @@ if has('nvim') || has('gui_running')
 endif
 
 " Centered floating window for fzf
-let g:fzf_layout = { 'window': 'call CreateCenteredFloatingWindow()' }
+if has('nvim')
+  let g:fzf_layout = { 'window': 'call CreateCenteredFloatingWindow()' }
+else
+  let g:fzf_layout = { 'down': '40%' }
+endif
 
 " Syntax highlight preview
 "if executable('highlight')
