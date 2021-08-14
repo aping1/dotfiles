@@ -301,8 +301,9 @@ if [ ! $TERM = dumb ]; then
         pick'autopair.zsh' \
         atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' \
             hlissner/zsh-autopair \
+        atload'zstyle '\'':completion:*:*:git:*'\'' script $PWD/git-completion.bash' \
+            felipec/git-completion \
         mv'contrib/completion/git-completion.zsh -> _git' \
-        !bash pick'contrib/completion/git-completion.bash' \
             git/git \
         as"program" pick"bin/git-dsf" \
             zdharma/zsh-diff-so-fancy \
@@ -335,13 +336,15 @@ if [ ! $TERM = dumb ]; then
             atload'unset -f __required_sbin;' \
                 zdharma/null
 
-        zinit ice wait"!" svn multisrc'{completion.zsh,git.zsh,history.zsh,functions.zsh}' notify
+        # removed git.zsh from below
+        zinit ice wait"!" svn multisrc'{completion.zsh,history.zsh,functions.zsh}' notify
         zsnippet OMZ::lib
         zinit ice as'completion';
         zinit snippet OMZ::plugins/pip/_pip
         zinit ice wait"0b" lucid
         zsnippet OMZ::plugins/web-search
         zsnippet OMZ::plugins/pip
+        zsnippet OMZ::plugins/git
         zsnippet OMZ::plugins/python
         zsnippet OMZ::plugins/jsontools
         zinit ice wait"0b" lucid as'completion' has'terraform'
