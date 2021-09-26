@@ -5,6 +5,7 @@
 # # ln -s $(brew --cellar python)/* ~/.pyenv/versions/
 # fi
 if (( $+commands[pyenv] )); then
+    PATH="$(pyenv root)/shims:${PATH}"
     eval "$(pyenv init -)"
     (( $+commands[pyenv-virtualenv-init] )) && eval "$(pyenv virtualenv-init -)" || print -- 'Missed virtualenv-init' >&2
 fi
