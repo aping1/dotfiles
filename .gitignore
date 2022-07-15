@@ -1,7 +1,9 @@
 
+.python_version
 .env
 config/nvim/.netrwhist
 config/nvim/plugged/**
 tmux/resurrect/tmux_resurrect_*
 tmux/plugins/*
 vim/bundle/**
+
