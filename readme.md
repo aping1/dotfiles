@@ -6,6 +6,14 @@
 
     git clone --recursive  git@github.com:allisonmarw/dotfiles.git ~/.dotfiles && ~/.dotfiles/install.zsh
 
+# TMUX YANk
+copy the remote/.tmux/yank.sh remotely with a tmux config on the **remote**
+or use the zsh ocs52_copy zsh function `fpath+=("$DOTFILES/config/zsh/functions")`
+
+```bash
+.tmux.conf:set -g @override_copy_command 'yank.sh'"
+```
+
 # Language Servers
 
 ## js
@@ -14,7 +22,7 @@ install node and use package.json
 
 ## python
 
-Use the requirments.txt
+[Use](Use) the requirments.txt
 
 # Modules
 
