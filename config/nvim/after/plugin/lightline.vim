@@ -156,7 +156,7 @@ function! s:LoadLightline()
             \     'pyenv': '(&filetype=="python"&&exists("pyenv#pyenv#is_enabled")&&1==pyenv#pyenv#is_enabled()&&winwidth(0)>getbufvar("b:", "small_threshold", g:small_threshold))',
             \     'pyenv_active': '(&filetype=="python"&&exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated())',
             \     'method': '(index(g:lightline_blacklist,&filetype)!=-1&&winwidth(0)>=getbufvar("b:", "medium_threshold", g:medium_threshold))',
-            \     'test_status': '(index(g:lightline_blacklist,&filetype)==-1&&(getbufvar("b:","testing_status",0)!=0)&&(getbufvar("b:","ale_linted",0)!=0))'
+            \     'test_status': '(index(g:lightline_blacklist,&filetype)==-1&&(getbufvar("b:","testing_status",0)!=0)&&exists("b:ale_linted")(getbufvar("b:","ale_linted",0)!=0))'
             \ },
             \ 'component_type': {
             \     'linter_checking': 'left',
