@@ -41,12 +41,15 @@ yabai -m rule --add app='Alfred' manage=off
 yabai -m rule --add app='Dash' manage=off
 yabai -m rule --add title='iStat Menus' manage=off
 
+## <rows>:<cols>:<start-x>:<start-y>:<width>:<height>
 CENTER_SCREEN="4:4:1:0:2:2"
 CORNER_SCREEN="4:4:0:0:2:2"
 FULL_SCREEN="4:4:0:0:4:4"
+BUFFERED_FULLSCREEN="6:6:0:0:5:6"
 
 yabai -m rule --add title="^Supports Options" manage=off grid=${CENTER_SCREEN} label="fileloader_floats" 
 yabai -m rule --add title="^[Cc]hoose a [fF]ile" manage=off grid=${CENTER_SCREEN} label="fileloader_floats" 
+yabai -m rule --add app="^Steam" grid=${FULL_SCREEN} manage=off label="steam_floats" 
 yabai -m rule --add app="^FlashPrint" grid=${FULL_SCREEN} manage=off label="flashprint_floats" 
 yabai -m rule --add title="^Print$" grid=${CENTER_SCREEN} manage=off label="print_floats" 
 yabai -m rule --add app="^Dash$" manage=off label="dash_floats" 
@@ -60,5 +63,5 @@ yabai -m rule --add app="App Store" grid=${CORNER_SCREEN} manage=off label="no_m
 yabai -m rule --add app="Alfred" manage=off label="no_mng_alfred" 
 yabai -m rule --add title="[pP]reference[s]?" grid=${CENTER_SCREEN} manage=off label="prefs_float" 
 yabai -m rule --add title="[Ss]etting[s]?$" manage=off label="vmware_settings_float" 
-yabai -m rule --add title="Virtual Machine Library" label="vmware_Lib_float" 
-
+yabai -m rule --add title="Virtual Machine Library" label="vmware_Lib_float" grid="${CENTER_SCREEN}"
+yabai -m rule --add app="VMware Fusion" title=Bootcamp label="vmware_bootacmp" grid="${BUFFERED_FULLSCREEN}"
