@@ -260,7 +260,7 @@ if [ ! $TERM = dumb ]; then
         changyuheng/fz \
         has'fzf' \
         bindmap'^R -> ^K' \
-        compile'{fzf-tab.zsh,lib/*/init.zsh' \
+        compile'{fzf-tab.zsh,lib}/*/init.zsh' \
         pick'fzf-tab.plugin.zsh' \
         atload'zinit_plugin_loaded_callback' \
         Aloxaf/fzf-tab \
@@ -336,7 +336,6 @@ if [ ! $TERM = dumb ]; then
             atload'unset -f __required_sbin;' \
                 zdharma/null
 
-        # removed git.zsh from below
         zinit ice wait"!" svn multisrc'{completion.zsh,history.zsh,functions.zsh}' notify
         zsnippet OMZ::lib
         zinit ice as'completion';
@@ -366,3 +365,5 @@ if (( $+PROFILING )); then
 fi
 
 export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
+
+eval $(thefuck --alias)
