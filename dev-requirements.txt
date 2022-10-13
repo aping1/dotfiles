@@ -1,3 +1,4 @@
+pynvim
 pylint
 flake8
 black

@@ -1,11 +1,9 @@
-pynvim
-neovim
-jedi
-msgpack
-flake8
-black
+PyYAML==5.3.1
+Pygments==2.5.2
+ansicolor==0.2.6
 appdirs
 attrs
+black
 black
 bypy
 certifi==2019.9.11
@@ -14,6 +12,7 @@ click
 dill
 flake8
 greenlet
+jedi
 mccabe
 msgpack
 multiprocess
@@ -31,5 +30,3 @@ toml
 typed-ast
 urllib3
 zipp
-PyObjC
-
