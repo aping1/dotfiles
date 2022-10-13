@@ -1,4 +1,4 @@
-# Allison Wampler's Dotfiles
+[#](#) Allison Wampler's Dotfiles
 
 # Info 
 
@@ -6,6 +6,15 @@
 
     git clone --recursive  git@github.com:allisonmarw/dotfiles.git ~/.dotfiles && ~/.dotfiles/install.zsh
 
+# Language Servers
+
+## js
+
+install node and use package.json
+
+## python
+
+Use the requirments.txt
 
 # Modules
 
