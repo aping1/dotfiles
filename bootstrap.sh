@@ -14,7 +14,7 @@ _trapped() {
 
 trap '_trapped $?' EXIT 
 
- [[ -d "${DOTFILES:="~/.dotfiles"}" ]] &&  export DOTFILES || exit 2
+ [[ -d "${DOTFILES:="$HOME/.dotfiles"}" ]] &&  export DOTFILES || exit 2
 
 # make sure deps exists
 ( 

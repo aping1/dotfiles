@@ -2,6 +2,7 @@ if exists("g:loaded_custom_coc")
   finish
 endif
 let g:loaded_custom_coc= 1
+let g:coc_disable_startup_warning = 1
 
 " We'll use coc lsp
 augroup PYONLY
