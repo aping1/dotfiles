@@ -180,6 +180,7 @@ if dein#load_state('~/.cache/dein')
     " --- Tags (ctags, lsp)
     call dein#add('liuchengxu/vista.vim')
 
+    call dein#add('lambdalisue/vim-pyenv')
     " Python virtuel env
     if executable('pyenv')
         call dein#add('lambdalisue/vim-pyenv')
