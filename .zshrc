@@ -109,9 +109,9 @@ function __required_sbin()  {
         compile'{*.zsh,tmux/*.zsh,task/*.zsh,project/*}' \
         multisrc'{init.zsh,*/init.zsh}' from'null' \
         _local/fbtools \
-        as'null' id-as'Osxalias' bpick'*Darwin*' nocd nocompile \
+        as'null' id-as'Osxalias' bpick'*darwin*' nocd nocompile \
         atload'(( $+functions[_darwin_aliases] )) && _darwin_aliases' \
-        zdharma/null
+        zdharma-continuum/null
 }
 
 if [ ! $TERM = dumb ]; then
@@ -132,7 +132,7 @@ if [ ! $TERM = dumb ]; then
         mkdir -p ${ZINIT_DOTFILES} || return 1
         print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
         command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
-        command git clone https://github.com/zdharma/zinit "${ZINIT_DOTFILES}/${ZINIT_BIN_DIR_NAME}" && \
+        command git clone https://github.com/zdharma-continuum/zinit "${ZINIT_DOTFILES}/${ZINIT_BIN_DIR_NAME}" && \
             print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
             print -P "%F{160}▓▒░ The clone has failed.%f%b"
     fi
@@ -171,9 +171,9 @@ if [ ! $TERM = dumb ]; then
     # Config source  #
     ##################
     zadd wait'!' light-mode compile'*handler' for \
-        zinit-zsh/z-a-patch-dl \
-        zinit-zsh/z-a-submods \
-        zinit-zsh/z-a-man
+        zdharma-continuum/zinit-annex-patch-dl \
+        zdharma-continuum/zinit-annex-submods \
+        zdharma-continuum/zinit-annex-man 
 
     # create main local config from "${ZINIT[PLUGINS_DIR]}/_local---config-files"
     [[ -d "${DOTFILES}/config/zsh" ]] && (
@@ -225,7 +225,7 @@ if [ ! $TERM = dumb ]; then
         trigger-load'!dotbare;!fadd;!fedit;!finit;!fstat;!flog;fcheckout' \
         kazhala/dotbare \
         trigger-load'!gencomp' pick'zsh-completion-generator.plugin.zsh'  \
-        atload'alias gencomp="zinit silent nocd as\"null\" wait\"2\" atload\"zinit creinstall -q _local/config-files; zicompinit_fast\" for /dev/null; gencomp"' \
+        atload'alias gencomp="zinit silent nocd as\"knull\" wait\"2\" atload\"zinit creinstall -q _local/config-files; zicompinit_fast\" for /dev/null; gencomp"' \
         RobSis/zsh-completion-generator
 
     function zinit_plugin_loaded_callback() {
@@ -246,7 +246,7 @@ if [ ! $TERM = dumb ]; then
         zsh-users/zsh-completions \
         compile'{hsmw-*,test/*}' \
         atload'zinit_plugin_loaded_callback' \
-        zdharma/history-search-multi-word \
+        zdharma-continuum/history-search-multi-word \
         as"completions" \
         bindmap'^T -> ^F; ^R -> ^T' \
         pick"shell/key-bindings.zsh" \
@@ -291,9 +291,9 @@ if [ ! $TERM = dumb ]; then
         has'systemctl' \
         OMZP::systemd/systemd.plugin.zsh \
         bpick'*linux*' atinit'alias open='\''xdg-open'\' \
-        zdharma/null \
+        zdharma-continuum/null \
         bpick'*darwin*' atinit'unalias open' \
-        zdharma/null \
+        zdharma-continuum/null \
         bpick'*darwin*' \
         load'[[ $TERM_PROGRAM == iTerm.app ]]' \
                 OMZP::iterm2 \
@@ -306,7 +306,7 @@ if [ ! $TERM = dumb ]; then
         mv'contrib/completion/git-completion.zsh -> _git' \
             git/git \
         as"program" pick"bin/git-dsf" \
-            zdharma/zsh-diff-so-fancy \
+            zdharma-continuum/zsh-diff-so-fancy \
         atclone"gencomp k; ZINIT[COMPINIT_OPTS]='-i' zpcompinit" atpull'%atclone' \
         atinit'(( $+aliases[ls] )) && unalias ls; (( $+functions[ls])) && unset -f ls; alias ls=k' \
             supercrabtree/k \
@@ -317,14 +317,14 @@ if [ ! $TERM = dumb ]; then
 
         zadd wait light-mode for \
             atload'__required_sbin' compile'*handler'\
-            zinit-zsh/z-a-bin-gem-node
+            zdharma-continuum/zinit-annex-bin-gem-node
 
         # Async Highligting & Compinit
         zadd 0c light-mode for \
             atinit'ZINIT[COMPINIT_OPTS]=-C;(( $+funtions[zicompinit_fast] )) && \
             zicompinit_fast || ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zicdreplay' \
             atload'FAST_HIGHLIGHT[use_async]=1' \
-            zdharma/fast-syntax-highlighting \
+            zdharma-continuum/fast-syntax-highlighting \
             compile'{src/*.zsh,src/strategies/*}' pick'zsh-autosuggestions.zsh' \
             atload'_zsh_autosuggest_start && zinit_plugin_loaded_callback' \
             zsh-users/zsh-autosuggestions \
@@ -334,7 +334,7 @@ if [ ! $TERM = dumb ]; then
             sei40kr/fast-alias-tips-bin \
             as"null" id-as'Cleanup0c' nocd nocompile \
             atload'unset -f __required_sbin;' \
-                zdharma/null
+                zdharma-continuum/null
 
         zinit ice wait"!" svn multisrc'{completion.zsh,history.zsh,functions.zsh}' notify
         zsnippet OMZ::lib
@@ -364,6 +364,10 @@ if (( $+PROFILING )); then
     zprof
 fi
 
-export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=/usr/local/opt/openssl@1.1/lib:$DYLD_LIBRARY_PATH
 
-eval $(thefuck --alias)
+if command -v thefuck ; then
+    eval $(thefuck --alias)
+else
+    echo "Install thefuck to use the 'fuck' alias"
+fi
