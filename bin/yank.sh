@@ -1,5 +1,6 @@
-
-function ocs52_copy() 
+#!bash
+emulate -L bash
+ocs52_copy() 
 {
     # Copy via OSC 52 ANSI escape sequence to controlling terminal
     buflen=$( printf -- '%s' "${*}" | wc -c )

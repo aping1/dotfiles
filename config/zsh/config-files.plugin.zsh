@@ -49,7 +49,6 @@ fi
 zmodload zsh/mapfile
 autoload -Uz chpwd_recent_dirs add-zsh-hook
 add-zsh-hook chpwd chpwd_recent_dirs
-zstyle ':chpwd:*' recent-dirs-file "$TMPDIR/chpwd-recent-dirs"
 (){
     emulate -L zsh
     local chpwdrdf

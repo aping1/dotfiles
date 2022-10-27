@@ -362,4 +362,3 @@ if (( $+PROFILING )); then
     zprof
 fi
 
-export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH

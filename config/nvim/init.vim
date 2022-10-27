@@ -643,7 +643,10 @@ let test#python#patterns = {
             \}
 
 " When writing a buffer (no delay), and on normal mode changes (after 750ms).
-call neomake#configure#automake('nw', 750)
+if exists('neomake#configure#automake')
+    call neomake#configure#automake('nw', 750)
+endif
+let g:loaded_projectionist=0
 
 let g:neomake_python_enabled_makers = []
 let g:neomake_jsx_enabled_makers= []
@@ -800,4 +803,5 @@ let g:comfortable_motion_friction = 1.9
 
 let g:slime_target = "neovim"
 
+let g:coc_disable_startup_warning = 1
 " { :set sw=2 ts=2 et }
