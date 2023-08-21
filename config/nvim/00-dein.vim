@@ -289,6 +289,10 @@ if dein#load_state('~/.cache/dein')
     "call dein#add('juliosueiras/vim-terraform-completion',
     "            \ {'on_ft': ['tf', 'tfvars']})
 
+    call dein#add('nvim-treesitter/nvim-treesitter')
+    call dein#add('neovim/nvim-lspconfig')
+    call dein#add('ray-x/go.nvim')
+    call dein#add('ray-x/guihua.lua')
     call dein#add('vim-scripts/applescript.vim',
                 \ {'on_ft': ['applescript']})
     call dein#add('ekalinin/Dockerfile.vim',

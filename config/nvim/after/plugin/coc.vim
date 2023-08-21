@@ -39,7 +39,16 @@ if exists('*lsp#register_server')
           \ 'whitelist': ["c", "cpp", "objc", "objcpp"],
           \ })
     "    else
-    "        echomsg "pyls is not available"
+    "        echomsg "ccls is not available"
+  endif
+  if executable('gopls')
+    autocmd User lsp_setup call lsp#register_server({
+          \ 'name': 'gopls',
+          \ 'cmd': {server_info->['gopls']},
+          \ 'whitelist': ["go"],
+          \ })
+    "    else
+    "        echomsg "gopls is not available"
   endif
 endif
 augroup END

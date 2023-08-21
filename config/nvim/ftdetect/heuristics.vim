@@ -52,14 +52,14 @@ function! s:projectionist_roots()
   return reverse(sort(keys(get(b:, 'projectionist', {})), function('projectionist#lencmp')))
 endfunction
 
-command! ReloadProjections if exists('b:projectionist_file') | call ProjectionistDetect(fnamemodify(b:projectionist_file, ':p:h')) | call <SID>SetProjections() | elseif exists('*projectionist#json_parse') | call LoadHeuristics() | else | echomsg "Not a projectionist" | endif 
+command! ReloadProjections if exists('*ProjectionistDetect') | call ProjectionistDetect(fnamemodify(b:projectionist_file, ':p:h')) | call <SID>SetProjections() | elseif exists('*projectionist#json_parse') | call LoadHeuristics() | else | echomsg "Not a projectionist" | endif 
 
 command! ProjectionistRoots echo <SID>projectionist_roots()
 
 augroup detect_project
     autocmd!
     autocmd Syntax * if g:loaded_projectionist == 1 | call LoadHeuristics() |
-          \ else | exe 'autocmd WinNew * call LoadHeuristics() | call ProjectionistDetect(expand("%"))' | endif
+                \ else | exe 'autocmd WinNew * call LoadHeuristics() | if exists("*ProjectionistDetect") | call ProjectionistDetect(expand("%")) | endif' | endif
     autocmd User ProjectionistDetect call <SID>SetProjections()
 augroup end
 

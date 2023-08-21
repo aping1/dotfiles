@@ -44,6 +44,7 @@
     typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
     status
+    dir
     background_jobs
     command_execution_time    # previous command duration
     time                      # current time
@@ -445,13 +446,13 @@
 
 # Turn timestamp on for old prompts
 function p10k-on-pre-prompt() { 
-    p10k display '1|2|3/right'=show '2/left/time'=hide '2/left/status'=hide '2/left/background_jobs'=hide
+    p10k display '1|2|3/right'=show '2/left/time'=hide '2/left/status'=hide '2/left/background_jobs'=hide '2/right/dir'=hide
 }
 function p10k-on-post-prompt() {
     #[[ $POWERLEVEL9K_O $last_prompt_dir == $PWD ]] && \
     # hides 1st|2nd row for the right prompt segment
     # show time, background_jobs, stats on the left
-    p10k display '1|2/right'=hide '2/left/dir'=show '2/left/time'=show '2/left/background_jobs'=show '2/left/status'=show
+    p10k display '1|2/right'=hide '2/left/time'=show '2/right/dir'=show '2/left/background_jobs'=show '2/left/status'=show
     #last_prompt_dir=$PWD
 }
 

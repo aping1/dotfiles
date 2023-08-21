@@ -310,7 +310,10 @@ if [ ! $TERM = dumb ]; then
         from'gh' pick'zsh-z.plugin.zsh' \
         agkozak/zsh-z \
         multisrc'helpers.d/*.zsh' from'null' \
-            _local/helpers
+            _local/helpers \
+        as"program" make'!' atclone'./direnv hook zsh > zhook.zsh' \
+            atpull'%atclone' src"zhook.zsh" \
+            direnv/direnv
 
         zadd wait light-mode for \
             atload'__required_sbin' compile'*handler'\
@@ -362,3 +365,6 @@ if (( $+PROFILING )); then
     zprof
 fi
 
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/bin/terraform terraform

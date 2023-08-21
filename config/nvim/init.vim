@@ -95,6 +95,18 @@ set fillchars+=eob:›
 "	  eob:c		'~'		empty lines at the end of a buffer
 
 set clipboard=unnamedplus
+let g:clipboard = {
+      \   'name': 'myClipboard',
+      \   'copy': {
+      \      '+': 'tmux load-buffer -',
+      \      '*': 'tmux load-buffer -',
+      \    },
+      \   'paste': {
+      \      '+': 'tmux save-buffer -',
+      \      '*': 'tmux save-buffer -',
+      \   },
+      \   'cache_enabled': 1,
+      \ }
 
 
 " Reload .vimrc immediately when edited
@@ -177,10 +189,10 @@ let g:jedi#use_splits_not_buffers = 'right'
 function! PythonFromEnvironment(py2_sel, py3_sel)
     let g:jedi#force_py_version='3'
     if exists("$VIRTUAL_ENV")
-        let g:python_host_prog=substitute(system('command -v python'), '\n', '', 'g')
+        let g:python_host_prog=substitute(system('command -v python2'), '\n', '', 'g')
         let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
     else
-        let g:python_host_prog=substitute(system('type -a python | awk "NR=='. a:py2_sel .'{print \$NF}"'), '\n', '', 'g')
+        let g:python_host_prog=substitute(system('type -a python2 | awk "NR=='. a:py2_sel .'{print \$NF}"'), '\n', '', 'g')
         let g:python3_host_prog=substitute(system('type -a python3 | awk "NR=='. a:py3_sel .'{print \$NF}"'), '\n', '', 'g')
     endif
 endfunction
@@ -461,15 +473,18 @@ let g:ale_linters = {
             \ 'c' : ['cppcheck'],
             \ 'sh' : ['shellcheck'],
             \ 'zsh' : ['deoplete-zsh'],
+            \ 'go' : ['gofmt', 'gopls'],
             \ 'terraform' : ['tflint'],
             \ 'javascript' : ['stylelint', 'eslint'],
             \ 'json' : ['jsonlint'],
             \ 'dockerfile' : ['hadolint'],
             \ }
+let g:ale_go_langserver_executable='gopls'
 
 " " Fix Python files with autopep8 and yapf.
 let g:ale_fixers = { 
             \ 'c' : ['clang-format', 'remove_trailing_lines'],
+            \ 'go' : ['gofmt'],
             \ 'lua' : ['trimwhitespace', 'remove_trailing_lines'],
             \ 'terraform' : ['terraform'],
             \ 'json' : ['prettier'] }
@@ -480,9 +495,11 @@ let g:ale_python_flake8_executable = 'python3'
 let g:ale_python_flake8_args = '-m flake8 --max-line-length=' . linelen
 let g:ale_python_flake8_options = '-m flake8 --max-line-length=' . linelen
 
+let g:ale_go_langserver_executable='gopls'
 let g:ale_fix_on_save = 0
 " Us quickfix with 'qq' delete
 " quickfix can be set with 'nvim -d FILENAME' so use loclist
+" le
 let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
