@@ -1,11 +1,11 @@
 {
   "/Users/aping1/Library/Application Support/Übersicht/widgets/*": {
-    "*index.jsx" : {
+    "*index.jsx": {
       "type": "source",
       "skeleton": "ubersicht_widget",
       "alternate": "/U{}some_script.applescript"
     },
-    "*some_script.applescript" : {
+    "*some_script.applescript": {
       "type": "source",
       "skeleton": "json_applescript",
       "alternate": "/U{}index.jsx"
@@ -32,11 +32,11 @@
     },
     "README.md": {
       "type": "readme",
-      "skeleton" : "readme"
+      "skeleton": "readme"
     },
     "*.applescript": {
       "make": "osacompile -o {}.scpt {}.applescript",
-      "start":"osascript {}.applescript"
+      "start": "osascript {}.applescript"
     },
     "test_*.py": {
       "type": "test",
@@ -52,6 +52,14 @@
       "type": "setuptools",
       "make": "python3 setup.py sdist bdist_wheel",
       "skeleton": "python_setup"
+    },
+    "*_test.go": {
+      "alternate": "{}.go",
+      "type:": "unittest"
+    },
+    "*.go": {
+      "alternate": "{}_test.go",
+      "type:": "source"
     }
   }
 }

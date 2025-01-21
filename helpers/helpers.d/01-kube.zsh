@@ -17,3 +17,25 @@ if [ $commands[kubectl] ]; then
   }
 fi
 
+  # -E: remove $@ -D: ignore unknonw
+function kgetall { 
+  zparseopts -E -D -- \
+           n+:=o_namespace -namespace+:=o_namespace
+  typeset -A helper
+  o_namespace=("${(@)o_namespace:#-n#--namespace}")
+  if ! (( #o_namespace )); then
+     kubectl api-resources --verbs=list --namespaced -o name | xargs -n1 kubectl get --show-kind --ignore-not-found
+     return 0
+  fi
+  helper=($(seq 1 ${#o_namespace}))
+  for ns in ${(@v)helper}; do
+     [[ ${o_namespace[$ns]} ]] || continue
+     printf 'Namespace: %s \n' "${o_namespace[$ns]}"
+     kubectl api-resources --verbs=list --namespaced -o name | xargs -n1 kubectl --namespace "${o_namespace[$ns]}" get --show-kind --ignore-not-found
+  done
+}
+
+
+export KUBECTL_EXTERNAL_DIFF="dyff between --omit-header --set-exit-code"
+
+complete -F __start_kubectl kgetall

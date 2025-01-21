@@ -25,7 +25,7 @@
 
     # Prompt sample https://github.com/romkatv/powerlevel10k/blob/master/config/p10k-classic.zsh
     # https://github.com/romkatv/powerlevel10k/blob/master/README.md#batteries-included
-    # Left prompt segments.
+    # kubecontext https://github.com/romkatv/powerlevel10k/blob/4bbb198a606b69dfb2d86ac33686e3d41f6d0141/config/p10k-rainbow.zsh#L1333-L1335
     typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     os_icon
     dir                       # current directory
@@ -33,8 +33,11 @@
     context                   # user@host
     virtualenv                # python virtual environment
     pyenv
+    gvm
     terraform
     vim_shell
+    kubecontext
+    gcloud
     newline
     time
     status
@@ -65,7 +68,7 @@
   # ===============================================================
   # p10k 
   # ===============================================================
-  typeset -g POWERLEVEL9K_MODE=nerdfont-complete
+  typeset -g POWERLEVEL9K_MODE=nerdfont-v3
   typeset -g POWERLEVEL9K_ICON_BEFORE_CONTENT=true
     # When set to `moderate`, some icons will have an extra space after them. This is meant to avoid
   # icon overlap when using non-monospace fonts. When set to `none`, spaces are not added.
@@ -140,7 +143,7 @@
 
 
   # ===============================================================
-  # RULER
+  # RULERj
   # ===============================================================
   typeset -g POWERLEVEL9K_SHOW_RULER=true
   typeset -g POWERLEVEL9K_RULER_CHAR='─'
@@ -150,6 +153,20 @@
   # ===============================================================
   #typeset -g POWERLEVEL9K_ICON_PADDING=none
   #typeset -g POWERLEVEL9K_DIR_ANCHOR_BOLD=false
+  #
+  #
+  typeset -g POWERLEVEL9K_KUBECONTEXT_CLASSES=(
+       '*-prod*'  PROD    # These values are examples that are unlikely
+       '*-stag*'  STAGE # to match your needs. Customize them as needed.
+      '*'       DEFAULT)
+
+  typeset -g POWERLEVEL9K_KUBECONTEXT_PROD_FOREGROUND=9
+  typeset -g POWERLEVEL9K_KUBECONTEXT_PROD_BACKGROUND=0
+  typeset -g POWERLEVEL9K_KUBECONTEXT_STAGE_FOREGROUND=11
+  typeset -g POWERLEVEL9K_KUBECONTEXT_DEFAULT_FOREGROUND=15
+ #  typeset -g POWERLEVEL9K_KUBECONTEXT_DEFAULT_BACKGROUND=5
+  typeset -g POWERLEVEL9K_KUBECONTEXT_PROD_VISUAL_IDENTIFIER_EXPANSION=' '
+
 
   # Blue current directory.
   typeset -g POWERLEVEL9K_DIR_FOREGROUND=$grey0x
@@ -191,7 +208,7 @@
   # typeset -g POWERLEVEL9K_STATUS_ERROR_SIGNAL_ PIPE_VISUAL_IDENTIRFIED_COLOR=${red0x}
   typeset -g POWERLEVEL9K_STATUS_OK_VISUAL_IDENTIFIER_EXPANSION=✔
   typeset -g POWERLEVEL9K_STATUS_ERROR_SIGNAL_VISUAL_IDENTIFIER_EXPANSION=
-  typeset -g POWERLEVEL9K_STATUS_ERROR_PIPE_VISUAL_IDENTIFIER_EXPANSION=ﳣ
+  typeset -g POWERLEVEL9K_STATUS_ERROR_PIPE_VISUAL_IDENTIFIER_EXPANSION=󰟥
   typeset -g POWERLEVEL9K_STATUS_ERROR_VISUAL_IDENTIFIER_EXPANSION=!
   typeset -g POWERLEVEL9K_STATUS_ERROR_VISUAL_IDENTIFIER_COLOR=${red0x}
   typeset -g POWERLEVEL9K_STATUS_SIGNAL_FOREGROUND=${yellow0x}
@@ -216,9 +233,10 @@
 
   typeset -g POWERLEVEL9K_VCS_{INCOMING,OUTGOING}_CHANGESFORMAT_FOREGROUND=$magenta0x
   # Don't show remote branch, current tag or stashes.
-  typeset -g POWERLEVEL9K_VCS_GIT_HOOKS=(vcs-detect-changes git-untracked git-aheadbehind)
+  # default: vcs-detect-changes git-untracked git-aheadbehind git-stash git-remotebranch git-tagname
+  # typeset -g POWERLEVEL9K_VCS_GIT_HOOKS=(vcs-detect-changes git-untracked git-aheadbehind b) 
   typeset -g POWERLEVEL9K_VCS_GIT_ICON=''
-  typeset -g POWERLEVEL9K_VCS_UNTRACKED_ICON='﯏ '
+  typeset -g POWERLEVEL9K_VCS_UNTRACKED_ICON='󱀦 '
 
   typeset -g POWERLEVEL9K_VCS_MODIFIED_ICON='✹'
   typeset -g POWERLEVEL9K_VCS_CONFLICT_ICON=''
@@ -226,10 +244,10 @@
   typeset -g POWERLEVEL9K_VCS_DIRTY_ICON=' '
   # typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=
   typeset -g POWERLEVEL9K_VCS_COMMIT_ICON='#' #<commit>
-  typeset -g POWERLEVEL9K_VCS_UNMERGED_ICON='נּ '
+  typeset -g POWERLEVEL9K_VCS_UNMERGED_ICON=''
   #typeset -g POWERLEVEL9K_VCS_GIT_GITHUB_ICON=
   typeset -g POWERLEVEL9K_VCS_BRANCH_ICON='\uF126 '
-  typeset -g POWERLEVEL9K_VCS_STASHES_ICON='裂'
+  typeset -g POWERLEVEL9K_VCS_STASHES_ICON=''
   # Don't show staged, unstaged, untracked indicators.
   # Show '*' when there are staged, unstaged or untracked files.
   # Show '⇣' if local branch is behind remote.
@@ -300,7 +318,7 @@
   # Don't show Python version.
   typeset -g POWERLEVEL9K_VIRTUALENV_SHOW_PYTHON_VERSION=true
   typeset -g POWERLEVEL9K_VIRTUALENV_{LEFT,RIGHT}_DELIMITER=
-  typeset -g POWERLEVEL9K_PYENV_CONTENT_EXPANSION='${P9K_CONTENT}${${P9K_PYENV_PYTHON_VERSION:#$P9K_CONTENT}:+ $P9K_PYENV_PYTHON_VERSION}'
+  typeset -g POWERLEVEL9K_PYENV_CONTENT_EXPANSION='${P9K_CONTENT}${${P9K_PYENV_PYTHON_VERSION:#$P9K_CONTENT}:+ $P9K_PYENV_PYTHON_VERSION} '
   # typeset -g POWERLEVEL9K_PYENV_FOREGROUND=37
   typeset -g POWERLEVEL9K_PYENV_FOREGROUND=${green0x}
   # Hide python version if it doesn't come from one of these sources.

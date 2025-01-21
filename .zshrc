@@ -45,8 +45,7 @@ function zadd() {
 }
 function znotify() {
     # echo "ZT Installing ${1/#[0-9][a-c]/wait"$1"} ${@:2}" >&2
-    zinit depth'3' notify ${1/#[0-9][a-c]/wait"$1"} "${@:2}"
-}
+    zinit depth'3' notify ${1/#[0-9][a-c]/wait"$1"} "${@:2}" }
 function zsnippet() {
     (( $+DEBUG )) && echo " Installing snippet ${1/#[0-9][a-c]/wait"$1"} ${@:2}" >&2
     zinit snippet "${@}"
@@ -247,7 +246,7 @@ if [ ! $TERM = dumb ]; then
         as"completions" \
         bindmap'^T -> ^F; ^R -> ^T' \
         pick"shell/key-bindings.zsh" \
-        id-as"junegunn/fzf_master" src"shell/completion.zsh" \
+        id-as"junegunn/fzf_master" src"shell/key-bindings.zsh" \
         atload'zinit_plugin_loaded_callback' \
         junegunn/fzf \
         has'zshz' \
@@ -270,8 +269,11 @@ if [ ! $TERM = dumb ]; then
         atinit'export SYSTEMD_EDITOR=${EDITOR:-vim}' \
         OMZ::plugins/systemd/systemd.plugin.zsh \
         from'gh' atload'bindkey "\eP" fuzzy-search-and-edit' \
-        seletskiy/zsh-fuzzy-search-and-edit
-
+        seletskiy/zsh-fuzzy-search-and-edit \
+        from'gh' make as"program" mv"pbcopy-secure -> spbcopy" \
+        alyssais/secure-pbcopy.git \
+        from'gh' \
+        dgnest/zsh-gvm-plugin
 
     ##################
     # Wait'0b' block #
@@ -298,7 +300,7 @@ if [ ! $TERM = dumb ]; then
         pick'autopair.zsh' \
         atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' \
             hlissner/zsh-autopair \
-        atload'zstyle '\'':completion:*:*:git:*'\'' script $PWD/git-completion.bash' \
+        atload'zstyle '\'':completion:*:*:git:*'\'' script $PWD/src/git-completion.bash' \
             felipec/git-completion \
         mv'contrib/completion/git-completion.zsh -> _git' \
             git/git \
@@ -309,6 +311,7 @@ if [ ! $TERM = dumb ]; then
             supercrabtree/k \
         from'gh' pick'zsh-z.plugin.zsh' \
         agkozak/zsh-z \
+        kyounger/zsh-gcloud \
         multisrc'helpers.d/*.zsh' from'null' \
             _local/helpers
 
@@ -333,24 +336,40 @@ if [ ! $TERM = dumb ]; then
             atload'unset -f __required_sbin;' \
                 zdharma-continuum/null
 
+        if (( $+commands[direnv] )); then
+            eval "$(direnv hook zsh)"
+        fi
+
+        if (( $+commands[tctl] )); then
+            eval "$(tctl completion zsh)"
+        fi
+        if (( $+commands[teleport] )); then
+            eval "$(teleport completion zsh)"
+        fi
+        if (( $+commands[cloud-admin] )); then
+            eval "$(cloud-admin completion zsh)"
+        fi
+        #zinit ice blockf
+        #zinit snippet $(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
+
+
         # removed git.zsh from below
-        zinit ice wait"!" svn multisrc'{completion.zsh,history.zsh,functions.zsh}' notify
-        zsnippet OMZ::lib
-        zinit ice as'completion';
-        zinit snippet OMZ::plugins/pip/_pip
-        zinit ice wait"0b" lucid
-        zsnippet OMZ::plugins/web-search
-        zsnippet OMZ::plugins/pip
-        zsnippet OMZ::plugins/git
-        zsnippet OMZ::plugins/python
-        zsnippet OMZ::plugins/jsontools
-        zinit ice wait"0b" lucid as'completion' has'terraform'
-        zsnippet OMZ::plugins/terraform
-        zinit ice wait"0b" lucid as'completion' has'helm'
-        zsnippet OMZ::plugins/helm
-        zinit ice wait"0b" lucid as'completion' has 'docker'
-        zsnippet OMZ::plugins/docker-compose
-        zsnippet OMZ::plugins/docker-machine
+        # zinit ice wait"!" svn multisrc'{completion.zsh,history.zsh,functions.zsh}' notify
+        # zsnippet OMZ::lib
+        # zinit ice as'completion';
+        # zinit snippet OMZ::plugins/pip/_pip
+        # zinit ice wait"0b" lucid
+        # zsnippet OMZ::plugins/web-search
+        # zsnippet OMZ::plugins/pip
+        # zsnippet OMZ::plugins/git
+        # zsnippet OMZ::plugins/python
+        # zsnippet OMZ::plugins/jsontools
+
+        # zinit ice wait"0b" lucid as'completion' has'helm'
+        # zsnippet OMZ::plugins/helm
+        # zinit ice wait"0b" lucid as'completion' has 'docker'
+        # zsnippet OMZ::plugins/docker-compose
+        # zsnippet OMZ::plugins/docker-machine
 }
 ####################################
 fi
@@ -363,3 +382,10 @@ if (( $+PROFILING )); then
 fi
 
 export DYLD_LIBRARY_PATH=/usr/local/opt/openssl/lib:$DYLD_LIBRARY_PATH
+
+[[ -s "/Users/awampler/.gvm/scripts/gvm" ]] && source "/Users/awampler/.gvm/scripts/gvm"
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /opt/homebrew/bin/vault vault
+
+complete -o nospace -C /opt/homebrew/Cellar/tfenv/3.0.0/versions/1.5.7/terraform terraform

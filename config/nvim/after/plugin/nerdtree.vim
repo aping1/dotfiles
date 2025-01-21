@@ -81,7 +81,7 @@ let NERDTreeIgnore = [
 let g:NERDTreeGitStatusIndicatorMapCustom = {
             \ 'Modified'  : '✹',
             \ 'Staged'    : '✚',
-            \ 'Untracked' : '﯏',
+            \ 'Untracked' : '󱀦',
             \ 'Renamed'   : '➜',
             \ 'Unmerged'  : '',
             \ 'Deleted'   : '✖',

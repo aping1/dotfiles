@@ -11,6 +11,7 @@ autoload -Uz $fpath[1]/*(.:t)
 #########################
 # IF EXECTUABLE Bat
 typeset -g BAT_THEME=TwoDark
+export BAT_THEME
 # some benmakrs on bat vs https://github.com/sharkdp/bat/blob/master/doc/alternatives.md
 #  *auto*, full, plain, changes, header, grid, numbers, snip.
 typeset -g BAT_STYLE=snip

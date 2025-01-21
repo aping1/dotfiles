@@ -1,0 +1,1 @@
+python3 -c 'import sys, yaml, json; [print(json.dumps(s)) for s in yaml.safe_load_all(sys.stdin.read())]' 

@@ -42,7 +42,7 @@ function ipython_bootstrap () {
 }
 function ipython3_bootstrap () {
     print -- "This does not load ipython default_profile. you can use ipy3" >&2
-    python3 -c 'import IPython; IPython.embed(colors="Linux")'
+    python3 -c 'import IPython; IPython.embed(colors="Linux"); a = get_ipython().configurables[0]; a.editing_mode='vi'; a.init_prompt_toolkit_cli()'
 }
 
 alias system_fillscreen='/usr/bin/yes "$(printf '\''-\n\n\n'\'')" | /usr/bin/head -n $(( $(tput lines) * 31 / 16 ))'

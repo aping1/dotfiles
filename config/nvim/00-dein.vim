@@ -8,18 +8,6 @@ if dein#load_state('~/.cache/dein')
     " relys on spaceship logging functions
     call dein#add('wsdjeg/dein-ui.vim')
 
-    try
-        " For more info on TOML and moving plugins...
-        " https://github.com/Shougo/dein.vim/blob/aa1da8e43b74c109c49281998eab0e148dc042b2/doc/dein.txt
-        let s:toml = '~/.vim/plugins.toml'
-        call dein#load_toml(s:toml, {'lazy': 0})
-    catch /.*/
-        echoerr v:exception
-        echomsg 'Error loading ...'
-        echomsg 'Caught: ' v:exception
-        echoerr 'error ' . s:toml . 'config'
-        call dein#add('mhinz/vim-startify')
-    endtry
 
     try
         " For more info on TOML and moving plugins...
@@ -34,10 +22,14 @@ if dein#load_state('~/.cache/dein')
     endtry
 
     if has('python3')
-        call dein#add('puremourning/vimspector',
-                \ {'hook_post_update': 'VimspectorInstall --enable-python'}
-                \ )
+        "call dein#add('puremourning/vimspector',
+        "        \ {'hook_post_update': 'VimspectorInstall --enable-python'}
+        "        \ )
     endif
+
+   call dein#add('mhinz/vim-startify')
+
+
 
     " Dynamic resize quickfix window
     call dein#add('blueyed/vim-qf_resize')
@@ -121,8 +113,8 @@ if dein#load_state('~/.cache/dein')
     " dispatch windows open in neovim
     call dein#add('radenling/vim-dispatch-neovim')
     " TestFile TestClosest...
-    call dein#add('janko/vim-test')
-    call dein#add('neomake/neomake')
+    " call dein#add('janko/vim-test')
+    " call dein#add('neomake/neomake')
 
     " -- REPLs
     if has('nvim')
@@ -138,8 +130,8 @@ if dein#load_state('~/.cache/dein')
     call dein#add('jpalardy/vim-slime',
                 \{'on_ft':['python', 'ipython']})
     " Snippet engine 
-    call dein#add('SirVer/ultisnips',
-                \{ 'tag': '1.3'})
+    "call dein#add('SirVer/ultisnips',
+    "            \{ 'tag': '1.3'})
 
     call dein#add('honza/vim-snippets')
     call dein#add('srydell/vim-skeleton')
@@ -247,20 +239,20 @@ if dein#load_state('~/.cache/dein')
                     \ 'branch': 'release',
                     \ 'build':  '''existing=~/.config/coc/extensions/node_modules/coc-ccls/node_modules/ws/lib/extension.js; missing=~/.config/coc/extensions/node_modules/coc-ccls/lib/extension.js; command -v gln && LN=gln; [[ -e "$existing" && ! -e "$missing" ]] && mkdir -p "$(dirname "$missing")" && { ${LN:-ln} -rs "$existing" "$missing" 2>/dev/null || ${LN} -s "$existing" "$missing";}''',
                     \ 'hook_post_update': 'call dein#build("coc-ccls") coc#util#install()'})
-        call dein#add('Shougo/deoplete.nvim',
-                    \{ 'hook_post_update': 'UpdateRemotePlugins'})
-        call dein#add('zchee/deoplete-jedi',
-                    \{'on_ft':['python', 'ipython'],
-                    \'depends': ['deoplete.nvim', 'jedi-vim'], 
-                    \'hook_post_update': 'UpdateRemotePlugins',
-                    \'install': 'git submodule update --init'
-                    \})
+        "call dein#add('Shougo/deoplete.nvim',
+        "            \{ 'hook_post_update': 'UpdateRemotePlugins'})
+        "call dein#add('zchee/deoplete-jedi',
+        "            \{'on_ft':['python', 'ipython'],
+        "            \'depends': ['deoplete.nvim', 'jedi-vim'], 
+        "            \'hook_post_update': 'UpdateRemotePlugins',
+        "            \'install': 'git submodule update --init'
+        "            \})
         " required for ZSH Autocomplete
         call dein#add('mtikekar/nvim-send-to-term')
-        call dein#add('deoplete-plugins/deoplete-zsh', {
-                    \ 'on_ft':['zsh'],
-                    \ 'depends': 'nvim-send-to-term'
-                    \ })
+        " call dein#add('deoplete-plugins/deoplete-zsh', {
+        "             \ 'on_ft':['zsh'],
+        "             \ 'depends': 'nvim-send-to-term'
+        "             \ })
     endif
 
     if has('macunix')
@@ -271,10 +263,25 @@ if dein#load_state('~/.cache/dein')
     call dein#add('itchyny/lightline.vim')
     call dein#add('maximbaz/lightline-ale')
 
-    if has('nvim')
-    call dein#add('numirias/semshi',
-                \{'hook_post_update': 'UpdateRemotePlugins'})
-    endif
+    " call dein#add('numirias/semshi',
+                    " \{'hook_post_update': 'UpdateRemotePlugins',
+                    " \'on_ft': ['python']})
+
+    call dein#add("ray-x/guihua.lua")
+    call dein#add("neovim/nvim-lspconfig")
+    call dein#add("nvim-treesitter/nvim-treesitter", {'build': ':TSInstall go'})
+    call dein#add('nvim-treesitter/nvim-treesitter-refactor')
+    call dein#add('ray-x/go.nvim')
+    call dein#add('charlespascoe/vim-go-syntax', {'on_ft': ['go']})
+    call dein#add("ThePrimeagen/refactoring.nvim")
+    call dein#add("nvim-lua/plenary.nvim")
+
+    " https://medium.com/@suyash10581108/go-lang-debugging-simplified-in-neovim-with-delve-and-dap-760bb950305d
+    call dein#add('sebdah/vim-delve', {'on_ft': ['go']})
+    call dein#add('mfussenegger/nvim-dap')
+    call dein#add('leoluz/nvim-dap-go')
+    call dein#add('nvim-neotest/nvim-nio')
+    call dein#add('rcarriga/nvim-dap-ui')
 
     call dein#add('gu-fan/riv.vim', {'on_ft': ['rst']})
     call dein#add('mtdl9/vim-log-highlighting')

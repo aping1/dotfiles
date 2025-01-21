@@ -44,3 +44,14 @@ catch /.*/
     echomsg "CocInstall coc-highlight failed"
 endtry
 '''
+
+[[plugins]]
+repo= 'josa42/coc-go'
+depends='coc.nvim'
+hook_post_source = '''
+try
+    CocInstall coc-go
+catch /.*/
+    echomsg "CocInstall coc-go failed"
+endtry
+'''

@@ -1,11 +1,12 @@
 [user]
+    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJXjZ+Y9StYdC5xhqwc95fSp1nrVT36Qgmt16v9R0vi1
     name = Allison Wampler
-    email = aping1@apt-miss.com
+	email = awampler@crusoeenergy.com
 [merge]
     tool = vimdiff
     guitool = vimrdiff
 [core]
-	excludesfile = ~/.gitignore
+	excludesfile = ~/.gitignore_global
 	editor = vim
 	page = less
 [mergetool]
@@ -51,3 +52,9 @@
     local-branches = !git branch -vv | cut -c 3- | awk '$3 !~/\\[/ { print $1 }'
 [push]
 	default = matching
+[gpg]
+  format = ssh
+[gpg "ssh"]
+  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+[init]
+	defaultBranch = main

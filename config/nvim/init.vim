@@ -271,6 +271,10 @@ autocmd Syntax python let b:ale_linters = ['flake8', 'vimls']
 autocmd Syntax javascript call deoplete#disable() | ALEEnable
 " autocmd Syntax javascript let b:ale_linters = ['eslint', 'stylelint', 'coc']
 autocmd Syntax javascript let b:ale_linters = ['coc', 'eslint']
+autocmd Syntax terraform let b:ale_linters = ["terraform-ls"]
+autocmd Syntax go let b:ale_linters = ["gopls", "golangci-lint"]
+autocmd Syntax go let b:ale_fixers = ["gopls"]
+autocmd Syntax go set foldmethod=syntax
 autocmd BufRead,BufNewFile *.omnijs set filetype=omnijs | set syntax=javascript
 augroup END
 
@@ -280,7 +284,7 @@ augroup END
 
 filetype plugin indent on
 syntax enable
-autocmd VimResized * wincmd =
+" autocmd VimResized * wincmd =
 
 
 set cmdheight=2
@@ -330,6 +334,8 @@ imap OD <ESC>hi
 "if !empty(glob('$HOME/.config/nvim/iron.plugin.lua')) 
 "    silent! luafile $HOME/.config/nvim/iron.plugin.lua
 "endif
+"
+lua require('dapconfig')
 
 " === fold settings ==
 set foldenable          " enable folding
@@ -405,12 +411,12 @@ let g:echodoc#enable_at_startup=1
 let g:echodoc#type="floating"
 
 
-augroup deopleteExtra
-    " autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-    "autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    autocmd!
-    autocmd FileType * if exists(":UltiSnipsAddFiletypes") | exe 'UltiSnipsAddFiletypes ' . &filetype  | endif
-augroup  END
+" augroup deopleteExtra
+    " " autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+    " "autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+    " autocmd!
+    " autocmd FileType * if exists(":UltiSnipsAddFiletypes") | exe 'UltiSnipsAddFiletypes ' . &filetype  | endif
+" augroup  END
 
 "----------------------------------------------
 " Plugin: 'w0rp/ale'
@@ -442,8 +448,9 @@ let g:ale_lint_on_insert_leave = 0
 let g:ale_close_preview_on_insert=0
 let g:ale_lint_on_enter = 1
 let g:ale_completion_enabled = 1
-let g:ale_sign_error = '窱'
-let g:ale_sign_warning = '碌'
+"let g:ale_sign_error = '窱'
+"let g:ale_sign_warning = '碌'
+let g:ale_go_golangci_lint_package=1
 
 set completeopt-=preview
 " Auto import with typescript`
@@ -457,11 +464,27 @@ let g:ale_linter_aliases = {
             \ }
 let g:ale_linters_explicit = 1
 
+" Use tab for trigger completion with characters ahead and navigate
+" NOTE: There's always complete item selected by default, you may want to enable
+" no select by `"suggest.noselect": true` in your configuration file
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
 let g:ale_linters = { 
             \ 'c' : ['cppcheck'],
             \ 'sh' : ['shellcheck'],
             \ 'zsh' : ['deoplete-zsh'],
-            \ 'terraform' : ['tflint'],
+            \ 'terraform' : ['terraform-ls'],
             \ 'javascript' : ['stylelint', 'eslint'],
             \ 'json' : ['jsonlint'],
             \ 'dockerfile' : ['hadolint'],
@@ -643,7 +666,7 @@ let test#python#patterns = {
             \}
 
 " When writing a buffer (no delay), and on normal mode changes (after 750ms).
-call neomake#configure#automake('nw', 750)
+" call neomake#configure#automake('nw', 750)
 
 let g:neomake_python_enabled_makers = []
 let g:neomake_jsx_enabled_makers= []

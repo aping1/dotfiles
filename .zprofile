@@ -45,6 +45,8 @@ else
     esac
 fi
 
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 if ! (( $+commands[brew] )) && [[ "${DISTRO}" == "darwin" ]]; then
     printf -- "Install Homebrew? --- ['y' or Press enter] ---\n" >&2
     if read -q; then
@@ -54,5 +56,6 @@ else
     setup_brew_env &>/dev/null
 fi
 
+export PATH=$HOME/.nix-profile/bin:$PATH
 # this is needed for p10k status Pipe return codes
 set +o PIPEFAIL

@@ -45,3 +45,7 @@ Thumbs.db
 *.python_version
 
 .env
+*.terraform.lock.hcl
+**/.terraform.lock.hcl
+tags
+*/tags

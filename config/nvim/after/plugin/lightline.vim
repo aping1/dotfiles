@@ -8,7 +8,7 @@ let s:base_dir = resolve(expand("<sfile>:p:h"))
 if has('macunix')
     let g:os=''
 elseif has('win32unix')
-    let g:os='  '
+    let g:os=' '
 elseif has('win32')
     let g:os=''
 elseif has('unix')
@@ -22,7 +22,7 @@ elseif has('unix')
         let g:os=''
     endif
 else
-    let g:os=''
+    let g:os='?'
 endif
 
 let g:os_spec_string=' n ' . g:os . ' '. (has("gui_running")?'': '').(' ')
@@ -38,9 +38,9 @@ let g:lightline_blacklist=[
 exec 'autocmd FileType '.join(g:lightline_blacklist,",") .'silent! ALEDisable'
 
 let g:lightline#ale#indicator_checking = ''
-let g:lightline#ale#indicator_warnings = 'ﯜ '
-let g:lightline#ale#indicator_errors = ' '
-let g:lightline#ale#indicator_ok = ''
+let g:lightline#ale#indicator_warnings = ''
+let g:lightline#ale#indicator_errors = ''
+let g:lightline#ale#indicator_ok = ''
 
 function! s:LightLineRefresh()
 if exists('*g:lightline#init')
@@ -301,7 +301,7 @@ function! LightlineFilename()
     let b:large_theshold = g:large_threshold + l:l
     return l:shortname ==# '__Tagbar__' ? 'Tagbar':
                 \ l:shortname ==# '__vista__' ? 'Vista':
-                \ l:shortname ==# '__doc__' ? '龎':
+                \ l:shortname ==# '__doc__' ? '':
                 \ l:shortname =~# 'NERDTree' ? '' :
                 \ &filetype ==# 'vimfiler' ? 'VimFiler' :
                 \ &filetype ==# 'vimshell' ? 'VimShell' : 
@@ -353,8 +353,8 @@ function! LightlineMode()
     let l:newmode = (l:mode ==? 'INSERT' ? "" :
                 \ l:mode ==? 'NORMAL' ? "" :
                 \ l:mode ==? 'COMMAND' ? "" :
-                \ l:mode ==? 'VISUAL' ? "﯎" :
-                \ l:mode =~? '^V' ? "" :
+                \ l:mode ==? 'VISUAL' ? "" :
+                \ l:mode =~? '^V' ? "" :
                 \ l:mode)
     return l:newmode  . ' '
 endfunction
@@ -409,12 +409,12 @@ function! LightlineFileFormat()
     return ''
 endfunction
 
-let g:lightline#pyenv#indicator_ok = ''
+let g:lightline#pyenv#indicator_ok = 'y'
 function! LightlineTabmodified(n) abort
     let winnr = tabpagewinnr(a:n)
     let buflist = tabpagebuflist(a:n)
     let fname = expand('#'.buflist[winnr - 1].':t')
-    let buf_modified = gettabwinvar(a:n, winnr, '&modified') ? '﯂' : ''
+    let buf_modified = gettabwinvar(a:n, winnr, '&modified') ? '' : ''
     return ( '' !=? fname ? buf_modified : '')
 endfunction
 
@@ -437,10 +437,10 @@ function! LightlineTabname(n) abort
     let winnr = tabpagewinnr(a:n)
     let fname = expand('#'.buflist[winnr - 1].':t')
     return fname =~? '__Tagbar__' ? 'Tagbar' :
-                \  fname =~? '__Vista__' ? 'Vista' :
-                \ fname ==# '__doc__' ? '龎':
+                \  fname =~? '__vista__' ? 'Vista' :
+                \ fname ==# '__doc__' ? '':
                 \ fname =~? 'NERD_tree' ? 'NERDTree' : 
-                \ ('' !=? fname ? fname : '﬒')
+                \ ('' !=? fname ? fname : '')
 endfunction
 
 
@@ -464,7 +464,7 @@ endfunction
 
 " Start test
 function! TestStarted() abort
-  call setbufvar("b:", "testing_status", '痢')
+  call setbufvar("b:", "testing_status", '')
 endfunction
 
 function! s:LightLineRefresh()

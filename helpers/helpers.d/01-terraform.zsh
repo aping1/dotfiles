@@ -1,0 +1,4 @@
+
+alias tfplan='terraform plan'
+
+
