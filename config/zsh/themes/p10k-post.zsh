@@ -6,6 +6,7 @@
 [[ ! -o 'no_brace_expand' ]] || p10k_config_opts+=('no_brace_expand')
 'builtin' 'setopt' 'no_aliases' 'no_sh_glob' 'brace_expand'
 
+
 () {
     emulate -L zsh
     setopt no_unset
@@ -23,6 +24,7 @@
     # Unset all configuration options.
     unset -m 'POWERLEVEL9K_*'
 
+    typeset -g POWERLEVEL9K_CUSTOM_GVM_VERSION="zsh_gvm_version"
     # Prompt sample https://github.com/romkatv/powerlevel10k/blob/master/config/p10k-classic.zsh
     # https://github.com/romkatv/powerlevel10k/blob/master/README.md#batteries-included
     # kubecontext https://github.com/romkatv/powerlevel10k/blob/4bbb198a606b69dfb2d86ac33686e3d41f6d0141/config/p10k-rainbow.zsh#L1333-L1335
@@ -33,7 +35,7 @@
     context                   # user@host
     virtualenv                # python virtual environment
     pyenv
-    gvm
+    custom_gvm_version
     terraform
     vim_shell
     kubecontext

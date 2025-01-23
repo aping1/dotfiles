@@ -1,0 +1,7 @@
+zsh_gvm_version(){
+    local gvm_version=$(gvm list | awk '/\=\>/{print $2}')
+    local gvm_version_icon=' '
+    local gvm_version_color='%F{blue}'
+    echo -n "%{$gvm_version_color%}${gvm_version_icon:-""}${gvm_version}%{%f%}"
+}
+
