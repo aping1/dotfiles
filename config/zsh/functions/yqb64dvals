@@ -1,0 +1,1 @@
+yq eval -os '.data |  to_entries[] | { .key: .value | @base64d }' 

@@ -1,0 +1,1 @@
+temporal workflow list | awk '/Running/{print $2}' | xargs -n 1 temporal workflow terminate --workflow-id

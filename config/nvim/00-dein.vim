@@ -7,7 +7,28 @@ if dein#load_state('~/.cache/dein')
     " :DeinUpgrade command using minimal SpaceVim ui
     " relys on spaceship logging functions
     call dein#add('wsdjeg/dein-ui.vim')
+    " use <tab> to trigger completion and navigate to the next complete item
+    " function! CheckBackspace() abort
+    " let col = col('.') - 1
+    " return !col || getline('.')[col - 1]  =~# '\s'
+    " endfunction
 
+    " inoremap <silent><expr> <Tab>
+        " \ coc#pum#visible() ? coc#pum#next(1) :
+        " \ CheckBackspace() ? "\<Tab>" :
+        " \ coc#refresh()
+
+    try
+        " For more info on TOML and moving plugins...
+        " https://github.com/Shougo/dein.vim/blob/aa1da8e43b74c109c49281998eab0e148dc042b2/doc/dein.txt
+        let s:toml = '~/.vim/plugins.toml'
+        call dein#load_toml(s:toml, {'lazy': 0})
+    catch /.*/
+        echoerr v:exception
+        echomsg 'Error loading ...'
+        echomsg 'Caught: ' v:exception
+        echoerr 'error ' . s:toml . 'config'
+    endtry
 
     try
         " For more info on TOML and moving plugins...
@@ -22,9 +43,9 @@ if dein#load_state('~/.cache/dein')
     endtry
 
     if has('python3')
-        "call dein#add('puremourning/vimspector',
-        "        \ {'hook_post_update': 'VimspectorInstall --enable-python'}
-        "        \ )
+        call dein#add('puremourning/vimspector',
+        \ {'hook_post_update': 'VimspectorInstall delve'}
+        \ )
     endif
 
    call dein#add('mhinz/vim-startify')
@@ -118,7 +139,8 @@ if dein#load_state('~/.cache/dein')
 
     " -- REPLs
     if has('nvim')
-        call dein#add('bfredl/nvim-ipy',
+        " call dein#add('bfredl/nvim-ipy',
+        " h
                     \{'on_ft':['python', 'ipython']})
     else
         call dein#add('jupyter-vim/jupyter-vim')
@@ -193,9 +215,12 @@ if dein#load_state('~/.cache/dein')
                 \{'on_ft': ['python', 'ipython'],
                 \'command': 'UpdateRemotePlugins'})
 
+
     " === nvim feature ===
     " if !has('nvim')
     if has('nvim')
+        call dein#add('nvim-lua/plenary.nvim')
+        call dein#add('nvim-telescope/telescope.nvim', { 'rev': 'latest' })
         call dein#add('Shougo/context_filetype.vim')
         call dein#add('ncm2/float-preview.nvim')
         call dein#add('neoclide/coc.nvim', {
@@ -203,8 +228,6 @@ if dein#load_state('~/.cache/dein')
                     \ 'build':  'yarn install --frozen-lockfile',
                     \ 'hook_post_source': 'let g:coc_global_extensions = [
                     \"coc-python",
-                    \"coc-neco",
-                    \"coc-neoinclude",
                     \"coc-html",
                     \"coc-xml",
                     \"coc-java",
@@ -248,7 +271,7 @@ if dein#load_state('~/.cache/dein')
         "            \'install': 'git submodule update --init'
         "            \})
         " required for ZSH Autocomplete
-        call dein#add('mtikekar/nvim-send-to-term')
+        " call dein#add('mtikekar/nvim-send-to-term')
         " call dein#add('deoplete-plugins/deoplete-zsh', {
         "             \ 'on_ft':['zsh'],
         "             \ 'depends': 'nvim-send-to-term'
@@ -271,6 +294,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add("neovim/nvim-lspconfig")
     call dein#add("nvim-treesitter/nvim-treesitter", {'build': ':TSInstall go'})
     call dein#add('nvim-treesitter/nvim-treesitter-refactor')
+    call dein#add('theHamsta/nvim-dap-virtual-text')
     call dein#add('ray-x/go.nvim')
     call dein#add('charlespascoe/vim-go-syntax', {'on_ft': ['go']})
     call dein#add("ThePrimeagen/refactoring.nvim")
@@ -302,6 +326,7 @@ if dein#load_state('~/.cache/dein')
     call dein#add('towolf/vim-helm', {'on_ft': ['helm']})
     call dein#add('kchmck/vim-coffee-script', {'on_ft': ['coffee']})
 
+    call dein#add('Shougo/neoinclude.vim')
     " --- management
     call dein#add('kevinhui/vim-docker-tools')
 

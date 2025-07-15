@@ -49,3 +49,6 @@ Thumbs.db
 **/.terraform.lock.hcl
 tags
 */tags
+.direnv
+.vimspector.json
+.vimspector.session

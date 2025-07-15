@@ -7,7 +7,7 @@
 # Standard path includes
 export ZSHENV
 path=(
-    /usr/local/{bin,sbin}
+    /usr/{,.}local/{bin,sbin}
     ${HOME}/bin
     $path
 )

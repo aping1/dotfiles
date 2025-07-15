@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+space=$1
+if !(( space >= 1 && space <= 10 )); then
+  echo "Invalid space number: ${space}"
+  exit 1
+fi
+window=$(yabai -m query --windows --window | jq -r '.id')
+if !(( window > 0 )); then
+  echo "Couldn't find window"
+  exit 2
+fi
+# Quick path - if the space is already visible on the other display we can just move it
+if yabai -m query --spaces --space "${space}" | jq -e '."is-visible" == true'; then
+  yabai -m window --space "${space}" --focus
+  exit 0
+fi
+# If not we need to switch it to the non-focused display, then switch spaces on the other display and then switch it
+tmp_display=$(yabai -m query --displays | jq -r '.[] | select(."has-focus" == false) | .id')
+yabai -m window "${window}" --display "${tmp_display:-1}"
+~/.dotfiles/scripts/yabai-focus-space "${space}"
+for ((i=0; i<100; i++)); do
+    if yabai -m query --spaces --space "${space}" | jq -e '."has-focus" == true'; then
+        echo "Space ${space} has focus."
+        break
+    fi
+    sleep 0.01
+done
+yabai -m space "${space}" --layout bsp
+yabai -m window "${window}" --space "${space}" --focus

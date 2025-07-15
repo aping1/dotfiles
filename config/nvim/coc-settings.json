@@ -8,7 +8,7 @@
   "python.formatting.blackArgs": ["--line-length", "120"],
   "python.formatting.provider": "black",
   "suggest.keepCompleteopt" : true,
-  "suggest.autoTrigger": "trigger",
+  "suggest.autoTrigger": "always",
   "coc.preferences.colorSupport": true,
   "diagnostic.displayByAle": true,
   "diagnostic.refreshOnInsertMode": true,
@@ -44,12 +44,12 @@
   "git.topRemovedSign.hlGroup": "GitGutterDelete",
   "git.changeRemovedSign.hlGroup": "GitGutterChangeDelete",
   "suggest.completionItemKindLabels": {
-    "function": "\uf794",
-    "method": "\uf6a6",
-    "variable": "\uf71b",
-    "constant": "\uf8ff",
-    "struct": "\ufb44",
-    "class": "\uf0e8",
+    "function": "f".
+    "method": " ",
+    "variable": "v",
+    "constant": "c",
+    "struct": "s",
+    "class": " ",
     "interface": "\ufa52",
     "text": "\ue612",
     "enum": "\uf435",
@@ -62,7 +62,7 @@
     "file": "\uf471",
     "value": "\uf8a3",
     "event": "\ufacd",
-    "folder": "\uf115",
+    "folder": " ",
     "keyword": "\uf893",
     "snippet": "\uf64d",
     "operator": "\uf915",
@@ -74,6 +74,16 @@
   "java.home": "/usr/lib/jvm/java-13-openjdk/",
   "eslint.trace.server": "verbose",
   "languageserver": {
+    "terraform": {
+      "command": "terraform-ls",
+      "args": ["serve"],
+      "filetypes": [
+        "terraform",
+        "tf"
+      ],
+      "initializationOptions": {},
+      "settings": {}
+    },
     "ccls": {
       "command": "ccls",
       "filetypes": ["c", "cpp", "objc", "objcpp"],

@@ -293,10 +293,6 @@ if [ ! $TERM = dumb ]; then
         zdharma-continuum/null \
         bpick'*darwin*' atinit'unalias open' \
         zdharma-continuum/null \
-        bpick'*darwin*' \
-        load'[[ $TERM_PROGRAM == iTerm.app ]]' \
-                OMZP::iterm2 \
-                OMZP::xcode  \
         pick'autopair.zsh' \
         atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' \
             hlissner/zsh-autopair \
@@ -320,7 +316,7 @@ if [ ! $TERM = dumb ]; then
             zdharma-continuum/zinit-annex-bin-gem-node
 
         # Async Highligting & Compinit
-        zadd 0c light-mode for \
+        zadd 0b light-mode for \
             atinit'ZINIT[COMPINIT_OPTS]=-C;(( $+funtions[zicompinit_fast] )) && \
             zicompinit_fast || ZINIT[COMPINIT_OPTS]='-i' zpcompinit; zicdreplay' \
             atload'FAST_HIGHLIGHT[use_async]=1' \
@@ -347,7 +343,7 @@ if [ ! $TERM = dumb ]; then
             eval "$(teleport completion zsh)"
         fi
         if (( $+commands[cloud-admin] )); then
-            eval "$(cloud-admin completion zsh)"
+            eval "$(cloud-admin completion zsh)" 
         fi
         #zinit ice blockf
         #zinit snippet $(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
@@ -367,11 +363,79 @@ if [ ! $TERM = dumb ]; then
 
         # zinit ice wait"0b" lucid as'completion' has'helm'
         # zsnippet OMZ::plugins/helm
-        # zinit ice wait"0b" lucid as'completion' has 'docker'
-        # zsnippet OMZ::plugins/docker-compose
+        # zinit ice wait"0b" lucid as'completion' has'docker-compose' \
+            # mv'docker-compose -> _docker-compose' pick'_docker-compose'  \
+            # nocompile bash 
+        # zsnippet https://raw.githubusercontent.com/docker/compose/master/contrib/completion/bash/docker-compose
         # zsnippet OMZ::plugins/docker-machine
 }
-####################################
+
+# zinit ice as"completion"
+# zinit wait lucid depth=1 for \
+  # make'alias alias=' \
+  # OMZP::docker \
+  # make'alias alias=' \
+  # OMZP::docker-compose 
+
+
+# ####################################
+# oh my zsh ?? [https://github.com/3v1n0/ellipses/blob/chezmoi/private_dot_ellipses/shells/private_dot_3v1rc#L804-L819]
+# __my_zsh_plugins_load() {
+  # if [ -z "$ZSH" ]; then
+    # _my_omz_plugins=()
+  # fi
+
+  # if [[ -v ZINIT[HOME_DIR] ]]; then
+    # if [ -n "$MY_ZINIT_USE_TURBO" ]; then
+      # for p in $_my_omz_plugins; do
+        # zinit wait is-snippet ${__my_zinit_load_params[@]} for \
+          # $ZSH/plugins/$p/$p.plugin.zsh
+      # done
+
+      # __zinit_plugin_init_callback() {
+        # if [[ "$ZINIT[CUR_PLUGIN]" == "zsh-bash-completions-fallback" ]]; then
+          # typeset -g ZSH_BASH_COMPLETIONS_FALLBACK_LAZYLOAD_DISABLE=true
+          # __my_zinit_init_completions
+        # #   __my_zinit_init_completions
+          # (( ${+functions[_zsh_autosuggest_start]} )) && \
+            # _zsh_autosuggest_start
+        # fi
+      # }
+
+      # local loaded_plugins=()
+      # __zinit_plugin_loaded_callback() {
+        # loaded_plugins+=($ZINIT[CUR_PLUGIN])
+
+        # if [ ${#_my_zsh_custom_plugins[@]} -eq ${#loaded_plugins[@]} ]; then
+          # __my_plugins_loaded_callback
+        # fi
+      # }
+
+      # zinit wait ${__my_zinit_load_params[@]} nocd \
+        # atinit='__zinit_plugin_init_callback' \
+        # atload='__zinit_plugin_loaded_callback' \
+          # for ${_my_zsh_custom_plugins[@]}
+    # else
+      # zinit light-mode ${__my_zinit_load_params[@]} \
+        # for ${_my_zsh_custom_plugins[@]}
+
+      # for p in $_my_omz_plugins; do
+        # zinit is-snippet ${__my_zinit_load_params[@]} for \
+          # $ZSH/plugins/$p/$p.plugin.zsh
+      # done
+
+      # __my_plugins_loaded_callback
+    # fi
+  # elif [ -n "$ZSH" ]; then
+    # # TODO support cloning and loading _my_zsh_custom_plugins
+    # plugins=_my_omz_plugins source $ZSH/oh-my-zsh.sh
+    # __my_plugins_loaded_callback
+    # __my_theme_loaded_callback
+  # else
+    # __my_default_zsh_settings
+  # fi
+# }
+
 fi
 
 # Tear Down profiling
@@ -389,3 +453,6 @@ autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /opt/homebrew/bin/vault vault
 
 complete -o nospace -C /opt/homebrew/Cellar/tfenv/3.0.0/versions/1.5.7/terraform terraform
+
+# Added by Windsurf
+export PATH="/Users/awampler/.codeium/windsurf/bin:$PATH"

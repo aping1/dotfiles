@@ -1,0 +1,4 @@
+WORKFLOW_NAME=$1
+[[ $WORKFLOW_NAME ]] || return 1
+shift
+TEMPORAL_DEBUG=true temporal workflow execute --workflow-id="$(od -A n -t d -N 1 /dev/urandom|tr -d \ )testing-pdu" --type=$WORKFLOW_NAME --task-queue=provision --input="$*"

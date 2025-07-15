@@ -16,7 +16,7 @@ set shell=/bin/bash
 set encoding=utf8
 " required for iterm 
 "set ambiwidth=double
-set ambiwidth=
+"set ambiwidth=
 set fileformats=unix,dos,mac
 set nobackup
 set noswapfile
@@ -168,7 +168,7 @@ let g:jedi#completions_enabled=0
 "  show virtualtext for completion
 "  dont make jedit do this?
 let g:jedi#show_call_signatures = 0
-let g:jedi#show_function_definition = 0
+" let g:jedi#show_function_definition = 0
 let g:jedi#popup_on_dot = 0
 " open the go-to function in split, not another buffer
 let g:jedi#use_splits_not_buffers = 'right'
@@ -271,7 +271,7 @@ autocmd Syntax python let b:ale_linters = ['flake8', 'vimls']
 autocmd Syntax javascript call deoplete#disable() | ALEEnable
 " autocmd Syntax javascript let b:ale_linters = ['eslint', 'stylelint', 'coc']
 autocmd Syntax javascript let b:ale_linters = ['coc', 'eslint']
-autocmd Syntax terraform let b:ale_linters = ["terraform-ls"]
+autocmd Syntax terraform let b:ale_linters = ["terraform_ls"]
 autocmd Syntax go let b:ale_linters = ["gopls", "golangci-lint"]
 autocmd Syntax go let b:ale_fixers = ["gopls"]
 autocmd Syntax go set foldmethod=syntax
@@ -484,7 +484,7 @@ let g:ale_linters = {
             \ 'c' : ['cppcheck'],
             \ 'sh' : ['shellcheck'],
             \ 'zsh' : ['deoplete-zsh'],
-            \ 'terraform' : ['terraform-ls'],
+            \ 'terraform' : ['terraform_ls'],
             \ 'javascript' : ['stylelint', 'eslint'],
             \ 'json' : ['jsonlint'],
             \ 'dockerfile' : ['hadolint'],
@@ -817,8 +817,10 @@ au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
             \| exe "normal! g'\"" | endif
 
 "let g:vimspector_install_gadgets = [ 'debugpy', 'vscode-cpptools', 'CodeLLDB' ]
-let g:vimspector_install_gadgets = [ 'debugpy' ]
+" let g:vimspector_install_gadgets = [ 'debugpy' ]
 let g:vimspector_enable_mappings = 'HUMAN'
+let g:vimspector_base_dir='/Users/awampler/.cache/dein/repos/github.com/puremourning/vimspector'
+
 let g:comfortable_motion_friction = 1.9
 
 let g:slime_target = "neovim"

@@ -135,7 +135,7 @@ function! s:LoadLightline()
             \   'lineinfo': '%4{winwidth(0) < getbufvar("b:", "small_threshold", g:small_threshold)?"":(&fenc==#"")?"":(winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)||len(col("."))>1000)?"C".col("."):"C".col(".").":"."L".line(".")}',
             \   'close': '%9999X%{g:os_spec_string}',
             \   'spell': '%{winwidth(0) <= getbufvar("b:", "small_threshold", g:small_threshold)?"":&fenc==#""?"":&spell?"":"暈"}%{winwidth(0) <= getbufvar("b:", "large_threshold", g:large_threshold)?"":&spelllang}',
-            \   'modified': '%{&modified?"﯂":&modifiable?"":""}',
+            \   'modified': '%{&modified?"󱇬":&modifiable?"":"󱈸"}',
             \   'readonly': '%{index(g:lightline_blacklist,&filetype)==-1&&(&fenc==#"")?"":(&readonly)?"":""}',
             \ },
             \ 'component_visible_condition': {
@@ -317,7 +317,7 @@ endfunction
 
 function! LightlinePyEnv ()
     let l:small_threshold = getbufvar("small_threshold", g:small_threshold)
-    let l:pyenv = exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated() ? "" : ""
+    let l:pyenv = exists("pyenv#pyenv#is_activated")&&1==pyenv#pyenv#is_activated() ? "" : ""
     let l:pycon = l:small_threshold && exists('*WebDevIconsGetFileTypeSymbol') ? WebDevIconsGetFileTypeSymbol('__init__.py',0) : ""
     return l:pyenv . l:pycon
 endfunction

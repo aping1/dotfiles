@@ -24,7 +24,6 @@ brew "cmake"
 brew "coreutils"
 brew "cppcheck"
 brew "ctags", link: false
-brew "docker", link: false
 brew "docker-completion"
 brew "docker-compose", link: false
 brew "docutils"
@@ -124,12 +123,10 @@ brew "universal-ctags/universal-ctags/universal-ctags", args: ["HEAD", "with-jan
 cask "adoptopenjdk"
 cask "calibre"
 cask "corelocationcli"
-cask "docker"
 cask "font-hack-nerd-font"
 cask "font-hasklig-nerd-font"
 cask "godot"
 cask "mono-mdk"
-cask "openra"
 cask "osxfuse"
 cask "phoenix"
 cask "wireshark"

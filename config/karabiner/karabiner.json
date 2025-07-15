@@ -2053,7 +2053,7 @@
                                     }
                                 },
                                 "to_if_alone": {
-                                    "shell_command": "/usr/local/bin/yabai -m space --create && id=$(yabai -m query --displays --display | jq '.spaces | max') &&  yabai -m window --space ${id:-1} &&  yabai -m space --focus ${id:-1} || /usr/local/bin/yabai -m window -space next"
+                                    "shell_command": "/usr/local/bin/yabai -m space --create && id=$(yabai -m query --displays --display | jq '.spaces | max') &&  yabai -m window --space ${id:-1} &&  yabai -m space --focus ${id:-1} || /usr/local/bin/yabai -m window --space next"
                                 },
                                 "type": "basic"
                             }
