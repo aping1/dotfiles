@@ -28,7 +28,9 @@ c_set_agent_mode () {
         unsetopt xtrace
 }
 
-alias   burnin="cloud-admin workflow nodes burnin --use-burnin-v2 --node-names "
+alias  claim="cloud-admin nodes add-claim --node-names"
+alias   burnin="cloud-admin workflow nodes burnin --node-names "
+alias   burnshort="cloud-admin workflow nodes burnin --dcgmi-level 4 --tests 'cpu,gpu,network,ib' --node-names "
 alias       ca="cloud-admin"
 alias       cals="cloud-admin nodes list --show NAME,TYPE,MODE      --node-names "
 alias      calsn="cloud-admin nodes list --show NAME,TYPE,MODE,NOTE --node-names "
@@ -78,6 +80,7 @@ trap 'unset xtrace' RET
 [[ $CIS_HOST && $CIS_PASSWORD ]] || { echo "please provide cis_host and pass" >&2 ; return 2; }
 [[ $1 ]] ||  { echo "please provide host" >&2 ; return 2; }
 export host=$1
+c_op_crusoe 
 cat > password.sh << eof
 #!/bin/bash
 echo -n "$(op item get "${CIS_PASSWORD}" --fields password --reveal)"
@@ -89,6 +92,31 @@ setopt xtrace
 source <(c_pw "$host")
 export SSH_ASKPASS='./password.sh' SSH_ASKPASS_REQUIRE=FORCE
 mkdir $host
-ssh crusoe@"$CIS_HOST" -- /opt/cray/redfish-tools/bin/get-redfish-info -u "${BMC_USER:-"$bmc_username"}" -p "${BMC_PW:-"$bmc_password"}" "${bmc_ip:-"${bmc_ip}"}" | tee >(awk '/Output file:/{print $3}' | head -n1 | read RFOUTPUTFILE ; echo scp crusoe@$CIS_HOST:$RFOUTPUTFILE $host/ ) | tee >(awk '/Log file:/{print $3}' | head -n 1| read RFLOGFILE; echo scp crusoe@$CIS_HOST:$RFLOGFILE $host/)
+ssh crusoe@"$CIS_HOST" -- /opt/cray/redfish-tools/bin/get-redfish-info -u "${BMC_USER:-"$bmc_username"}" -p "${BMC_PW:-"$bmc_password"}" "${bmc_ip:-"${bmc_ip}"}" | tee >(awk '/Output file:/{print $3}' | head -n1 | read RFOUTPUTFILE ; echo scp crusoe@$CIS_HOST:$RFOUTPUTFILE $host/ ) | tee >(awk '/Log file:/{print $3}' | head -n 1| read RFLOGFILE; echo scp crusoe@$CIS_HOST:$RFLOGFILE $host/); 
 }
 
+function c_ssh_cis {
+[[ $CIS_HOST && $CIS_PASSWORD ]] || { echo "please provide cis_host and pass pointer" >&2 ; return 2; }
+export host=$1
+c_op_crusoe 
+cat > password.sh << eof
+#!/bin/bash
+echo -n "$(op item get "${CIS_PASSWORD}" --fields password --reveal)"
+eof
+chmod +x password.sh
+[[ "$(wc -c password.sh | awk '{print $1}')" -gt 7 ]]  || {echo "could not get password https://start.1password.com/open/i?a=rmo5ro5mbrdl7dopzbtok6w7eq&v=z5mmc5zuyppjdxcjgkj5r2txhi&i=bdrnjjwrde2jwh7a5rxim3m2zm&h=crusoeenergysystemsinc.1password.com" >&2; return 5; }
+[[ -x ./password.sh ]] || { echo "COULDNT read passowrd" >&2; return 253; }
+(
+ (( $+DEBUG )) && { setopt xtrace; trap 'unsetopt xtraxe' QUIT HUP; }
+  export SSH_ASKPASS='./password.sh' SSH_ASKPASS_REQUIRE=FORCE
+  ssh-keygen -R "$CIS_HOST"
+  ssh crusoe@"$CIS_HOST" 
+)
+}
+
+function c_op_crusoe {
+# https://start.1password.com/open/i?a=LW25M4PRARHS3OEBZS6IAVOI2I&v=nftbjfvxzu4g5x4xpauznaggzm&i=pyophqldfqf4kot5htybyesdam&h=my.1password.com
+# https://start.1password.com/open/i?a=LW25M4PRARHS3OEBZS6IAVOI2I&v=nftbjfvxzu4g5x4xpauznaggzm&i=pyophqldfqf4kot5htybyesdam&h=my.1password.com
+op --account V6B7FMWWAVAI7KT4AOVP74SV74 item get pyophqldfqf4kot5htybyesdam --fields password --reveal | tee >(spbcopy) | base64
+
+}
