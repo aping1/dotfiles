@@ -18,17 +18,19 @@ if dein#load_state('~/.cache/dein')
         " \ CheckBackspace() ? "\<Tab>" :
         " \ coc#refresh()
 
-    try
-        " For more info on TOML and moving plugins...
-        " https://github.com/Shougo/dein.vim/blob/aa1da8e43b74c109c49281998eab0e148dc042b2/doc/dein.txt
-        let s:toml = '~/.vim/plugins.toml'
-        call dein#load_toml(s:toml, {'lazy': 0})
-    catch /.*/
-        echoerr v:exception
-        echomsg 'Error loading ...'
-        echomsg 'Caught: ' v:exception
-        echoerr 'error ' . s:toml . 'config'
-    endtry
+    if ! has('nvim')
+        try
+            " For more info on TOML and moving plugins...
+            " https://github.com/Shougo/dein.vim/blob/aa1da8e43b74c109c49281998eab0e148dc042b2/doc/dein.txt
+            let s:toml = '~/.vim/plugins.toml'
+            call dein#load_toml(s:toml, {'lazy': 0})
+        catch /.*/
+            echoerr v:exception
+            echomsg 'Error loading ...'
+            echomsg 'Caught: ' v:exception
+            echoerr 'error ' . s:toml . 'config'
+        endtry
+    endif
 
     try
         " For more info on TOML and moving plugins...
@@ -37,8 +39,8 @@ if dein#load_state('~/.cache/dein')
         call dein#load_toml(s:toml, {'lazy': 0})
     catch /.*/
         echoerr v:exception
-        echomsg 'Error loading ...'
-        echomsg 'Caught: ' v:exception
+        echomsg 'error loading ...'
+        echomsg 'caught: ' v:exception
         echoerr 'error ' . s:toml . 'config'
     endtry
 

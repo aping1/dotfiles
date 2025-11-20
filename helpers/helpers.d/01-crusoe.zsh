@@ -1,4 +1,6 @@
 function get-bmc   () {
+    (( ${+DEBUG}  )) && { setopt xtrace; trap 'unsetopt xtrace' TRAPEXIT  ; }
+
 [[ $1 ]] || return 1
 gcloud secrets versions access 1 --secret=$(gcloud secrets list --filter="Labels.hostname : '$1'" | awk '{print $1}' | sed -n '2p')
 }
@@ -7,32 +9,34 @@ c_get_bmc () {
   local HOST=${1}
   [[ $HOST ]] || return 1
   ( 
-  setopt xtrace
+  (( ${+DEBUG}  )) && { setopt xtrace; trap 'unsetopt xtrace' TRAPEXIT ; }
+
   cd ~/code/scripts/ipmi_tools
-  export NETBOX_API_TOKEN="$(kubectl --context gke_island-prod_us-central1_island-prod --namespace refinery \
-  get secrets refinery  --output json | jq -r '.data.REFINERY_NETBOX_TOKEN' | base64 -d)"
+  export NETBOX_API_TOKEN=${NETBOX_API_TOKEN:-"$(kubectl --context gke_island-prod_us-central1_island-prod --namespace refinery \
+  get secrets refinery  --output json | jq -r '.data.refinery_netbox_token' | base64 -d)"}
   ./get-ipmi-creds.sh "$HOST"
   )
 }
 
 c_set_agent_mode () {
-        setopt xtrace
+        (( ${+DEBUG}  )) && { setopt xtrace; trap 'unsetopt xtrace' TRAPEXIT ; }
         [[ -n $1 ]] || return 1
         [[ -n $2 ]] || return 1
         local NODE="$1" MODE="$2"
         shift 2
-        export NETBOX_API_TOKEN="$(kubectl --context gke_island-prod_us-central1_island-prod --namespace refinery \
-  get secrets refinery  --output json | jq -r '.data.REFINERY_NETBOX_TOKEN' | base64 -d)"
+        export NETBOX_API_TOKEN=${NETBOX_API_TOKEN:-"$(kubectl --context gke_island-prod_us-central1_island-prod --namespace refinery \
+  get secrets refinery  --output json | jq -r '.data.refinery_netbox_token' | base64 -d)"}
         [[ $NETBOX_API_TOKEN ]] || return 2
         cloud-admin nodes set-config --node-names "$NODE" --mode ${MODE:-AGENT_MODE_FREEZE_ENV} ${*}
-        unsetopt xtrace
 }
 
 alias  claim="cloud-admin nodes add-claim --node-names"
 alias   burnin="cloud-admin workflow nodes burnin --node-names "
+alias   burninamd="cloud-admin workflow nodes burnin --test amdgpu --node-names "
 alias   burnshort="cloud-admin workflow nodes burnin --dcgmi-level 4 --tests 'cpu,gpu,network,ib' --node-names "
 alias       ca="cloud-admin"
 alias       cals="cloud-admin nodes list --show NAME,TYPE,MODE      --node-names "
+alias       calso="cloud-admin nodes list --show NAME,TYPE,MODE,OWNER      --node-names "
 alias      calsn="cloud-admin nodes list --show NAME,TYPE,MODE,NOTE --node-names "
 alias   config="cloud-admin workflow nodes config --node-names "
 alias       hi="cloud-admin nodes agent-mode-history --show NODE_NAME,MODE,TRANSITION_TIME      --node-names "
@@ -44,27 +48,50 @@ alias      vms="cloud-admin vms list --show NODE_NAME,NAME,VM_ID,PROJECT,ORG,CRE
 alias      cavms="vms list --show name,project_id,node_name,state,reservation_id,created_at,maintenance_policy --node-name "
 alias      ztp="cloud-admin workflow nodes reprovision --node-names "
 
-function c_pw() {
+alias fleetpaste='./fleet-tools/fleet-state.sh <(pbpaste; echo)'
+alias fleet2paste='./fleet-tools2/fleet-state.sh <(pbpaste | awk '\''{print $1}'\'' | grep -v "^-"; echo)'
 
+function c_untake () {
+        (( ${+DEBUG}  )) && {
+                setopt xtrace
+                trap 'unsetopt xtrace' TRAPEXIT
+        }
+        local HOSTS=${1}
+        [[ -n $HOSTS ]] || return 1
+        shift
+        cloud-admin nodes set-release-state --state "ACTIVE" --node-names "$HOSTS" $@
+}
+
+function c_take(){
+  (( ${+DEBUG}  )) && { setopt xtrace; trap 'unsetopt xtrace' TRAPEXIT  ; }
+  local HOSTS=${1}
+  [[ $HOSTS ]] || return 1
+  shift
+  cloud-admin nodes set-release-state --state "PRE_RELEASE" --node-names "$HOSTS" $@
+  cloud-admin nodes add-claim --node-names "$HOSTS" $@
+}
+
+function c_pw() {
+  (( ${+DEBUG}  )) && { setopt xtrace; trap 'unsetopt xtrace' TRAPEXIT  ; }
   local HOST=${1}
   [[ $HOST ]] || return 1
   ( 
     cd ~/code/scripts/ipmi_tools &>/dev/null
-    export NETBOX_API_TOKEN="$(kubectl --context gke_island-prod_us-central1_island-prod --namespace refinery \
-get secrets refinery  --output json | jq -r '.data.REFINERY_NETBOX_TOKEN' | base64 -d)"
-    [[ $NETBOX_API_TOKEN ]] || return 2
+    [[ $NETBOX_API_TOKEN ]] || { echo "Please source a NETBOX_API_TOKEN" >&2;  return 2;}
+    export NETBOX_API_TOKEN
     ./get-ipmi-creds.sh -e "$1" \
-		      | tee /dev/tty   \
-		      | awk '{
+              | tee /dev/tty   \
+              | awk '{
                       if ($2 == "IP:")       {printf "export bmc_ip=%s\n", $3 }
-			          if ($2 == "password:") {printf "export bmc_password=%s\n", $3 }
-    			      if ($2 == "username:") {printf "export bmc_username=%s\n", $3 }
-                	  }' 
+                      if ($2 == "password:") {printf "export bmc_password=%s\n", $3 }
+                      if ($2 == "username:") {printf "export bmc_username=%s\n", $3 }
+                      }' 
    )
 
 }
 
 function c_boot_to_bios () {
+  (( ${+DEBUG}  )) && { setopt xtrace; trap 'unsetopt xtrace' TRAPEXIT  ; }
   local HOST=${1}
   [[ $HOST ]] || return 1
   source <(c_pw $HOST)
@@ -76,7 +103,7 @@ function now() {
 }
 
 function c_crawler_logs () {
-trap 'unset xtrace' RET
+(( ${+DEBUG}  )) && { setopt xtrace; trap TRAPEXIT 'unsetopt xtrace'; }
 [[ $CIS_HOST && $CIS_PASSWORD ]] || { echo "please provide cis_host and pass" >&2 ; return 2; }
 [[ $1 ]] ||  { echo "please provide host" >&2 ; return 2; }
 export host=$1
@@ -86,10 +113,10 @@ cat > password.sh << eof
 echo -n "$(op item get "${CIS_PASSWORD}" --fields password --reveal)"
 eof
 chmod +x password.sh
-setopt xtrace
 [[ "$(wc -c password.sh | awk '{print $1}')" -gt 7 ]]  || {echo "could not get password https://start.1password.com/open/i?a=rmo5ro5mbrdl7dopzbtok6w7eq&v=z5mmc5zuyppjdxcjgkj5r2txhi&i=bdrnjjwrde2jwh7a5rxim3m2zm&h=crusoeenergysystemsinc.1password.com" >&2; return 5; }
 [[ -x ./password.sh ]] || { echo "COULDNT read passowrd" >&2; return 253; }
-source <(c_pw "$host")
+source <(c_pw "$host" )
+[[ $bmc_ip ]] || { echo "failed to source c_pw" >&2; return 2;}
 export SSH_ASKPASS='./password.sh' SSH_ASKPASS_REQUIRE=FORCE
 mkdir $host
 ssh crusoe@"$CIS_HOST" -- /opt/cray/redfish-tools/bin/get-redfish-info -u "${BMC_USER:-"$bmc_username"}" -p "${BMC_PW:-"$bmc_password"}" "${bmc_ip:-"${bmc_ip}"}" | tee >(awk '/Output file:/{print $3}' | head -n1 | read RFOUTPUTFILE ; echo scp crusoe@$CIS_HOST:$RFOUTPUTFILE $host/ ) | tee >(awk '/Log file:/{print $3}' | head -n 1| read RFLOGFILE; echo scp crusoe@$CIS_HOST:$RFLOGFILE $host/); 

@@ -93,6 +93,7 @@ alias ztimes='zinit times'
 alias zstatus='zinit zstatus'
 alias zreportall='zinit zreport --all'
 alias zreport='zinit zreport'
+alias @csv='tr '\''\n'\'' '\'','\'
 
 if (( $+command[jq] )); then
     alias lines-to-json='jq --slurp --raw-input '\''split("\n")[:-1]'\'
@@ -101,4 +102,7 @@ if (( $+command[jq] )); then
 	time: (. | strptime("%a, %d %b %Y %H:%M:%S") | todate[11:19]) })'\'
 fi
 
+alias beep='printf '\''\007'\'
+
 # vim: filetype=zsh
+#

@@ -1,5 +1,5 @@
 [user]
-    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJXjZ+Y9StYdC5xhqwc95fSp1nrVT36Qgmt16v9R0vi1
+    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMhbLVuTGBt9MViH42B+0KWZ1vxmZnLSFKhydAfEmmCb 
     name = Allison Wampler
 	email = awampler@crusoeenergy.com
 [merge]
