@@ -147,3 +147,44 @@ function c_op_crusoe {
 op --account V6B7FMWWAVAI7KT4AOVP74SV74 item get pyophqldfqf4kot5htybyesdam --fields password --reveal | tee >(spbcopy) | base64
 
 }
+
+function c_window() {
+    [[ -z $1 ]] && return 2
+    local TODIR=${${${${${0}#c_split}:-${1}}#/}/_/-}
+    osascript  <<EOF
+        tell application "iTerm"
+        activate
+        tell current window to set tb to create tab with default profile
+        tell tb 
+          select
+          write text "cd ~/TICKETS/${TODIR}"
+        end tell
+      end tell
+EOF
+}
+
+function c_split() {
+    [[ -z $1 ]] && return 2
+    local TODIR=${${${${${0}#c_split}:-${1}}#/}/_/-}
+    osascript  <<EOF
+        tell application "iTerm"
+        activate
+       tell current session of current window to set newSplit to split horizontally with same profile
+        tell newSplit
+          select
+          write text "cd ~/TICKETS/${TODIR}"
+        end tell
+      end tell
+EOF
+}
+
+alias c_split_txdr='c_split txdr'
+alias c_split_icat='c_split icat'
+alias c_split_vaeq='c_split vaeq'
+alias c_split_txdr_lab='c_split txdr-dev'
+alias c_split_txdr_staging='c_split txdr-dev'
+alias c_window_txdr='c_window txdr'
+alias c_window_icat='c_window icat'
+alias c_window_vaeq='c_window vaeq'
+alias c_window_txdr_lab='c_window txdr-dev'
+alias c_window_txdr_staging='c_window txdr-dev'
