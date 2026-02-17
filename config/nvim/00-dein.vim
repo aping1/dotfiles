@@ -196,12 +196,12 @@ if dein#load_state('~/.cache/dein')
     " --- Tags (ctags, lsp)
     call dein#add('liuchengxu/vista.vim')
 
-    " Python virtuel env
-    if executable('pyenv')
-        call dein#add('lambdalisue/vim-pyenv')
-    else
-        call dein#add('plytophogy/vim-virtualenv')
-    endif
+"    " Python virtuel env
+"    if executable('pyenv')
+"        call dein#add('lambdalisue/vim-pyenv')
+"    else
+"        call dein#add('plytophogy/vim-virtualenv')
+"    endif
 
     " --- Autocomplete
     if has('nvim')

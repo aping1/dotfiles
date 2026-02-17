@@ -460,3 +460,5 @@ export PATH="/Users/awampler/.codeium/windsurf/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
 export PATH="/Users/awampler/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+eval "$(mise activate zsh)"
+eval "$(mise activate zsh)"

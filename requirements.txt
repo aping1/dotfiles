@@ -28,7 +28,7 @@ requests
 requests-toolbelt
 six
 toml
-typed-ast
+# typed-ast
 urllib3
 zipp
 PyObjC

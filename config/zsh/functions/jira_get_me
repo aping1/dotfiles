@@ -1,0 +1,30 @@
+# setopt xtrace; trap 'unsetopt xtrace' EXIT
+emulate -L bash
+jira_username=$(grep "email" ~/.gitconfig | awk '{print $3}' | sed 's/crusoeenergy\.com/crusoe\.ai/')
+if [ "$jira_username" == "" ]; then
+echo "You must have your email set in ~/.gitconfig"
+exit 1
+fi
+jira_base_url="https://crusoe.atlassian.net/rest/api/3"
+if [ "$JIRA_API_TOKEN" == "" ]; then
+echo "You must set JIRA_API_TOKEN to run this script"
+exit 1
+fi
+query_str='assignee%20%3D%20currentUser()%20AND%20resolution%20%3D%20Unresolved%20order%20by%20updated%20DESC'
+curl -s -u ${jira_username}:$JIRA_API_TOKEN -X GET -H "Accept: application/json" "${jira_base_url}/search/jql?jql=${query_str}" > tmp-jira-my-jira
+jq -r '.issues | length' tmp-jira-my-jira &>/dev/null
+if [ $? -ne 0 ]; then
+echo "UNKNOWN"
+else
+total_issues=`jq -r '.issues | length' tmp-jira-my-jira`
+if [ "$total_issues" == "" ] || [ "$total_issues" == "null" ] || [ $total_issues -eq 0 ]; then
+echo "none"
+else
+for jira_issue_id in `jq -r '.issues[].id' tmp-jira-my-jira`; do
+curl -s -u ${jira_username}:$JIRA_API_TOKEN -X GET -H "Accept: application/json" "${jira_base_url}/issue/${jira_issue_id}" | tee tmp-jira-my-jira-${jira_issue_id}
+jira_issue_key=`jq -r '.key' tmp-jira-my-jira-${jira_issue_id}`
+jira_issue_status=`jq -r '.fields.status.name + ":" + .fields.assignee.emailAddress + "@" + .fields.customfield_10001.name' tmp-jira-my-jira-${jira_issue_id}`
+done
+echo
+fi
+fi

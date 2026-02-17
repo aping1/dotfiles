@@ -148,6 +148,17 @@ op --account V6B7FMWWAVAI7KT4AOVP74SV74 item get pyophqldfqf4kot5htybyesdam --fi
 
 }
 
+function c_ib_siblings () {
+  (( ${+DEBUG} )) && { setopt xtrace; trap 'unsetopt xtrace' EXIT ;}
+  [[ $1 ]] || return 2
+  local HOST=$1; 
+  local Q='.ib_network_id==$ib and .mode != "AGENT_MODE_NORMAL"'
+  (( ${+NORMAL} )) && Q='.ib_network_id==$ib';
+  local IB_NETWORK="$(cals "$HOST" --format json | jq -r 'map(.ib_network_id)[0]' )"; 
+  [[ ${IB_NETWORK} ]] || return 3
+  cloud-admin nodes list --all --format json | jq --arg ib "$IB_NETWORK" 'map(select('"$Q"')) | map(.name) | join(",")' | tee /dev/stderr | xargs cloud-admin nodes list --show NAME,TYPE,MODE,OWNER --node-names | grep --color=always "$HOST"'\|$'
+}
+
 function c_window() {
     [[ -z $1 ]] && return 2
     local TODIR=${${${${${0}#c_split}:-${1}}#/}/_/-}
@@ -188,3 +199,6 @@ alias c_window_icat='c_window icat'
 alias c_window_vaeq='c_window vaeq'
 alias c_window_txdr_lab='c_window txdr-dev'
 alias c_window_txdr_staging='c_window txdr-dev'
+alias c_bmc_update='() { temporal workflow start --type UpdateFirmwareWorkflow -t bmc-manager --input '\''{ "hostnames":'\''"$(printf '\''%s\n'\'' "${@}" | jq -R . | jq -s .)"'\'',"profile": "default"}'\'' --address "127.0.0.1:7233"}'
+alias smoketest='cloud-admin workflow nodes burnin --dcgmi-level 1 --tests '\''gpu,cpu'\'' --node-names'
+alias healthcheck=' cloud-admin workflow nodes burnin --tests '\''health'\'' --node-names'

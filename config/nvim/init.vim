@@ -180,76 +180,76 @@ function! PythonFromEnvironment(py2_sel, py3_sel)
         let g:python_host_prog=substitute(system('command -v python'), '\n', '', 'g')
         let g:python3_host_prog=substitute(system('command -v python3'), '\n', '', 'g')
     else
-        let g:python_host_prog=substitute(system('type -a python | awk "NR=='. a:py2_sel .'{print \$NF}"'), '\n', '', 'g')
+        let g:python_host_prog=substitute(system('type -a python3 | awk "NR=='. a:py2_sel .'{print \$NF}"'), '\n', '', 'g')
         let g:python3_host_prog=substitute(system('type -a python3 | awk "NR=='. a:py3_sel .'{print \$NF}"'), '\n', '', 'g')
     endif
 endfunction
 
 " for pyenv ...
-if exists('*pyenv#pyenv#is_enabled') 
-    function! s:python_prefixes() abort " {{{
-        if ! exists('*pyenv#pyenv#is_enabled()') || ! pyenv#pyenv#is_enabled()
-            return []
-        endif
-        let result = pyenv#utils#system(join([
-                    \ g:pyenv#pyenv_exec,
-                    \ 'prefix',
-                    \]))
-        if result.status == 0
-            return split(result.stdout, '\v\r?\n')
-        endif
-        return []
-    endfunction " }}}
-    command! -nargs=0 CopyPythonPrefixes call setreg('+', s:python_prefixes()[0])
-    if exists('$PYENV_VIRTUAL_INIT')
-        augroup pyvirtualenv
-            autocmd!
-            autocmd VimEnter python silent! command PyenvActivate 
-        augroup end
-    endif
-    function! s:pyenv_init()
-        if exists('*jedi#init_python') && jedi#init_python()
-            let g:jedi#force_py_version='3'
-        endif
-        " if active
-        if exists('*pyenv#pyenv#is_activated')
-                    \ && pyenv#pyenv#is_activated() 
-                    \ && pyenv#python#get_external_major_version()
-            " pyenv#info#format('%iv') A version of the internal /usr/bin/python
-            if pyenv#python#get_internal_major_version() >= 2
-                let g:jedi#force_py_version=pyenv#python#get_internal_major_version()
-            else 
-                let g:jedi#force_py_version=3
-            endif 
-            if pyenv#python#get_external_major_version() == 2 
-                " in the case it's 2. we just use the one from the environment
-                let g:python_host_prog=g:pyenv#python_exec . '2'
-                let g:python3_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
-                let g:jedi#force_py_version=2
-            elseif pyenv#python#get_external_major_version() > 0
-                let g:jedi#force_py_version=pyenv#python#get_external_major_version()
-                if g:pyenv#python_exec =~ '[[:digit:].]\+$'
-                    let g:python_host_prog=g:pyenv#python_exec . '2'
-                    let g:python3_host_prog=g:pyenv#python_exec
-                endif 
-            endif
-        else
-            call PythonFromEnvironment("2", "2")
-        endif
-        " for vim-test
-        let g:test#python#runner = g:python3_host_prog
-        let g:test#python#pyunit#executable =  g:python3_host_prog .  '-m pyunit'
-        " set the virtual env python used to launch the debugger
-        let g:pudb_breakpoint_symbol='☠'
-        let g:pyenv_path = s:python_prefixes()[0]
-    endfunction
-    augroup vim-pyenv-custom-augroup
-        autocmd User vim-pyenv-activate-post   call s:pyenv_init()
-        autocmd User vim-pyenv-deactivate-post call s:pyenv_init()
-    augroup END
-else
-    call PythonFromEnvironment("1", "1")
-endif
+"if exists('*pyenv#pyenv#is_enabled') 
+"    function! s:python_prefixes() abort " {{{
+"        if ! exists('*pyenv#pyenv#is_enabled()') || ! pyenv#pyenv#is_enabled()
+"            return []
+"        endif
+"        let result = pyenv#utils#system(join([
+"                    \ g:pyenv#pyenv_exec,
+"                    \ 'prefix',
+"                    \]))
+"        if result.status == 0
+"            return split(result.stdout, '\v\r?\n')
+"        endif
+"        return []
+"    endfunction " }}}
+"    command! -nargs=0 CopyPythonPrefixes call setreg('+', s:python_prefixes()[0])
+"    if exists('$PYENV_VIRTUAL_INIT')
+"        augroup pyvirtualenv
+"            autocmd!
+"            autocmd VimEnter python silent! command PyenvActivate 
+"        augroup end
+"    endif
+"    function! s:pyenv_init()
+"        if exists('*jedi#init_python') && jedi#init_python()
+"            let g:jedi#force_py_version='3'
+"        endif
+"        " if active
+"        if exists('*pyenv#pyenv#is_activated')
+"                    \ && pyenv#pyenv#is_activated() 
+"                    \ && pyenv#python#get_external_major_version()
+"            " pyenv#info#format('%iv') A version of the internal /usr/bin/python
+"            if pyenv#python#get_internal_major_version() >= 2
+"                let g:jedi#force_py_version=pyenv#python#get_internal_major_version()
+"            else 
+"                let g:jedi#force_py_version=3
+"            endif 
+"            if pyenv#python#get_external_major_version() == 2 
+"                " in the case it's 2. we just use the one from the environment
+"                let g:python_host_prog=g:pyenv#python_exec . '2'
+"                let g:python3_host_prog=substitute(system('type -a python3 | awk "NR==2{print \$NF}"'), '\n', '', 'g')
+"                let g:jedi#force_py_version=2
+"            elseif pyenv#python#get_external_major_version() > 0
+"                let g:jedi#force_py_version=pyenv#python#get_external_major_version()
+"                if g:pyenv#python_exec =~ '[[:digit:].]\+$'
+"                    let g:python_host_prog=g:pyenv#python_exec . '2'
+"                    let g:python3_host_prog=g:pyenv#python_exec
+"                endif 
+"            endif
+"        else
+"            call PythonFromEnvironment("2", "2")
+"        endif
+"        " for vim-test
+"        let g:test#python#runner = g:python3_host_prog
+"        let g:test#python#pyunit#executable =  g:python3_host_prog .  '-m pyunit'
+"        " set the virtual env python used to launch the debugger
+"        let g:pudb_breakpoint_symbol='☠'
+"        let g:pyenv_path = s:python_prefixes()[0]
+"    endfunction
+"    augroup vim-pyenv-custom-augroup
+"        autocmd User vim-pyenv-activate-post   call s:pyenv_init()
+"        autocmd User vim-pyenv-deactivate-post call s:pyenv_init()
+"    augroup END
+"else
+"   call PythonFromEnvironment("1", "1")
+"endif
 
 " let g:deoplete#auto_complete_delay = 10
 " Required for Semshi > 100
@@ -699,8 +699,8 @@ function! s:vim_test_keymap()
     nmap <silent> t<C-l> :TestLast<CR>
     nmap <silent> t<C-g> :TestVisit<CR>
 endfunction
-let g:test#python#runner = g:python3_host_prog
-let g:test#python#pyunit#executable =  g:python3_host_prog .  '-m pyunit'
+" let g:test#python#runner = g:python3_host_prog
+" let g:test#python#pyunit#executable =  g:python3_host_prog .  '-m pyunit'
 let g:test#strategy = "dispatch"
 " make test commands execute using dispatch.vim
 let g:dispatch_handlers=["iterm", "tmux", "neovim", "job", "screen", "windows", "x11", 'headless']
